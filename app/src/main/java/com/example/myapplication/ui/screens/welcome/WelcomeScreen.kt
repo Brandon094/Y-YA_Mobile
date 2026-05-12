@@ -95,7 +95,7 @@ fun WelcomeScreen(
             fontSize = 14.sp,
             color = Color.Black
         )
-
+        Spacer(modifier = Modifier.height(10.dp))
         // Botón regístro
         OutlinedButton(
             onClick = { onRegisterClick() },
