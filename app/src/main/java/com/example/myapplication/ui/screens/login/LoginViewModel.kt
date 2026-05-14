@@ -4,19 +4,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import com.example.myapplication.data.SupabaseManager
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.providers.builtin.Email
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
-// ---------- ViewModel ----------
 class LoginViewModel : ViewModel() {
+    val TAG = "LoginScreen"
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
-    fun login(username: String, password: String, onResult: (Boolean) -> Unit) {
-        if (username.isBlank() || password.isBlank()) {
+    fun login(email: String, password: String, onResult: (Boolean) -> Unit) {
+        if (email.isBlank() || password.isBlank()) {
             _errorMessage.value = "Completa todos los campos"
             onResult(false)
             return
@@ -26,15 +29,27 @@ class LoginViewModel : ViewModel() {
         _errorMessage.value = null
 
         viewModelScope.launch {
-            delay(1500)
+            try {
+                SupabaseManager.client.auth.signInWith(Email) {
+                    this.email = email
+                    this.password = password
+                }
 
-            val success = username == "test@example.com" && password == "123456"
-
-            _isLoading.value = false
-            if (success) {
+                _isLoading.value = false
                 onResult(true)
-            } else {
-                _errorMessage.value = "Usuario o contraseña incorrectos"
+            } catch (e: Exception) {
+                _isLoading.value = false
+                val errorText = e.message ?: ""
+                
+                _errorMessage.value = when {
+                    errorText.contains("Invalid login credentials", ignoreCase = true) -> 
+                        "Correo o contraseña incorrectos"
+                    errorText.contains("Email not confirmed", ignoreCase = true) -> 
+                        "Por favor, confirma tu correo electrónico"
+                    errorText.contains("network", ignoreCase = true) -> 
+                        "Sin conexión a internet"
+                    else -> "Error: Verifique sus datos"
+                }
                 onResult(false)
             }
         }

@@ -108,14 +108,19 @@ fun LoginScreen(
             // Usuario
             OutlinedTextField(
                 value = usuario,
-                onValueChange = { usuario = it },
-                label = { Text("Usuario") },
+                onValueChange = { 
+                    usuario = it 
+                    if (errorMessage != null) viewModel.login("", "", {}) // Truco rápido para limpiar error al escribir
+                },
+                label = { Text("Correo electrónico") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
+                isError = errorMessage != null,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Black
+                    unfocusedBorderColor = Color.Black,
+                    errorBorderColor = Color.Red
                 )
             )
 
@@ -124,14 +129,19 @@ fun LoginScreen(
             // Contraseña
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = { 
+                    password = it 
+                    // Limpiar mensaje de error si el usuario vuelve a escribir
+                },
                 label = { Text("Contraseña") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
+                isError = errorMessage != null,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Black
+                    unfocusedBorderColor = Color.Black,
+                    errorBorderColor = Color.Red
                 ),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -204,7 +214,9 @@ fun LoginScreen(
             if (!errorMessage.isNullOrEmpty()) {
                 Text(
                     text = errorMessage!!,
-                    color = Color.White
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
         }
