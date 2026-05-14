@@ -2,11 +2,13 @@ package com.example.myapplication.navigation
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.myapplication.data.Service
 import com.example.myapplication.ui.screens.welcome.WelcomeScreen
 import com.example.myapplication.ui.screens.home.HomeScreen
 import com.example.myapplication.ui.screens.login.LoginScreen
 import com.example.myapplication.ui.screens.register.RegisterScreen
 import com.example.myapplication.ui.screens.reset.ResetPasswordScreen
+import com.example.myapplication.ui.screens.service_detail.ServiceDetailScreen
 
 // ---------- Screens ----------
 sealed class Screen {
@@ -15,6 +17,7 @@ sealed class Screen {
     object Reset : Screen()
     object RegisterUser : Screen()
     object Home : Screen()
+    data class ServiceDetail(val service: Service) : Screen()
 }
 
 // ---------- Navigation ----------
@@ -23,7 +26,7 @@ fun AppNavigation() {
 
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Welcome) }
 
-    when (currentScreen) {
+    when (val screen = currentScreen) {
 
         // Bienvenida
         Screen.Welcome -> WelcomeScreen(
@@ -50,7 +53,16 @@ fun AppNavigation() {
         )
 
         // Home REAL
-        Screen.Home -> HomeScreen()
+        Screen.Home -> HomeScreen(
+            onServiceClick = { service -> currentScreen = Screen.ServiceDetail(service) },
+            onLogout = { currentScreen = Screen.Login }
+        )
+
+        // Detalle de Servicio
+        is Screen.ServiceDetail -> ServiceDetailScreen(
+            service = screen.service,
+            onBack = { currentScreen = Screen.Home }
+        )
     }
 }
 
