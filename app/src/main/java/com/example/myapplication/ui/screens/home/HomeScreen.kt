@@ -27,6 +27,8 @@ import com.example.myapplication.data.Service
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    onServiceClick: (Service) -> Unit,
+    onLogout: () -> Unit,
     viewModel: HomeViewModel = viewModel()
 ) {
     Scaffold(
@@ -60,7 +62,7 @@ fun HomeScreen(
                 Text(
                     text = "Cerrar sesión →",
                     color = Color.White,
-                    modifier = Modifier.clickable { }
+                    modifier = Modifier.clickable { onLogout() }
                 )
             }
         }
@@ -80,9 +82,15 @@ fun HomeScreen(
                 color = Color.Black
             )
 
-            LazyColumn {
-                items(viewModel.services) { service ->
-                    ServiceItem(service)
+            if (viewModel.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Color.Red)
+                }
+            } else {
+                LazyColumn {
+                    items(viewModel.services) { service ->
+                        ServiceItem(service, onClick = { onServiceClick(service) })
+                    }
                 }
             }
         }
@@ -90,12 +98,13 @@ fun HomeScreen(
 }
 
 @Composable
-fun ServiceItem(service: Service) {
+fun ServiceItem(service: Service, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .background(Color(0xFFFF6B6B), RoundedCornerShape(12.dp))
+            .clickable { onClick() }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -128,5 +137,5 @@ fun ServiceItem(service: Service) {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen(onServiceClick = {}, onLogout = {})
 }
