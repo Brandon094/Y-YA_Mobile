@@ -53,7 +53,8 @@ fun RegisterScreen(
         Text(
             text = "Únete",
             fontSize = 32.sp,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onBackground,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -136,7 +137,7 @@ fun RegisterScreen(
                 .height(50.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Red
+                containerColor = MaterialTheme.colorScheme.primary
             ),
             enabled = !isLoading
         ) {
@@ -153,7 +154,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text("Autenticarse con", color = Color.Black)
+        Text("Autenticarse con", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -166,12 +167,12 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text("¿Ya tienes cuenta?", color = Color.Black)
+        Text("¿Ya tienes cuenta?", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
 
         TextButton(onClick = { onGoToLogin() }, enabled = !isLoading) {
             Text(
                 "Iniciar sesión",
-                color = Color.Red // Cambié a rojo para que se vea, antes era blanco sobre fondo claro
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }

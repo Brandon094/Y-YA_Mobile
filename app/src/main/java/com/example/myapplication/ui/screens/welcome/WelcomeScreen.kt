@@ -50,7 +50,8 @@ fun WelcomeScreen(
         Text(
             text = "yáya",
             fontSize = 28.sp,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -59,7 +60,8 @@ fun WelcomeScreen(
         Text(
             text = "Conecta. Confía. Contrata",
             fontSize = 20.sp,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onBackground,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -68,7 +70,7 @@ fun WelcomeScreen(
         Text(
             text = "Encuentra el servicio que buscas.\nOfrece tu talento.\nTodo en un solo lugar: YAYA.",
             fontSize = 14.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
@@ -79,7 +81,7 @@ fun WelcomeScreen(
             onClick = { onLoginClick() },
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Red
+                containerColor = MaterialTheme.colorScheme.primary
             ),
             modifier = Modifier
                 .width(200.dp)
@@ -93,7 +95,7 @@ fun WelcomeScreen(
         Text(
             text = "¿No tienes cuenta?",
             fontSize = 14.sp,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
         )
         Spacer(modifier = Modifier.height(10.dp))
         // Botón regístro
@@ -103,8 +105,9 @@ fun WelcomeScreen(
             modifier = Modifier
                 .width(200.dp)
                 .height(50.dp),
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
         ) {
-            Text("Regístrate", color = Color.Black)
+            Text("Regístrate", color = MaterialTheme.colorScheme.primary)
         }
     }
 }

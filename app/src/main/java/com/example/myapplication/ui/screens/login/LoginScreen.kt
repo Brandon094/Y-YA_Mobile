@@ -92,7 +92,8 @@ fun LoginScreen(
             Text(
                 text = "yáya",
                 fontSize = 28.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -100,7 +101,8 @@ fun LoginScreen(
             Text(
                 text = "Inicia sesión",
                 fontSize = 32.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -118,9 +120,9 @@ fun LoginScreen(
                 enabled = !isLoading,
                 isError = errorMessage != null,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Black,
-                    errorBorderColor = Color.Red
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                    errorBorderColor = MaterialTheme.colorScheme.error
                 )
             )
 
@@ -139,9 +141,9 @@ fun LoginScreen(
                 enabled = !isLoading,
                 isError = errorMessage != null,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Black,
-                    errorBorderColor = Color.Red
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                    errorBorderColor = MaterialTheme.colorScheme.error
                 ),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -181,7 +183,7 @@ fun LoginScreen(
                     .height(50.dp),
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red
+                    containerColor = MaterialTheme.colorScheme.primary
                 ),
                 enabled = !isLoading
             ) {
@@ -197,7 +199,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("O inicia con", color = Color.White)
+            Text("O inicia con", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -214,7 +216,7 @@ fun LoginScreen(
             if (!errorMessage.isNullOrEmpty()) {
                 Text(
                     text = errorMessage!!,
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(top = 8.dp)
                 )

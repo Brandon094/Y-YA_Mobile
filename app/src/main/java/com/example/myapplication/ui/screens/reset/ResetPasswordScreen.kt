@@ -5,30 +5,31 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResetPasswordScreen(
     onPasswordReset: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    viewModel: ResetPasswordViewModel = viewModel()
 ) {
-    var currentPassword by remember { mutableStateOf("") }
-    var newPassword by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-
-    var passwordVisible by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    
+    val isLoading by viewModel.isLoading.observeAsState(false)
+    val errorMessage by viewModel.errorMessage.observeAsState()
+    val isSuccess by viewModel.isSuccess.observeAsState(false)
 
     Scaffold(
         topBar = {
@@ -36,7 +37,7 @@ fun ResetPasswordScreen(
                 title = {
                     Text(
                         "Restablecer contraseña",
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                 },
                 navigationIcon = {
@@ -44,12 +45,12 @@ fun ResetPasswordScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Volver",
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.secondary
                 )
             )
         }
@@ -64,89 +65,84 @@ fun ResetPasswordScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            
+            if (isSuccess) {
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = Color.Green
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "¡Correo enviado!",
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                )
+                Text(
+                    "Revisa tu bandeja de entrada para restablecer tu contraseña.",
+                    modifier = Modifier.padding(16.dp),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center
+                )
+                Button(
+                    onClick = { onBack() },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("Volver al Login", color = Color.White)
+                }
+            } else {
+                Text(
+                    "Ingresa tu correo para recibir un enlace de recuperación.",
+                    modifier = Modifier.padding(bottom = 24.dp),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
 
-            Spacer(modifier = Modifier.height(20.dp))
+                // Email
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Correo electrónico") },
+                    placeholder = { Text("ejemplo@correo.com") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading,
+                    isError = errorMessage != null
+                )
 
-            // Contraseña actual
-            OutlinedTextField(
-                value = currentPassword,
-                onValueChange = { currentPassword = it },
-                label = { Text("Contraseña actual") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(
-                            imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                            contentDescription = null
-                        )
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Mostrar error
+                if (!errorMessage.isNullOrEmpty()) {
+                    Text(
+                        text = errorMessage!!,
+                        color = Color.Red,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+
+                // Botón Enviar
+                Button(
+                    onClick = {
+                        viewModel.sendResetPasswordEmail(email)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    enabled = !isLoading
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    } else {
+                        Text("Enviar enlace", color = Color.White)
                     }
                 }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Nueva contraseña
-            OutlinedTextField(
-                value = newPassword,
-                onValueChange = { newPassword = it },
-                label = { Text("Nueva contraseña") },
-                placeholder = { Text("Escribe tu contraseña") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Confirmar contraseña
-            OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                label = { Text("Confirmar contraseña") },
-                placeholder = { Text("Escribe tu contraseña") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Botón Restablecer
-            Button(
-                onClick = {
-                    when {
-                        currentPassword.isBlank() || newPassword.isBlank() || confirmPassword.isBlank() -> {
-                            error = "Completa todos los campos"
-                        }
-                        newPassword != confirmPassword -> {
-                            error = "Las contraseñas no coinciden"
-                        }
-                        newPassword.length < 6 -> {
-                            error = "Mínimo 6 caracteres"
-                        }
-                        else -> {
-                            error = ""
-                            onPasswordReset()
-                        }
-                    }
-                },
-                modifier = Modifier
-                    .width(180.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red
-                )
-            ) {
-                Text("Restablecer", color = Color.White)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (error.isNotEmpty()) {
-                Text(error, color = Color.White)
             }
         }
     }
