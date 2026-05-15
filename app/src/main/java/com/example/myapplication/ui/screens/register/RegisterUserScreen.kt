@@ -26,18 +26,23 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.R
 
+/**
+ * PANTALLA DE REGISTRO
+ * Permite a nuevos usuarios crear una cuenta en la plataforma.
+ */
 @Composable
 fun RegisterScreen(
-    onRegister: () -> Unit,
-    onGoToLogin: () -> Unit,
+    onRegister: () -> Unit,    // Regresa al login o avanza tras registrarse
+    onGoToLogin: () -> Unit,   // Opción para ir al login si ya tiene cuenta
     viewModel: RegisterUserViewModel = viewModel()
 ) {
+    // Estados para capturar la entrada del usuario
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    // Observamos el estado del ViewModel
+    // Estados observados desde el ViewModel de Registro
     val isLoading by viewModel.isLoading.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
 
@@ -49,7 +54,7 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Título
+        // Título de la pantalla
         Text(
             text = "Únete",
             fontSize = 32.sp,
@@ -59,7 +64,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Nombre (puedes guardarlo en Supabase luego en una tabla de perfiles)
+        // Campo: Nombre de usuario
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
@@ -75,7 +80,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Email
+        // Campo: Correo electrónico
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -92,7 +97,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Password
+        // Campo: Contraseña con transformación visual
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -113,7 +118,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Mostrar error si existe
+        // Mostrar mensaje de error si la validación en Supabase falla
         if (!errorMessage.isNullOrEmpty()) {
             Text(
                 text = errorMessage!!,
@@ -122,12 +127,11 @@ fun RegisterScreen(
             )
         }
 
-        // Botón Unirse conectado al ViewModel
+        // Botón para procesar el registro
         Button(
             onClick = {
                 viewModel.register(email, password) { success ->
                     if (success) {
-                        // Si el registro es exitoso, navegamos o avisamos
                         onRegister() 
                     }
                 }
@@ -158,7 +162,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Google icon
+        // Icono de Google (placeholder)
         Image(
             painter = painterResource(id = R.drawable.ic_google),
             contentDescription = "Google",
@@ -169,6 +173,7 @@ fun RegisterScreen(
 
         Text("¿Ya tienes cuenta?", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
 
+        // Opción para regresar al login
         TextButton(onClick = { onGoToLogin() }, enabled = !isLoading) {
             Text(
                 "Iniciar sesión",
