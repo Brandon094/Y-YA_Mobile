@@ -24,14 +24,19 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.R
 
+/**
+ * PANTALLA DE EDICIÓN DE PERFIL
+ * Proporciona un formulario para que el usuario actualice sus datos en Supabase.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileScreen(
-    onBack: () -> Unit,
+    onBack: () -> Unit, // Regresa al perfil tras cancelar o guardar
     viewModel: EditProfileViewModel = viewModel()
 ) {
     Scaffold(
         topBar = {
+            // Cabecera con título y acción de retroceso
             TopAppBar(
                 title = { Text("Editar perfil", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
@@ -60,14 +65,14 @@ fun EditProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // Avatar editable
+            // Sección de Avatar (Foto de perfil) con botón de cámara simulado
             Box(
                 modifier = Modifier
                     .size(120.dp)
                     .background(MaterialTheme.colorScheme.surface, CircleShape)
                     .padding(4.dp)
                     .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape)
-                    .clickable { /* Abrir galería */ },
+                    .clickable { /* Funcionalidad futura: Selección de galería */ },
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -76,6 +81,7 @@ fun EditProfileScreen(
                     modifier = Modifier.size(70.dp)
                 )
 
+                // Icono flotante de cámara para indicar que es editable
                 Surface(
                     modifier = Modifier
                         .size(36.dp)
@@ -95,7 +101,7 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Nombre
+            // Campo: Edición del Nombre Completo
             OutlinedTextField(
                 value = viewModel.name,
                 onValueChange = { viewModel.name = it },
@@ -111,7 +117,7 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Teléfono
+            // Campo: Edición del Teléfono (Usa teclado numérico)
             OutlinedTextField(
                 value = viewModel.phone,
                 onValueChange = { viewModel.phone = it },
@@ -128,6 +134,7 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            // Manejo visual de errores en la actualización
             if (viewModel.errorMessage != null) {
                 Text(
                     text = viewModel.errorMessage!!,
@@ -136,11 +143,11 @@ fun EditProfileScreen(
                 )
             }
 
-            // Botón guardar
+            // Botón de Guardar: Envía los datos a Supabase mediante el ViewModel
             Button(
                 onClick = {
                     viewModel.updateProfile {
-                        onBack()
+                        onBack() // Regresamos tras el éxito
                     }
                 },
                 modifier = Modifier
@@ -159,6 +166,7 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Opción para cancelar y regresar
             TextButton(onClick = onBack, enabled = !viewModel.isLoading) {
                 Text("Cancelar", color = MaterialTheme.colorScheme.primary)
             }
