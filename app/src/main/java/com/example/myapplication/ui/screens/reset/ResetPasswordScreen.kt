@@ -18,15 +18,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
+/**
+ * PANTALLA DE RECUPERACIÓN DE CONTRASEÑA
+ * Gestiona el envío de correos electrónicos para restablecer el acceso a la cuenta.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResetPasswordScreen(
-    onPasswordReset: () -> Unit,
-    onBack: () -> Unit,
+    onPasswordReset: () -> Unit, // Acción post-recuperación (opcional en este flujo)
+    onBack: () -> Unit,          // Regresa a la pantalla anterior
     viewModel: ResetPasswordViewModel = viewModel()
 ) {
+    // Estado para capturar el correo electrónico de recuperación
     var email by remember { mutableStateOf("") }
     
+    // Observamos estados desde el ViewModel de Supabase
     val isLoading by viewModel.isLoading.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
     val isSuccess by viewModel.isSuccess.observeAsState(false)
@@ -66,6 +72,7 @@ fun ResetPasswordScreen(
             verticalArrangement = Arrangement.Center
         ) {
             
+            // Vista de ÉXITO: Aparece cuando Supabase confirma el envío del email
             if (isSuccess) {
                 Icon(
                     imageVector = Icons.Default.Email,
@@ -93,6 +100,7 @@ fun ResetPasswordScreen(
                     Text("Volver al Login", color = Color.White)
                 }
             } else {
+                // Vista de FORMULARIO: Pide el correo del usuario
                 Text(
                     "Ingresa tu correo para recibir un enlace de recuperación.",
                     modifier = Modifier.padding(bottom = 24.dp),
@@ -100,7 +108,6 @@ fun ResetPasswordScreen(
                     textAlign = TextAlign.Center
                 )
 
-                // Email
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -114,7 +121,7 @@ fun ResetPasswordScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Mostrar error
+                // Mensaje de error (ej. correo no encontrado)
                 if (!errorMessage.isNullOrEmpty()) {
                     Text(
                         text = errorMessage!!,
@@ -123,7 +130,7 @@ fun ResetPasswordScreen(
                     )
                 }
 
-                // Botón Enviar
+                // Botón para disparar la acción en Supabase
                 Button(
                     onClick = {
                         viewModel.sendResetPasswordEmail(email)
