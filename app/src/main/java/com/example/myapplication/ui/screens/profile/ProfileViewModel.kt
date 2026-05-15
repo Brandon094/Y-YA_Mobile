@@ -12,6 +12,10 @@ import kotlinx.coroutines.launch
 import android.util.Log
 import kotlinx.serialization.Serializable
 
+/**
+ * MODELO DE DATOS PARA EL PERFIL (DTO)
+ * Estructura interna para recibir los datos de la tabla 'profiles' de Supabase.
+ */
 @Serializable
 data class UserProfile(
     val id: String,
@@ -19,26 +23,37 @@ data class UserProfile(
     val phone: String? = null
 )
 
+/**
+ * LÓGICA DE NEGOCIO PARA EL PERFIL
+ * Combina datos de Auth (Email) y de la tabla Profiles (Nombre/Teléfono).
+ */
 class ProfileViewModel : ViewModel() {
 
+    // Estados reactivos que la pantalla de Perfil observa para actualizarse
     var name by mutableStateOf("Cargando...")
         private set
 
     var email by mutableStateOf("Cargando...")
         private set
 
+    // Cargamos los datos en cuanto se abre la pantalla de Perfil
     init {
         fetchProfile()
     }
 
+    /**
+     * Obtiene la información del usuario logueado.
+     */
     private fun fetchProfile() {
         viewModelScope.launch {
             try {
+                // Obtenemos el usuario actualmente autenticado
                 val user = SupabaseManager.client.auth.currentUserOrNull()
                 if (user != null) {
                     email = user.email ?: ""
                     
-                    // Consultamos el nombre real de la tabla 'profiles'
+                    // Consultamos el registro correspondiente en la tabla personalizada 'profiles'
+                    // Usamos un filtro para traer solo el que coincida con el ID del usuario
                     val profile = SupabaseManager.client.postgrest["profiles"]
                         .select {
                             filter {
@@ -51,7 +66,7 @@ class ProfileViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 Log.e("ProfileVM", "Error fetching profile", e)
-                // Si falla, al menos mostramos el email
+                // Fallback en caso de error para que la UI no quede vacía
                 if (email == "Cargando...") email = "Usuario"
             }
         }
