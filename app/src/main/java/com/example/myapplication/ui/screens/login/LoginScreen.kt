@@ -48,17 +48,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.R
 import com.example.myapplication.ui.screens.login.LoginViewModel
 
-// ---------- Pantalla de Login ----------
+/**
+ * PANTALLA DE INICIO DE SESIÓN (LOGIN)
+ * Permite a los usuarios autenticarse para acceder a la aplicación.
+ */
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit,
-    onNavigateToReset: () -> Unit,
+    onLoginSuccess: () -> Unit,    // Acción al entrar correctamente
+    onNavigateToReset: () -> Unit, // Acción para recuperar clave
     viewModel: LoginViewModel = viewModel()
 ) {
+    // Estados locales para los campos de entrada
     var usuario by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    // Observación de estados del ViewModel (Carga y Errores)
     val isLoading by viewModel.isLoading.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
 
@@ -72,7 +77,7 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo en caja blanca
+            // Contenedor del Logo
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -89,6 +94,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Título de la App
             Text(
                 text = "yáya",
                 fontSize = 28.sp,
@@ -107,12 +113,11 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Usuario
+            // Campo de texto para el Correo
             OutlinedTextField(
                 value = usuario,
                 onValueChange = { 
                     usuario = it 
-                    if (errorMessage != null) viewModel.login("", "", {}) // Truco rápido para limpiar error al escribir
                 },
                 label = { Text("Correo electrónico") },
                 singleLine = true,
@@ -128,13 +133,10 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Contraseña
+            // Campo de texto para la Contraseña con opción de ver/ocultar
             OutlinedTextField(
                 value = password,
-                onValueChange = { 
-                    password = it 
-                    // Limpiar mensaje de error si el usuario vuelve a escribir
-                },
+                onValueChange = { password = it },
                 label = { Text("Contraseña") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -159,6 +161,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Enlace para recuperar contraseña
             TextButton(
                 onClick = { onNavigateToReset() },
                 modifier = Modifier.align(Alignment.End)
@@ -171,11 +174,11 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botón login
+            // Botón de Inicio de Sesión
             Button(
                 onClick = {
-                    viewModel.login(usuario, password) {
-                        if (it) onLoginSuccess()
+                    viewModel.login(usuario, password) { success ->
+                        if (success) onLoginSuccess()
                     }
                 },
                 modifier = Modifier
@@ -188,10 +191,7 @@ fun LoginScreen(
                 enabled = !isLoading
             ) {
                 if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = Color.White
-                    )
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                 } else {
                     Text("Inicia sesión", color = Color.White)
                 }
@@ -203,17 +203,16 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Google
+            // Acceso alternativo con Google
             Image(
                 painter = painterResource(id = R.drawable.ic_google),
                 contentDescription = "Google",
                 modifier = Modifier.size(40.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Error
+            // Espacio para mostrar mensajes de error de Supabase
             if (!errorMessage.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = errorMessage!!,
                     color = MaterialTheme.colorScheme.error,
