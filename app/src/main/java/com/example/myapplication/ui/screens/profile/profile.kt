@@ -25,13 +25,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.R
 
+/**
+ * PANTALLA DE PERFIL DE USUARIO
+ * Permite al usuario ver sus datos personales y acceder a opciones de configuración.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onEditProfile: () -> Unit,
-    onChangePassword: () -> Unit,
-    onLogout: () -> Unit,
-    onBack: () -> Unit,
+    onEditProfile: () -> Unit,    // Navega a la pantalla de edición
+    onChangePassword: () -> Unit, // Navega al flujo de recuperación/cambio
+    onLogout: () -> Unit,         // Acción para cerrar sesión
+    onBack: () -> Unit,           // Regresa al Home
     viewModel: ProfileViewModel = viewModel()
 ) {
 
@@ -65,7 +69,7 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // Avatar
+            // Sección del Avatar (Imagen de perfil)
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -83,7 +87,7 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Nombre
+            // Información dinámica del usuario (Nombre y Email)
             Text(
                 text = viewModel.name,
                 fontSize = 24.sp,
@@ -91,7 +95,6 @@ fun ProfileScreen(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            // Email
             Text(
                 text = viewModel.email,
                 fontSize = 14.sp,
@@ -100,12 +103,13 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Opciones
+            // Lista de opciones navegables
             ProfileOption("Editar perfil", Icons.Default.Edit, onEditProfile)
             ProfileOption("Cambiar contraseña", Icons.Default.Lock, onChangePassword)
             
-            Spacer(modifier = Modifier.weight(1f)) // Empuja el logout al final
+            Spacer(modifier = Modifier.weight(1f)) // Empuja el botón de salida al final de la pantalla
 
+            // Botón de Cerrar Sesión con estilo destacado
             Button(
                 onClick = onLogout,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
@@ -120,6 +124,9 @@ fun ProfileScreen(
     }
 }
 
+/**
+ * COMPONENTE REUTILIZABLE PARA LAS OPCIONES DEL PERFIL
+ */
 @Composable
 fun ProfileOption(
     title: String,
@@ -139,6 +146,7 @@ fun ProfileOption(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Icono de la opción con fondo circular suave
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -157,6 +165,7 @@ fun ProfileOption(
                 fontWeight = FontWeight.Medium
             )
 
+            // Indicador de navegación (Flecha)
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
