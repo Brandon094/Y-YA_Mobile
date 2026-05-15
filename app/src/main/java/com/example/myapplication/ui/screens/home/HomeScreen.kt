@@ -24,46 +24,82 @@ import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 import com.example.myapplication.data.Service
 
+import com.example.myapplication.data.SupabaseManager
+import io.github.jan.supabase.auth.auth
+import kotlinx.coroutines.launch
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.runtime.rememberCoroutineScope
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onServiceClick: (Service) -> Unit,
+    onProfileClick: () -> Unit,
     onLogout: () -> Unit,
     viewModel: HomeViewModel = viewModel()
 ) {
+    val scope = rememberCoroutineScope()
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Buscar servicio") },
                 navigationIcon = {
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Default.Person, contentDescription = null)
+                    IconButton(onClick = onProfileClick) {
+                        Icon(
+                            imageVector = Icons.Default.Person, 
+                            contentDescription = "Mi Perfil",
+                            tint = MaterialTheme.colorScheme.onSecondary
+                        )
                     }
                 },
                 actions = {
                     IconButton(onClick = { }) {
-                        Icon(Icons.Default.Notifications, contentDescription = null)
+                        Icon(
+                            imageVector = Icons.Default.Notifications, 
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondary
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1E2A38),
-                    titleContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    titleContentColor = MaterialTheme.colorScheme.onSecondary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSecondary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onSecondary
                 )
             )
         },
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(16.dp),
-                contentAlignment = Alignment.CenterEnd
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                tonalElevation = 4.dp,
+                color = MaterialTheme.colorScheme.surface
             ) {
-                Text(
-                    text = "Cerrar sesión →",
-                    color = Color.White,
-                    modifier = Modifier.clickable { onLogout() }
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                SupabaseManager.client.auth.signOut()
+                                onLogout()
+                            }
+                        },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Logout,
+                            contentDescription = "Cerrar sesión"
+                        )
+                    }
+                }
             }
         }
     ) { padding ->
@@ -79,12 +115,12 @@ fun HomeScreen(
                 text = "Selecciona el servicio a contratar:",
                 modifier = Modifier.padding(16.dp),
                 fontSize = 16.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             if (viewModel.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color.Red)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
                 LazyColumn {
@@ -103,7 +139,7 @@ fun ServiceItem(service: Service, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 6.dp)
-            .background(Color(0xFFFF6B6B), RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
             .clickable { onClick() }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -122,14 +158,14 @@ fun ServiceItem(service: Service, onClick: () -> Unit) {
         Spacer(modifier = Modifier.width(12.dp))
 
         Column(modifier = Modifier.weight(1f)) {
-            Text(service.title, fontSize = 14.sp, color = Color.Black)
-            Text(service.description, fontSize = 12.sp, color = Color.DarkGray)
+            Text(service.title, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+            Text(service.description, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
         }
 
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
             contentDescription = null,
-            tint = Color.Black
+            tint = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -137,5 +173,5 @@ fun ServiceItem(service: Service, onClick: () -> Unit) {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(onServiceClick = {}, onLogout = {})
+    HomeScreen(onServiceClick = {}, onProfileClick = {}, onLogout = {})
 }

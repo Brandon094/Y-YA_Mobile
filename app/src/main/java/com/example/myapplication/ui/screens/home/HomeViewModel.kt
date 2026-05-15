@@ -34,7 +34,8 @@ class HomeViewModel : ViewModel() {
                 
                 services = result
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error cargando servicios", e)
+                Log.e("HomeViewModel", "ERROR DE SUPABASE: ${e.message}")
+                e.printStackTrace() // Esto te dirá en el Logcat si es un error de RLS o de modelo
             } finally {
                 isLoading = false
             }
