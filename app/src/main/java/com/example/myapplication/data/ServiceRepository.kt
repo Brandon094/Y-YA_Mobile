@@ -1,7 +1,12 @@
 package com.example.myapplication.data
 
+/**
+ * REPOSITORIO DE SERVICIOS (ESTÁTICO)
+ * Contiene datos predefinidos útiles para previsualizaciones (Previews) y pruebas iniciales.
+ * En la versión final, estos datos se reemplazan por las llamadas dinámicas a Supabase.
+ */
 object ServiceRepository {
-    // Datos hardcodeados de ejemplo
+    // Lista de servicios de ejemplo con títulos y descripciones realistas
     val services = listOf(
         Service(title = "Aseo general del hogar", description = "Limpieza básica del hogar"),
         Service(title = "Limpieza profunda", description = "Limpieza detallada de espacios"),
