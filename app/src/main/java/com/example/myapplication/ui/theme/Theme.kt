@@ -8,28 +8,35 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = RedDark,
-    secondary = RedPrimary,
-    tertiary = RedDark
+    primary = RedPrimary,
+    secondary = NavyBlue, // Cambiado de White a NavyBlue
+    background = BackgroundDark,
+    surface = SurfaceDark,
+    onPrimary = White,
+    onBackground = TextPrimaryDark,
+    onSurface = TextPrimaryDark,
+    onSecondary = White, // Letras blancas sobre el fondo azul/gris
+    error = Color(0xFFFF453A)
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = RedPrimary,
-    secondary = RedDark,
-    background = RedPrimary,
+    secondary = NavyBlue,
+    background = BackgroundLight,
     surface = White,
     onPrimary = White,
-    onBackground = Black,
-    onSurface = Black
+    onBackground = TextPrimary,
+    onSurface = TextPrimary,
+    onSecondary = White
 )
 
 @Composable
 fun YYATheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
@@ -38,7 +45,6 @@ fun YYATheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
