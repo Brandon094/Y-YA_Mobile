@@ -15,10 +15,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 
+/**
+ * PANTALLA DE BIENVENIDA (WELCOME)
+ * Es la primera pantalla que ve un usuario no autenticado.
+ * Presenta la propuesta de valor de la aplicación YAYA.
+ */
 @Composable
 fun WelcomeScreen(
-    onLoginClick: () -> Unit,
-    onRegisterClick: () -> Unit
+    onLoginClick: () -> Unit,    // Navega al flujo de inicio de sesión
+    onRegisterClick: () -> Unit  // Navega al flujo de registro
 ) {
 
     Column(
@@ -30,7 +35,7 @@ fun WelcomeScreen(
         verticalArrangement = Arrangement.Center
     ) {
 
-        // Logo en caja blanca
+        // Contenedor del Logo de la App
         Box(
             modifier = Modifier
                 .size(140.dp)
@@ -46,7 +51,7 @@ fun WelcomeScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Nombre app
+        // Nombre de la marca
         Text(
             text = "yáya",
             fontSize = 28.sp,
@@ -56,7 +61,7 @@ fun WelcomeScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Frase principal
+        // Eslógan principal
         Text(
             text = "Conecta. Confía. Contrata",
             fontSize = 20.sp,
@@ -66,7 +71,7 @@ fun WelcomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Descripción
+        // Texto descriptivo de la misión de la app
         Text(
             text = "Encuentra el servicio que buscas.\nOfrece tu talento.\nTodo en un solo lugar: YAYA.",
             fontSize = 14.sp,
@@ -76,7 +81,7 @@ fun WelcomeScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Botón login
+        // Botón principal: Acceso al Login
         Button(
             onClick = { onLoginClick() },
             shape = RoundedCornerShape(20.dp),
@@ -92,13 +97,14 @@ fun WelcomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Opción secundaria: Registro de nueva cuenta
         Text(
             text = "¿No tienes cuenta?",
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
         )
         Spacer(modifier = Modifier.height(10.dp))
-        // Botón regístro
+        
         OutlinedButton(
             onClick = { onRegisterClick() },
             shape = RoundedCornerShape(20.dp),
