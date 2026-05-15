@@ -25,14 +25,20 @@ import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 import com.example.myapplication.data.Service
 
+/**
+ * PANTALLA DE DETALLE DEL SERVICIO
+ * Muestra información extendida sobre un servicio seleccionado, incluyendo
+ * descripción, beneficios y opciones de contratación.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServiceDetailScreen(
-    service: Service,
-    onBack: () -> Unit
+    service: Service, // Objeto con la info del servicio
+    onBack: () -> Unit // Función para regresar a la lista
 ) {
     Scaffold(
         topBar = {
+            // Barra superior personalizada con el título y botón de retorno
             TopAppBar(
                 title = { Text("Detalles del Servicio", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
@@ -40,26 +46,25 @@ fun ServiceDetailScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Regresar",
-                            tint = MaterialTheme.colorScheme.onSecondary // Usa el color del texto de la barra
+                            tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
-                    titleContentColor = MaterialTheme.colorScheme.onSecondary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSecondary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onSecondary
+                    titleContentColor = MaterialTheme.colorScheme.onSecondary
                 )
             )
         },
         bottomBar = {
+            // Barra inferior fija con el botón principal de acción
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shadowElevation = 8.dp,
                 color = MaterialTheme.colorScheme.surface
             ) {
                 Button(
-                    onClick = { /* Lógica de contratación */ },
+                    onClick = { /* Lógica de contratación - MVP Placeholder */ },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
@@ -77,6 +82,7 @@ fun ServiceDetailScreen(
             }
         }
     ) { padding ->
+        // Contenido con soporte para scroll si la descripción es larga
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -84,7 +90,7 @@ fun ServiceDetailScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Imagen de cabecera o Placeholder
+            // Cabecera Visual con Logo
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -100,11 +106,8 @@ fun ServiceDetailScreen(
                 )
             }
 
-            Column(
-                modifier = Modifier
-                    .padding(24.dp)
-            ) {
-                // Título y Rating
+            Column(modifier = Modifier.padding(24.dp)) {
+                // Título y calificación (ficticia para el MVP)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -125,7 +128,7 @@ fun ServiceDetailScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Etiqueta de precio/tipo
+                // Etiqueta de estatus/verificación
                 Surface(
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp)
@@ -141,6 +144,7 @@ fun ServiceDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+                // Sección de Descripción
                 Text(
                     text = "Descripción del servicio",
                     fontSize = 18.sp,
@@ -159,7 +163,7 @@ fun ServiceDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Beneficios
+                // Sección de Beneficios (Listado estático para demostración)
                 Text(
                     text = "¿Qué incluye?",
                     fontSize = 18.sp,
@@ -191,12 +195,12 @@ fun ServiceDetailScreen(
                         Text(
                             text = benefit, 
                             fontSize = 14.sp, 
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f) // Color dinámico
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
                         )
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(40.dp)) // Espacio para el bottom bar
+                Spacer(modifier = Modifier.height(40.dp)) // Espacio de seguridad para el BottomBar
             }
         }
     }
