@@ -16,39 +16,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileScreen(
-    currentName: String,
-    currentEmail: String,
-    currentPhone: String,
-    onSave: (String, String, String) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    viewModel: EditProfileViewModel = viewModel()
 ) {
-
-    var name by remember { mutableStateOf(currentName) }
-    var email by remember { mutableStateOf(currentEmail) }
-    var phone by remember { mutableStateOf(currentPhone) }
-
-    var error by remember { mutableStateOf("") }
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Editar perfil") },
+                title = { Text("Editar perfil", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { onBack() }) {
+                    IconButton(onClick = onBack) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver"
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    titleContentColor = MaterialTheme.colorScheme.onSecondary
+                )
             )
         }
     ) { padding ->
@@ -66,8 +64,10 @@ fun EditProfileScreen(
             Box(
                 modifier = Modifier
                     .size(120.dp)
-                    .background(Color.White, CircleShape)
-                    .clickable { /* aquí luego abres galería */ },
+                    .background(MaterialTheme.colorScheme.surface, CircleShape)
+                    .padding(4.dp)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape)
+                    .clickable { /* Abrir galería */ },
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -76,86 +76,91 @@ fun EditProfileScreen(
                     modifier = Modifier.size(70.dp)
                 )
 
-                Icon(
-                    imageVector = Icons.Default.CameraAlt,
-                    contentDescription = null,
+                Surface(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .background(Color.Black, CircleShape)
-                        .padding(6.dp),
-                    tint = Color.White
-                )
+                        .size(36.dp)
+                        .align(Alignment.BottomEnd),
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary,
+                    shadowElevation = 4.dp
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CameraAlt,
+                        contentDescription = "Cambiar foto",
+                        modifier = Modifier.padding(8.dp),
+                        tint = Color.White
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Nombre
             OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Nombre") },
+                value = viewModel.name,
+                onValueChange = { viewModel.name = it },
+                label = { Text("Nombre completo") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Email
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Correo") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                enabled = !viewModel.isLoading,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Teléfono
             OutlinedTextField(
-                value = phone,
-                onValueChange = { phone = it },
+                value = viewModel.phone,
+                onValueChange = { viewModel.phone = it },
                 label = { Text("Teléfono") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                enabled = !viewModel.isLoading,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                )
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            if (viewModel.errorMessage != null) {
+                Text(
+                    text = viewModel.errorMessage!!,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+
             // Botón guardar
             Button(
                 onClick = {
-                    when {
-                        name.isBlank() || email.isBlank() -> {
-                            error = "Nombre y correo son obligatorios"
-                        }
-                        else -> {
-                            error = ""
-                            onSave(name, email, phone)
-                        }
+                    viewModel.updateProfile {
+                        onBack()
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(16.dp)
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                enabled = !viewModel.isLoading
             ) {
-                Text("Guardar cambios")
+                if (viewModel.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
+                } else {
+                    Text("Guardar cambios", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Cancelar
-            Text(
-                text = "Cancelar",
-                modifier = Modifier.clickable { onBack() },
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            if (error.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(error, color = Color.Red)
+            TextButton(onClick = onBack, enabled = !viewModel.isLoading) {
+                Text("Cancelar", color = MaterialTheme.colorScheme.primary)
             }
         }
     }
@@ -165,10 +170,6 @@ fun EditProfileScreen(
 @Composable
 fun EditProfileScreenPreview() {
     EditProfileScreen(
-        currentName = "Brandon Daza",
-        currentEmail = "brandon@email.com",
-        currentPhone = "123456789",
-        onSave = { _, _, _ -> },
         onBack = {}
     )
 }
