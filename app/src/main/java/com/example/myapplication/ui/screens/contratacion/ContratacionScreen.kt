@@ -1,4 +1,4 @@
-package com.example.yya2.screen
+package com.example.myapplication.ui.screens.contratacion
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,11 +14,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.data.Service
 
 @Composable
-fun PantallaContratacion(onContratarClick: () -> Unit) {
+fun PantallaContratacion(
+    service: Service,
+    onContratarClick: () -> Unit,
+    viewModel: ContratacionViewModel = viewModel()
+) {
     val coral = Color(0xFFE8614A)
     val coralSuave = Color(0xFFFFF0EE)
+
+    LaunchedEffect(service) {
+        viewModel.setInitialData(service)
+    }
 
     Column(
         modifier = Modifier
@@ -33,6 +43,7 @@ fun PantallaContratacion(onContratarClick: () -> Unit) {
                 .padding(top = 48.dp, bottom = 24.dp),
             contentAlignment = Alignment.Center
         ) {
+            @Suppress("DEPRECATION")
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "YÁYA",
@@ -96,10 +107,10 @@ fun PantallaContratacion(onContratarClick: () -> Unit) {
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    CampoFormulario("Servicio")
-                    CampoFormulario("Dirección")
-                    CampoFormulario("Hora")
-                    CampoFormulario("¿Cuánto ofrece?")
+                    CampoFormulario("Servicio", viewModel.servicio) { viewModel.servicio = it }
+                    CampoFormulario("Dirección", viewModel.direccion) { viewModel.direccion = it }
+                    CampoFormulario("Hora", viewModel.hora) { viewModel.hora = it }
+                    CampoFormulario("¿Cuánto ofrece?", viewModel.oferta) { viewModel.oferta = it }
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = { onContratarClick() },
@@ -126,17 +137,17 @@ fun InfoFila(etiqueta: String, valor: String) {
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        @Suppress("DEPRECATION")
         Text(etiqueta, color = Color.Gray, fontSize = 14.sp)
         Text(valor, fontWeight = FontWeight.Medium, fontSize = 14.sp)
     }
 }
 
 @Composable
-fun CampoFormulario(etiqueta: String) {
-    var texto by remember { mutableStateOf("") }
+fun CampoFormulario(etiqueta: String, valor: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
-        value = texto,
-        onValueChange = { texto = it },
+        value = valor,
+        onValueChange = onValueChange,
         label = { Text(etiqueta, fontSize = 14.sp) },
         modifier = Modifier
             .fillMaxWidth()

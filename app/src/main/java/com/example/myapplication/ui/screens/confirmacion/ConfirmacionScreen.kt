@@ -1,4 +1,4 @@
-package com.example.yya2.screen
+package com.example.myapplication.ui.screens.confirmacion
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,11 +16,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.data.Service
 
 @Composable
-fun PantallaReservaConfirmada(onContinuarClick: () -> Unit) {
+fun PantallaReservaConfirmada(
+    service: Service,
+    onContinuarClick: () -> Unit,
+    viewModel: ConfirmacionViewModel = viewModel()
+) {
     val coral = Color(0xFFE8614A)
     val context = LocalContext.current
+
+    LaunchedEffect(service) {
+        viewModel.setServiceData(service)
+    }
 
     Column(
         modifier = Modifier
@@ -34,6 +45,7 @@ fun PantallaReservaConfirmada(onContinuarClick: () -> Unit) {
                 .padding(top = 48.dp, bottom = 8.dp),
             contentAlignment = Alignment.Center
         ) {
+            @Suppress("DEPRECATION")
             Text(
                 text = "YÁYA",
                 fontSize = 22.sp,
@@ -57,6 +69,7 @@ fun PantallaReservaConfirmada(onContinuarClick: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        @Suppress("DEPRECATION")
         Text(
             text = "¡Reserva confirmada!",
             fontSize = 22.sp,
@@ -75,6 +88,7 @@ fun PantallaReservaConfirmada(onContinuarClick: () -> Unit) {
                 .padding(horizontal = 16.dp, vertical = 10.dp),
             contentAlignment = Alignment.Center
         ) {
+            @Suppress("DEPRECATION")
             Text(
                 text = "Tu servicio ha sido reservado exitosamente.",
                 fontSize = 13.sp,
@@ -95,6 +109,7 @@ fun PantallaReservaConfirmada(onContinuarClick: () -> Unit) {
             colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8F7))
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
+                @Suppress("DEPRECATION")
                 Text(
                     text = "Detalles de tu reserva",
                     fontWeight = FontWeight.Bold,
@@ -106,12 +121,12 @@ fun PantallaReservaConfirmada(onContinuarClick: () -> Unit) {
                 HorizontalDivider(color = Color(0xFFEEEEEE))
                 Spacer(modifier = Modifier.height(12.dp))
 
-                DetalleReservaFila("🧹", "Servicio", "Aseo general")
-                DetalleReservaFila("👤", "Prestador", "Maria Chantre")
-                DetalleReservaFila("📅", "Fecha", "27/08/2025")
-                DetalleReservaFila("📍", "Ubicación", "Cl 1 #5-40")
-                DetalleReservaFila("💰", "Precio", "$ 50.000")
-                DetalleReservaFila("⏱", "Tiempo", "4h")
+                DetalleReservaFila("🧹", "Servicio", viewModel.servicio)
+                DetalleReservaFila("👤", "Prestador", viewModel.prestador)
+                DetalleReservaFila("📅", "Fecha", viewModel.fecha)
+                DetalleReservaFila("📍", "Ubicación", viewModel.ubicacion)
+                DetalleReservaFila("💰", "Precio", viewModel.precio)
+                DetalleReservaFila("⏱", "Tiempo", viewModel.tiempo)
             }
         }
 
@@ -150,7 +165,9 @@ fun DetalleReservaFila(icono: String, etiqueta: String, valor: String) {
             .padding(vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        @Suppress("DEPRECATION")
         Text(text = icono, fontSize = 16.sp, modifier = Modifier.width(28.dp))
+        @Suppress("DEPRECATION")
         Text(
             text = etiqueta,
             color = Color.Gray,
