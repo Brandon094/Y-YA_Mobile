@@ -22,6 +22,8 @@ import kotlinx.coroutines.launch
 
 import com.example.myapplication.ui.screens.profile.ProfileScreen
 import com.example.myapplication.ui.screens.edit_profile.EditProfileScreen
+import com.example.myapplication.ui.screens.contratacion.PantallaContratacion
+import com.example.myapplication.ui.screens.confirmacion.PantallaReservaConfirmada
 
 /**
  * DEFINICIÓN DE RUTAS (PANTALLAS)
@@ -37,6 +39,8 @@ sealed class Screen {
     object Home : Screen()            // Pantalla principal (listado de servicios)
     object Profile : Screen()         // Ver perfil del usuario
     object EditProfile : Screen()     // Formulario para editar datos de perfil
+    data class Contratacion(val service: Service) : Screen()    // Pantalla de contratación (Yya2)
+    data class Confirmacion(val service: Service) : Screen()    // Pantalla de confirmación (Yya2)
     // ServiceDetail recibe un objeto de tipo 'Service' como argumento
     data class ServiceDetail(val service: Service) : Screen()
 }
@@ -125,10 +129,22 @@ fun AppNavigation() {
             onBack = { currentScreen = Screen.Profile }
         )
 
-        // Detalle de Servicio: Muestra info específica de un servicio
         is Screen.ServiceDetail -> ServiceDetailScreen(
             service = screen.service,
-            onBack = { currentScreen = Screen.Home }
+            onBack = { currentScreen = Screen.Home },
+            onContratar = { currentScreen = Screen.Contratacion(screen.service) }
+        )
+
+        // Flujo Yya2: Contratación
+        is Screen.Contratacion -> PantallaContratacion(
+            service = screen.service,
+            onContratarClick = { currentScreen = Screen.Confirmacion(screen.service) }
+        )
+
+        // Flujo Yya2: Confirmación
+        is Screen.Confirmacion -> PantallaReservaConfirmada(
+            service = screen.service,
+            onContinuarClick = { currentScreen = Screen.Home }
         )
     }
 }

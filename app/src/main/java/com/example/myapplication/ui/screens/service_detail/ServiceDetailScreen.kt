@@ -34,7 +34,8 @@ import com.example.myapplication.data.Service
 @Composable
 fun ServiceDetailScreen(
     service: Service, // Objeto con la info del servicio
-    onBack: () -> Unit // Función para regresar a la lista
+    onBack: () -> Unit, // Función para regresar a la lista
+    onContratar: () -> Unit // Función para ir a la pantalla de contratación
 ) {
     Scaffold(
         topBar = {
@@ -64,7 +65,7 @@ fun ServiceDetailScreen(
                 color = MaterialTheme.colorScheme.surface
             ) {
                 Button(
-                    onClick = { /* Lógica de contratación - MVP Placeholder */ },
+                    onClick = onContratar,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
@@ -214,6 +215,7 @@ fun ServiceDetailScreenPreview() {
             title = "Limpieza profunda",
             description = "Una limpieza detallada que incluye vidrios, pisos y rincones difíciles."
         ),
-        onBack = {}
+        onBack = {},
+        onContratar = {}
     )
 }
