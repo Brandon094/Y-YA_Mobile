@@ -130,7 +130,7 @@ fun RegisterScreen(
         // Botón para procesar el registro
         Button(
             onClick = {
-                viewModel.register(email, password) { success ->
+                viewModel.register(name, email, password) { success ->
                     if (success) {
                         onRegister() 
                     }
