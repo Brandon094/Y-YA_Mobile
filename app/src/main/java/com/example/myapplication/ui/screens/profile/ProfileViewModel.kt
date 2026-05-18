@@ -6,22 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.SupabaseManager
+import com.example.myapplication.data.models.UserProfile
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 import android.util.Log
 import kotlinx.serialization.Serializable
-
-/**
- * MODELO DE DATOS PARA EL PERFIL (DTO)
- * Estructura interna para recibir los datos de la tabla 'profiles' de Supabase.
- */
-@Serializable
-data class UserProfile(
-    val id: String,
-    val full_name: String,
-    val phone: String? = null
-)
 
 /**
  * LÓGICA DE NEGOCIO PARA EL PERFIL
