@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.data.Service
+import com.example.myapplication.data.models.Service
 
 class ContratacionViewModel : ViewModel() {
     var servicio by mutableStateOf("")
@@ -18,7 +18,7 @@ class ContratacionViewModel : ViewModel() {
             oferta = service.price.toString()
         }
     }
-
+    // Almacenar la contratacion en supabase
     fun contratar(onSuccess: () -> Unit) {
         // Aquí iría la lógica para guardar la contratación en Supabase si fuera necesario
         onSuccess()

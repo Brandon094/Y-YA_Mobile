@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.Service
+import com.example.myapplication.data.models.Service
 import com.example.myapplication.data.SupabaseManager
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch

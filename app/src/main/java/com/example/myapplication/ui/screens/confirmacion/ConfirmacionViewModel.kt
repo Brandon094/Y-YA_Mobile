@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.data.Service
+import com.example.myapplication.data.models.Service
 
 class ConfirmacionViewModel : ViewModel() {
     var servicio by mutableStateOf("")
