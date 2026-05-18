@@ -1,5 +1,7 @@
 package com.example.myapplication.data
 
+import com.example.myapplication.data.models.Service
+
 /**
  * REPOSITORIO DE SERVICIOS (ESTÁTICO)
  * Contiene datos predefinidos útiles para previsualizaciones (Previews) y pruebas iniciales.
