@@ -2,7 +2,7 @@ package com.example.myapplication.navigation
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.myapplication.data.Service
+import com.example.myapplication.data.models.Service
 import com.example.myapplication.ui.screens.welcome.WelcomeScreen
 import com.example.myapplication.ui.screens.home.HomeScreen
 import com.example.myapplication.ui.screens.login.LoginScreen
