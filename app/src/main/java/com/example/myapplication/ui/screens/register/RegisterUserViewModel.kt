@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 /**
  * VIEWMODEL PARA EL REGISTRO DE USUARIOS
- * Gestiona la creación de credenciales y la inicialización del perfil en la base de datos.
+ * Gestiona la creación de la cuenta de autenticación y el perfil detallado del usuario.
  */
 class RegisterUserViewModel : ViewModel() {
 
@@ -25,13 +25,23 @@ class RegisterUserViewModel : ViewModel() {
     val errorMessage: LiveData<String?> = _errorMessage
 
     /**
-     * Registra un nuevo usuario.
-     * 1. Crea la cuenta en Auth.
-     * 2. Crea el perfil en la tabla 'profiles' con el nombre proporcionado.
+     * Registra un nuevo usuario con todos los datos requeridos por el modelo de negocio.
      */
-    fun register(name: String, email: String, password: String, onResult: (Boolean) -> Unit) {
-        if (name.isBlank() || email.isBlank() || password.isBlank()) {
-            _errorMessage.value = "Completa todos los campos"
+    fun register(
+        name: String, 
+        email: String, 
+        password: String, 
+        phone: String, 
+        address: String,
+        documentId: String,
+        birthDate: String,
+        role: String,
+        onResult: (Boolean) -> Unit
+    ) {
+        // Validación de campos obligatorios
+        if (name.isBlank() || email.isBlank() || password.isBlank() || phone.isBlank() || 
+            address.isBlank() || documentId.isBlank() || birthDate.isBlank()) {
+            _errorMessage.value = "Por favor, completa todos los campos"
             onResult(false)
             return
         }
@@ -41,35 +51,40 @@ class RegisterUserViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // PASO 1: Registro en Supabase Auth
-                val authResult = SupabaseManager.client.auth.signUpWith(Email) {
+                // 1. Crear el usuario en Supabase Auth
+                SupabaseManager.client.auth.signUpWith(Email) {
                     this.email = email
                     this.password = password
                 }
                 
-                // Obtenemos el ID del usuario recién creado
+                // 2. Obtener el ID del usuario creado
                 val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
 
                 if (userId != null) {
-                    // PASO 2: Crear el perfil usando nuestro modelo UserProfile
+                    // 3. Crear perfil completo
                     val newProfile = UserProfile(
                         id = userId,
                         full_name = name,
-                        role = "client" // Por defecto se registra como cliente
+                        phone = phone,
+                        document_id = documentId,
+                        birth_date = birthDate,
+                        address = address,
+                        role = role
                     )
 
+                    // 4. Guardar en la tabla 'profiles'
                     SupabaseManager.client.postgrest["profiles"].insert(newProfile)
                     
                     _isLoading.value = false
                     onResult(true)
                 } else {
-                    throw Exception("No se pudo obtener el ID del usuario")
+                    throw Exception("No se pudo obtener el ID de usuario.")
                 }
 
             } catch (e: Exception) {
-                Log.e("Register", "Error completo: ", e)
+                Log.e("Register", "Error: ", e)
                 _isLoading.value = false
-                _errorMessage.value = "Error al registrar: ${e.localizedMessage}"
+                _errorMessage.value = "Error: ${e.localizedMessage}"
                 onResult(false)
             }
         }
