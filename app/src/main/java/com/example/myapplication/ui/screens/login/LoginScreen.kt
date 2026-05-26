@@ -56,6 +56,7 @@ import com.example.myapplication.ui.screens.login.LoginViewModel
 fun LoginScreen(
     onLoginSuccess: () -> Unit,    // Acción al entrar correctamente
     onNavigateToReset: () -> Unit, // Acción para recuperar clave
+    onNavigateToRegister: () -> Unit, // Acción para ir a crear cuenta
     viewModel: LoginViewModel = viewModel()
 ) {
     // Estados locales para los campos de entrada
@@ -116,8 +117,8 @@ fun LoginScreen(
             // Campo de texto para el Correo
             OutlinedTextField(
                 value = usuario,
-                onValueChange = { 
-                    usuario = it 
+                onValueChange = {
+                    usuario = it
                 },
                 label = { Text("Correo electrónico") },
                 singleLine = true,
@@ -197,18 +198,20 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text("O inicia con", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
-
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Acceso alternativo con Google
-            Image(
-                painter = painterResource(id = R.drawable.ic_google),
-                contentDescription = "Google",
-                modifier = Modifier.size(40.dp)
-            )
+            // TextButton para crear una cuenta nueva (estilo similar a "¿Olvidó su contraseña?")
+            TextButton(
+                onClick = { onNavigateToRegister() },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading
+            ) {
+                Text(
+                    text = "¿No tienes una cuenta? Crear cuenta nueva",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 14.sp
+                )
+            }
 
             // Espacio para mostrar mensajes de error de Supabase
             if (!errorMessage.isNullOrEmpty()) {
@@ -227,5 +230,9 @@ fun LoginScreen(
 @Preview
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(onLoginSuccess = {}, onNavigateToReset = {})
+    LoginScreen(
+        onLoginSuccess = {},
+        onNavigateToReset = {},
+        onNavigateToRegister = {}
+    )
 }
