@@ -89,7 +89,8 @@ fun AppNavigation() {
         // Login: Si tiene éxito, navega al Home
         Screen.Login -> LoginScreen(
             onLoginSuccess = { currentScreen = Screen.Home },
-            onNavigateToReset = { currentScreen = Screen.Reset }
+            onNavigateToReset = { currentScreen = Screen.Reset },
+            onNavigateToRegister = { currentScreen = Screen.RegisterUser }
         )
 
         // Recuperar Contraseña: Al finalizar regresa al Login
