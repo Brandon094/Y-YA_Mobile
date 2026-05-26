@@ -11,53 +11,51 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 import android.util.Log
-import kotlinx.serialization.Serializable
 
 /**
  * LÓGICA DE NEGOCIO PARA EL PERFIL
- * Combina datos de Auth (Email) y de la tabla Profiles (Nombre/Teléfono).
+ * Consulta la información completa del usuario desde Auth y la tabla 'profiles'.
  */
 class ProfileViewModel : ViewModel() {
 
-    // Estados reactivos que la pantalla de Perfil observa para actualizarse
-    var name by mutableStateOf("Cargando...")
+    // El perfil completo del usuario
+    var userProfile by mutableStateOf<UserProfile?>(null)
         private set
 
-    var email by mutableStateOf("Cargando...")
+    var email by mutableStateOf("")
         private set
 
-    // Cargamos los datos en cuanto se abre la pantalla de Perfil
+    var isLoading by mutableStateOf(false)
+        private set
+
     init {
         fetchProfile()
     }
 
     /**
-     * Obtiene la información del usuario logueado.
+     * Obtiene los datos del servidor.
      */
-    private fun fetchProfile() {
+    fun fetchProfile() {
+        isLoading = true
         viewModelScope.launch {
             try {
-                // Obtenemos el usuario actualmente autenticado
                 val user = SupabaseManager.client.auth.currentUserOrNull()
                 if (user != null) {
                     email = user.email ?: ""
                     
-                    // Consultamos el registro correspondiente en la tabla personalizada 'profiles'
-                    // Usamos un filtro para traer solo el que coincida con el ID del usuario
+                    // Traemos el registro completo de la tabla profiles
                     val profile = SupabaseManager.client.postgrest["profiles"]
                         .select {
-                            filter {
-                                eq("id", user.id)
-                            }
+                            filter { eq("id", user.id) }
                         }
                         .decodeSingle<UserProfile>()
                     
-                    name = profile.full_name
+                    userProfile = profile
                 }
             } catch (e: Exception) {
-                Log.e("ProfileVM", "Error fetching profile", e)
-                // Fallback en caso de error para que la UI no quede vacía
-                if (email == "Cargando...") email = "Usuario"
+                Log.e("ProfileVM", "Error al obtener perfil: ${e.message}")
+            } finally {
+                isLoading = false
             }
         }
     }
