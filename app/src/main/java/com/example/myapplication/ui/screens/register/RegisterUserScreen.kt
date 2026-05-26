@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.screens.register
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,11 +23,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.R
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 /**
  * PANTALLA DE REGISTRO INTEGRAL
  * Captura toda la información necesaria para el perfil del usuario según el modelo YYA.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     onRegister: () -> Unit,
@@ -44,8 +50,42 @@ fun RegisterScreen(
     var selectedRole by remember { mutableStateOf("client") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    // Estados para el DatePicker
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+
+    // Observación de estados del ViewModel
     val isLoading by viewModel.isLoading.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
+
+    // Diálogo del selector de fecha
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val selectedDate = datePickerState.selectedDateMillis
+                    if (selectedDate != null) {
+                        val date = Instant.ofEpochMilli(selectedDate)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                        // Formato YYYY-MM-DD requerido por bases de datos
+                        birthDate = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+                    }
+                    showDatePicker = false
+                }) {
+                    Text("Confirmar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancelar")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -93,16 +133,28 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Campo: Fecha de Nacimiento
+        // Campo: Fecha de Nacimiento (Selector)
         OutlinedTextField(
             value = birthDate,
-            onValueChange = { birthDate = it },
+            onValueChange = { }, // No editable manualmente
             label = { Text("Fecha de Nacimiento") },
-            placeholder = { Text("DD/MM/YYYY") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            enabled = !isLoading,
-            leadingIcon = { Icon(Icons.Default.DateRange, contentDescription = null) }
+            placeholder = { Text("Selecciona tu fecha") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { if (!isLoading) showDatePicker = true },
+            enabled = false, // Evita teclado
+            colors = OutlinedTextFieldDefaults.colors(
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+            leadingIcon = { 
+                IconButton(onClick = { if (!isLoading) showDatePicker = true }) {
+                    Icon(Icons.Default.DateRange, contentDescription = null)
+                }
+            }
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -171,7 +223,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Selector de Rol
-        /**Text(
+        Text(
             text = "¿Cómo quieres usar YAYA?",
             modifier = Modifier.align(Alignment.Start),
             fontWeight = FontWeight.Medium
@@ -181,7 +233,7 @@ fun RegisterScreen(
             Text("Quiero servicios", modifier = Modifier.padding(end = 16.dp))
             RadioButton(selected = selectedRole == "provider", onClick = { selectedRole = "provider" }, enabled = !isLoading)
             Text("Ofrecer talentos")
-        }*/
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
 
