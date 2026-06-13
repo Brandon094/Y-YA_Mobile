@@ -91,11 +91,14 @@
     <string name="service_detail_order_button">Solicitar este servicio</string>
     <string name="service_detail_verified">Servicio Verificado</string>
     <string name="service_detail_description_label">Descripción del servicio</string>
-    <string name="service_detail_whats_included_label">¿Qué incluye?</string>
-    <string name="service_benefit_personnel">Personal altamente capacitado</string>
-    <string name="service_benefit_equipment">Equipos y materiales incluidos</string>
-    <string name="service_benefit_insurance">Seguro contra accidentes</string>
-    <string name="service_benefit_guarantee">Garantía de satisfacción</string>
+    <string name="service_detail_provider_label">Prestador del servicio</string>
+    <string name="service_detail_price_label">Precio base</string>
+    <string name="service_detail_time_label">Tiempo estimado</string>
+    <string name="service_detail_extra_cost_label">Costo adicional (materiales)</string>
+    <string name="service_detail_whats_included_label">Condiciones y Materiales</string>
+    <string name="service_detail_materials_yes">Materiales e insumos incluidos</string>
+    <string name="service_detail_materials_no">No incluye materiales (se cobran aparte)</string>
+    <string name="service_detail_guarantee">Garantía de cumplimiento YÁYA</string>
 
     <!-- Contratacion Screen -->
     <string name="contratacion_provider_label">Prestador de servicio</string>
