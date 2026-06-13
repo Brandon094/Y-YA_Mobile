@@ -18,25 +18,22 @@ import android.util.Log
  */
 class EditProfileViewModel : ViewModel() {
 
-    // Estados mutables vinculados a los campos de texto de la pantalla
     var name by mutableStateOf("")
     var phone by mutableStateOf("")
+    var documentId by mutableStateOf("")
+    var birthDate by mutableStateOf("")
+    var address by mutableStateOf("")
 
-    // Estado para controlar la UI durante la petición al servidor
     var isLoading by mutableStateOf(false)
         private set
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
-    // Al iniciar, precargamos los datos actuales para que el usuario pueda verlos antes de editar
     init {
         fetchCurrentData()
     }
 
-    /**
-     * Trae los datos actuales desde Supabase para llenar el formulario.
-     */
     private fun fetchCurrentData() {
         isLoading = true
         viewModelScope.launch {
@@ -44,32 +41,26 @@ class EditProfileViewModel : ViewModel() {
                 val user = SupabaseManager.client.auth.currentUserOrNull()
                 if (user != null) {
                     val profile = SupabaseManager.client.postgrest["profiles"]
-                        .select {
-                            filter {
-                                eq("id", user.id)
-                            }
-                        }
+                        .select { filter { eq("id", user.id) } }
                         .decodeSingle<UserProfile>()
                     
                     name = profile.full_name
                     phone = profile.phone ?: ""
+                    documentId = profile.document_id ?: ""
+                    birthDate = profile.birth_date ?: ""
+                    address = profile.address ?: ""
                 }
             } catch (e: Exception) {
-                Log.e("EditProfileVM", "Error fetching data", e)
+                Log.e("EditProfileVM", "Error al cargar datos actuales: ${e.message}")
             } finally {
                 isLoading = false
             }
         }
     }
 
-    /**
-     * Envía los nuevos datos (Nombre y Teléfono) a la base de datos.
-     * @param onComplete Callback que se ejecuta cuando la actualización es exitosa.
-     */
     fun updateProfile(onComplete: () -> Unit) {
-        // Validación de negocio local
         if (name.isBlank()) {
-            errorMessage = "El nombre no puede estar vacío"
+            errorMessage = "El nombre es obligatorio"
             return
         }
 
@@ -80,21 +71,21 @@ class EditProfileViewModel : ViewModel() {
             try {
                 val user = SupabaseManager.client.auth.currentUserOrNull()
                 if (user != null) {
-                    // Operación UPDATE en Supabase
                     SupabaseManager.client.postgrest["profiles"].update(
                         {
                             set("full_name", name)
                             set("phone", phone)
+                            set("document_id", documentId)
+                            set("birth_date", if(birthDate.isBlank()) null else birthDate)
+                            set("address", address)
                         }
                     ) {
-                        filter {
-                            eq("id", user.id) // Aseguramos que solo editamos nuestro propio perfil
-                        }
+                        filter { eq("id", user.id) }
                     }
-                    onComplete() // Regresamos a la pantalla de perfil
+                    onComplete()
                 }
             } catch (e: Exception) {
-                Log.e("EditProfileVM", "Error updating profile", e)
+                Log.e("EditProfileVM", "Error al actualizar perfil: ${e.message}")
                 errorMessage = "Error al actualizar: ${e.localizedMessage}"
             } finally {
                 isLoading = false

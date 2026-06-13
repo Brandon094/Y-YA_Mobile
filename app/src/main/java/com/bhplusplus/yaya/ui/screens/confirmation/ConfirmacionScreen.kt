@@ -3,8 +3,10 @@ package com.bhplusplus.yaya.ui.screens.confirmation
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,35 +22,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
-import com.bhplusplus.yaya.data.ServiceRepository
 import com.bhplusplus.yaya.data.models.Service
 
 /**
  * PANTALLA DE CONFIRMACIÓN DE RESERVA
- * Muestra el resumen del servicio solicitado exitosamente.
- * Cumple con las directrices de pasar únicamente el ID del servicio.
+ * Muestra el resumen del servicio solicitado exitosamente con datos REALES de Supabase.
  */
 @Composable
 fun PantallaReservaConfirmada(
-    serviceId: String, 
+    serviceId: String,
+    requestId: String,
     onContinuarClick: () -> Unit,
     viewModel: ConfirmacionViewModel = viewModel()
 ) {
-    val coral = Color(0xFFE8614A)
     val context = LocalContext.current
-    
-    // Obtenemos el servicio desde el repositorio/caché usando el ID
-    val service = ServiceRepository.findById(serviceId)
 
-    // Sincronizamos los datos del servicio con el ViewModel para la visualización
-    LaunchedEffect(service) {
-        viewModel.setServiceData(service)
+    // Carga de datos reales al iniciar
+    LaunchedEffect(requestId) {
+        viewModel.loadRequestData(requestId, serviceId)
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(coral),
+            .background(MaterialTheme.colorScheme.primary) // Fondo rojo corporativo
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Header YÁYA
@@ -62,7 +60,7 @@ fun PantallaReservaConfirmada(
                 text = stringResource(R.string.app_brand_yaya),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 letterSpacing = 4.sp
             )
         }
@@ -72,63 +70,62 @@ fun PantallaReservaConfirmada(
         // Ícono de confirmación
         Box(
             modifier = Modifier
-                .size(90.dp)
-                .background(Color.White.copy(alpha = 0.2f), shape = CircleShape),
+                .size(100.dp)
+                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f), shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "✓", fontSize = 48.sp, color = Color.White, fontWeight = FontWeight.Bold)
+            Text(text = "✓", fontSize = 56.sp, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Text(
             text = stringResource(R.string.confirmation_success_title),
-            fontSize = 22.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onPrimary
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Banner mensaje
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .background(Color.White.copy(alpha = 0.25f), shape = RoundedCornerShape(8.dp))
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            contentAlignment = Alignment.Center
+        // Banner informativo
+        Surface(
+            modifier = Modifier.padding(horizontal = 24.dp),
+            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Text(
                 text = stringResource(R.string.confirmation_success_message),
-                fontSize = 13.sp,
-                color = Color.White,
-                textAlign = TextAlign.Center
+                modifier = Modifier.padding(16.dp),
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onPrimary,
+                textAlign = TextAlign.Center,
+                lineHeight = 20.sp
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        // Tarjeta de detalles
+        // Tarjeta de detalles (Ticket)
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
-            shape = RoundedCornerShape(20.dp),
-            elevation = CardDefaults.cardElevation(6.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8F7))
+            shape = RoundedCornerShape(24.dp),
+            elevation = CardDefaults.cardElevation(8.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
                 Text(
                     text = stringResource(R.string.confirmation_details_title),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    color = coral,
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                HorizontalDivider(color = Color(0xFFEEEEEE))
-                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Spacer(modifier = Modifier.height(16.dp))
 
                 DetalleReservaFila("🧹", stringResource(R.string.confirmation_service_label), viewModel.servicio)
                 DetalleReservaFila("👤", stringResource(R.string.confirmation_provider_label), viewModel.prestador)
@@ -140,8 +137,9 @@ fun PantallaReservaConfirmada(
         }
 
         Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // Botón continuar
+        // Botón de acción principal
         val finishedMsg = stringResource(R.string.confirmation_toast_finished)
         Button(
             onClick = { 
@@ -150,16 +148,17 @@ fun PantallaReservaConfirmada(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 32.dp)
-                .height(52.dp),
-            shape = RoundedCornerShape(14.dp),
+                .padding(start = 24.dp, end = 24.dp, bottom = 40.dp)
+                .height(56.dp),
+            shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White
-            )
+                containerColor = MaterialTheme.colorScheme.onPrimary,
+                contentColor = MaterialTheme.colorScheme.primary
+            ),
+            elevation = ButtonDefaults.buttonElevation(4.dp)
         ) {
             Text(
                 text = stringResource(R.string.confirmation_continue_button),
-                color = coral,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
@@ -172,21 +171,21 @@ fun DetalleReservaFila(icono: String, etiqueta: String, valor: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 7.dp),
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = icono, fontSize = 16.sp, modifier = Modifier.width(28.dp))
+        Text(text = icono, fontSize = 18.sp, modifier = Modifier.width(32.dp))
         Text(
             text = etiqueta,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             fontSize = 14.sp,
-            modifier = Modifier.width(90.dp)
+            modifier = Modifier.width(100.dp)
         )
         Text(
             text = valor,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.SemiBold,
             fontSize = 14.sp,
-            color = Color(0xFF333333)
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -194,5 +193,10 @@ fun DetalleReservaFila(icono: String, etiqueta: String, valor: String) {
 @Preview(showBackground = true)
 @Composable
 fun ConfirmacionPreview() {
-    PantallaReservaConfirmada(serviceId = "1", onContinuarClick = {})
+    // Para el preview, PantallaReservaConfirmada requiere serviceId y requestId
+    // Pero como tiene ViewModel interno, es mejor crear un content separado si quisiéramos preview limpio.
+    // Por ahora, simulamos los datos mínimos.
+    Surface {
+        Text("Previsualización no disponible directamente para pantallas con lógica de red intensa.")
+    }
 }

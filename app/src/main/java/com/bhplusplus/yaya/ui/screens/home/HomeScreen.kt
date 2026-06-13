@@ -44,6 +44,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 fun HomeScreen(
     onServiceClick: (Service) -> Unit, // Navega a los detalles del servicio
     onProfileClick: () -> Unit,        // Navega al perfil del usuario
+    onMyOrders: () -> Unit,            // Navega a mis pedidos (Cliente)
+    onIncomingRequestsClick: () -> Unit, // Navega a solicitudes recibidas (Prestador)
     onCreateServiceClick: () -> Unit,  // Navega a la creación de servicio
     onLogout: () -> Unit,              // Regresa al login tras cerrar sesión
     viewModel: HomeViewModel = viewModel()
@@ -52,7 +54,7 @@ fun HomeScreen(
     
     Scaffold(
         topBar = {
-            // Barra superior con acceso al perfil y notificaciones
+            // Barra superior con acceso al perfil y notificaciones (Solicitudes)
             TopAppBar(
                 title = { Text(stringResource(R.string.home_top_bar_title)) },
                 navigationIcon = {
@@ -65,10 +67,17 @@ fun HomeScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Próxima funcionalidad */ }) {
+                    // Acceso rápido a notificaciones/estados según el rol
+                    IconButton(onClick = {
+                        if (viewModel.userRole == "provider" || viewModel.userRole == "admin") {
+                            onIncomingRequestsClick()
+                        } else {
+                            onMyOrders()
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Notifications, 
-                            contentDescription = null,
+                            contentDescription = "Notificaciones",
                             tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
@@ -261,5 +270,12 @@ fun ServiceItem(service: Service, onClick: () -> Unit) {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(onServiceClick = {}, onProfileClick = {}, onCreateServiceClick = {}, onLogout = {})
+    HomeScreen(
+        onServiceClick = {}, 
+        onProfileClick = {}, 
+        onMyOrders = {},
+        onIncomingRequestsClick = {},
+        onCreateServiceClick = {}, 
+        onLogout = {}
+    )
 }

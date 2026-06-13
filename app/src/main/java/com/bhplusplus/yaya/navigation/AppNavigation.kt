@@ -37,10 +37,11 @@ import com.bhplusplus.yaya.ui.screens.contratacion.PantallaContratacion
 import com.bhplusplus.yaya.ui.screens.confirmation.PantallaReservaConfirmada
 import com.bhplusplus.yaya.ui.screens.create_service.CreateServiceScreen
 import com.bhplusplus.yaya.ui.screens.my_orders.MyOrdersScreen
+import com.bhplusplus.yaya.ui.screens.incoming_requests.IncomingRequestsScreen
+import com.bhplusplus.yaya.ui.screens.my_services.MyServicesScreen
 
 /**
  * DEFINICIÓN DE RUTAS (PANTALLAS) CON SEGURIDAD DE TIPOS
- * Siguiendo las directrices del manual: Se pasan únicamente los IDs (Strings).
  */
 @Serializable object LoadingRoute
 @Serializable object WelcomeRoute
@@ -50,11 +51,13 @@ import com.bhplusplus.yaya.ui.screens.my_orders.MyOrdersScreen
 @Serializable object HomeRoute
 @Serializable object ProfileRoute
 @Serializable object EditProfileRoute
-@Serializable object CreateServiceRoute
+@Serializable data class CreateServiceRoute(val serviceId: String? = null)
 @Serializable object MyOrdersRoute
+@Serializable object IncomingRequestsRoute
+@Serializable object MyServicesRoute
 @Serializable data class ServiceDetailRoute(val serviceId: String)
 @Serializable data class ContratacionRoute(val serviceId: String)
-@Serializable data class ConfirmacionRoute(val serviceId: String)
+@Serializable data class ConfirmacionRoute(val serviceId: String, val requestId: String)
 
 /**
  * NAVEGACIÓN PRINCIPAL
@@ -84,16 +87,16 @@ fun AppNavigation() {
         navController = navController,
         startDestination = LoadingRoute
     ) {
-        // Pantalla de Carga Inicial (Splash Screen Profesional)
+        // Pantalla de Carga Inicial
         composable<LoadingRoute> {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFFFFDF9)), // Color hueso elegante
+                    .background(Color(0xFFFFFDF9)),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.logo_yaya_full), // Logo Completo
+                    painter = painterResource(id = R.drawable.logo_yaya_full),
                     contentDescription = "YÁYA Splash",
                     modifier = Modifier.size(250.dp)
                 )
@@ -145,7 +148,9 @@ fun AppNavigation() {
                     navController.navigate(ServiceDetailRoute(id)) 
                 },
                 onProfileClick = { navController.navigate(ProfileRoute) },
-                onCreateServiceClick = { navController.navigate(CreateServiceRoute) },
+                onMyOrders = { navController.navigate(MyOrdersRoute) },
+                onIncomingRequestsClick = { navController.navigate(IncomingRequestsRoute) },
+                onCreateServiceClick = { navController.navigate(CreateServiceRoute()) },
                 onLogout = {
                     scope.launch {
                         SupabaseManager.client.auth.signOut()
@@ -162,6 +167,8 @@ fun AppNavigation() {
             ProfileScreen(
                 onEditProfile = { navController.navigate(EditProfileRoute) },
                 onMyOrders = { navController.navigate(MyOrdersRoute) },
+                onIncomingRequests = { navController.navigate(IncomingRequestsRoute) },
+                onMyServices = { navController.navigate(MyServicesRoute) },
                 onChangePassword = { navController.navigate(ResetRoute) },
                 onLogout = {
                     scope.launch {
@@ -183,8 +190,10 @@ fun AppNavigation() {
         }
 
         // Creación de Servicio
-        composable<CreateServiceRoute> {
+        composable<CreateServiceRoute> { backStackEntry ->
+            val route: CreateServiceRoute = backStackEntry.toRoute()
             CreateServiceScreen(
+                serviceId = route.serviceId,
                 onBack = { navController.popBackStack() },
                 onServiceCreated = { navController.popBackStack() }
             )
@@ -194,6 +203,23 @@ fun AppNavigation() {
         composable<MyOrdersRoute> {
             MyOrdersScreen(
                 onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Solicitudes Recibidas (Prestador)
+        composable<IncomingRequestsRoute> {
+            IncomingRequestsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Mis Servicios Publicados (Prestador)
+        composable<MyServicesRoute> {
+            MyServicesScreen(
+                onBack = { navController.popBackStack() },
+                onEditService = { serviceId ->
+                    navController.navigate(CreateServiceRoute(serviceId))
+                }
             )
         }
 
@@ -213,7 +239,9 @@ fun AppNavigation() {
             PantallaContratacion(
                 serviceId = route.serviceId,
                 onBack = { navController.popBackStack() },
-                onContratarClick = { navController.navigate(ConfirmacionRoute(route.serviceId)) }
+                onContratarClick = { requestId -> 
+                    navController.navigate(ConfirmacionRoute(route.serviceId, requestId)) 
+                }
             )
         }
 
@@ -222,6 +250,7 @@ fun AppNavigation() {
             val route: ConfirmacionRoute = backStackEntry.toRoute()
             PantallaReservaConfirmada(
                 serviceId = route.serviceId,
+                requestId = route.requestId,
                 onContinuarClick = { 
                     navController.navigate(HomeRoute) {
                         popUpTo(HomeRoute) { inclusive = true }

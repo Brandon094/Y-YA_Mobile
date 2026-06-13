@@ -12,6 +12,8 @@ import com.bhplusplus.yaya.data.models.UserProfile
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import android.util.Log
@@ -21,13 +23,16 @@ import android.util.Log
  */
 class ContratacionViewModel : ViewModel() {
     
-    // Perfil del prestador real traído de Supabase
+    // Datos cargados desde Supabase
+    var service by mutableStateOf<Service?>(null)
+        private set
     var providerProfile by mutableStateOf<UserProfile?>(null)
         private set
 
-    // Estados de los campos del formulario
+    // Estados del formulario
     var direccion by mutableStateOf("")
-    var hora by mutableStateOf("")
+    var fecha by mutableStateOf("") // Formato YYYY-MM-DD
+    var hora by mutableStateOf("")  // Formato HH:mm
     var oferta by mutableStateOf("")
 
     // Estados de control
@@ -37,28 +42,31 @@ class ContratacionViewModel : ViewModel() {
         private set
 
     /**
-     * Inicializa los datos de la pantalla con la información del servicio.
+     * Carga toda la información necesaria desde Supabase usando el ID real.
      */
-    fun setInitialData(service: Service) {
-        if (oferta.isEmpty()) {
-            oferta = service.price.toString()
-        }
-    }
-
-    /**
-     * Descarga la información del prestador desde la tabla 'profiles' usando su ID.
-     */
-    fun loadProviderInfo(providerId: String) {
+    fun loadData(serviceId: String) {
         viewModelScope.launch {
             isLoading = true
+            errorMessage = null
             try {
-                val result = SupabaseManager.client.postgrest["profiles"]
-                    .select { filter { eq("id", providerId) } }
-                    .decodeSingle<UserProfile>()
+                // 1. Descargar el Servicio Real
+                val serviceResult = SupabaseManager.client.postgrest["services"]
+                    .select { filter { eq("id", serviceId) } }
+                    .decodeSingle<Service>()
                 
-                providerProfile = result
+                service = serviceResult
+                if (oferta.isEmpty()) oferta = serviceResult.price.toString()
+
+                // 2. Descargar el Perfil del Prestador Real
+                serviceResult.provider_id?.let { pId ->
+                    val providerResult = SupabaseManager.client.postgrest["profiles"]
+                        .select { filter { eq("id", pId) } }
+                        .decodeSingle<UserProfile>()
+                    providerProfile = providerResult
+                }
             } catch (e: Exception) {
-                Log.e("ContratacionVM", "Error cargando prestador: ${e.message}")
+                Log.e("ContratacionVM", "Error al cargar datos: ${e.message}")
+                errorMessage = "No se pudo obtener la información del servicio."
             } finally {
                 isLoading = false
             }
@@ -66,12 +74,14 @@ class ContratacionViewModel : ViewModel() {
     }
 
     /**
-     * Guarda la solicitud en la tabla 'requests'.
+     * Crea la reserva en Supabase.
      */
-    fun contratar(service: Service, onResult: (Boolean) -> Unit) {
-        if (direccion.isBlank() || hora.isBlank()) {
-            errorMessage = "Por favor, ingresa la dirección y la hora sugerida."
-            onResult(false)
+    fun contratar(onResult: (Boolean, String?) -> Unit) {
+        val currentService = service ?: return
+
+        if (direccion.isBlank() || fecha.isBlank() || hora.isBlank()) {
+            errorMessage = "Completa dirección, fecha y hora."
+            onResult(false, null)
             return
         }
 
@@ -79,22 +89,35 @@ class ContratacionViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val clientId = SupabaseManager.client.auth.currentUserOrNull()?.id
-                    ?: throw Exception("Sesión no válida.")
+                    ?: throw Exception("Sesión inválida")
+
+                // Combinar fecha y hora para crear un LocalDateTime
+                val date = LocalDate.parse(fecha)
+                val time = LocalTime.parse(hora)
+                val combinedDateTime = LocalDateTime.of(date, time)
+                
+                // Formatear para Supabase (Timestamptz)
+                val scheduledDate = combinedDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
 
                 val request = ServiceRequest(
                     client_id = clientId,
-                    service_id = service.id ?: "",
-                    request_description = "Oferta: $oferta. Hora: $hora",
+                    service_id = currentService.id!!,
+                    request_description = "Oferta: $oferta. Programado para: $fecha a las $hora",
                     service_address = direccion,
-                    scheduled_date = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
+                    scheduled_date = scheduledDate,
                     status = "pending"
                 )
 
-                SupabaseManager.client.postgrest["requests"].insert(request)
-                onResult(true)
+                // Insertamos y recuperamos el ID generado
+                val response = SupabaseManager.client.postgrest["requests"].insert(request) {
+                    select()
+                }.decodeSingle<ServiceRequest>()
+
+                onResult(true, response.id)
             } catch (e: Exception) {
-                errorMessage = "Error al procesar la solicitud: ${e.localizedMessage}"
-                onResult(false)
+                Log.e("ContratacionVM", "Error al crear: ${e.message}")
+                errorMessage = "Error al procesar la reserva. Verifica los datos."
+                onResult(false, null)
             } finally {
                 isLoading = false
             }

@@ -10,15 +10,15 @@ import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.ServiceRequest
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.launch
 
 /**
  * VIEWMODEL PARA LA PANTALLA DE MIS PEDIDOS
- * Recupera el historial de solicitudes del usuario actual desde Supabase.
+ * Recupera el historial de solicitudes y permite negociar contraofertas.
  */
 class MyOrdersViewModel : ViewModel() {
 
-    // Lista de pedidos filtrada para el usuario actual
     var orders by mutableStateOf<List<ServiceRequest>>(emptyList())
         private set
 
@@ -30,7 +30,7 @@ class MyOrdersViewModel : ViewModel() {
     }
 
     /**
-     * Consulta la tabla 'requests' filtrando por client_id.
+     * Consulta la tabla 'requests' uniendo con 'services' para ver títulos.
      */
     fun fetchMyOrders() {
         viewModelScope.launch {
@@ -38,22 +38,75 @@ class MyOrdersViewModel : ViewModel() {
             try {
                 val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
                 if (userId != null) {
-                    // Consultamos las solicitudes donde el usuario es el cliente
                     val result = SupabaseManager.client.postgrest["requests"]
-                        .select {
+                        .select(Columns.raw("*, services(*)")) {
                             filter {
                                 eq("client_id", userId)
                             }
                         }
                         .decodeList<ServiceRequest>()
                     
-                    // Ordenamos por fecha de creación (más recientes primero)
                     orders = result.sortedByDescending { it.created_at }
                 }
             } catch (e: Exception) {
                 Log.e("MyOrdersVM", "Error al cargar pedidos: ${e.message}")
             } finally {
                 isLoading = false
+            }
+        }
+    }
+
+    /**
+     * El cliente acepta la propuesta del prestador (Cambia estado a accepted).
+     */
+    fun acceptProposal(requestId: String) {
+        viewModelScope.launch {
+            try {
+                SupabaseManager.client.postgrest["requests"].update({
+                    set("status", "accepted")
+                }) {
+                    filter { eq("id", requestId) }
+                }
+                fetchMyOrders()
+            } catch (e: Exception) {
+                Log.e("MyOrdersVM", "Error al aceptar: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * El cliente envía una nueva contraoferta.
+     */
+    fun sendNewOffer(request: ServiceRequest, newPrice: String) {
+        viewModelScope.launch {
+            try {
+                val updatedDescription = "${request.request_description}\n--- Nueva oferta Cliente: $$newPrice"
+                SupabaseManager.client.postgrest["requests"].update({
+                    set("request_description", updatedDescription)
+                }) {
+                    filter { eq("id", request.id!!) }
+                }
+                fetchMyOrders()
+            } catch (e: Exception) {
+                Log.e("MyOrdersVM", "Error al contraofertar: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * El cliente cancela la solicitud.
+     */
+    fun cancelRequest(requestId: String) {
+        viewModelScope.launch {
+            try {
+                SupabaseManager.client.postgrest["requests"].update({
+                    set("status", "cancelled")
+                }) {
+                    filter { eq("id", requestId) }
+                }
+                fetchMyOrders()
+            } catch (e: Exception) {
+                Log.e("MyOrdersVM", "Error al cancelar: ${e.message}")
             }
         }
     }

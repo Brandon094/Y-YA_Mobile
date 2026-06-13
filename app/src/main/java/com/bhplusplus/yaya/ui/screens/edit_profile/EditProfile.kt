@@ -1,21 +1,21 @@
 package com.bhplusplus.yaya.ui.screens.edit_profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -24,30 +24,52 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
-import com.bhplusplus.yaya.ui.screens.edit_profile.EditProfileViewModel
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 /**
  * PANTALLA DE EDICIÓN DE PERFIL
- * Proporciona un formulario para que el usuario actualice sus datos en Supabase.
+ * Sincronizada con el esquema SQL (Nombre, Teléfono, ID, Fecha Nacimiento, Dirección).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileScreen(
-    onBack: () -> Unit, // Regresa al perfil tras cancelar o guardar
+    onBack: () -> Unit,
     viewModel: EditProfileViewModel = viewModel()
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val date = Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                        viewModel.birthDate = date.toString()
+                    }
+                    showDatePicker = false
+                }) { Text(stringResource(R.string.register_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.register_cancel)) }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
     Scaffold(
         topBar = {
-            // Cabecera con título y acción de retroceso
             TopAppBar(
                 title = { Text(stringResource(R.string.edit_profile_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.edit_profile_back_desc),
-                            tint = MaterialTheme.colorScheme.onSecondary
-                        )
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -57,53 +79,17 @@ fun EditProfileScreen(
             )
         }
     ) { padding ->
-
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState())
                 .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
-            // Sección de Avatar (Foto de perfil) con botón de cámara simulado
-            Box(
-                modifier = Modifier
-                    .size(120.dp)
-                    .background(MaterialTheme.colorScheme.surface, CircleShape)
-                    .padding(4.dp)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape)
-                    .clickable { /* Funcionalidad futura: Selección de galería */ },
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_logo),
-                    contentDescription = stringResource(R.string.edit_profile_avatar_desc),
-                    modifier = Modifier.size(70.dp)
-                )
-
-                // Icono flotante de cámara para indicar que es editable
-                Surface(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .align(Alignment.BottomEnd),
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primary,
-                    shadowElevation = 4.dp
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CameraAlt,
-                        contentDescription = stringResource(R.string.edit_profile_change_photo_desc),
-                        modifier = Modifier.padding(8.dp),
-                        tint = Color.White
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Campo: Edición del Nombre Completo
+            // NOMBRE
             OutlinedTextField(
                 value = viewModel.name,
                 onValueChange = { viewModel.name = it },
@@ -111,66 +97,77 @@ fun EditProfileScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 enabled = !viewModel.isLoading,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-                )
+                leadingIcon = { Icon(Icons.Default.Person, null) }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // DOCUMENTO ID
+            OutlinedTextField(
+                value = viewModel.documentId,
+                onValueChange = { viewModel.documentId = it },
+                label = { Text(stringResource(R.string.register_id_number)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                enabled = !viewModel.isLoading,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                leadingIcon = { Icon(Icons.Default.Badge, null) }
+            )
 
-            // Campo: Edición del Teléfono (Usa teclado numérico)
+            // TELÉFONO
             OutlinedTextField(
                 value = viewModel.phone,
                 onValueChange = { viewModel.phone = it },
                 label = { Text(stringResource(R.string.edit_profile_phone_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 enabled = !viewModel.isLoading,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                leadingIcon = { Icon(Icons.Default.Phone, null) }
+            )
+
+            // DIRECCIÓN
+            OutlinedTextField(
+                value = viewModel.address,
+                onValueChange = { viewModel.address = it },
+                label = { Text(stringResource(R.string.register_address)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                enabled = !viewModel.isLoading,
+                leadingIcon = { Icon(Icons.Default.Home, null) }
+            )
+
+            // FECHA NACIMIENTO
+            OutlinedTextField(
+                value = viewModel.birthDate,
+                onValueChange = {},
+                label = { Text(stringResource(R.string.register_birth_date)) },
+                modifier = Modifier.fillMaxWidth().clickable { if(!viewModel.isLoading) showDatePicker = true },
+                enabled = false,
+                leadingIcon = { Icon(Icons.Default.DateRange, null) },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(Modifier.height(8.dp))
 
-            // Manejo visual de errores en la actualización
             if (viewModel.errorMessage != null) {
-                Text(
-                    text = viewModel.errorMessage!!,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                Text(text = viewModel.errorMessage!!, color = MaterialTheme.colorScheme.error)
             }
 
-            // Botón de Guardar: Envía los datos a Supabase mediante el ViewModel
             Button(
-                onClick = {
-                    viewModel.updateProfile {
-                        onBack() // Regresamos tras el éxito
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
+                onClick = { viewModel.updateProfile { onBack() } },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 enabled = !viewModel.isLoading
             ) {
-                if (viewModel.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-                } else {
-                    Text(stringResource(R.string.edit_profile_save_button), fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                }
+                if (viewModel.isLoading) CircularProgressIndicator(color = Color.White)
+                else Text(stringResource(R.string.edit_profile_save_button), fontWeight = FontWeight.Bold)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Opción para cancelar y regresar
             TextButton(onClick = onBack, enabled = !viewModel.isLoading) {
-                Text(stringResource(R.string.edit_profile_cancel_button), color = MaterialTheme.colorScheme.primary)
+                Text(stringResource(R.string.edit_profile_cancel_button))
             }
         }
     }
@@ -178,8 +175,6 @@ fun EditProfileScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun EditProfileScreenPreview() {
-    EditProfileScreen(
-        onBack = {}
-    )
+fun EditProfilePreview() {
+    EditProfileScreen(onBack = {})
 }
