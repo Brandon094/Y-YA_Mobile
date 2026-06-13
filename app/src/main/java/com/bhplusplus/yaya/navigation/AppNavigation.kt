@@ -10,16 +10,22 @@ import com.bhplusplus.yaya.ui.screens.register.RegisterScreen
 import com.bhplusplus.yaya.ui.screens.reset.ResetPasswordScreen
 import com.bhplusplus.yaya.ui.screens.service_detail.ServiceDetailScreen
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.SupabaseManager
 import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.launch
@@ -56,6 +62,7 @@ fun AppNavigation() {
     
     // LaunchedEffect para verificar sesión al iniciar
     LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(2000) // 2 segundos de Splash para que luzca el logo
         val session = SupabaseManager.client.auth.currentSessionOrNull()
         if (session != null) {
             navController.navigate(HomeRoute) {
@@ -72,13 +79,19 @@ fun AppNavigation() {
         navController = navController,
         startDestination = LoadingRoute
     ) {
-        // Pantalla de Carga Inicial
+        // Pantalla de Carga Inicial (Splash Screen Profesional)
         composable<LoadingRoute> {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFFFFDF9)), // Color hueso elegante
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Color.Red)
+                Image(
+                    painter = painterResource(id = R.drawable.logo_yaya_full), // Logo Completo
+                    contentDescription = "YÁYA Splash",
+                    modifier = Modifier.size(250.dp)
+                )
             }
         }
 

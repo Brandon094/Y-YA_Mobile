@@ -88,9 +88,10 @@ fun LoginScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_logo),
+                    painter = painterResource(id = R.drawable.logo_yaya_typographic), // Logo
+                    // Tipográfico
                     contentDescription = stringResource(R.string.login_logo_description),
-                    modifier = Modifier.size(60.dp)
+                    modifier = Modifier.size(100.dp)
                 )
             }
 
