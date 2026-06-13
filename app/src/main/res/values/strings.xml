@@ -142,4 +142,11 @@
 
     <!-- My Orders Screen -->
     <string name="my_orders_title">Mis Pedidos</string>
+
+    <!-- Incoming Requests (Provider) -->
+    <string name="incoming_requests_title">Solicitudes Recibidas</string>
+    <string name="incoming_requests_empty">No tienes solicitudes nuevas.</string>
+    <string name="incoming_requests_accept">Aceptar</string>
+    <string name="incoming_requests_reject">Rechazar</string>
+    <string name="incoming_requests_client_label">Cliente</string>
 </resources>

@@ -34,6 +34,7 @@ import com.bhplusplus.yaya.R
 fun ProfileScreen(
     onEditProfile: () -> Unit,    // Navega a la pantalla de edición
     onMyOrders: () -> Unit,       // Navega al historial de pedidos
+    onIncomingRequests: () -> Unit, // Navega a solicitudes recibidas (solo prestadores)
     onChangePassword: () -> Unit, // Navega al flujo de recuperación/cambio
     onLogout: () -> Unit,         // Acción para cerrar sesión
     onBack: () -> Unit,           // Regresa al Home
@@ -136,6 +137,11 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // LISTA DE OPCIONES NAVEGABLES
+                // Si el usuario es prestador, habilitamos la gestión de solicitudes entrantes
+                if (profile?.role == "provider" || profile?.role == "admin") {
+                    ProfileOption(stringResource(R.string.incoming_requests_title), Icons.Default.MoveToInbox, onIncomingRequests)
+                }
+
                 ProfileOption(stringResource(R.string.my_orders_title), Icons.Default.History, onMyOrders)
                 ProfileOption(stringResource(R.string.profile_edit_option), Icons.Default.Edit, onEditProfile)
                 ProfileOption(stringResource(R.string.profile_change_password_option), Icons.Default.Lock, onChangePassword)
@@ -251,6 +257,7 @@ fun ProfileScreenPreview() {
     ProfileScreen(
         onEditProfile = {},
         onMyOrders = {},
+        onIncomingRequests = {},
         onChangePassword = {},
         onLogout = {},
         onBack = {}

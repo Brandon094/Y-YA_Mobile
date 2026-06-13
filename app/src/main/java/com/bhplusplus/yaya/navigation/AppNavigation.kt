@@ -37,6 +37,7 @@ import com.bhplusplus.yaya.ui.screens.contratacion.PantallaContratacion
 import com.bhplusplus.yaya.ui.screens.confirmation.PantallaReservaConfirmada
 import com.bhplusplus.yaya.ui.screens.create_service.CreateServiceScreen
 import com.bhplusplus.yaya.ui.screens.my_orders.MyOrdersScreen
+import com.bhplusplus.yaya.ui.screens.incoming_requests.IncomingRequestsScreen
 
 /**
  * DEFINICIÓN DE RUTAS (PANTALLAS) CON SEGURIDAD DE TIPOS
@@ -51,6 +52,7 @@ import com.bhplusplus.yaya.ui.screens.my_orders.MyOrdersScreen
 @Serializable object EditProfileRoute
 @Serializable object CreateServiceRoute
 @Serializable object MyOrdersRoute
+@Serializable object IncomingRequestsRoute
 @Serializable data class ServiceDetailRoute(val serviceId: String)
 @Serializable data class ContratacionRoute(val serviceId: String)
 @Serializable data class ConfirmacionRoute(val serviceId: String, val requestId: String)
@@ -161,6 +163,7 @@ fun AppNavigation() {
             ProfileScreen(
                 onEditProfile = { navController.navigate(EditProfileRoute) },
                 onMyOrders = { navController.navigate(MyOrdersRoute) },
+                onIncomingRequests = { navController.navigate(IncomingRequestsRoute) },
                 onChangePassword = { navController.navigate(ResetRoute) },
                 onLogout = {
                     scope.launch {
@@ -192,6 +195,13 @@ fun AppNavigation() {
         // Mis Pedidos
         composable<MyOrdersRoute> {
             MyOrdersScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Solicitudes Recibidas (Prestador)
+        composable<IncomingRequestsRoute> {
+            IncomingRequestsScreen(
                 onBack = { navController.popBackStack() }
             )
         }
