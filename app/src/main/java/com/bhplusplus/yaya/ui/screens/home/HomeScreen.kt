@@ -44,7 +44,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 fun HomeScreen(
     onServiceClick: (Service) -> Unit, // Navega a los detalles del servicio
     onProfileClick: () -> Unit,        // Navega al perfil del usuario
-    onIncomingRequestsClick: () -> Unit, // Navega a solicitudes recibidas
+    onMyOrders: () -> Unit,            // Navega a mis pedidos (Cliente)
+    onIncomingRequestsClick: () -> Unit, // Navega a solicitudes recibidas (Prestador)
     onCreateServiceClick: () -> Unit,  // Navega a la creación de servicio
     onLogout: () -> Unit,              // Regresa al login tras cerrar sesión
     viewModel: HomeViewModel = viewModel()
@@ -66,15 +67,19 @@ fun HomeScreen(
                     }
                 },
                 actions = {
-                    // LÓGICA DE VISIBILIDAD: Solo mostramos el acceso rápido si el usuario es prestador
-                    if (viewModel.userRole == "provider" || viewModel.userRole == "admin") {
-                        IconButton(onClick = onIncomingRequestsClick) {
-                            Icon(
-                                imageVector = Icons.Default.Notifications, 
-                                contentDescription = "Solicitudes Recibidas",
-                                tint = MaterialTheme.colorScheme.onSecondary
-                            )
+                    // Acceso rápido a notificaciones/estados según el rol
+                    IconButton(onClick = {
+                        if (viewModel.userRole == "provider" || viewModel.userRole == "admin") {
+                            onIncomingRequestsClick()
+                        } else {
+                            onMyOrders()
                         }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications, 
+                            contentDescription = "Notificaciones",
+                            tint = MaterialTheme.colorScheme.onSecondary
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -268,6 +273,7 @@ fun HomeScreenPreview() {
     HomeScreen(
         onServiceClick = {}, 
         onProfileClick = {}, 
+        onMyOrders = {},
         onIncomingRequestsClick = {},
         onCreateServiceClick = {}, 
         onLogout = {}
