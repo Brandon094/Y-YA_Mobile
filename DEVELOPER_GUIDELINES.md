@@ -61,13 +61,13 @@ Al iniciar sesión, el agente debe saber que ya se han implementado:
 - **Mis Pedidos (Cliente):** Historial completo de solicitudes con badges de estado dinámicos (`pending`, `accepted`, `completed`).
 - **Gestión de Perfil:** Edición completa de datos sincronizada con esquema SQL (Cédula, Dirección, Nacimiento).
 - **Publicación de Servicios:** Formulario para prestadores con lógica de categorías y costos de materiales.
+- **Dashboard del Prestador (Operatividad):** Interfaz de **Solicitudes Recibidas** terminada. Permite al prestador ver quién lo busca y gestionar el estado (Aceptar/Rechazar) con persistencia en SQL.
 
 ## 8. Próximos Hitos y Funcionalidades (Roadmap)
 Para completar el MVP (Producto Mínimo Viable), se deben desarrollar los siguientes módulos:
 
-### Hito 1: Dashboard del Prestador (Operatividad)
-- **Solicitudes Entrantes:** Interfaz para que el prestador vea quién lo busca y pueda Aceptar/Rechazar (Cambio de `status` en `requests`).
-- **Mis Servicios:** Panel de administración para editar o pausar (activar/desactivar) sus publicaciones existentes.
+### Hito 1: Gestión de Publicaciones
+- **Mis Servicios:** Panel de administración para que el prestador pueda editar o pausar (activar/desactivar) sus publicaciones existentes.
 
 ### Hito 2: Comunicación y Confianza
 - **Chat en Tiempo Real:** Integración con `Supabase Realtime` y tabla `messages`.
