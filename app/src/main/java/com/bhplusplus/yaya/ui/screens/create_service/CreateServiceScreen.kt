@@ -30,7 +30,7 @@ import com.bhplusplus.yaya.R
 
 /**
  * PANTALLA DE CREACIÓN DE SERVICIO
- * Sincronizada con el esquema SQL de Supabase (provider_id, category_id, etc.)
+ * Sincronizada con el esquema SQL (provider_id, category_id, title, description, price, extra_cost, etc.)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,20 +41,17 @@ fun CreateServiceScreen(
 ) {
     val focusManager = LocalFocusManager.current
 
-    // ESTADOS DE LOS CAMPOS
+    // ESTADOS
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var estimatedTime by remember { mutableStateOf("") }
     var materialsIncluded by remember { mutableStateOf(false) }
+    var extraCost by remember { mutableStateOf("0") }
     
-    // Estado para el selector de categoría
     var selectedCategoryId by remember { mutableStateOf<String?>(null) }
     var selectedCategoryName by remember { mutableStateOf("Selecciona una categoría") }
     var expanded by remember { mutableStateOf(false) }
-
-    val isFormValid = title.isNotBlank() && description.isNotBlank() && 
-                      price.isNotBlank() && selectedCategoryId != null
 
     val isLoading by viewModel.isLoading.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
@@ -65,9 +62,13 @@ fun CreateServiceScreen(
                 title = { Text(stringResource(R.string.create_service_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondary)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    titleContentColor = MaterialTheme.colorScheme.onSecondary
+                )
             )
         }
     ) { padding ->
@@ -78,9 +79,10 @@ fun CreateServiceScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // SELECTOR DE CATEGORÍA (Exposed Dropdown Menu)
+            // CATEGORÍA
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { if (!isLoading) expanded = !expanded },
@@ -90,18 +92,13 @@ fun CreateServiceScreen(
                     value = selectedCategoryName,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Categoría del servicio") },
+                    label = { Text("Categoría") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     modifier = Modifier.menuAnchor().fillMaxWidth(),
                     enabled = !isLoading,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary
-                    )
+                    shape = RoundedCornerShape(12.dp)
                 )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
+                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     viewModel.categories.forEach { category ->
                         DropdownMenuItem(
                             text = { Text(category.name) },
@@ -115,105 +112,72 @@ fun CreateServiceScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // CAMPO: TÍTULO
+            // TÍTULO
             OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
+                value = title, onValueChange = { title = it },
                 label = { Text(stringResource(R.string.create_service_field_title)) },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                enabled = !isLoading,
-                leadingIcon = { Icon(Icons.Default.Title, contentDescription = null) },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                enabled = !isLoading, shape = RoundedCornerShape(12.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // CAMPO: DESCRIPCIÓN
+            // DESCRIPCIÓN
             OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
+                value = description, onValueChange = { description = it },
                 label = { Text(stringResource(R.string.create_service_field_description)) },
                 modifier = Modifier.fillMaxWidth().height(120.dp),
-                enabled = !isLoading,
-                leadingIcon = { Icon(Icons.Default.Description, contentDescription = null) },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                enabled = !isLoading, shape = RoundedCornerShape(12.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // CAMPO: TIEMPO ESTIMADO
+            // PRECIO BASE
             OutlinedTextField(
-                value = estimatedTime,
-                onValueChange = { estimatedTime = it },
-                label = { Text("Tiempo estimado (ej: 2 horas)") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                enabled = !isLoading,
-                leadingIcon = { Icon(Icons.Default.Timer, contentDescription = null) },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // CAMPO: PRECIO
-            OutlinedTextField(
-                value = price,
-                onValueChange = { price = it },
+                value = price, onValueChange = { price = it },
                 label = { Text(stringResource(R.string.create_service_field_price)) },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                enabled = !isLoading,
-                leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                enabled = !isLoading, shape = RoundedCornerShape(12.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // TOGGLE: MATERIALES INCLUIDOS
-            Row(
+            // TIEMPO ESTIMADO
+            OutlinedTextField(
+                value = estimatedTime, onValueChange = { estimatedTime = it },
+                label = { Text("Tiempo estimado (ej: 2 horas)") },
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    checked = materialsIncluded,
-                    onCheckedChange = { materialsIncluded = it },
-                    enabled = !isLoading
-                )
+                enabled = !isLoading, shape = RoundedCornerShape(12.dp)
+            )
+
+            // MATERIALES
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(checked = materialsIncluded, onCheckedChange = { materialsIncluded = it }, enabled = !isLoading)
                 Text("¿Incluye materiales e insumos?")
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            if (!errorMessage.isNullOrEmpty()) {
-                Text(text = errorMessage!!, color = Color.Red, modifier = Modifier.padding(bottom = 16.dp))
+            // COSTO EXTRA (Si no incluye materiales)
+            if (!materialsIncluded) {
+                OutlinedTextField(
+                    value = extraCost, onValueChange = { extraCost = it },
+                    label = { Text("Costo extra de materiales") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    enabled = !isLoading, shape = RoundedCornerShape(12.dp)
+                )
             }
 
-            // BOTÓN DE PUBLICAR
+            if (!errorMessage.isNullOrEmpty()) {
+                Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error)
+            }
+
             Button(
                 onClick = {
-                    viewModel.createService(
-                        title, description, price, selectedCategoryId, 
-                        estimatedTime, materialsIncluded
-                    ) { success ->
-                        if (success) onServiceCreated()
+                    viewModel.createService(title, description, price, selectedCategoryId, estimatedTime, materialsIncluded, extraCost) {
+                        if (it) onServiceCreated()
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(16.dp),
-                enabled = !isLoading && isFormValid
+                enabled = !isLoading && title.isNotBlank() && selectedCategoryId != null
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-                } else {
-                    Text(stringResource(R.string.create_service_button), fontWeight = FontWeight.Bold)
-                }
+                if (isLoading) CircularProgressIndicator(color = Color.White)
+                else Text(stringResource(R.string.create_service_button), fontWeight = FontWeight.Bold)
             }
         }
     }

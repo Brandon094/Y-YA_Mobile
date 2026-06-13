@@ -34,9 +34,6 @@ class CreateServiceViewModel : ViewModel() {
         fetchCategories()
     }
 
-    /**
-     * Carga las categorías disponibles desde la tabla 'categories'.
-     */
     private fun fetchCategories() {
         viewModelScope.launch {
             try {
@@ -59,51 +56,45 @@ class CreateServiceViewModel : ViewModel() {
         categoryId: String?, 
         estimatedTime: String,
         materialsIncluded: Boolean,
+        extraCost: String,
         onResult: (Boolean) -> Unit
     ) {
-        // Validaciones previas
         if (title.isBlank() || description.isBlank() || price.isBlank() || categoryId == null) {
-            _errorMessage.value = "Por favor, completa todos los campos y selecciona una categoría"
+            _errorMessage.value = "Completa los campos obligatorios"
             onResult(false)
             return
         }
 
-        val priceDouble = price.toDoubleOrNull()
-        if (priceDouble == null || priceDouble <= 0) {
-            _errorMessage.value = "El precio debe ser un número válido"
-            onResult(false)
-            return
-        }
+        val priceVal = price.toDoubleOrNull() ?: 0.0
+        val extraCostVal = extraCost.toDoubleOrNull() ?: 0.0
 
         _isLoading.value = true
         _errorMessage.value = null
 
         viewModelScope.launch {
             try {
-                // 1. Obtenemos el ID del usuario autenticado (el Prestador)
-                val currentUserId = SupabaseManager.client.auth.currentUserOrNull()?.id
-                    ?: throw Exception("Debes estar autenticado para publicar un servicio")
+                val user = SupabaseManager.client.auth.currentUserOrNull()
+                    ?: throw Exception("No autenticado")
 
-                // 2. Creamos el objeto Service según el esquema SQL
                 val newService = Service(
-                    provider_id = currentUserId,
+                    provider_id = user.id,
                     category_id = categoryId,
                     title = title,
                     description = description,
-                    price = priceDouble,
+                    price = priceVal,
                     estimated_time = estimatedTime,
                     materials_included = materialsIncluded,
+                    extra_cost = extraCostVal,
                     status = "active"
                 )
 
-                // 3. Insertamos en Supabase
                 SupabaseManager.client.postgrest["services"].insert(newService)
 
                 _isLoading.value = false
                 onResult(true)
             } catch (e: Exception) {
                 _isLoading.value = false
-                _errorMessage.value = "Error al guardar: ${e.localizedMessage}"
+                _errorMessage.value = "Error: ${e.localizedMessage}"
                 onResult(false)
             }
         }
