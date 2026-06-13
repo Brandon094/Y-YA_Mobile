@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.R
 import java.time.Instant
@@ -74,12 +75,12 @@ fun RegisterScreen(
                     }
                     showDatePicker = false
                 }) {
-                    Text("Confirmar")
+                    Text(stringResource(R.string.register_confirm))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.register_cancel))
                 }
             }
         ) {
@@ -98,7 +99,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(30.dp))
 
         Text(
-            text = "Crea tu cuenta",
+            text = stringResource(R.string.register_title),
             fontSize = 28.sp,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold
@@ -110,7 +111,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Nombre Completo") },
+            label = { Text(stringResource(R.string.register_full_name)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !isLoading,
@@ -123,7 +124,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = documentId,
             onValueChange = { documentId = it },
-            label = { Text("Número de Identificación") },
+            label = { Text(stringResource(R.string.register_id_number)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !isLoading,
@@ -137,8 +138,8 @@ fun RegisterScreen(
         OutlinedTextField(
             value = birthDate,
             onValueChange = { }, // No editable manualmente
-            label = { Text("Fecha de Nacimiento") },
-            placeholder = { Text("Selecciona tu fecha") },
+            label = { Text(stringResource(R.string.register_birth_date)) },
+            placeholder = { Text(stringResource(R.string.register_select_date_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { if (!isLoading) showDatePicker = true },
@@ -163,7 +164,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = phone,
             onValueChange = { phone = it },
-            label = { Text("Teléfono de contacto") },
+            label = { Text(stringResource(R.string.register_phone)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !isLoading,
@@ -177,7 +178,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = address,
             onValueChange = { address = it },
-            label = { Text("Dirección de residencia") },
+            label = { Text(stringResource(R.string.register_address)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !isLoading,
@@ -190,7 +191,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Correo electrónico") },
+            label = { Text(stringResource(R.string.register_email)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !isLoading,
@@ -204,7 +205,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Contraseña") },
+            label = { Text(stringResource(R.string.register_password)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !isLoading,
@@ -224,15 +225,15 @@ fun RegisterScreen(
 
         // Selector de Rol
         Text(
-            text = "¿Cómo quieres usar YAYA?",
+            text = stringResource(R.string.register_how_to_use),
             modifier = Modifier.align(Alignment.Start),
             fontWeight = FontWeight.Medium
         )
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             RadioButton(selected = selectedRole == "client", onClick = { selectedRole = "client" }, enabled = !isLoading)
-            Text("Quiero servicios", modifier = Modifier.padding(end = 16.dp))
+            Text(stringResource(R.string.register_want_services), modifier = Modifier.padding(end = 16.dp))
             RadioButton(selected = selectedRole == "provider", onClick = { selectedRole = "provider" }, enabled = !isLoading)
-            Text("Ofrecer talentos")
+            Text(stringResource(R.string.register_offer_talents))
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -256,14 +257,14 @@ fun RegisterScreen(
             if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
             } else {
-                Text("Registrarme", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(stringResource(R.string.register_button), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         TextButton(onClick = onGoToLogin, enabled = !isLoading) {
-            Text("¿Ya tienes cuenta? Inicia sesión", color = MaterialTheme.colorScheme.primary)
+            Text(stringResource(R.string.register_already_have_account), color = MaterialTheme.colorScheme.primary)
         }
         
         Spacer(modifier = Modifier.height(24.dp))

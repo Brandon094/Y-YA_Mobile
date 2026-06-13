@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import com.example.myapplication.ui.screens.profile.ProfileScreen
 import com.example.myapplication.ui.screens.edit_profile.EditProfileScreen
 import com.example.myapplication.ui.screens.contratacion.PantallaContratacion
-import com.example.myapplication.ui.screens.confirmacion.PantallaReservaConfirmada
+import com.example.myapplication.ui.screens.confirmation.PantallaReservaConfirmada
 
 /**
  * DEFINICIÓN DE RUTAS (PANTALLAS)

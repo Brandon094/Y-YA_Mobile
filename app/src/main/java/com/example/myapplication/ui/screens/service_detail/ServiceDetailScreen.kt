@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,12 +42,12 @@ fun ServiceDetailScreen(
         topBar = {
             // Barra superior personalizada con el título y botón de retorno
             TopAppBar(
-                title = { Text("Detalles del Servicio", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.service_detail_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Regresar",
+                            contentDescription = stringResource(R.string.service_detail_back_desc),
                             tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
@@ -74,7 +75,7 @@ fun ServiceDetailScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Text(
-                        "Solicitar este servicio",
+                        stringResource(R.string.service_detail_order_button),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -135,7 +136,7 @@ fun ServiceDetailScreen(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = "Servicio Verificado",
+                        text = stringResource(R.string.service_detail_verified),
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         fontSize = 12.sp,
@@ -147,7 +148,7 @@ fun ServiceDetailScreen(
 
                 // Sección de Descripción
                 Text(
-                    text = "Descripción del servicio",
+                    text = stringResource(R.string.service_detail_description_label),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
@@ -166,7 +167,7 @@ fun ServiceDetailScreen(
 
                 // Sección de Beneficios (Listado estático para demostración)
                 Text(
-                    text = "¿Qué incluye?",
+                    text = stringResource(R.string.service_detail_whats_included_label),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
@@ -175,10 +176,10 @@ fun ServiceDetailScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 val benefits = listOf(
-                    "Personal altamente capacitado",
-                    "Equipos y materiales incluidos",
-                    "Seguro contra accidentes",
-                    "Garantía de satisfacción"
+                    stringResource(R.string.service_benefit_personnel),
+                    stringResource(R.string.service_benefit_equipment),
+                    stringResource(R.string.service_benefit_insurance),
+                    stringResource(R.string.service_benefit_guarantee)
                 )
 
                 benefits.forEach { benefit ->

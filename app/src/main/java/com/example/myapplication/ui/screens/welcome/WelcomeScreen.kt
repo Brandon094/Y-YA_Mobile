@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,7 +45,7 @@ fun WelcomeScreen(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_logo),
-                contentDescription = "Logo",
+                contentDescription = stringResource(R.string.welcome_logo_description),
                 modifier = Modifier.size(80.dp)
             )
         }
@@ -53,7 +54,7 @@ fun WelcomeScreen(
 
         // Nombre de la marca
         Text(
-            text = "yáya",
+            text = stringResource(R.string.welcome_brand_name),
             fontSize = 28.sp,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
@@ -63,7 +64,7 @@ fun WelcomeScreen(
 
         // Eslógan principal
         Text(
-            text = "Conecta. Confía. Contrata",
+            text = stringResource(R.string.welcome_slogan),
             fontSize = 20.sp,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
@@ -73,7 +74,7 @@ fun WelcomeScreen(
 
         // Texto descriptivo de la misión de la app
         Text(
-            text = "Encuentra el servicio que buscas.\nOfrece tu talento.\nTodo en un solo lugar: YAYA.",
+            text = stringResource(R.string.welcome_description),
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -92,14 +93,14 @@ fun WelcomeScreen(
                 .width(200.dp)
                 .height(50.dp)
         ) {
-            Text("Inicia sesión", color = Color.White)
+            Text(stringResource(R.string.welcome_login_button), color = Color.White)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Opción secundaria: Registro de nueva cuenta
         Text(
-            text = "¿No tienes cuenta?",
+            text = stringResource(R.string.welcome_no_account),
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
         )
@@ -113,7 +114,7 @@ fun WelcomeScreen(
                 .height(50.dp),
             border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
         ) {
-            Text("Regístrate", color = MaterialTheme.colorScheme.primary)
+            Text(stringResource(R.string.welcome_register_button), color = MaterialTheme.colorScheme.primary)
         }
     }
 }

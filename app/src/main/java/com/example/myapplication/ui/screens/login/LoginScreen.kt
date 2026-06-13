@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -88,7 +89,7 @@ fun LoginScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_logo),
-                    contentDescription = "Logo",
+                    contentDescription = stringResource(R.string.login_logo_description),
                     modifier = Modifier.size(60.dp)
                 )
             }
@@ -97,7 +98,7 @@ fun LoginScreen(
 
             // Título de la App
             Text(
-                text = "yáya",
+                text = stringResource(R.string.app_title_yaya),
                 fontSize = 28.sp,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
@@ -106,7 +107,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Inicia sesión",
+                text = stringResource(R.string.login_title),
                 fontSize = 32.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
@@ -120,7 +121,7 @@ fun LoginScreen(
                 onValueChange = {
                     usuario = it
                 },
-                label = { Text("Correo electrónico") },
+                label = { Text(stringResource(R.string.login_email_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
@@ -138,7 +139,7 @@ fun LoginScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Contraseña") },
+                label = { Text(stringResource(R.string.login_password_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
@@ -168,7 +169,7 @@ fun LoginScreen(
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text(
-                    text = "¿Olvidó su contraseña?",
+                    text = stringResource(R.string.login_forgot_password),
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -194,7 +195,7 @@ fun LoginScreen(
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                 } else {
-                    Text("Inicia sesión", color = Color.White)
+                    Text(stringResource(R.string.login_button_text), color = Color.White)
                 }
             }
 
@@ -207,7 +208,7 @@ fun LoginScreen(
                 enabled = !isLoading
             ) {
                 Text(
-                    text = "¿No tienes una cuenta? Crear cuenta nueva",
+                    text = stringResource(R.string.login_no_account),
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 14.sp
                 )

@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.screens.confirmacion
+package com.example.myapplication.ui.screens.confirmation
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

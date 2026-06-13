@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,12 +39,12 @@ fun EditProfileScreen(
         topBar = {
             // Cabecera con título y acción de retroceso
             TopAppBar(
-                title = { Text("Editar perfil", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.edit_profile_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
+                            contentDescription = stringResource(R.string.edit_profile_back_desc),
                             tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
@@ -77,7 +78,7 @@ fun EditProfileScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_logo),
-                    contentDescription = "Avatar",
+                    contentDescription = stringResource(R.string.edit_profile_avatar_desc),
                     modifier = Modifier.size(70.dp)
                 )
 
@@ -92,7 +93,7 @@ fun EditProfileScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.CameraAlt,
-                        contentDescription = "Cambiar foto",
+                        contentDescription = stringResource(R.string.edit_profile_change_photo_desc),
                         modifier = Modifier.padding(8.dp),
                         tint = Color.White
                     )
@@ -105,7 +106,7 @@ fun EditProfileScreen(
             OutlinedTextField(
                 value = viewModel.name,
                 onValueChange = { viewModel.name = it },
-                label = { Text("Nombre completo") },
+                label = { Text(stringResource(R.string.edit_profile_full_name_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 enabled = !viewModel.isLoading,
@@ -121,7 +122,7 @@ fun EditProfileScreen(
             OutlinedTextField(
                 value = viewModel.phone,
                 onValueChange = { viewModel.phone = it },
-                label = { Text("Teléfono") },
+                label = { Text(stringResource(R.string.edit_profile_phone_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -160,7 +161,7 @@ fun EditProfileScreen(
                 if (viewModel.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                 } else {
-                    Text("Guardar cambios", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(stringResource(R.string.edit_profile_save_button), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
             }
 
@@ -168,7 +169,7 @@ fun EditProfileScreen(
 
             // Opción para cancelar y regresar
             TextButton(onClick = onBack, enabled = !viewModel.isLoading) {
-                Text("Cancelar", color = MaterialTheme.colorScheme.primary)
+                Text(stringResource(R.string.edit_profile_cancel_button), color = MaterialTheme.colorScheme.primary)
             }
         }
     }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,12 +43,12 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mi perfil", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.profile_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { onBack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
+                            contentDescription = stringResource(R.string.profile_back_desc),
                             tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
@@ -85,7 +86,7 @@ fun ProfileScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_logo),
-                        contentDescription = "Avatar",
+                        contentDescription = stringResource(R.string.profile_avatar_desc),
                         modifier = Modifier.size(65.dp)
                     )
                 }
@@ -94,7 +95,7 @@ fun ProfileScreen(
 
                 // Nombre y Email destacados
                 Text(
-                    text = profile?.full_name ?: "Cargando...",
+                    text = profile?.full_name ?: stringResource(R.string.profile_loading),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
@@ -117,25 +118,25 @@ fun ProfileScreen(
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Text(
-                            text = "Información Personal",
+                            text = stringResource(R.string.profile_personal_info),
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
                         
-                        InfoRow(icon = Icons.Default.Badge, label = "Documento ID", value = profile?.document_id ?: "No registrado")
-                        InfoRow(icon = Icons.Default.Phone, label = "Teléfono", value = profile?.phone ?: "No registrado")
-                        InfoRow(icon = Icons.Default.Home, label = "Dirección", value = profile?.address ?: "No registrada")
-                        InfoRow(icon = Icons.Default.Cake, label = "Nacimiento", value = profile?.birth_date ?: "No registrado")
-                        InfoRow(icon = Icons.Default.Star, label = "Rol", value = if(profile?.role == "provider") "Prestador" else "Cliente")
+                        InfoRow(icon = Icons.Default.Badge, label = stringResource(R.string.profile_document_id_label), value = profile?.document_id ?: stringResource(R.string.profile_not_registered))
+                        InfoRow(icon = Icons.Default.Phone, label = stringResource(R.string.profile_phone_label), value = profile?.phone ?: stringResource(R.string.profile_not_registered))
+                        InfoRow(icon = Icons.Default.Home, label = stringResource(R.string.profile_address_label), value = profile?.address ?: stringResource(R.string.profile_not_registered_fem))
+                        InfoRow(icon = Icons.Default.Cake, label = stringResource(R.string.profile_birth_date_label), value = profile?.birth_date ?: stringResource(R.string.profile_not_registered))
+                        InfoRow(icon = Icons.Default.Star, label = stringResource(R.string.profile_role_label), value = if(profile?.role == "provider") stringResource(R.string.profile_role_provider) else stringResource(R.string.profile_role_client))
                     }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // LISTA DE OPCIONES NAVEGABLES
-                ProfileOption("Editar perfil", Icons.Default.Edit, onEditProfile)
-                ProfileOption("Cambiar contraseña", Icons.Default.Lock, onChangePassword)
+                ProfileOption(stringResource(R.string.profile_edit_option), Icons.Default.Edit, onEditProfile)
+                ProfileOption(stringResource(R.string.profile_change_password_option), Icons.Default.Lock, onChangePassword)
                 
                 Spacer(modifier = Modifier.height(40.dp))
 
@@ -148,7 +149,7 @@ fun ProfileScreen(
                 ) {
                     Icon(Icons.Default.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Cerrar sesión", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.profile_logout_button), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
             }
         }

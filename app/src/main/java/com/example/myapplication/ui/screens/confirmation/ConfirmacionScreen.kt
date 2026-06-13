@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.screens.confirmacion
+package com.example.myapplication.ui.screens.confirmation
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -12,11 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.R
 import com.example.myapplication.data.models.Service
 
 @Composable
@@ -47,7 +49,7 @@ fun PantallaReservaConfirmada(
         ) {
             @Suppress("DEPRECATION")
             Text(
-                text = "YÁYA",
+                text = stringResource(R.string.app_brand_yaya),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -71,7 +73,7 @@ fun PantallaReservaConfirmada(
 
         @Suppress("DEPRECATION")
         Text(
-            text = "¡Reserva confirmada!",
+            text = stringResource(R.string.confirmation_success_title),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White
@@ -90,7 +92,7 @@ fun PantallaReservaConfirmada(
         ) {
             @Suppress("DEPRECATION")
             Text(
-                text = "Tu servicio ha sido reservado exitosamente.",
+                text = stringResource(R.string.confirmation_success_message),
                 fontSize = 13.sp,
                 color = Color.White,
                 textAlign = TextAlign.Center
@@ -111,7 +113,7 @@ fun PantallaReservaConfirmada(
             Column(modifier = Modifier.padding(24.dp)) {
                 @Suppress("DEPRECATION")
                 Text(
-                    text = "Detalles de tu reserva",
+                    text = stringResource(R.string.confirmation_details_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
                     color = coral,
@@ -121,21 +123,22 @@ fun PantallaReservaConfirmada(
                 HorizontalDivider(color = Color(0xFFEEEEEE))
                 Spacer(modifier = Modifier.height(12.dp))
 
-                DetalleReservaFila("🧹", "Servicio", viewModel.servicio)
-                DetalleReservaFila("👤", "Prestador", viewModel.prestador)
-                DetalleReservaFila("📅", "Fecha", viewModel.fecha)
-                DetalleReservaFila("📍", "Ubicación", viewModel.ubicacion)
-                DetalleReservaFila("💰", "Precio", viewModel.precio)
-                DetalleReservaFila("⏱", "Tiempo", viewModel.tiempo)
+                DetalleReservaFila("🧹", stringResource(R.string.confirmation_service_label), viewModel.servicio)
+                DetalleReservaFila("👤", stringResource(R.string.confirmation_provider_label), viewModel.prestador)
+                DetalleReservaFila("📅", stringResource(R.string.confirmation_date_label), viewModel.fecha)
+                DetalleReservaFila("📍", stringResource(R.string.confirmation_location_label), viewModel.ubicacion)
+                DetalleReservaFila("💰", stringResource(R.string.confirmation_price_label), viewModel.precio)
+                DetalleReservaFila("⏱", stringResource(R.string.confirmation_time_label), viewModel.tiempo)
             }
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
         // Botón continuar
+        val finishedMsg = stringResource(R.string.confirmation_toast_finished)
         Button(
             onClick = { 
-                Toast.makeText(context, "Reserva finalizada", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, finishedMsg, Toast.LENGTH_SHORT).show()
                 onContinuarClick() 
             },
             modifier = Modifier
@@ -148,7 +151,7 @@ fun PantallaReservaConfirmada(
             )
         ) {
             Text(
-                text = "Continuar",
+                text = stringResource(R.string.confirmation_continue_button),
                 color = coral,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp

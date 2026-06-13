@@ -14,7 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.R
 import com.example.myapplication.data.models.Service
 
 @Composable
@@ -46,14 +48,14 @@ fun PantallaContratacion(
             @Suppress("DEPRECATION")
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "YÁYA",
+                    text = stringResource(R.string.app_brand_yaya),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                     letterSpacing = 4.sp
                 )
                 Text(
-                    text = "Conecta. Confía. Contrata.",
+                    text = stringResource(R.string.app_slogan),
                     fontSize = 12.sp,
                     color = Color.White.copy(alpha = 0.85f)
                 )
@@ -83,14 +85,14 @@ fun PantallaContratacion(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text("Maria Chantre", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text("Prestadora de servicio", fontSize = 12.sp, color = Color.Gray)
+                            Text(stringResource(R.string.contratacion_provider_label), fontSize = 12.sp, color = Color.Gray)
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     HorizontalDivider(color = Color(0xFFEEEEEE))
                     Spacer(modifier = Modifier.height(12.dp))
-                    InfoFila("Edad", "22 Años")
-                    InfoFila("Teléfono", "314 288 34256")
+                    InfoFila(stringResource(R.string.contratacion_age_label), "22 Años")
+                    InfoFila(stringResource(R.string.contratacion_phone_label), "314 288 34256")
                 }
             }
 
@@ -102,15 +104,15 @@ fun PantallaContratacion(
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
-                        "Solicitar servicio",
+                        stringResource(R.string.contratacion_request_title),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    CampoFormulario("Servicio", viewModel.servicio) { viewModel.servicio = it }
-                    CampoFormulario("Dirección", viewModel.direccion) { viewModel.direccion = it }
-                    CampoFormulario("Hora", viewModel.hora) { viewModel.hora = it }
-                    CampoFormulario("¿Cuánto ofrece?", viewModel.oferta) { viewModel.oferta = it }
+                    CampoFormulario(stringResource(R.string.contratacion_service_field), viewModel.servicio) { viewModel.servicio = it }
+                    CampoFormulario(stringResource(R.string.contratacion_address_field), viewModel.direccion) { viewModel.direccion = it }
+                    CampoFormulario(stringResource(R.string.contratacion_time_field), viewModel.hora) { viewModel.hora = it }
+                    CampoFormulario(stringResource(R.string.contratacion_offer_field), viewModel.oferta) { viewModel.oferta = it }
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = { onContratarClick() },
@@ -119,7 +121,7 @@ fun PantallaContratacion(
                         colors = ButtonDefaults.buttonColors(containerColor = coral)
                     ) {
                         Text(
-                            "Contratar",
+                            stringResource(R.string.contratacion_button),
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(vertical = 4.dp)
