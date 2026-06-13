@@ -18,11 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
-import com.example.myapplication.data.Service
+import com.example.myapplication.data.models.Service
 
 import com.example.myapplication.data.SupabaseManager
 import io.github.jan.supabase.auth.auth
@@ -30,30 +31,36 @@ import kotlinx.coroutines.launch
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.runtime.rememberCoroutineScope
 
+/**
+ * PANTALLA PRINCIPAL (HOME)
+ * Muestra el catálogo de servicios disponibles para contratar.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onServiceClick: (Service) -> Unit,
-    onProfileClick: () -> Unit,
-    onLogout: () -> Unit,
+    onServiceClick: (Service) -> Unit, // Navega a los detalles del servicio
+    onProfileClick: () -> Unit,        // Navega al perfil del usuario
+    onLogout: () -> Unit,              // Regresa al login tras cerrar sesión
     viewModel: HomeViewModel = viewModel()
 ) {
     val scope = rememberCoroutineScope()
+    
     Scaffold(
         topBar = {
+            // Barra superior con acceso al perfil y notificaciones
             TopAppBar(
-                title = { Text("Buscar servicio") },
+                title = { Text(stringResource(R.string.home_top_bar_title)) },
                 navigationIcon = {
                     IconButton(onClick = onProfileClick) {
                         Icon(
                             imageVector = Icons.Default.Person, 
-                            contentDescription = "Mi Perfil",
+                            contentDescription = stringResource(R.string.home_profile_desc),
                             tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = { /* Próxima funcionalidad */ }) {
                         Icon(
                             imageVector = Icons.Default.Notifications, 
                             contentDescription = null,
@@ -63,13 +70,12 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
-                    titleContentColor = MaterialTheme.colorScheme.onSecondary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSecondary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onSecondary
+                    titleContentColor = MaterialTheme.colorScheme.onSecondary
                 )
             )
         },
         bottomBar = {
+            // Barra inferior que contiene solo el botón de cerrar sesión
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 tonalElevation = 4.dp,
@@ -96,33 +102,34 @@ fun HomeScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Logout,
-                            contentDescription = "Cerrar sesión"
+                            contentDescription = stringResource(R.string.home_logout_desc)
                         )
                     }
                 }
             }
         }
     ) { padding ->
-
+        // Contenido principal: Lista de servicios
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-
             Text(
-                text = "Selecciona el servicio a contratar:",
+                text = stringResource(R.string.home_select_service_label),
                 modifier = Modifier.padding(16.dp),
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onBackground
             )
 
+            // Si está cargando datos de Supabase, muestra un Spinner
             if (viewModel.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
+                // Lista de desplazamiento eficiente (Recycler View en Compose)
                 LazyColumn {
                     items(viewModel.services) { service ->
                         ServiceItem(service, onClick = { onServiceClick(service) })
@@ -133,6 +140,10 @@ fun HomeScreen(
     }
 }
 
+/**
+ * COMPONENTE DE TARJETA DE SERVICIO
+ * Representa un ítem individual dentro de la lista del Home.
+ */
 @Composable
 fun ServiceItem(service: Service, onClick: () -> Unit) {
     Row(
@@ -144,8 +155,7 @@ fun ServiceItem(service: Service, onClick: () -> Unit) {
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-        // Icono/logo
+        // Logo del servicio
         Image(
             painter = painterResource(id = R.drawable.ic_logo),
             contentDescription = null,
@@ -157,11 +167,22 @@ fun ServiceItem(service: Service, onClick: () -> Unit) {
 
         Spacer(modifier = Modifier.width(12.dp))
 
+        // Información de texto
         Column(modifier = Modifier.weight(1f)) {
-            Text(service.title, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
-            Text(service.description, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+            Text(
+                text = service.title, 
+                fontSize = 14.sp, 
+                color = MaterialTheme.colorScheme.onSurface, 
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+            )
+            Text(
+                text = service.description, 
+                fontSize = 12.sp, 
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
         }
 
+        // Icono indicador de navegación
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
             contentDescription = null,

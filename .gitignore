@@ -1,27 +1,14 @@
-# Android Studio / IntelliJ
-.idea/
 *.iml
-.gradle/
+.gradle
+/local.properties
+/.idea/
+/captures
+.externalNativeBuild
+.cxx
 build/
-captures/
-externalNativeBuild/
-.cxx/
-local.properties
-
-# Log files
+app/build/
+.DS_Store
 *.log
-
-# Keystore files
 *.jks
 *.keystore
-
-# Google Services
-# google-services.json
-
-# System files
-.DS_Store
-Thumbs.db
-
-# AS generated
-app/build/
 .navigation/

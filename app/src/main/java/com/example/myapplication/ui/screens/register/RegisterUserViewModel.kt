@@ -6,10 +6,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.SupabaseManager
+import com.example.myapplication.data.models.UserProfile
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 
+/**
+ * VIEWMODEL PARA EL REGISTRO DE USUARIOS
+ * Gestiona la creación de la cuenta de autenticación y el perfil detallado del usuario.
+ */
 class RegisterUserViewModel : ViewModel() {
 
     private val _isLoading = MutableLiveData(false)
@@ -18,9 +24,24 @@ class RegisterUserViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
-    fun register(email: String, password: String, onResult: (Boolean) -> Unit) {
-        if (email.isBlank() || password.isBlank()) {
-            _errorMessage.value = "Completa todos los campos"
+    /**
+     * Registra un nuevo usuario con todos los datos requeridos por el modelo de negocio.
+     */
+    fun register(
+        name: String, 
+        email: String, 
+        password: String, 
+        phone: String, 
+        address: String,
+        documentId: String,
+        birthDate: String,
+        role: String,
+        onResult: (Boolean) -> Unit
+    ) {
+        // Validación de campos obligatorios
+        if (name.isBlank() || email.isBlank() || password.isBlank() || phone.isBlank() || 
+            address.isBlank() || documentId.isBlank() || birthDate.isBlank()) {
+            _errorMessage.value = "Por favor, completa todos los campos"
             onResult(false)
             return
         }
@@ -30,18 +51,40 @@ class RegisterUserViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // Registro en Supabase
+                // 1. Crear el usuario en Supabase Auth
                 SupabaseManager.client.auth.signUpWith(Email) {
                     this.email = email
                     this.password = password
                 }
                 
-                _isLoading.value = false
-                onResult(true)
+                // 2. Obtener el ID del usuario creado
+                val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
+
+                if (userId != null) {
+                    // 3. Crear perfil completo
+                    val newProfile = UserProfile(
+                        id = userId,
+                        full_name = name,
+                        phone = phone,
+                        document_id = documentId,
+                        birth_date = birthDate,
+                        address = address,
+                        role = role
+                    )
+
+                    // 4. Guardar en la tabla 'profiles'
+                    SupabaseManager.client.postgrest["profiles"].insert(newProfile)
+                    
+                    _isLoading.value = false
+                    onResult(true)
+                } else {
+                    throw Exception("No se pudo obtener el ID de usuario.")
+                }
+
             } catch (e: Exception) {
-                Log.e("Register", "Error completo: ", e)
+                Log.e("Register", "Error: ", e)
                 _isLoading.value = false
-                _errorMessage.value = "Error al registrar: ${e.message}"
+                _errorMessage.value = "Error: ${e.localizedMessage}"
                 onResult(false)
             }
         }

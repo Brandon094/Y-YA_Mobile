@@ -1,3 +1,123 @@
 <resources>
-    <string name="app_name">Y-YA</string>
+    <string name="app_name">YÁYA</string>
+    <string name="app_title_yaya">yáya</string>
+    <string name="app_brand_yaya">YÁYA</string>
+    <string name="app_slogan">Conecta. Confía. Contrata.</string>
+
+    <!-- Login Screen -->
+    <string name="login_logo_description">Logo</string>
+    <string name="login_title">Inicia sesión</string>
+    <string name="login_email_label">Correo electrónico</string>
+    <string name="login_password_label">Contraseña</string>
+    <string name="login_forgot_password">¿Olvidó su contraseña?</string>
+    <string name="login_button_text">Inicia sesión</string>
+    <string name="login_no_account">¿No tienes una cuenta? Crear cuenta nueva</string>
+
+    <!-- Welcome Screen -->
+    <string name="welcome_logo_description">Logo</string>
+    <string name="welcome_brand_name">yáya</string>
+    <string name="welcome_slogan">Conecta. Confía. Contrata</string>
+    <string name="welcome_description">Encuentra el servicio que buscas.\nOfrece tu talento.\nTodo en un solo lugar: YAYA.</string>
+    <string name="welcome_login_button">Inicia sesión</string>
+    <string name="welcome_no_account">¿No tienes cuenta?</string>
+    <string name="welcome_register_button">Regístrate</string>
+
+    <!-- Home Screen -->
+    <string name="home_top_bar_title">Buscar servicio</string>
+    <string name="home_profile_desc">Mi Perfil</string>
+    <string name="home_logout_desc">Cerrar sesión</string>
+    <string name="home_select_service_label">Selecciona el servicio a contratar:</string>
+
+    <!-- Register Screen -->
+    <string name="register_confirm">Confirmar</string>
+    <string name="register_cancel">Cancelar</string>
+    <string name="register_title">Crea tu cuenta</string>
+    <string name="register_full_name">Nombre Completo</string>
+    <string name="register_id_number">Número de Identificación</string>
+    <string name="register_birth_date">Fecha de Nacimiento</string>
+    <string name="register_select_date_placeholder">Selecciona tu fecha</string>
+    <string name="register_phone">Teléfono de contacto</string>
+    <string name="register_address">Dirección de residencia</string>
+    <string name="register_email">Correo electrónico</string>
+    <string name="register_password">Contraseña</string>
+    <string name="register_how_to_use">¿Cómo quieres usar YAYA?</string>
+    <string name="register_want_services">Quiero servicios</string>
+    <string name="register_offer_talents">Ofrecer talentos</string>
+    <string name="register_button">Registrarme</string>
+    <string name="register_already_have_account">¿Ya tienes cuenta? Inicia sesión</string>
+
+    <!-- Reset Password Screen -->
+    <string name="reset_password_title">Restablecer contraseña</string>
+    <string name="reset_password_back_desc">Volver</string>
+    <string name="reset_password_success_title">¡Correo enviado!</string>
+    <string name="reset_password_success_message">Revisa tu bandeja de entrada para restablecer tu contraseña.</string>
+    <string name="reset_password_back_to_login">Volver al Login</string>
+    <string name="reset_password_instructions">Ingresa tu correo para recibir un enlace de recuperación.</string>
+    <string name="reset_password_email_placeholder">ejemplo@correo.com</string>
+    <string name="reset_password_send_link">Enviar enlace</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">Mi perfil</string>
+    <string name="profile_back_desc">Volver</string>
+    <string name="profile_avatar_desc">Avatar</string>
+    <string name="profile_loading">Cargando...</string>
+    <string name="profile_personal_info">Información Personal</string>
+    <string name="profile_document_id_label">Documento ID</string>
+    <string name="profile_not_registered">No registrado</string>
+    <string name="profile_not_registered_fem">No registrada</string>
+    <string name="profile_phone_label">Teléfono</string>
+    <string name="profile_address_label">Dirección</string>
+    <string name="profile_birth_date_label">Nacimiento</string>
+    <string name="profile_role_label">Rol</string>
+    <string name="profile_role_provider">Prestador</string>
+    <string name="profile_role_client">Cliente</string>
+    <string name="profile_edit_option">Editar perfil</string>
+    <string name="profile_change_password_option">Cambiar contraseña</string>
+    <string name="profile_logout_button">Cerrar sesión</string>
+
+    <!-- Edit Profile Screen -->
+    <string name="edit_profile_title">Editar perfil</string>
+    <string name="edit_profile_back_desc">Volver</string>
+    <string name="edit_profile_avatar_desc">Avatar</string>
+    <string name="edit_profile_change_photo_desc">Cambiar foto</string>
+    <string name="edit_profile_full_name_label">Nombre completo</string>
+    <string name="edit_profile_phone_label">Teléfono</string>
+    <string name="edit_profile_save_button">Guardar cambios</string>
+    <string name="edit_profile_cancel_button">Cancelar</string>
+
+    <!-- Service Detail Screen -->
+    <string name="service_detail_title">Detalles del Servicio</string>
+    <string name="service_detail_back_desc">Regresar</string>
+    <string name="service_detail_order_button">Solicitar este servicio</string>
+    <string name="service_detail_verified">Servicio Verificado</string>
+    <string name="service_detail_description_label">Descripción del servicio</string>
+    <string name="service_detail_whats_included_label">¿Qué incluye?</string>
+    <string name="service_benefit_personnel">Personal altamente capacitado</string>
+    <string name="service_benefit_equipment">Equipos y materiales incluidos</string>
+    <string name="service_benefit_insurance">Seguro contra accidentes</string>
+    <string name="service_benefit_guarantee">Garantía de satisfacción</string>
+
+    <!-- Contratacion Screen -->
+    <string name="contratacion_provider_label">Prestadora de servicio</string>
+    <string name="contratacion_age_label">Edad</string>
+    <string name="contratacion_phone_label">Teléfono</string>
+    <string name="contratacion_request_title">Solicitar servicio</string>
+    <string name="contratacion_service_field">Servicio</string>
+    <string name="contratacion_address_field">Dirección</string>
+    <string name="contratacion_time_field">Hora</string>
+    <string name="contratacion_offer_field">¿Cuánto ofrece?</string>
+    <string name="contratacion_button">Contratar</string>
+
+    <!-- Confirmation Screen -->
+    <string name="confirmation_success_title">¡Reserva confirmada!</string>
+    <string name="confirmation_success_message">Tu servicio ha sido reservado exitosamente.</string>
+    <string name="confirmation_details_title">Detalles de tu reserva</string>
+    <string name="confirmation_service_label">Servicio</string>
+    <string name="confirmation_provider_label">Prestador</string>
+    <string name="confirmation_date_label">Fecha</string>
+    <string name="confirmation_location_label">Ubicación</string>
+    <string name="confirmation_price_label">Precio</string>
+    <string name="confirmation_time_label">Tiempo</string>
+    <string name="confirmation_toast_finished">Reserva finalizada</string>
+    <string name="confirmation_continue_button">Continuar</string>
 </resources>

@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -48,17 +49,23 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.R
 import com.example.myapplication.ui.screens.login.LoginViewModel
 
-// ---------- Pantalla de Login ----------
+/**
+ * PANTALLA DE INICIO DE SESIÓN (LOGIN)
+ * Permite a los usuarios autenticarse para acceder a la aplicación.
+ */
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit,
-    onNavigateToReset: () -> Unit,
+    onLoginSuccess: () -> Unit,    // Acción al entrar correctamente
+    onNavigateToReset: () -> Unit, // Acción para recuperar clave
+    onNavigateToRegister: () -> Unit, // Acción para ir a crear cuenta
     viewModel: LoginViewModel = viewModel()
 ) {
+    // Estados locales para los campos de entrada
     var usuario by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
+    // Observación de estados del ViewModel (Carga y Errores)
     val isLoading by viewModel.isLoading.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
 
@@ -72,7 +79,7 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo en caja blanca
+            // Contenedor del Logo
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -82,15 +89,16 @@ fun LoginScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_logo),
-                    contentDescription = "Logo",
+                    contentDescription = stringResource(R.string.login_logo_description),
                     modifier = Modifier.size(60.dp)
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Título de la App
             Text(
-                text = "yáya",
+                text = stringResource(R.string.app_title_yaya),
                 fontSize = 28.sp,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
@@ -99,7 +107,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Inicia sesión",
+                text = stringResource(R.string.login_title),
                 fontSize = 32.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
@@ -107,14 +115,13 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Usuario
+            // Campo de texto para el Correo
             OutlinedTextField(
                 value = usuario,
-                onValueChange = { 
-                    usuario = it 
-                    if (errorMessage != null) viewModel.login("", "", {}) // Truco rápido para limpiar error al escribir
+                onValueChange = {
+                    usuario = it
                 },
-                label = { Text("Correo electrónico") },
+                label = { Text(stringResource(R.string.login_email_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
@@ -128,14 +135,11 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Contraseña
+            // Campo de texto para la Contraseña con opción de ver/ocultar
             OutlinedTextField(
                 value = password,
-                onValueChange = { 
-                    password = it 
-                    // Limpiar mensaje de error si el usuario vuelve a escribir
-                },
-                label = { Text("Contraseña") },
+                onValueChange = { password = it },
+                label = { Text(stringResource(R.string.login_password_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
@@ -159,23 +163,24 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Enlace para recuperar contraseña
             TextButton(
                 onClick = { onNavigateToReset() },
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text(
-                    text = "¿Olvidó su contraseña?",
+                    text = stringResource(R.string.login_forgot_password),
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botón login
+            // Botón de Inicio de Sesión
             Button(
                 onClick = {
-                    viewModel.login(usuario, password) {
-                        if (it) onLoginSuccess()
+                    viewModel.login(usuario, password) { success ->
+                        if (success) onLoginSuccess()
                     }
                 },
                 modifier = Modifier
@@ -188,32 +193,30 @@ fun LoginScreen(
                 enabled = !isLoading
             ) {
                 if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = Color.White
-                    )
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                 } else {
-                    Text("Inicia sesión", color = Color.White)
+                    Text(stringResource(R.string.login_button_text), color = Color.White)
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text("O inicia con", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
-
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Google
-            Image(
-                painter = painterResource(id = R.drawable.ic_google),
-                contentDescription = "Google",
-                modifier = Modifier.size(40.dp)
-            )
+            // TextButton para crear una cuenta nueva (estilo similar a "¿Olvidó su contraseña?")
+            TextButton(
+                onClick = { onNavigateToRegister() },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading
+            ) {
+                Text(
+                    text = stringResource(R.string.login_no_account),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 14.sp
+                )
+            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Error
+            // Espacio para mostrar mensajes de error de Supabase
             if (!errorMessage.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = errorMessage!!,
                     color = MaterialTheme.colorScheme.error,
@@ -228,5 +231,9 @@ fun LoginScreen(
 @Preview
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(onLoginSuccess = {}, onNavigateToReset = {})
+    LoginScreen(
+        onLoginSuccess = {},
+        onNavigateToReset = {},
+        onNavigateToRegister = {}
+    )
 }
