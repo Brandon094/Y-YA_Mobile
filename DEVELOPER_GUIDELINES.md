@@ -52,34 +52,35 @@ Cualquier nuevo modelo de datos debe respetar el esquema de `public.services`, `
 
 ## 7. Estado Actual del Proyecto (Contexto para el Agente)
 Al iniciar sesión, el agente debe saber que ya se han implementado:
-- **Autenticación:** Flujo completo de Login, Registro (con validaciones de email/password) y Recuperación de clave.
-- **Persistencia:** Sesión persistente mediante `multiplatform-settings`.
-- **Navegación:** Sistema centralizado en `AppNavigation.kt` usando Type-Safety.
-- **Pantallas Core:** 
-    - `Splash/Loading`: Con logo completo y fondo elegante.
-    - `Home`: Con barra de búsqueda, filtro por categorías dinámico y control de acceso (el botón '+' solo aparece para prestadores/admin).
-    - `Profile/EditProfile`: Lectura y edición de datos del perfil.
-    - `CreateService`: Formulario vinculado a la tabla `services` y `categories` de Supabase.
+- **Autenticación Avanzada:** Flujo de Login, Registro con respaldo de Metadata (nombre/rol) para autoreparación de perfiles y recuperación de clave.
+- **Persistencia de Sesión:** Implementada mediante `multiplatform-settings` (la sesión no se cierra al salir).
+- **Catálogo Dinámico (Home):** Listado de servicios reales con barra de búsqueda funcional y filtrado por categorías desde SQL.
+- **Detalle de Servicio:** Visualización completa de información técnica, costos extra, materiales y datos del prestador real.
+- **Flujo de Contratación (Core):** Sistema de reserva dinámico con selectores de fecha y hora (Reloj/Calendario) sincronizado con la tabla `public.requests`.
+- **Ticket de Confirmación:** Resumen real de la reservación tras éxito en Base de Datos.
+- **Mis Pedidos (Cliente):** Historial completo de solicitudes con badges de estado dinámicos (`pending`, `accepted`, `completed`).
+- **Gestión de Perfil:** Edición completa de datos sincronizada con esquema SQL (Cédula, Dirección, Nacimiento).
+- **Publicación de Servicios:** Formulario para prestadores con lógica de categorías y costos de materiales.
 
 ## 8. Próximos Hitos y Funcionalidades (Roadmap)
 Para completar el MVP (Producto Mínimo Viable), se deben desarrollar los siguientes módulos:
 
-### Hito 1: Gestión y Seguimiento (Dashboards)
-- **Mis Pedidos:** Historial de servicios contratados por el cliente y su estado.
-- **Solicitudes Entrantes:** Panel para que el prestador acepte/rechace trabajos.
-- **Mis Servicios:** Interfaz para que el prestador gestione sus publicaciones existentes.
+### Hito 1: Dashboard del Prestador (Operatividad)
+- **Solicitudes Entrantes:** Interfaz para que el prestador vea quién lo busca y pueda Aceptar/Rechazar (Cambio de `status` en `requests`).
+- **Mis Servicios:** Panel de administración para editar o pausar (activar/desactivar) sus publicaciones existentes.
 
 ### Hito 2: Comunicación y Confianza
-- **Chat en Tiempo Real:** Comunicación directa cliente-prestador (Tabla `messages`).
-- **Sistema de Reputación:** Visualización y envío de calificaciones (Tabla `ratings`).
+- **Chat en Tiempo Real:** Integración con `Supabase Realtime` y tabla `messages`.
+- **Sistema de Reputación:** Visualización de estrellas reales y envío de calificaciones (Tabla `ratings`) tras finalizar un servicio.
 
-### Hito 3: Monetización y Legal
-- **Suscripciones (SaaS):** Pantalla de selección de planes para prestadores.
-- **Cumplimiento:** Pantalla de Términos, Condiciones y Políticas de Privacidad.
+### Hito 3: Experiencia Multimedia (Storage)
+- **Fotos de Perfil:** Subida y visualización de avatares reales mediante Buckets de Supabase Storage.
+- **Galería de Servicios:** Permitir a los prestadores subir fotos de sus trabajos anteriores.
 
-### Hito 4: Experiencia Pro
-- **Multimedia:** Subida de fotos de perfil y servicios a Supabase Storage.
-- **Notificaciones:** Sistema de alertas para actualizaciones de pedidos y mensajes.
+### Hito 4: Modelo SaaS y Legal
+- **Suscripciones:** Pantalla de planes para prestadores y restricción de funcionalidades según suscripción.
+- **Notificaciones:** Alertas Push para cambios en el estado de pedidos.
+- **Cumplimiento:** Pantallas de Términos, Condiciones y Políticas de Privacidad.
 
 ---
 *Propiedad Intelectual de **BH++** - 2026*
