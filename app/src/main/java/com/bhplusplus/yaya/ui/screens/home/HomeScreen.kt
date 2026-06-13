@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Notifications
@@ -28,11 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.Service
-
 import com.bhplusplus.yaya.data.SupabaseManager
 import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.launch
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.runtime.rememberCoroutineScope
 
 /**
