@@ -16,9 +16,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.myapplication.data.SupabaseManager
 import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
 import com.example.myapplication.ui.screens.profile.ProfileScreen
 import com.example.myapplication.ui.screens.edit_profile.EditProfileScreen
@@ -26,52 +31,49 @@ import com.example.myapplication.ui.screens.contratacion.PantallaContratacion
 import com.example.myapplication.ui.screens.confirmation.PantallaReservaConfirmada
 
 /**
- * DEFINICIÓN DE RUTAS (PANTALLAS)
- * Usamos una 'sealed class' para representar las diferentes pantallas de la app.
- * Esto permite un manejo seguro y exhaustivo en el sistema de navegación.
+ * DEFINICIÓN DE RUTAS (PANTALLAS) CON SEGURIDAD DE TIPOS
  */
-sealed class Screen {
-    object Loading : Screen()         // Pantalla de carga (mientras verifica sesión)
-    object Welcome : Screen()         // Pantalla de bienvenida
-    object Login : Screen()           // Inicio de sesión
-    object Reset : Screen()           // Restablecer contraseña
-    object RegisterUser : Screen()    // Registro de nuevo usuario
-    object Home : Screen()            // Pantalla principal (listado de servicios)
-    object Profile : Screen()         // Ver perfil del usuario
-    object EditProfile : Screen()     // Formulario para editar datos de perfil
-    data class Contratacion(val service: Service) : Screen()    // Pantalla de contratación (Yya2)
-    data class Confirmacion(val service: Service) : Screen()    // Pantalla de confirmación (Yya2)
-    // ServiceDetail recibe un objeto de tipo 'Service' como argumento
-    data class ServiceDetail(val service: Service) : Screen()
-}
+@Serializable object LoadingRoute
+@Serializable object WelcomeRoute
+@Serializable object LoginRoute
+@Serializable object ResetRoute
+@Serializable object RegisterRoute
+@Serializable object HomeRoute
+@Serializable object ProfileRoute
+@Serializable object EditProfileRoute
+@Serializable data class ServiceDetailRoute(val service: Service)
+@Serializable data class ContratacionRoute(val service: Service)
+@Serializable data class ConfirmacionRoute(val service: Service)
 
 /**
  * NAVEGACIÓN PRINCIPAL
- * Este componente actúa como el "cerebro" que decide qué pantalla mostrar.
+ * Utiliza Jetpack Compose Navigation con Type-Safety.
  */
 @Composable
 fun AppNavigation() {
-    // scope permite ejecutar funciones suspendidas (como signOut) desde la UI
+    val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     
-    // Estado que controla qué pantalla se está visualizando actualmente
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.Loading) }
-
-    // LaunchedEffect se ejecuta al iniciar la aplicación.
-    // Verifica si el usuario tiene una sesión activa en Supabase.
+    // LaunchedEffect para verificar sesión al iniciar
     LaunchedEffect(Unit) {
         val session = SupabaseManager.client.auth.currentSessionOrNull()
         if (session != null) {
-            currentScreen = Screen.Home // Si hay sesión, saltamos al Home
+            navController.navigate(HomeRoute) {
+                popUpTo(LoadingRoute) { inclusive = true }
+            }
         } else {
-            currentScreen = Screen.Welcome // Si no, mostramos la Bienvenida
+            navController.navigate(WelcomeRoute) {
+                popUpTo(LoadingRoute) { inclusive = true }
+            }
         }
     }
 
-    // Estructura condicional que renderiza la pantalla correspondiente según el estado
-    when (val screen = currentScreen) {
-        // Indicador visual de carga
-        Screen.Loading -> {
+    NavHost(
+        navController = navController,
+        startDestination = LoadingRoute
+    ) {
+        // Pantalla de Carga Inicial
+        composable<LoadingRoute> {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -80,77 +82,117 @@ fun AppNavigation() {
             }
         }
 
-        // Pantalla de Bienvenida: Navega a Login o Registro
-        Screen.Welcome -> WelcomeScreen(
-            onLoginClick = { currentScreen = Screen.Login },
-            onRegisterClick = { currentScreen = Screen.RegisterUser }
-        )
+        // Bienvenida
+        composable<WelcomeRoute> {
+            WelcomeScreen(
+                onLoginClick = { navController.navigate(LoginRoute) },
+                onRegisterClick = { navController.navigate(RegisterRoute) }
+            )
+        }
 
-        // Login: Si tiene éxito, navega al Home
-        Screen.Login -> LoginScreen(
-            onLoginSuccess = { currentScreen = Screen.Home },
-            onNavigateToReset = { currentScreen = Screen.Reset },
-            onNavigateToRegister = { currentScreen = Screen.RegisterUser }
-        )
+        // Login
+        composable<LoginRoute> {
+            LoginScreen(
+                onLoginSuccess = { 
+                    navController.navigate(HomeRoute) {
+                        popUpTo(WelcomeRoute) { inclusive = true }
+                    }
+                },
+                onNavigateToReset = { navController.navigate(ResetRoute) },
+                onNavigateToRegister = { navController.navigate(RegisterRoute) }
+            )
+        }
 
-        // Recuperar Contraseña: Al finalizar regresa al Login
-        Screen.Reset -> ResetPasswordScreen(
-            onPasswordReset = { currentScreen = Screen.Login },
-            onBack = { currentScreen = Screen.Login }
-        )
+        // Recuperar Contraseña
+        composable<ResetRoute> {
+            ResetPasswordScreen(
+                onPasswordReset = { navController.popBackStack() },
+                onBack = { navController.popBackStack() }
+            )
+        }
 
-        // Registro: Al finalizar regresa al Login para que el usuario entre
-        Screen.RegisterUser -> RegisterScreen(
-            onRegister = { currentScreen = Screen.Login },
-            onGoToLogin = { currentScreen = Screen.Login }
-        )
+        // Registro
+        composable<RegisterRoute> {
+            RegisterScreen(
+                onRegister = { navController.navigate(LoginRoute) },
+                onGoToLogin = { navController.navigate(LoginRoute) }
+            )
+        }
 
-        // Home: Muestra servicios y permite ir al Perfil o Detalle
-        Screen.Home -> HomeScreen(
-            onServiceClick = { service -> currentScreen = Screen.ServiceDetail(service) },
-            onProfileClick = { currentScreen = Screen.Profile },
-            onLogout = { currentScreen = Screen.Login }
-        )
-
-        // Perfil: Permite editar datos, cambiar clave o cerrar sesión
-        Screen.Profile -> ProfileScreen(
-            onEditProfile = { currentScreen = Screen.EditProfile },
-            onChangePassword = { currentScreen = Screen.Reset },
-            onLogout = {
-                scope.launch {
-                    SupabaseManager.client.auth.signOut() // Cierra sesión en Supabase
-                    currentScreen = Screen.Login
+        // Home
+        composable<HomeRoute> {
+            HomeScreen(
+                onServiceClick = { service -> navController.navigate(ServiceDetailRoute(service)) },
+                onProfileClick = { navController.navigate(ProfileRoute) },
+                onLogout = {
+                    scope.launch {
+                        SupabaseManager.client.auth.signOut()
+                        navController.navigate(LoginRoute) {
+                            popUpTo(HomeRoute) { inclusive = true }
+                        }
+                    }
                 }
-            },
-            onBack = { currentScreen = Screen.Home }
-        )
+            )
+        }
 
-        // Editar Perfil: Regresa al perfil tras guardar cambios
-        Screen.EditProfile -> EditProfileScreen(
-            onBack = { currentScreen = Screen.Profile }
-        )
+        // Perfil
+        composable<ProfileRoute> {
+            ProfileScreen(
+                onEditProfile = { navController.navigate(EditProfileRoute) },
+                onChangePassword = { navController.navigate(ResetRoute) },
+                onLogout = {
+                    scope.launch {
+                        SupabaseManager.client.auth.signOut()
+                        navController.navigate(WelcomeRoute) {
+                            popUpTo(HomeRoute) { inclusive = true }
+                        }
+                    }
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
 
-        is Screen.ServiceDetail -> ServiceDetailScreen(
-            service = screen.service,
-            onBack = { currentScreen = Screen.Home },
-            onContratar = { currentScreen = Screen.Contratacion(screen.service) }
-        )
+        // Editar Perfil
+        composable<EditProfileRoute> {
+            EditProfileScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
 
-        // Flujo Yya2: Contratación
-        is Screen.Contratacion -> PantallaContratacion(
-            service = screen.service,
-            onContratarClick = { currentScreen = Screen.Confirmacion(screen.service) }
-        )
+        // Detalle del Servicio
+        composable<ServiceDetailRoute> { backStackEntry ->
+            val route: ServiceDetailRoute = backStackEntry.toRoute()
+            ServiceDetailScreen(
+                service = route.service,
+                onBack = { navController.popBackStack() },
+                onContratar = { navController.navigate(ContratacionRoute(route.service)) }
+            )
+        }
 
-        // Flujo Yya2: Confirmación
-        is Screen.Confirmacion -> PantallaReservaConfirmada(
-            service = screen.service,
-            onContinuarClick = { currentScreen = Screen.Home }
-        )
+        // Contratación
+        composable<ContratacionRoute> { backStackEntry ->
+            val route: ContratacionRoute = backStackEntry.toRoute()
+            PantallaContratacion(
+                service = route.service,
+                onContratarClick = { navController.navigate(ConfirmacionRoute(route.service)) }
+            )
+        }
+
+        // Confirmación
+        composable<ConfirmacionRoute> { backStackEntry ->
+            val route: ConfirmacionRoute = backStackEntry.toRoute()
+            PantallaReservaConfirmada(
+                service = route.service,
+                onContinuarClick = { 
+                    navController.navigate(HomeRoute) {
+                        popUpTo(HomeRoute) { inclusive = true }
+                    }
+                }
+            )
+        }
     }
 }
 
-// Previsualización de la navegación (útil durante el desarrollo)
 @Preview(showBackground = true)
 @Composable
 fun AppNavigationPreview() {

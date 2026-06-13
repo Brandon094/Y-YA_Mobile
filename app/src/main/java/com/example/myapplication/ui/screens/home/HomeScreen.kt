@@ -89,12 +89,7 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = {
-                            scope.launch {
-                                SupabaseManager.client.auth.signOut()
-                                onLogout()
-                            }
-                        },
+                        onClick = onLogout,
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                             contentColor = MaterialTheme.colorScheme.primary
