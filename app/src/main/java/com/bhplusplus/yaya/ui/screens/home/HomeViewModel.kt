@@ -13,6 +13,7 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 import android.util.Log
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * LÓGICA DE NEGOCIO PARA LA PANTALLA PRINCIPAL
@@ -60,12 +61,18 @@ class HomeViewModel : ViewModel() {
                 applyFilters() // Inicializamos la lista filtrada
 
                 // 3. Obtener rol del usuario
-                val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
-                if (userId != null) {
-                    val profile = SupabaseManager.client.postgrest["profiles"]
-                        .select { filter { eq("id", userId) } }
-                        .decodeSingle<UserProfile>()
-                    userRole = profile.role
+                val user = SupabaseManager.client.auth.currentUserOrNull()
+                if (user != null) {
+                    try {
+                        val profile = SupabaseManager.client.postgrest["profiles"]
+                            .select { filter { eq("id", user.id) } }
+                            .decodeSingle<UserProfile>()
+                        userRole = profile.role
+                    } catch (e: Exception) {
+                        Log.w("HomeViewModel", "Perfil no encontrado en DB, usando metadata.")
+                        // Recuperamos el rol desde los metadatos de Auth para no bloquear la UI
+                        userRole = user.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "ERROR: ${e.message}")

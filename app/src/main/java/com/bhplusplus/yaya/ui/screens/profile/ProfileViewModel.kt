@@ -11,6 +11,7 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 import android.util.Log
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * LÓGICA DE NEGOCIO PARA EL PERFIL
@@ -43,17 +44,39 @@ class ProfileViewModel : ViewModel() {
                 if (user != null) {
                     email = user.email ?: ""
                     
-                    // Traemos el registro completo de la tabla profiles
-                    val profile = SupabaseManager.client.postgrest["profiles"]
-                        .select {
-                            filter { eq("id", user.id) }
+                    // 1. Intentar traer el registro de la tabla profiles
+                    try {
+                        val profile = SupabaseManager.client.postgrest["profiles"]
+                            .select {
+                                filter { eq("id", user.id) }
+                            }
+                            .decodeSingle<UserProfile>()
+                        
+                        userProfile = profile
+                    } catch (e: Exception) {
+                        Log.w("ProfileVM", "Registro no encontrado en 'profiles'. Intentando recuperar de metadata.")
+                        
+                        // 2. Si no existe en la tabla, intentamos reconstruir un perfil básico desde la Metadata de Auth
+                        // Esto evita que la pantalla salga totalmente vacía.
+                        val metadata = user.userMetadata
+                        if (metadata != null) {
+                            val name = metadata["full_name"]?.jsonPrimitive?.content ?: "Usuario"
+                            val role = metadata["role"]?.jsonPrimitive?.content ?: "client"
+                            
+                            userProfile = UserProfile(
+                                id = user.id,
+                                full_name = name,
+                                role = role,
+                                phone = "",
+                                address = "",
+                                document_id = "",
+                                birth_date = ""
+                            )
                         }
-                        .decodeSingle<UserProfile>()
-                    
-                    userProfile = profile
+                    }
                 }
             } catch (e: Exception) {
-                Log.e("ProfileVM", "Error al obtener perfil: ${e.message}")
+                Log.e("ProfileVM", "Error crítico al obtener perfil: ${e.message}")
             } finally {
                 isLoading = false
             }
