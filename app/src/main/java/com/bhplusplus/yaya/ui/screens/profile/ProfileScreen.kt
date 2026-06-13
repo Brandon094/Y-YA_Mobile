@@ -35,6 +35,7 @@ fun ProfileScreen(
     onEditProfile: () -> Unit,    // Navega a la pantalla de edición
     onMyOrders: () -> Unit,       // Navega al historial de pedidos
     onIncomingRequests: () -> Unit, // Navega a solicitudes recibidas (solo prestadores)
+    onMyServices: () -> Unit,     // Navega a la gestión de servicios propios
     onChangePassword: () -> Unit, // Navega al flujo de recuperación/cambio
     onLogout: () -> Unit,         // Acción para cerrar sesión
     onBack: () -> Unit,           // Regresa al Home
@@ -137,8 +138,9 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // LISTA DE OPCIONES NAVEGABLES
-                // Si el usuario es prestador, habilitamos la gestión de solicitudes entrantes
+                // Si el usuario es prestador, habilitamos la gestión de solicitudes entrantes y servicios propios
                 if (profile?.role == "provider" || profile?.role == "admin") {
+                    ProfileOption("Mis Servicios Publicados", Icons.Default.Work, onMyServices)
                     ProfileOption(stringResource(R.string.incoming_requests_title), Icons.Default.MoveToInbox, onIncomingRequests)
                 }
 
@@ -258,6 +260,7 @@ fun ProfileScreenPreview() {
         onEditProfile = {},
         onMyOrders = {},
         onIncomingRequests = {},
+        onMyServices = {},
         onChangePassword = {},
         onLogout = {},
         onBack = {}
