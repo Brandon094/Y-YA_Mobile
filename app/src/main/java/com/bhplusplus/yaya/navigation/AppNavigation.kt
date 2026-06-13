@@ -146,6 +146,7 @@ fun AppNavigation() {
                     navController.navigate(ServiceDetailRoute(id)) 
                 },
                 onProfileClick = { navController.navigate(ProfileRoute) },
+                onIncomingRequestsClick = { navController.navigate(IncomingRequestsRoute) },
                 onCreateServiceClick = { navController.navigate(CreateServiceRoute) },
                 onLogout = {
                     scope.launch {

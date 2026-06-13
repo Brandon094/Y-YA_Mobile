@@ -44,6 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 fun HomeScreen(
     onServiceClick: (Service) -> Unit, // Navega a los detalles del servicio
     onProfileClick: () -> Unit,        // Navega al perfil del usuario
+    onIncomingRequestsClick: () -> Unit, // Navega a solicitudes recibidas
     onCreateServiceClick: () -> Unit,  // Navega a la creación de servicio
     onLogout: () -> Unit,              // Regresa al login tras cerrar sesión
     viewModel: HomeViewModel = viewModel()
@@ -52,7 +53,7 @@ fun HomeScreen(
     
     Scaffold(
         topBar = {
-            // Barra superior con acceso al perfil y notificaciones
+            // Barra superior con acceso al perfil y notificaciones (Solicitudes)
             TopAppBar(
                 title = { Text(stringResource(R.string.home_top_bar_title)) },
                 navigationIcon = {
@@ -65,12 +66,15 @@ fun HomeScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Próxima funcionalidad */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications, 
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondary
-                        )
+                    // LÓGICA DE VISIBILIDAD: Solo mostramos el acceso rápido si el usuario es prestador
+                    if (viewModel.userRole == "provider" || viewModel.userRole == "admin") {
+                        IconButton(onClick = onIncomingRequestsClick) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications, 
+                                contentDescription = "Solicitudes Recibidas",
+                                tint = MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -261,5 +265,11 @@ fun ServiceItem(service: Service, onClick: () -> Unit) {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(onServiceClick = {}, onProfileClick = {}, onCreateServiceClick = {}, onLogout = {})
+    HomeScreen(
+        onServiceClick = {}, 
+        onProfileClick = {}, 
+        onIncomingRequestsClick = {},
+        onCreateServiceClick = {}, 
+        onLogout = {}
+    )
 }
