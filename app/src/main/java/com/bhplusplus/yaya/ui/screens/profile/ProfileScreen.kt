@@ -33,6 +33,7 @@ import com.bhplusplus.yaya.R
 @Composable
 fun ProfileScreen(
     onEditProfile: () -> Unit,    // Navega a la pantalla de edición
+    onMyOrders: () -> Unit,       // Navega al historial de pedidos
     onChangePassword: () -> Unit, // Navega al flujo de recuperación/cambio
     onLogout: () -> Unit,         // Acción para cerrar sesión
     onBack: () -> Unit,           // Regresa al Home
@@ -135,6 +136,7 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // LISTA DE OPCIONES NAVEGABLES
+                ProfileOption(stringResource(R.string.my_orders_title), Icons.Default.History, onMyOrders)
                 ProfileOption(stringResource(R.string.profile_edit_option), Icons.Default.Edit, onEditProfile)
                 ProfileOption(stringResource(R.string.profile_change_password_option), Icons.Default.Lock, onChangePassword)
                 
@@ -248,6 +250,7 @@ fun ProfileOption(
 fun ProfileScreenPreview() {
     ProfileScreen(
         onEditProfile = {},
+        onMyOrders = {},
         onChangePassword = {},
         onLogout = {},
         onBack = {}

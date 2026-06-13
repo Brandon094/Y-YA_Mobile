@@ -98,15 +98,21 @@
     <string name="service_benefit_guarantee">Garantía de satisfacción</string>
 
     <!-- Contratacion Screen -->
-    <string name="contratacion_provider_label">Prestadora de servicio</string>
+    <string name="contratacion_provider_label">Prestador de servicio</string>
     <string name="contratacion_age_label">Edad</string>
     <string name="contratacion_phone_label">Teléfono</string>
     <string name="contratacion_request_title">Solicitar servicio</string>
+    <string name="contratacion_details_section">Detalles de la Solicitud</string>
     <string name="contratacion_service_field">Servicio</string>
     <string name="contratacion_address_field">Dirección</string>
+    <string name="contratacion_address_placeholder">Ingresa tu dirección</string>
     <string name="contratacion_time_field">Hora</string>
+    <string name="contratacion_time_placeholder">Ej: Hoy 3:00 PM</string>
     <string name="contratacion_offer_field">¿Cuánto ofrece?</string>
     <string name="contratacion_button">Contratar</string>
+    <string name="contratacion_unknown_provider">Prestador Independiente</string>
+    <string name="contratacion_unknown_age">Información no disponible</string>
+    <string name="contratacion_unknown_phone">Contactar por chat</string>
 
     <!-- Confirmation Screen -->
     <string name="confirmation_success_title">¡Reserva confirmada!</string>
@@ -128,4 +134,7 @@
     <string name="create_service_field_description">Descripción detallada</string>
     <string name="create_service_field_price">Precio sugerido (Ej: 50000)</string>
     <string name="create_service_button">Publicar talento</string>
+
+    <!-- My Orders Screen -->
+    <string name="my_orders_title">Mis Pedidos</string>
 </resources>

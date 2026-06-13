@@ -36,9 +36,11 @@ import com.bhplusplus.yaya.ui.screens.edit_profile.EditProfileScreen
 import com.bhplusplus.yaya.ui.screens.contratacion.PantallaContratacion
 import com.bhplusplus.yaya.ui.screens.confirmation.PantallaReservaConfirmada
 import com.bhplusplus.yaya.ui.screens.create_service.CreateServiceScreen
+import com.bhplusplus.yaya.ui.screens.my_orders.MyOrdersScreen
 
 /**
  * DEFINICIÓN DE RUTAS (PANTALLAS) CON SEGURIDAD DE TIPOS
+ * Siguiendo las directrices del manual: Se pasan únicamente los IDs (Strings).
  */
 @Serializable object LoadingRoute
 @Serializable object WelcomeRoute
@@ -49,6 +51,7 @@ import com.bhplusplus.yaya.ui.screens.create_service.CreateServiceScreen
 @Serializable object ProfileRoute
 @Serializable object EditProfileRoute
 @Serializable object CreateServiceRoute
+@Serializable object MyOrdersRoute
 @Serializable data class ServiceDetailRoute(val serviceId: String)
 @Serializable data class ContratacionRoute(val serviceId: String)
 @Serializable data class ConfirmacionRoute(val serviceId: String)
@@ -158,6 +161,7 @@ fun AppNavigation() {
         composable<ProfileRoute> {
             ProfileScreen(
                 onEditProfile = { navController.navigate(EditProfileRoute) },
+                onMyOrders = { navController.navigate(MyOrdersRoute) },
                 onChangePassword = { navController.navigate(ResetRoute) },
                 onLogout = {
                     scope.launch {
@@ -186,11 +190,16 @@ fun AppNavigation() {
             )
         }
 
+        // Mis Pedidos
+        composable<MyOrdersRoute> {
+            MyOrdersScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
         // Detalle del Servicio
         composable<ServiceDetailRoute> { backStackEntry ->
             val route: ServiceDetailRoute = backStackEntry.toRoute()
-            // Aquí deberías obtener el objeto Service usando el route.serviceId
-            // Por ahora, para que compile y funcione, simularemos el objeto o lo buscaremos
             ServiceDetailScreen(
                 serviceId = route.serviceId,
                 onBack = { navController.popBackStack() },
@@ -203,6 +212,7 @@ fun AppNavigation() {
             val route: ContratacionRoute = backStackEntry.toRoute()
             PantallaContratacion(
                 serviceId = route.serviceId,
+                onBack = { navController.popBackStack() },
                 onContratarClick = { navController.navigate(ConfirmacionRoute(route.serviceId)) }
             )
         }
