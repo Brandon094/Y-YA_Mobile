@@ -10,12 +10,14 @@ lifecycleCompose = "2.10.0"
 activityCompose = "1.10.0"
 composeBom = "2026.02.01"
 supabase = "3.6.0"
+multiplatformSettings = "1.2.0"
 ktor = "3.0.3"
 kotlinxSerialization = "1.7.3"
 composeRuntime = "1.11.1"
 composeIcons = "1.7.8"
 ui = "1.11.2"
 navigationCompose = "2.8.7"
+foundation = "1.11.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +52,8 @@ ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serializatio
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+multiplatform-settings = { group = "com.russhwolf", name = "multiplatform-settings", version.ref = "multiplatformSettings" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

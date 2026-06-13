@@ -5,13 +5,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,6 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 fun HomeScreen(
     onServiceClick: (Service) -> Unit, // Navega a los detalles del servicio
     onProfileClick: () -> Unit,        // Navega al perfil del usuario
+    onCreateServiceClick: () -> Unit,  // Navega a la creación de servicio
     onLogout: () -> Unit,              // Regresa al login tras cerrar sesión
     viewModel: HomeViewModel = viewModel()
 ) {
@@ -53,7 +58,7 @@ fun HomeScreen(
                 navigationIcon = {
                     IconButton(onClick = onProfileClick) {
                         Icon(
-                            imageVector = Icons.Default.Person, 
+                            imageVector = Icons.Default.Person,
                             contentDescription = stringResource(R.string.home_profile_desc),
                             tint = MaterialTheme.colorScheme.onSecondary
                         )
@@ -73,6 +78,18 @@ fun HomeScreen(
                     titleContentColor = MaterialTheme.colorScheme.onSecondary
                 )
             )
+        },
+        floatingActionButton = {
+            // LÓGICA DE PERMISOS: Solo mostramos el botón si el usuario es 'provider' (Prestador) o 'admin'
+            if (viewModel.userRole == "provider" || viewModel.userRole == "admin") {
+                FloatingActionButton(
+                    onClick = onCreateServiceClick,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Crear Servicio")
+                }
+            }
         },
         bottomBar = {
             // Barra inferior que contiene solo el botón de cerrar sesión
@@ -104,13 +121,68 @@ fun HomeScreen(
             }
         }
     ) { padding ->
-        // Contenido principal: Lista de servicios
+        // Contenido principal
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
+            // 1. BARRA DE BÚSQUEDA
+            OutlinedTextField(
+                value = viewModel.searchQuery,
+                onValueChange = { viewModel.onSearchQueryChange(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                placeholder = { Text("Buscar servicios...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                trailingIcon = {
+                    if (viewModel.searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
+                            Icon(Icons.Default.Clear, contentDescription = "Limpiar")
+                        }
+                    }
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(24.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                )
+            )
+
+            // 2. SELECTOR DE CATEGORÍAS (Horizontal)
+            Text(
+                text = "Categorías",
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Opción "Todas"
+                item {
+                    FilterChip(
+                        selected = viewModel.selectedCategoryId == null,
+                        onClick = { viewModel.onCategorySelect(null) },
+                        label = { Text("Todas") }
+                    )
+                }
+                // Categorías de la base de datos
+                items(viewModel.categories) { category ->
+                    FilterChip(
+                        selected = viewModel.selectedCategoryId == category.id,
+                        onClick = { viewModel.onCategorySelect(category.id) },
+                        label = { Text(category.name) }
+                    )
+                }
+            }
+
             Text(
                 text = stringResource(R.string.home_select_service_label),
                 modifier = Modifier.padding(16.dp),
@@ -124,9 +196,9 @@ fun HomeScreen(
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
-                // Lista de desplazamiento eficiente (Recycler View en Compose)
+                // Lista filtrada
                 LazyColumn {
-                    items(viewModel.services) { service ->
+                    items(viewModel.filteredServices) { service ->
                         ServiceItem(service, onClick = { onServiceClick(service) })
                     }
                 }
@@ -189,5 +261,5 @@ fun ServiceItem(service: Service, onClick: () -> Unit) {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(onServiceClick = {}, onProfileClick = {}, onLogout = {})
+    HomeScreen(onServiceClick = {}, onProfileClick = {}, onCreateServiceClick = {}, onLogout = {})
 }

@@ -35,6 +35,7 @@ import com.bhplusplus.yaya.ui.screens.profile.ProfileScreen
 import com.bhplusplus.yaya.ui.screens.edit_profile.EditProfileScreen
 import com.bhplusplus.yaya.ui.screens.contratacion.PantallaContratacion
 import com.bhplusplus.yaya.ui.screens.confirmation.PantallaReservaConfirmada
+import com.bhplusplus.yaya.ui.screens.create_service.CreateServiceScreen
 
 /**
  * DEFINICIÓN DE RUTAS (PANTALLAS) CON SEGURIDAD DE TIPOS
@@ -47,6 +48,7 @@ import com.bhplusplus.yaya.ui.screens.confirmation.PantallaReservaConfirmada
 @Serializable object HomeRoute
 @Serializable object ProfileRoute
 @Serializable object EditProfileRoute
+@Serializable object CreateServiceRoute
 @Serializable data class ServiceDetailRoute(val serviceId: String)
 @Serializable data class ContratacionRoute(val serviceId: String)
 @Serializable data class ConfirmacionRoute(val serviceId: String)
@@ -140,6 +142,7 @@ fun AppNavigation() {
                     navController.navigate(ServiceDetailRoute(id)) 
                 },
                 onProfileClick = { navController.navigate(ProfileRoute) },
+                onCreateServiceClick = { navController.navigate(CreateServiceRoute) },
                 onLogout = {
                     scope.launch {
                         SupabaseManager.client.auth.signOut()
@@ -172,6 +175,14 @@ fun AppNavigation() {
         composable<EditProfileRoute> {
             EditProfileScreen(
                 onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Creación de Servicio
+        composable<CreateServiceRoute> {
+            CreateServiceScreen(
+                onBack = { navController.popBackStack() },
+                onServiceCreated = { navController.popBackStack() }
             )
         }
 

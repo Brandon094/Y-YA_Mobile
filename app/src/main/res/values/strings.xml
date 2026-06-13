@@ -120,4 +120,12 @@
     <string name="confirmation_time_label">Tiempo</string>
     <string name="confirmation_toast_finished">Reserva finalizada</string>
     <string name="confirmation_continue_button">Continuar</string>
+
+    <!-- Create Service Screen -->
+    <string name="create_service_title">Publicar Servicio</string>
+    <string name="create_service_instructions">Completa los datos para ofrecer tu talento en YÁYA.</string>
+    <string name="create_service_field_title">Título del servicio</string>
+    <string name="create_service_field_description">Descripción detallada</string>
+    <string name="create_service_field_price">Precio sugerido (Ej: 50000)</string>
+    <string name="create_service_button">Publicar talento</string>
 </resources>

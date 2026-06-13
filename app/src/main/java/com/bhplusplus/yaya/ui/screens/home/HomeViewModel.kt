@@ -5,52 +5,103 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bhplusplus.yaya.data.models.Category
 import com.bhplusplus.yaya.data.models.Service
+import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.data.SupabaseManager
+import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 import android.util.Log
 
 /**
  * LÓGICA DE NEGOCIO PARA LA PANTALLA PRINCIPAL
- * Se encarga de traer los datos de los servicios desde la base de datos de Supabase.
+ * Gestiona el listado, la búsqueda y el filtrado por categorías.
  */
 class HomeViewModel : ViewModel() {
 
-    // Lista de servicios observable por la UI (Compose State)
-    var services by mutableStateOf<List<Service>>(emptyList())
+    // Lista original (sin filtrar) traída de Supabase
+    private var allServices = emptyList<Service>()
+
+    // Lista que se muestra en la UI (ya filtrada)
+    var filteredServices by mutableStateOf<List<Service>>(emptyList())
         private set
 
-    // Estado para mostrar el indicador de carga en el listado
+    // Lista de categorías para el selector horizontal
+    var categories by mutableStateOf<List<Category>>(emptyList())
+        private set
+
+    // Estado del filtro actual
+    var searchQuery by mutableStateOf("")
+    var selectedCategoryId by mutableStateOf<String?>(null)
+
+    var userRole by mutableStateOf<String?>(null)
     var isLoading by mutableStateOf(false)
         private set
 
-    // Al instanciar el ViewModel, cargamos los servicios automáticamente
     init {
-        fetchServices()
+        loadData()
     }
 
-    /**
-     * Consulta la tabla 'services' de Supabase.
-     */
-    fun fetchServices() {
+    fun loadData() {
         viewModelScope.launch {
             isLoading = true
             try {
-                // Realizamos un SELECT a la tabla 'services'
-                // decodeList convierte automáticamente el JSON de la BD en una lista de objetos Service
-                val result = SupabaseManager.client.postgrest["services"]
+                // 1. Obtener categorías reales de la DB
+                categories = SupabaseManager.client.postgrest["categories"]
+                    .select()
+                    .decodeList<Category>()
+
+                // 2. Obtener todos los servicios
+                allServices = SupabaseManager.client.postgrest["services"]
                     .select()
                     .decodeList<Service>()
                 
-                services = result
+                applyFilters() // Inicializamos la lista filtrada
+
+                // 3. Obtener rol del usuario
+                val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
+                if (userId != null) {
+                    val profile = SupabaseManager.client.postgrest["profiles"]
+                        .select { filter { eq("id", userId) } }
+                        .decodeSingle<UserProfile>()
+                    userRole = profile.role
+                }
             } catch (e: Exception) {
-                // Log de error detallado para depuración
-                Log.e("HomeViewModel", "ERROR DE SUPABASE: ${e.message}")
-                e.printStackTrace()
+                Log.e("HomeViewModel", "ERROR: ${e.message}")
             } finally {
                 isLoading = false
             }
         }
+    }
+
+    /**
+     * Filtra la lista localmente para que sea instantáneo para el usuario.
+     */
+    fun applyFilters() {
+        filteredServices = allServices.filter { service ->
+            val matchesSearch = service.title.contains(searchQuery, ignoreCase = true) ||
+                               service.description.contains(searchQuery, ignoreCase = true)
+            
+            val matchesCategory = selectedCategoryId == null || service.category_id == selectedCategoryId
+            
+            matchesSearch && matchesCategory
+        }
+    }
+
+    /**
+     * Al cambiar el texto de búsqueda
+     */
+    fun onSearchQueryChange(newQuery: String) {
+        searchQuery = newQuery
+        applyFilters()
+    }
+
+    /**
+     * Al seleccionar o deseleccionar una categoría
+     */
+    fun onCategorySelect(categoryId: String?) {
+        selectedCategoryId = if (selectedCategoryId == categoryId) null else categoryId
+        applyFilters()
     }
 }

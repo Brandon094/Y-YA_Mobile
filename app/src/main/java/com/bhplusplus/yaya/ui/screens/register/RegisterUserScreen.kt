@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -14,8 +15,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -28,10 +32,12 @@ import com.bhplusplus.yaya.R
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import android.util.Patterns
 
 /**
  * PANTALLA DE REGISTRO INTEGRAL
  * Captura toda la información necesaria para el perfil del usuario según el modelo YYA.
+ * Incluye validaciones en tiempo real y una experiencia de usuario optimizada.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +46,10 @@ fun RegisterScreen(
     onGoToLogin: () -> Unit,
     viewModel: RegisterUserViewModel = viewModel()
 ) {
-    // Estados de los campos
+    // Administrador de foco para saltar entre campos automáticamente al usar el teclado
+    val focusManager = LocalFocusManager.current
+
+    // ESTADOS LOCALES: Almacenan lo que el usuario escribe en cada campo
     var name by remember { mutableStateOf("") }
     var documentId by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
@@ -48,18 +57,36 @@ fun RegisterScreen(
     var phone by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var selectedRole by remember { mutableStateOf("client") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    var selectedRole by remember { mutableStateOf("client") } // 'client' o 'provider'
+    var passwordVisible by remember { mutableStateOf(false) } // Controla si se ve la clave
 
-    // Estados para el DatePicker
+    // LÓGICA DE VALIDACIÓN: Se actualiza cada vez que el usuario escribe algo
+    // Valida que el email tenga un formato estándar (nombre@dominio.com)
+    val isEmailValid = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    // Valida que la contraseña sea lo suficientemente larga y segura (mínimo 6 chars)
+    val isPasswordValid = password.length >= 6
+    // El formulario es válido SOLO si todos los campos tienen contenido y cumplen sus reglas
+    val isFormValid = name.isNotBlank() && documentId.isNotBlank() && birthDate.isNotBlank() && 
+                      isEmailValid && phone.isNotBlank() && address.isNotBlank() && isPasswordValid
+
+    // ESTADOS DEL SELECTOR DE FECHA (DatePicker)
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
-    // Observación de estados del ViewModel
+    // OBSERVACIÓN DEL VIEWMODEL: Escuchamos si Supabase está cargando o devolvió un error
     val isLoading by viewModel.isLoading.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
 
-    // Diálogo del selector de fecha
+    // FUNCIÓN DE REGISTRO: Solo se ejecuta si el formulario es válido
+    val performRegister = {
+        if (isFormValid) {
+            viewModel.register(name, email, password, phone, address, documentId, birthDate, selectedRole) { success ->
+                if (success) onRegister() // Si fue exitoso, navegamos fuera de la pantalla
+            }
+        }
+    }
+
+    // DIÁLOGO DEL SELECTOR DE FECHA: Aparece al tocar el campo de nacimiento
     if (showDatePicker) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
@@ -67,10 +94,11 @@ fun RegisterScreen(
                 TextButton(onClick = {
                     val selectedDate = datePickerState.selectedDateMillis
                     if (selectedDate != null) {
+                        // Convertimos los milisegundos a una fecha legible en formato ISO
                         val date = Instant.ofEpochMilli(selectedDate)
                             .atZone(ZoneId.systemDefault())
                             .toLocalDate()
-                        // Formato YYYY-MM-DD requerido por bases de datos
+                        // El formato YYYY-MM-DD es el estándar que pide Supabase
                         birthDate = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
                     }
                     showDatePicker = false
@@ -88,16 +116,18 @@ fun RegisterScreen(
         }
     }
 
+    // DISEÑO DE LA PANTALLA
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()) // Soporta scroll si la pantalla es pequeña
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(30.dp))
 
+        // TÍTULO PRINCIPAL
         Text(
             text = stringResource(R.string.register_title),
             fontSize = 28.sp,
@@ -107,20 +137,22 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Campo: Nombre
+        // CAMPO: NOMBRE COMPLETO
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
             label = { Text(stringResource(R.string.register_full_name)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            enabled = !isLoading,
-            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) }
+            enabled = !isLoading, // Se deshabilita durante la carga
+            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next), // Muestra tecla 'Siguiente'
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Campo: Identificación (ID/DNI)
+        // CAMPO: NÚMERO DE IDENTIFICACIÓN (DNI/CÉDULA)
         OutlinedTextField(
             value = documentId,
             onValueChange = { documentId = it },
@@ -128,22 +160,23 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !isLoading,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             leadingIcon = { Icon(Icons.Default.Badge, contentDescription = null) }
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Campo: Fecha de Nacimiento (Selector)
+        // CAMPO: FECHA DE NACIMIENTO (Input no editable, lanza el selector)
         OutlinedTextField(
             value = birthDate,
-            onValueChange = { }, // No editable manualmente
+            onValueChange = { }, // Bloqueado manual para evitar errores de formato
             label = { Text(stringResource(R.string.register_birth_date)) },
             placeholder = { Text(stringResource(R.string.register_select_date_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { if (!isLoading) showDatePicker = true },
-            enabled = false, // Evita teclado
+                .clickable { if (!isLoading) showDatePicker = true }, // Lanza el DatePicker
+            enabled = false, // Evita que aparezca el teclado estándar
             colors = OutlinedTextFieldDefaults.colors(
                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
                 disabledBorderColor = MaterialTheme.colorScheme.outline,
@@ -160,7 +193,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Campo: Teléfono
+        // CAMPO: TELÉFONO DE CONTACTO
         OutlinedTextField(
             value = phone,
             onValueChange = { phone = it },
@@ -168,13 +201,14 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !isLoading,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) }
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Campo: Dirección
+        // CAMPO: DIRECCIÓN DE RESIDENCIA
         OutlinedTextField(
             value = address,
             onValueChange = { address = it },
@@ -182,12 +216,14 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !isLoading,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             leadingIcon = { Icon(Icons.Default.Home, contentDescription = null) }
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Campo: Email
+        // CAMPO: CORREO ELECTRÓNICO (Con validación visual)
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -195,13 +231,15 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !isLoading,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            isError = email.isNotEmpty() && !isEmailValid, // Marca error si el formato no es válido
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) }
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Campo: Contraseña
+        // CAMPO: CONTRASEÑA (Con Toggle de visibilidad y acción de finalizar)
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -209,7 +247,10 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             enabled = !isLoading,
+            isError = password.isNotEmpty() && !isPasswordValid, // Marca error si es muy corta
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { performRegister() }), // Dispara el botón al dar 'Enter'
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -223,7 +264,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Selector de Rol
+        // SELECTOR DE ROL: Define cómo el usuario participará en el sistema
         Text(
             text = stringResource(R.string.register_how_to_use),
             modifier = Modifier.align(Alignment.Start),
@@ -238,23 +279,21 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // MENSAJE DE ERROR: Aparece solo si Supabase devuelve un problema
         if (!errorMessage.isNullOrEmpty()) {
             Text(text = errorMessage!!, color = Color.Red, modifier = Modifier.padding(bottom = 16.dp))
         }
 
-        // Botón de Registro Final
+        // BOTÓN PRINCIPAL DE REGISTRO
         Button(
-            onClick = {
-                viewModel.register(name, email, password, phone, address, documentId, birthDate, selectedRole) { success ->
-                    if (success) onRegister() 
-                }
-            },
+            onClick = { performRegister() },
             modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-            enabled = !isLoading
+            enabled = !isLoading && isFormValid // Solo se activa si el formulario está perfecto
         ) {
             if (isLoading) {
+                // Indicador de progreso mientras se comunica con Supabase
                 CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
             } else {
                 Text(stringResource(R.string.register_button), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
@@ -263,6 +302,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // ENLACE PARA REGRESAR AL LOGIN
         TextButton(onClick = onGoToLogin, enabled = !isLoading) {
             Text(stringResource(R.string.register_already_have_account), color = MaterialTheme.colorScheme.primary)
         }
