@@ -29,12 +29,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
 
 /**
- * PANTALLA DE CREACIÓN DE SERVICIO
- * Sincronizada con el esquema SQL (provider_id, category_id, title, description, price, extra_cost, etc.)
+ * PANTALLA DE CREACIÓN Y EDICIÓN DE SERVICIO
+ * Sincronizada con el esquema SQL de Supabase.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateServiceScreen(
+    serviceId: String? = null,
     onBack: () -> Unit,
     onServiceCreated: () -> Unit,
     viewModel: CreateServiceViewModel = viewModel()
@@ -56,10 +57,42 @@ fun CreateServiceScreen(
     val isLoading by viewModel.isLoading.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
 
+    // Si recibimos un ID, cargamos los datos del servicio para editar
+    LaunchedEffect(serviceId) {
+        if (serviceId != null) {
+            viewModel.loadServiceData(serviceId) { service ->
+                title = service.title
+                description = service.description
+                price = service.price.toString()
+                estimatedTime = service.estimated_time ?: ""
+                materialsIncluded = service.materials_included
+                extraCost = service.extra_cost.toString()
+                selectedCategoryId = service.category_id
+                
+                // Buscamos el nombre de la categoría
+                val cat = viewModel.categories.find { it.id == service.category_id }
+                if (cat != null) selectedCategoryName = cat.name
+            }
+        }
+    }
+    
+    // Actualizar el nombre de la categoría una vez carguen las categorías si estamos en modo edición
+    LaunchedEffect(viewModel.categories) {
+        if (selectedCategoryId != null) {
+            val cat = viewModel.categories.find { it.id == selectedCategoryId }
+            if (cat != null) selectedCategoryName = cat.name
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.create_service_title), fontWeight = FontWeight.Bold) },
+                title = { 
+                    Text(
+                        text = if (serviceId == null) stringResource(R.string.create_service_title) else "Editar Servicio", 
+                        fontWeight = FontWeight.Bold 
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondary)
@@ -168,7 +201,7 @@ fun CreateServiceScreen(
 
             Button(
                 onClick = {
-                    viewModel.createService(title, description, price, selectedCategoryId, estimatedTime, materialsIncluded, extraCost) {
+                    viewModel.saveService(serviceId, title, description, price, selectedCategoryId, estimatedTime, materialsIncluded, extraCost) {
                         if (it) onServiceCreated()
                     }
                 },
@@ -177,7 +210,10 @@ fun CreateServiceScreen(
                 enabled = !isLoading && title.isNotBlank() && selectedCategoryId != null
             ) {
                 if (isLoading) CircularProgressIndicator(color = Color.White)
-                else Text(stringResource(R.string.create_service_button), fontWeight = FontWeight.Bold)
+                else Text(
+                    text = if (serviceId == null) stringResource(R.string.create_service_button) else "Guardar Cambios", 
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }

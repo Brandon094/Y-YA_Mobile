@@ -13,9 +13,10 @@ import com.bhplusplus.yaya.data.models.Service
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
+import android.util.Log
 
 /**
- * VIEWMODEL PARA LA CREACIÓN DE SERVICIOS
+ * VIEWMODEL PARA LA CREACIÓN Y EDICIÓN DE SERVICIOS
  * Sincronizado con el esquema de base de datos SQL de YÁYA.
  */
 class CreateServiceViewModel : ViewModel() {
@@ -47,9 +48,30 @@ class CreateServiceViewModel : ViewModel() {
     }
 
     /**
-     * Crea un nuevo servicio vinculado al usuario actual y a una categoría.
+     * Carga los datos de un servicio existente para editar.
      */
-    fun createService(
+    fun loadServiceData(serviceId: String, onLoaded: (Service) -> Unit) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            try {
+                val service = SupabaseManager.client.postgrest["services"]
+                    .select { filter { eq("id", serviceId) } }
+                    .decodeSingle<Service>()
+                onLoaded(service)
+            } catch (e: Exception) {
+                Log.e("CreateServiceVM", "Error al cargar servicio: ${e.message}")
+                _errorMessage.value = "Error al cargar los datos del servicio"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * Crea o actualiza un servicio vinculado al usuario actual.
+     */
+    fun saveService(
+        serviceId: String? = null,
         title: String, 
         description: String, 
         price: String, 
@@ -76,7 +98,8 @@ class CreateServiceViewModel : ViewModel() {
                 val user = SupabaseManager.client.auth.currentUserOrNull()
                     ?: throw Exception("No autenticado")
 
-                val newService = Service(
+                val serviceData = Service(
+                    id = serviceId,
                     provider_id = user.id,
                     category_id = categoryId,
                     title = title,
@@ -88,7 +111,25 @@ class CreateServiceViewModel : ViewModel() {
                     status = "active"
                 )
 
-                SupabaseManager.client.postgrest["services"].insert(newService)
+                if (serviceId == null) {
+                    // Nuevo
+                    SupabaseManager.client.postgrest["services"].insert(serviceData)
+                } else {
+                    // Editar
+                    SupabaseManager.client.postgrest["services"].update(
+                        {
+                            set("title", title)
+                            set("description", description)
+                            set("price", priceVal)
+                            set("category_id", categoryId)
+                            set("estimated_time", estimatedTime)
+                            set("materials_included", materialsIncluded)
+                            set("extra_cost", extraCostVal)
+                        }
+                    ) {
+                        filter { eq("id", serviceId) }
+                    }
+                }
 
                 _isLoading.value = false
                 onResult(true)
