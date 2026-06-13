@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -22,16 +23,24 @@ import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.ServiceRepository
 import com.bhplusplus.yaya.data.models.Service
 
+/**
+ * PANTALLA DE CONFIRMACIÓN DE RESERVA
+ * Muestra el resumen del servicio solicitado exitosamente.
+ * Cumple con las directrices de pasar únicamente el ID del servicio.
+ */
 @Composable
 fun PantallaReservaConfirmada(
-    serviceId: String, // Recibimos el ID
+    serviceId: String, 
     onContinuarClick: () -> Unit,
     viewModel: ConfirmacionViewModel = viewModel()
 ) {
-    val service = ServiceRepository.findById(serviceId)
     val coral = Color(0xFFE8614A)
     val context = LocalContext.current
+    
+    // Obtenemos el servicio desde el repositorio/caché usando el ID
+    val service = ServiceRepository.findById(serviceId)
 
+    // Sincronizamos los datos del servicio con el ViewModel para la visualización
     LaunchedEffect(service) {
         viewModel.setServiceData(service)
     }
@@ -49,7 +58,6 @@ fun PantallaReservaConfirmada(
                 .padding(top = 48.dp, bottom = 8.dp),
             contentAlignment = Alignment.Center
         ) {
-            @Suppress("DEPRECATION")
             Text(
                 text = stringResource(R.string.app_brand_yaya),
                 fontSize = 22.sp,
@@ -73,7 +81,6 @@ fun PantallaReservaConfirmada(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        @Suppress("DEPRECATION")
         Text(
             text = stringResource(R.string.confirmation_success_title),
             fontSize = 22.sp,
@@ -92,7 +99,6 @@ fun PantallaReservaConfirmada(
                 .padding(horizontal = 16.dp, vertical = 10.dp),
             contentAlignment = Alignment.Center
         ) {
-            @Suppress("DEPRECATION")
             Text(
                 text = stringResource(R.string.confirmation_success_message),
                 fontSize = 13.sp,
@@ -113,7 +119,6 @@ fun PantallaReservaConfirmada(
             colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8F7))
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
-                @Suppress("DEPRECATION")
                 Text(
                     text = stringResource(R.string.confirmation_details_title),
                     fontWeight = FontWeight.Bold,
@@ -170,9 +175,7 @@ fun DetalleReservaFila(icono: String, etiqueta: String, valor: String) {
             .padding(vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        @Suppress("DEPRECATION")
         Text(text = icono, fontSize = 16.sp, modifier = Modifier.width(28.dp))
-        @Suppress("DEPRECATION")
         Text(
             text = etiqueta,
             color = Color.Gray,
@@ -186,4 +189,10 @@ fun DetalleReservaFila(icono: String, etiqueta: String, valor: String) {
             color = Color(0xFF333333)
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ConfirmacionPreview() {
+    PantallaReservaConfirmada(serviceId = "1", onContinuarClick = {})
 }
