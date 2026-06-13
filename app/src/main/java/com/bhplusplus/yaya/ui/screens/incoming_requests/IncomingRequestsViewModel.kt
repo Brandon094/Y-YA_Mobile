@@ -67,6 +67,27 @@ class IncomingRequestsViewModel : ViewModel() {
     }
 
     /**
+     * Envía una contraoferta (nuevo precio) al cliente.
+     */
+    fun sendCounterOffer(request: ServiceRequest, newPrice: String) {
+        viewModelScope.launch {
+            try {
+                val updatedDescription = "${request.request_description}\n--- Contraoferta Prestador: $$newPrice"
+                
+                SupabaseManager.client.postgrest["requests"].update({
+                    set("request_description", updatedDescription)
+                    // Mantenemos el estado en pending para que el cliente decida
+                }) {
+                    filter { eq("id", request.id!!) }
+                }
+                fetchIncomingRequests()
+            } catch (e: Exception) {
+                Log.e("IncomingReqVM", "Error en contraoferta: ${e.message}")
+            }
+        }
+    }
+
+    /**
      * Actualiza el estado de una solicitud (Aceptar/Rechazar).
      */
     fun updateRequestStatus(requestId: String, newStatus: String) {

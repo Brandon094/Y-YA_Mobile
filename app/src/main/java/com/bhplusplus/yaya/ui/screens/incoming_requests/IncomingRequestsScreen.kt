@@ -5,16 +5,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -23,7 +25,7 @@ import com.bhplusplus.yaya.data.models.ServiceRequest
 
 /**
  * PANTALLA DE SOLICITUDES RECIBIDAS (VISTA PRESTADOR)
- * Permite al prestador ver quién lo ha contratado y gestionar las solicitudes.
+ * Ahora incluye sistema de Contraoferta (Subasta) para negociar el precio.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,6 +33,41 @@ fun IncomingRequestsScreen(
     onBack: () -> Unit,
     viewModel: IncomingRequestsViewModel = viewModel()
 ) {
+    var showNegotiationDialog by remember { mutableStateOf<ServiceRequest?>(null) }
+    var counterPrice by remember { mutableStateOf("") }
+
+    // Dialogo de Contraoferta
+    if (showNegotiationDialog != null) {
+        AlertDialog(
+            onDismissRequest = { showNegotiationDialog = null },
+            title = { Text("Proponer otro precio") },
+            text = {
+                Column {
+                    Text("Ingresa el valor que consideras justo para este trabajo:", fontSize = 14.sp)
+                    Spacer(Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = counterPrice,
+                        onValueChange = { counterPrice = it },
+                        label = { Text("Nuevo Precio") },
+                        prefix = { Text("$") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    viewModel.sendCounterOffer(showNegotiationDialog!!, counterPrice)
+                    showNegotiationDialog = null
+                    counterPrice = ""
+                }) { Text("Enviar Propuesta") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showNegotiationDialog = null }) { Text("Cancelar") }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -69,7 +106,8 @@ fun IncomingRequestsScreen(
                         IncomingRequestItem(
                             request = request,
                             onAccept = { viewModel.updateRequestStatus(request.id!!, "accepted") },
-                            onReject = { viewModel.updateRequestStatus(request.id!!, "cancelled") }
+                            onReject = { viewModel.updateRequestStatus(request.id!!, "cancelled") },
+                            onNegotiate = { showNegotiationDialog = request }
                         )
                     }
                 }
@@ -85,7 +123,8 @@ fun IncomingRequestsScreen(
 fun IncomingRequestItem(
     request: ServiceRequest,
     onAccept: () -> Unit,
-    onReject: () -> Unit
+    onReject: () -> Unit,
+    onNegotiate: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -99,12 +138,11 @@ fun IncomingRequestItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Info del Cliente
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = request.client?.full_name ?: "Cliente Desconocido",
+                        text = request.client?.full_name ?: "Cliente",
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
@@ -116,47 +154,39 @@ fun IncomingRequestItem(
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Spacer(Modifier.height(12.dp))
 
-            // Info del Servicio
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Work, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color.Gray)
-                Spacer(Modifier.width(8.dp))
-                Text(text = request.services?.title ?: "Servicio solicitado", fontWeight = FontWeight.Medium)
-            }
+            Text(text = request.services?.title ?: "Servicio", fontWeight = FontWeight.Bold)
+            Text(text = request.service_address, fontSize = 14.sp, color = Color.Gray)
+            
+            Spacer(Modifier.height(12.dp))
 
-            Spacer(Modifier.height(8.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color.Gray)
-                Spacer(Modifier.width(8.dp))
-                Text(text = request.service_address, fontSize = 14.sp)
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Event, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color.Gray)
-                Spacer(Modifier.width(8.dp))
-                Text(text = request.scheduled_date?.take(16)?.replace("T", " ") ?: "Sin fecha", fontSize = 14.sp)
-            }
-
-            if (!request.request_description.isNullOrBlank()) {
-                Spacer(Modifier.height(12.dp))
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = request.request_description,
-                        modifier = Modifier.padding(12.dp),
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+            // MOSTRAR LA OFERTA ACTUAL
+            Surface(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text("Propuesta actual:", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                    Text(text = request.request_description ?: "Sin detalles", fontSize = 14.sp)
                 }
             }
 
-            // ACCIONES (Solo si está pendiente)
+            // ACCIONES
             if (request.status == "pending") {
                 Spacer(Modifier.height(16.dp))
+                
+                // Botón de Subasta/Negociación
+                OutlinedButton(
+                    onClick = onNegotiate,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.Gavel, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("Hacer Contraoferta")
+                }
+
+                Spacer(Modifier.height(8.dp))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
