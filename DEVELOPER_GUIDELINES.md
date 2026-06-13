@@ -71,8 +71,10 @@ Al iniciar sesión, el agente debe saber que ya se han implementado:
 ## 8. Próximos Hitos y Funcionalidades (Roadmap)
 Para completar el MVP (Producto Mínimo Viable), se deben desarrollar los siguientes módulos:
 
-### Hito 1: Gestión de Publicaciones
+### Hito 1: Gestión y Refinamiento Operativo
 - **Mis Servicios:** Panel de administración para que el prestador pueda editar o pausar (activar/desactivar) sus publicaciones existentes.
+- **Sincronización de Disponibilidad:** Implementar lógica para que el selector de fecha/hora en la contratación valide contra la tabla `public.availability`.
+- **Evolución SQL:** Añadir columna `final_price` a `public.requests` para registrar el acuerdo económico final tras la subasta.
 
 ### Hito 2: Comunicación y Confianza
 - **Chat en Tiempo Real:** Integración con `Supabase Realtime` y tabla `messages`.
