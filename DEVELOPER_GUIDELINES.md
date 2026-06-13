@@ -66,13 +66,13 @@ Al iniciar sesión, el agente debe saber que ya se han implementado:
 - **Mis Pedidos (Cliente):** Historial completo de solicitudes con badges de estado dinámicos (`pending`, `accepted`, `completed`). Incluye **Sistema de Negociación** para responder a contraofertas del prestador.
 - **Gestión de Perfil:** Edición completa de datos sincronizada con esquema SQL (Cédula, Dirección, Nacimiento).
 - **Publicación de Servicios:** Formulario para prestadores con lógica de categorías y costos de materiales.
+- **Mis Servicios:** Panel de administración para que el prestador pueda editar o pausar (activar/desactivar) sus publicaciones existentes.
 - **Dashboard del Prestador (Operatividad):** Interfaz de **Solicitudes Recibidas** terminada con acceso rápido desde el icono de notificaciones en el Home. Permite al prestador ver quién lo busca y gestionar el estado (Aceptar/Rechazar/Contraofertar) con persistencia en SQL.
 
 ## 8. Próximos Hitos y Funcionalidades (Roadmap)
 Para completar el MVP (Producto Mínimo Viable), se deben desarrollar los siguientes módulos:
 
 ### Hito 1: Gestión y Refinamiento Operativo
-- **Mis Servicios:** Panel de administración para que el prestador pueda editar o pausar (activar/desactivar) sus publicaciones existentes.
 - **Sincronización de Disponibilidad:** Implementar lógica para que el selector de fecha/hora en la contratación valide contra la tabla `public.availability`.
 - **Evolución SQL:** Añadir columna `final_price` a `public.requests` para registrar el acuerdo económico final tras la subasta.
 
