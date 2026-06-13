@@ -61,5 +61,25 @@ Al iniciar sesión, el agente debe saber que ya se han implementado:
     - `Profile/EditProfile`: Lectura y edición de datos del perfil.
     - `CreateService`: Formulario vinculado a la tabla `services` y `categories` de Supabase.
 
+## 8. Próximos Hitos y Funcionalidades (Roadmap)
+Para completar el MVP (Producto Mínimo Viable), se deben desarrollar los siguientes módulos:
+
+### Hito 1: Gestión y Seguimiento (Dashboards)
+- **Mis Pedidos:** Historial de servicios contratados por el cliente y su estado.
+- **Solicitudes Entrantes:** Panel para que el prestador acepte/rechace trabajos.
+- **Mis Servicios:** Interfaz para que el prestador gestione sus publicaciones existentes.
+
+### Hito 2: Comunicación y Confianza
+- **Chat en Tiempo Real:** Comunicación directa cliente-prestador (Tabla `messages`).
+- **Sistema de Reputación:** Visualización y envío de calificaciones (Tabla `ratings`).
+
+### Hito 3: Monetización y Legal
+- **Suscripciones (SaaS):** Pantalla de selección de planes para prestadores.
+- **Cumplimiento:** Pantalla de Términos, Condiciones y Políticas de Privacidad.
+
+### Hito 4: Experiencia Pro
+- **Multimedia:** Subida de fotos de perfil y servicios a Supabase Storage.
+- **Notificaciones:** Sistema de alertas para actualizaciones de pedidos y mensajes.
+
 ---
 *Propiedad Intelectual de **BH++** - 2026*
