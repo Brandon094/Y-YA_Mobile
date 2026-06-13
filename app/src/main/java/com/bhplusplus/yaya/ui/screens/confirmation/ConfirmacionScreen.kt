@@ -22,24 +22,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
-import com.bhplusplus.yaya.data.ServiceRepository
 import com.bhplusplus.yaya.data.models.Service
 
 /**
  * PANTALLA DE CONFIRMACIÓN DE RESERVA
- * Muestra el resumen del servicio solicitado exitosamente con el tema oficial YÁYA.
+ * Muestra el resumen del servicio solicitado exitosamente con datos REALES de Supabase.
  */
 @Composable
 fun PantallaReservaConfirmada(
-    serviceId: String, 
+    serviceId: String,
+    requestId: String,
     onContinuarClick: () -> Unit,
     viewModel: ConfirmacionViewModel = viewModel()
 ) {
-    val service = ServiceRepository.findById(serviceId)
     val context = LocalContext.current
 
-    LaunchedEffect(service) {
-        viewModel.setServiceData(service)
+    // Carga de datos reales al iniciar
+    LaunchedEffect(requestId) {
+        viewModel.loadRequestData(requestId, serviceId)
     }
 
     Column(
@@ -67,7 +67,7 @@ fun PantallaReservaConfirmada(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Ícono de confirmación animado/estilizado
+        // Ícono de confirmación
         Box(
             modifier = Modifier
                 .size(100.dp)
@@ -90,8 +90,7 @@ fun PantallaReservaConfirmada(
 
         // Banner informativo
         Surface(
-            modifier = Modifier
-                .padding(horizontal = 24.dp),
+            modifier = Modifier.padding(horizontal = 24.dp),
             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f),
             shape = RoundedCornerShape(12.dp)
         ) {
@@ -107,7 +106,7 @@ fun PantallaReservaConfirmada(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Tarjeta de detalles del ticket
+        // Tarjeta de detalles (Ticket)
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -194,5 +193,10 @@ fun DetalleReservaFila(icono: String, etiqueta: String, valor: String) {
 @Preview(showBackground = true)
 @Composable
 fun ConfirmacionPreview() {
-    PantallaReservaConfirmada(serviceId = "1", onContinuarClick = {})
+    // Para el preview, PantallaReservaConfirmada requiere serviceId y requestId
+    // Pero como tiene ViewModel interno, es mejor crear un content separado si quisiéramos preview limpio.
+    // Por ahora, simulamos los datos mínimos.
+    Surface {
+        Text("Previsualización no disponible directamente para pantallas con lógica de red intensa.")
+    }
 }

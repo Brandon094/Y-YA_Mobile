@@ -40,7 +40,6 @@ import com.bhplusplus.yaya.ui.screens.my_orders.MyOrdersScreen
 
 /**
  * DEFINICIÓN DE RUTAS (PANTALLAS) CON SEGURIDAD DE TIPOS
- * Siguiendo las directrices del manual: Se pasan únicamente los IDs (Strings).
  */
 @Serializable object LoadingRoute
 @Serializable object WelcomeRoute
@@ -54,7 +53,7 @@ import com.bhplusplus.yaya.ui.screens.my_orders.MyOrdersScreen
 @Serializable object MyOrdersRoute
 @Serializable data class ServiceDetailRoute(val serviceId: String)
 @Serializable data class ContratacionRoute(val serviceId: String)
-@Serializable data class ConfirmacionRoute(val serviceId: String)
+@Serializable data class ConfirmacionRoute(val serviceId: String, val requestId: String)
 
 /**
  * NAVEGACIÓN PRINCIPAL
@@ -84,16 +83,16 @@ fun AppNavigation() {
         navController = navController,
         startDestination = LoadingRoute
     ) {
-        // Pantalla de Carga Inicial (Splash Screen Profesional)
+        // Pantalla de Carga Inicial
         composable<LoadingRoute> {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFFFFDF9)), // Color hueso elegante
+                    .background(Color(0xFFFFFDF9)),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.logo_yaya_full), // Logo Completo
+                    painter = painterResource(id = R.drawable.logo_yaya_full),
                     contentDescription = "YÁYA Splash",
                     modifier = Modifier.size(250.dp)
                 )
@@ -213,7 +212,9 @@ fun AppNavigation() {
             PantallaContratacion(
                 serviceId = route.serviceId,
                 onBack = { navController.popBackStack() },
-                onContratarClick = { navController.navigate(ConfirmacionRoute(route.serviceId)) }
+                onContratarClick = { requestId -> 
+                    navController.navigate(ConfirmacionRoute(route.serviceId, requestId)) 
+                }
             )
         }
 
@@ -222,6 +223,7 @@ fun AppNavigation() {
             val route: ConfirmacionRoute = backStackEntry.toRoute()
             PantallaReservaConfirmada(
                 serviceId = route.serviceId,
+                requestId = route.requestId,
                 onContinuarClick = { 
                     navController.navigate(HomeRoute) {
                         popUpTo(HomeRoute) { inclusive = true }
