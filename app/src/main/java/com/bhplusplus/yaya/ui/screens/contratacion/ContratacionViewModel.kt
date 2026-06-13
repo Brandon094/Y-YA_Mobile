@@ -76,12 +76,12 @@ class ContratacionViewModel : ViewModel() {
     /**
      * Crea la reserva en Supabase.
      */
-    fun contratar(onResult: (Boolean) -> Unit) {
+    fun contratar(onResult: (Boolean, String?) -> Unit) {
         val currentService = service ?: return
 
         if (direccion.isBlank() || fecha.isBlank() || hora.isBlank()) {
             errorMessage = "Completa dirección, fecha y hora."
-            onResult(false)
+            onResult(false, null)
             return
         }
 
@@ -108,12 +108,16 @@ class ContratacionViewModel : ViewModel() {
                     status = "pending"
                 )
 
-                SupabaseManager.client.postgrest["requests"].insert(request)
-                onResult(true)
+                // Insertamos y recuperamos el ID generado
+                val response = SupabaseManager.client.postgrest["requests"].insert(request) {
+                    select()
+                }.decodeSingle<ServiceRequest>()
+
+                onResult(true, response.id)
             } catch (e: Exception) {
                 Log.e("ContratacionVM", "Error al crear: ${e.message}")
                 errorMessage = "Error al procesar la reserva. Verifica los datos."
-                onResult(false)
+                onResult(false, null)
             } finally {
                 isLoading = false
             }

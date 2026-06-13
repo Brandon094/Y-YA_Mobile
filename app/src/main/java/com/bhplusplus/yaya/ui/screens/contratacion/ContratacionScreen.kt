@@ -40,7 +40,7 @@ import java.util.Calendar
 fun PantallaContratacion(
     serviceId: String,
     onBack: () -> Unit,
-    onContratarClick: () -> Unit,
+    onContratarClick: (String) -> Unit, // Recibe el ID de la solicitud creada
     viewModel: ContratacionViewModel = viewModel()
 ) {
     // CARGA REAL DESDE SUPABASE
@@ -128,8 +128,8 @@ fun PantallaContratacion(
             errorMessage = viewModel.errorMessage,
             onBack = onBack,
             onContratar = {
-                viewModel.contratar { success ->
-                    if (success) onContratarClick()
+                viewModel.contratar { success, requestId ->
+                    if (success && requestId != null) onContratarClick(requestId)
                 }
             }
         )
