@@ -109,6 +109,8 @@
     <string name="contratacion_service_field">Servicio</string>
     <string name="contratacion_address_field">Dirección</string>
     <string name="contratacion_address_placeholder">Ingresa tu dirección</string>
+    <string name="contratacion_date_field">Fecha del servicio</string>
+    <string name="contratacion_date_placeholder">Selecciona la fecha</string>
     <string name="contratacion_time_field">Hora</string>
     <string name="contratacion_time_placeholder">Ej: Hoy 3:00 PM</string>
     <string name="contratacion_offer_field">¿Cuánto ofrece?</string>
