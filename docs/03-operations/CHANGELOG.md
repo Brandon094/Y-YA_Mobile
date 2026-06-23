@@ -7,6 +7,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [0.1.0-alpha] - 2025-03-05
 ### Añadido (MVP+ Milestone)
+- **Hito 1: Refinamiento Operativo:** 
+    - Implementación de lógica de validación de disponibilidad en tiempo real contra `public.availability`.
+    - Evolución del modelo económico con soporte para `final_price` en el flujo de negociación.
 - **Sistema de Cuenta Universal:** Implementación de acceso multi-rol sin doble fricción.
 - **Módulo de Negociación:** Lógica de contraofertas entre Clientes y Prestadores.
 - **Gestión Operativa:** Panel de "Solicitudes Recibidas" (Prestador) y "Mis Pedidos" (Cliente).

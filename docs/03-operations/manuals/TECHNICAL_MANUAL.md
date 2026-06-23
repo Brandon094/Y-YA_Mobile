@@ -28,5 +28,9 @@ El proyecto sigue el patrón de arquitectura **MVVM (Model-View-ViewModel)** rec
 ## 5. Gestión de Estado
 Se utiliza `StateFlow` y `SharedFlow` dentro de los ViewModels para exponer el estado a la UI de forma segura frente al ciclo de vida.
 
+## 6. Modelos de Datos Críticos (Hito 1)
+- **Availability:** Mapea la disponibilidad semanal de los prestadores para validación en tiempo real.
+- **ServiceRequest:** Evolucionado para incluir `final_price`, permitiendo la persistencia del acuerdo económico tras la negociación.
+
 ---
-*Última actualización: Marzo 2025*
+*Última actualización: Junio 2026*

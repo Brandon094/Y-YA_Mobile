@@ -44,7 +44,7 @@ Flujo transaccional entre cliente y prestador.
 - [x] **Pantalla de Contratación (Formulario)**
     - [x] UI: Selectores de fecha y hora integrados.
     - [x] ViewModel: Registro de la solicitud en `public.requests`.
-    - [ ] Lógica: Validación contra `public.availability` (Pendiente).
+    - [x] Lógica: Validación en tiempo real contra `public.availability` (Hito 1).
 - [x] **Confirmación (Ticket)**
     - [x] UI: Resumen dinámico de la transacción exitosa.
 

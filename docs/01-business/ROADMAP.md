@@ -13,8 +13,8 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 
 ## Hito 1: Refinamiento Operativo y Lógica de Negocio
 **Objetivo:** Asegurar que el flujo transaccional sea robusto y preciso.
-- [ ] **Sincronización de Disponibilidad:** Validación en tiempo real del selector de fecha/hora contra la tabla `public.availability`.
-- [ ] **Evolución del Modelo Económico:** Implementación del campo `final_price` en solicitudes para reflejar acuerdos tras negociaciones.
+- [x] **Sincronización de Disponibilidad:** Validación en tiempo real del selector de fecha/hora contra la tabla `public.availability`.
+- [x] **Evolución del Modelo Económico:** Implementación del campo `final_price` en solicitudes para reflejar acuerdos tras negociaciones.
 - [ ] **Optimización de UI/UX:** Refinamiento de transiciones y estados de carga (Shimmer effect).
 
 ## Hito 2: Comunicación y Sistema de Reputación
