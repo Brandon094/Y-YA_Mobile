@@ -2,13 +2,12 @@
 
 Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA, dividida en hitos (milestones) que llevan el proyecto desde su estado actual hasta el lanzamiento del MVP (Producto Mínimo Viable) y futuras expansiones.
 
-## Estado Actual: 🟢 Fase de Cimentación Completada
-- Autenticación avanzada con Supabase (Auth + Metadata).
-- Catálogo dinámico de servicios con búsqueda y filtrado.
-- Flujo de contratación (Core) con reserva de fecha/hora.
-- Sistema de gestión de pedidos (Cliente) con negociación.
-- Dashboard operativo del prestador (Aceptar/Rechazar solicitudes).
-- Gestión de perfil y publicación de servicios.
+## Estado Actual: 🟢 MVP+ Finalizado (v0.1.0-alpha)
+- **Cuenta Universal:** Sin doble fricción entre clientes y prestadores.
+- **Negociación Activa:** Flujo de contraofertas funcional.
+- **Gestión Dual:** Historial de pedidos y panel de solicitudes recibidas.
+- **Publicación:** Módulo de creación y edición de servicios para talentos.
+- **Identidad:** Branding y manuales operativos completados.
 
 ---
 

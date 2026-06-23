@@ -38,11 +38,11 @@ Se utiliza un enfoque de **Inyección de Dependencias** (DI) para desacoplar los
 - Componentes clave como `SupabaseClient` se inicializan a nivel de aplicación.
 - Los ViewModels reciben sus repositorios mediante sus constructores.
 
-## 5. Integración con el Backend (Supabase)
-- **Auth:** Gestión de sesiones persistentes.
-- **Postgrest:** Consultas a la base de datos PostgreSQL mediante sintaxis de Kotlin.
-- **Realtime:** Suscripciones a cambios en las tablas para funcionalidades como el Chat y actualizaciones de pedidos.
-- **Storage:** Manejo de archivos binarios (imágenes) mediante Buckets.
+## 5. Lógica de Roles y Cuenta Universal
+YÁYA rompe la fricción tradicional de las plataformas de servicios al permitir que un mismo `id` de perfil contenga las capacidades de ambos roles. 
+- La UI se adapta dinámicamente consultando el campo `role` en `public.profiles`.
+- Un usuario con rol `provider` puede contratar servicios de otros prestadores sin necesidad de un perfil secundario.
+- Esta arquitectura simplifica la gestión de sesiones y la integridad de los datos en Supabase.
 
 ## 6. Manejo de Errores y Estados Globales
 Cada pantalla implementa un modelo de estado robusto:

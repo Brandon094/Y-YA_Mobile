@@ -3,8 +3,9 @@
 Este documento define los términos clave utilizados en el ecosistema de YÁYA para asegurar una comunicación clara entre los equipos de desarrollo, diseño y negocio.
 
 ## 1. Roles de Usuario
-- **Cliente:** Persona que utiliza la plataforma para buscar, solicitar y contratar servicios profesionales o técnicos.
-- **Prestador (o Proveedor):** Profesional o técnico que ofrece sus servicios a través de la aplicación, gestionando su propio catálogo y horarios.
+- **Cuenta Universal:** Concepto central de YÁYA donde un identificador único (ID) permite al usuario alternar entre ser Cliente o Prestador de forma transparente, eliminando la "doble fricción" de crear múltiples cuentas.
+- **Cliente:** Persona que utiliza la plataforma para buscar, solicitar y contratar servicios.
+- **Prestador (o Proveedor):** Profesional o técnico que ofrece sus servicios.
 - **Administrador:** Usuario con privilegios elevados para gestionar categorías, moderar reseñas y supervisar la actividad de la plataforma.
 
 ## 2. Conceptos de Negocio
