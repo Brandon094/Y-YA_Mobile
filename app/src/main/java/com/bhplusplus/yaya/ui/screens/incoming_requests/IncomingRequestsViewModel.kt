@@ -72,11 +72,12 @@ class IncomingRequestsViewModel : ViewModel() {
     fun sendCounterOffer(request: ServiceRequest, newPrice: String) {
         viewModelScope.launch {
             try {
+                val priceVal = newPrice.toDoubleOrNull() ?: 0.0
                 val updatedDescription = "${request.request_description}\n--- Contraoferta Prestador: $$newPrice"
                 
                 SupabaseManager.client.postgrest["requests"].update({
                     set("request_description", updatedDescription)
-                    // Mantenemos el estado en pending para que el cliente decida
+                    set("final_price", priceVal) // Hito 1: Actualización de precio en negociación
                 }) {
                     filter { eq("id", request.id!!) }
                 }

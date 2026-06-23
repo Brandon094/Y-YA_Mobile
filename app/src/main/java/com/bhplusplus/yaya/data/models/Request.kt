@@ -13,6 +13,7 @@ data class ServiceRequest(
     val id: String? = null,
     val client_id: String,
     val service_id: String,
+    val final_price: Double = 0.0, // Precio final acordado (Hito 1)
     val request_description: String? = null,
     val service_address: String,
     val scheduled_date: String? = null, // Formato ISO 8601

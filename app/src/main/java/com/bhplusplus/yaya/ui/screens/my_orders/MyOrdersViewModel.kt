@@ -80,9 +80,11 @@ class MyOrdersViewModel : ViewModel() {
     fun sendNewOffer(request: ServiceRequest, newPrice: String) {
         viewModelScope.launch {
             try {
+                val priceVal = newPrice.toDoubleOrNull() ?: 0.0
                 val updatedDescription = "${request.request_description}\n--- Nueva oferta Cliente: $$newPrice"
                 SupabaseManager.client.postgrest["requests"].update({
                     set("request_description", updatedDescription)
+                    set("final_price", priceVal) // Hito 1: Actualización de precio en negociación
                 }) {
                     filter { eq("id", request.id!!) }
                 }

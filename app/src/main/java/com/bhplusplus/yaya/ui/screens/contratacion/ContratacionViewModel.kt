@@ -73,6 +73,59 @@ class ContratacionViewModel : ViewModel() {
         }
     }
 
+    var isAvailable by mutableStateOf(true) // Hito 1: Estado de disponibilidad
+        private set
+
+    /**
+     * Valida la disponibilidad del prestador para el día y hora seleccionados.
+     */
+    fun checkAvailability() {
+        val providerId = service?.provider_id ?: return
+        if (fecha.isBlank()) return
+
+        viewModelScope.launch {
+            try {
+                val date = LocalDate.parse(fecha)
+                val dayOfWeek = date.dayOfWeek.value // 1 (Lunes) a 7 (Domingo)
+
+                val result = SupabaseManager.client.postgrest["availability"]
+                    .select {
+                        filter {
+                            eq("provider_id", providerId)
+                            eq("day_of_week", dayOfWeek)
+                        }
+                    }
+                    .decodeList<com.bhplusplus.yaya.data.models.Availability>()
+
+                if (result.isEmpty()) {
+                    isAvailable = false
+                    errorMessage = "El prestador no trabaja este día."
+                } else {
+                    // Si hay hora, validamos el rango
+                    if (hora.isNotEmpty()) {
+                        val selectedTime = LocalTime.parse(hora)
+                        val availability = result.first()
+                        val startTime = LocalTime.parse(availability.start_time)
+                        val endTime = LocalTime.parse(availability.end_time)
+
+                        if (selectedTime.isBefore(startTime) || selectedTime.isAfter(endTime)) {
+                            isAvailable = false
+                            errorMessage = "Hora fuera del rango de atención ($startTime - $endTime)."
+                        } else {
+                            isAvailable = true
+                            errorMessage = null
+                        }
+                    } else {
+                        isAvailable = true
+                        errorMessage = null
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("ContratacionVM", "Error al validar disponibilidad: ${e.message}")
+            }
+        }
+    }
+
     /**
      * Crea la reserva en Supabase.
      */
@@ -81,6 +134,12 @@ class ContratacionViewModel : ViewModel() {
 
         if (direccion.isBlank() || fecha.isBlank() || hora.isBlank()) {
             errorMessage = "Completa dirección, fecha y hora."
+            onResult(false, null)
+            return
+        }
+
+        if (!isAvailable) {
+            errorMessage = "El horario seleccionado no está disponible."
             onResult(false, null)
             return
         }
@@ -102,7 +161,8 @@ class ContratacionViewModel : ViewModel() {
                 val request = ServiceRequest(
                     client_id = clientId,
                     service_id = currentService.id!!,
-                    request_description = "Oferta: $oferta. Programado para: $fecha a las $hora",
+                    final_price = oferta.toDoubleOrNull() ?: currentService.price, // Hito 1: Evolución Económica
+                    request_description = "Oferta inicial: $oferta. Programado para: $fecha a las $hora",
                     service_address = direccion,
                     scheduled_date = scheduledDate,
                     status = "pending"

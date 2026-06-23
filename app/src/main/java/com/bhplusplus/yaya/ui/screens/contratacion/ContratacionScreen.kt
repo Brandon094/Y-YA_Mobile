@@ -62,6 +62,7 @@ fun PantallaContratacion(
                             .atZone(ZoneId.systemDefault())
                             .toLocalDate()
                         viewModel.fecha = date.toString() // YYYY-MM-DD
+                        viewModel.checkAvailability() // Validar disponibilidad (Hito 1)
                     }
                     showDatePicker = false
                 }) { Text("Confirmar") }
@@ -90,6 +91,7 @@ fun PantallaContratacion(
                     val hour = if (timePickerState.hour < 10) "0${timePickerState.hour}" else "${timePickerState.hour}"
                     val minute = if (timePickerState.minute < 10) "0${timePickerState.minute}" else "${timePickerState.minute}"
                     viewModel.hora = "$hour:$minute"
+                    viewModel.checkAvailability() // Validar disponibilidad (Hito 1)
                     showTimePicker = false
                 }) { Text("Confirmar") }
             },
@@ -126,6 +128,7 @@ fun PantallaContratacion(
             onOfertaChange = { viewModel.oferta = it },
             isLoading = viewModel.isLoading,
             errorMessage = viewModel.errorMessage,
+            isAvailable = viewModel.isAvailable, // Hito 1
             onBack = onBack,
             onContratar = {
                 viewModel.contratar { success, requestId ->
@@ -154,6 +157,7 @@ fun ContratacionContent(
     onOfertaChange: (String) -> Unit,
     isLoading: Boolean,
     errorMessage: String?,
+    isAvailable: Boolean, // Hito 1
     onBack: () -> Unit,
     onContratar: () -> Unit
 ) {
@@ -252,7 +256,7 @@ fun ContratacionContent(
                         onClick = onContratar,
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         shape = RoundedCornerShape(16.dp),
-                        enabled = !isLoading && direccion.isNotBlank() && fecha.isNotBlank() && hora.isNotBlank()
+                        enabled = !isLoading && direccion.isNotBlank() && fecha.isNotBlank() && hora.isNotBlank() && isAvailable
                     ) {
                         if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
                         else Text(stringResource(R.string.contratacion_button), fontWeight = FontWeight.Bold)
@@ -282,6 +286,7 @@ fun ContratacionPreview() {
         fecha = "", onFechaClick = {},
         hora = "", onHoraClick = {},
         oferta = "", onOfertaChange = {}, isLoading = false, errorMessage = null,
+        isAvailable = true,
         onBack = {}, onContratar = {}
     )
 }
