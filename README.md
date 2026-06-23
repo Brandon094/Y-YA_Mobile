@@ -4,100 +4,61 @@
 
 ---
 
-## 🚀 Características Principales
+## 📚 Centro de Documentación (Enciclopedia del Proyecto)
 
-- **Catálogo de Servicios:** Exploración intuitiva de diversas categorías (Limpieza, Cuidado de mascotas, Cocina, etc.).
-- **Perfiles Detallados:** Información clara de los prestadores de servicios para generar confianza.
-- **Flujo de Contratación Ágil:** Proceso simplificado desde la búsqueda hasta la confirmación de la reserva.
-- **Gestión de Perfil:** Control total sobre los datos personales y roles (Cliente o Prestador).
-- **Autenticación Segura:** Sistema robusto de inicio de sesión y recuperación de contraseña.
+Toda la información técnica, de negocio y operativa está centralizada en la carpeta [`docs/`](./docs/).
+
+### 🔹 [01. Negocio & Producto](./docs/01-business/)
+- **[Identidad de Marca (Branding)](./docs/01-business/BRANDING.md):** Colores, logos y tono de voz.
+- **[Glosario de Términos](./docs/01-business/GLOSSARY.md):** Definiciones clave del ecosistema.
+- **[Requisitos](./docs/01-business/REQUIREMENTS.md):** RF y RNF del sistema.
+- **[Roadmap](./docs/01-business/ROADMAP.md):** Hitos y futuro del proyecto.
+- **[Ficha Técnica](./docs/01-business/TECHNICAL_SHEET.md):** Especificaciones generales.
+
+### 🔹 [02. Arquitectura & Datos](./docs/02-architecture/)
+- **[Arquitectura de Software](./docs/02-architecture/SOFTWARE_ARCHITECTURE.md):** Patrones (MVVM), flujo de datos y navegación.
+- **[Modelo de Seguridad](./docs/02-architecture/SECURITY_MODEL.md):** Autenticación, RLS y protección de datos.
+- **[Diccionario de Datos](./docs/02-architecture/DATA_DICTIONARY.md):** Detalle técnico de tablas y campos.
+- **[Diagrama ER](./docs/02-architecture/ER_DIAGRAM.md):** Relaciones de la base de datos.
+
+### 🔹 [03. Operaciones & Proceso](./docs/03-operations/)
+- **[Manual del Usuario](./docs/03-operations/manuals/USER_MANUAL.md):** Guía para Clientes y Prestadores.
+- **[Manual del Administrador](./docs/03-operations/manuals/ADMIN_MANUAL.md):** Guía de moderación y gestión.
+- **[Manual Técnico](./docs/03-operations/manuals/TECHNICAL_MANUAL.md):** Estándares de desarrollo y stack.
+- **[Guía del Desarrollador (Guidelines)](./docs/03-operations/DEVELOPER_GUIDELINES.md):** Reglas de oro del código.
+- **[Guía de Configuración (Setup)](./docs/03-operations/SETUP_GUIDE.md):** Pasos para iniciar el desarrollo.
+- **[Changelog](./docs/03-operations/CHANGELOG.md):** Historial de cambios y versiones.
 
 ---
 
-## 💰 Modelo de Negocio
+## 🚀 Características Principales
 
-**YÁYA** opera bajo un modelo de **Suscripción (SaaS)**:
-- **Planes para Prestadores:** Suscripciones mensuales/anuales para destacar servicios y acceder a herramientas premium de gestión.
-- **Acceso para Clientes:** Registro gratuito con opciones de suscripción para beneficios exclusivos y soporte prioritario.
+- **Catálogo de Servicios:** Exploración intuitiva de diversas categorías.
+- **Perfiles Detallados:** Información clara de los prestadores.
+- **Flujo de Contratación:** Proceso simplificado y seguro.
+- **Gestión de Perfil:** Control total sobre datos y roles.
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-El proyecto está construido bajo los estándares más modernos de desarrollo en Android:
-
-- **Lenguaje:** [Kotlin](https://kotlinlang.org/) (Coroutines & Flow)
-- **UI Framework:** [Jetpack Compose](https://developer.android.com/jetpack/compose) (Arquitectura declarativa)
-- **Diseño:** [Material 3](https://m3.material.io/) (Material Design actual)
-- **Backend as a Service (BaaS):** [Supabase](https://supabase.com/) (Auth, Database & Realtime)
-- **Navegación:** [Jetpack Navigation Component](https://developer.android.com/guide/navigation) (Type-Safe Navigation)
-- **Arquitectura:** MVVM (Model-View-ViewModel) para una separación clara de responsabilidades.
-- **Redes:** [Ktor Client](https://ktor.io/) para comunicación con APIs.
-- **Serialización:** Kotlinx Serialization para manejo de datos seguro.
-
----
-
-## 📂 Estructura del Proyecto
-
-El código está organizado siguiendo las mejores prácticas de modularización por capas:
-
-```text
-com.bhplusplus.yaya
-├── data                # Repositorios y modelos de datos
-│   └── models          # Clases de datos (Service, UserProfile)
-├── navigation          # Configuración de rutas y NavHost con Type-Safety
-├── ui
-│   ├── screens         # Pantallas principales (Home, Login, Register, etc.)
-│   └── theme           # Definición de colores, tipografía y estilo visual
-└── MainActivity.kt     # Punto de entrada de la aplicación
-```
-
----
-
-## ⚙️ Instalación y Configuración
-
-1. **Clonar el repositorio:**
-   ```bash
-   git clone https://github.com/Brandon094/Y-YA_Mobile.git
-   ```
-2. **Abrir en Android Studio:**
-   Asegúrate de tener instalada la versión **Ladybug** (o superior) para compatibilidad total con el plugin de Compose.
-3. **Configurar Supabase:**
-   Crea un proyecto en Supabase y añade tus credenciales en `SupabaseManager.kt` (o mediante variables de entorno en el futuro).
-4. **Build & Run:**
-   Sincroniza con Gradle y lanza la app en un emulador o dispositivo físico.
+- **Lenguaje:** Kotlin (Coroutines & Flow)
+- **UI:** Jetpack Compose (Material 3)
+- **Backend:** Supabase (Auth, DB & Realtime)
+- **Navegación:** Jetpack Navigation (Type-Safe)
+- **Arquitectura:** MVVM
 
 ---
 
 ## 🤝 Contribuciones
 
-Este proyecto es desarrollado por la marca **BH++**. Si deseas contribuir:
-1. Crea un *Fork* del proyecto.
-2. Crea tu rama de funcionalidad (`git checkout -b feature/NuevaFuncionalidad`).
-3. Realiza un *Commit* de tus cambios (`git commit -m 'Add: Nueva Funcionalidad'`).
-4. Sube los cambios (`git push origin feature/NuevaFuncionalidad`).
-5. Abre un *Pull Request*.
-
----
-
-## 📌 Estándares de Commits
-
-Para mantener un historial limpio y organizado, seguimos la convención de **Conventional Commits**. Cada mensaje debe empezar con un prefijo que indique el tipo de cambio:
-
-- **`feat:`** (Add) Nueva funcionalidad para el usuario.
-- **`fix:`** (Fix) Corrección de un error o bug.
-- **`refactor:`** Cambio en el código que no corrige errores ni añade funciones (ej. renombrar variables, reorganizar carpetas).
-- **`docs:`** Cambios solo en la documentación (README, comentarios).
-- **`style:`** Cambios que no afectan el significado del código (espaciado, formato, comas faltantes).
-- **`chore:`** Tareas de mantenimiento, actualización de dependencias o configuración de herramientas.
-
-**Ejemplo:** `feat: implementar validación de email en registro`
+Este proyecto es desarrollado por **BH++**. Si deseas contribuir, consulta nuestros [estándares de commits](./docs/03-operations/DEVELOPER_GUIDELINES.md#5-gestión-del-proyecto-git) y abre un Pull Request.
 
 ---
 
 ## 📝 Licencia
 
-Este proyecto es de **Propiedad Exclusiva de BH++**. Todos los derechos están reservados. Queda prohibida la copia, distribución o modificación no autorizada. Consulta el archivo `LICENSE` para más detalles.
+Este proyecto es de **Propiedad Exclusiva de BH++**. Consulta el archivo [`LICENSE`](./LICENSE) para más detalles.
 
 ---
 *Desarrollado con ❤️ por **BH++***
