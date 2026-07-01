@@ -22,6 +22,7 @@ Toda la información técnica, de negocio y operativa está centralizada en la c
 - **[Diagrama ER](./docs/02-architecture/ER_DIAGRAM.md):** Relaciones de la base de datos.
 
 ### 🔹 [03. Operaciones & Proceso](./docs/03-operations/)
+- **[Informe Técnico Integrador](./docs/03-operations/PROJECT_REPORT_INTEGRATOR.md):** Documento oficial para el Taller de Codificación.
 - **[Manual del Usuario](./docs/03-operations/manuals/USER_MANUAL.md):** Guía para Clientes y Prestadores.
 - **[Manual del Administrador](./docs/03-operations/manuals/ADMIN_MANUAL.md):** Guía de moderación y gestión.
 - **[Manual Técnico](./docs/03-operations/manuals/TECHNICAL_MANUAL.md):** Estándares de desarrollo y stack.
