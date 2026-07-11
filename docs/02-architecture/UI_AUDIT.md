@@ -90,7 +90,10 @@ Gestión de órdenes y servicios según el rol.
 ## 🔴 6. Próximas Implementaciones (MVP+)
 Funcionalidades críticas para el cierre de la versión 1.0.
 
-- [ ] **Chat en Tiempo Real**
+- [x] **Chat en Tiempo Real**
+    - [x] UI: Interfaz de burbujas con scroll automático.
+    - [x] Lógica: Suscripción a `messages` vía Supabase Realtime.
+    - [x] Navegación: Accesos desde Detalle, Mis Pedidos y Solicitudes.
 - [x] **Sistema de Calificaciones (Ratings)**
 - [ ] **Notificaciones Push**
 

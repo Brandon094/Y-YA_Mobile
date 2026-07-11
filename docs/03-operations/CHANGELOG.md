@@ -7,6 +7,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [0.1.0-alpha] - 2025-03-05
 ### Añadido (MVP+ Milestone)
+- **Hito 2: Chat en Tiempo Real:** 
+    - Implementación de mensajería instantánea bidireccional.
+    - Integración con `Supabase Realtime` para actualizaciones sin recarga.
+    - Puntos de contacto en Detalle de Servicio, Mis Pedidos y Solicitudes Recibidas.
 - **Hito 2: Sistema de Reputación:** 
     - Implementación de flujo de calificaciones (1-5 estrellas) y reseñas.
     - Nuevo modelo de datos `Rating` vinculado a las solicitudes completadas.
