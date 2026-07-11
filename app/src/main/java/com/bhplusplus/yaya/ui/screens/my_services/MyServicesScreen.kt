@@ -132,16 +132,30 @@ fun MyServiceItem(
                 }
                 
                 // Switch de Activación (Pausar/Activar)
+                val isPending = service.status == "pending_approval"
+                
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Switch(
                         checked = service.status == "active",
-                        onCheckedChange = { onToggleStatus() },
-                        colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary)
+                        onCheckedChange = { if (!isPending) onToggleStatus() },
+                        enabled = !isPending, // BLOQUEADO SI ESTÁ PENDIENTE
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.primary,
+                            disabledCheckedThumbColor = Color.Gray.copy(alpha = 0.5f)
+                        )
                     )
                     Text(
-                        text = if (service.status == "active") "Activo" else "Pausado",
+                        text = when (service.status) {
+                            "active" -> "Activo"
+                            "pending_approval" -> "En Revisión"
+                            else -> "Pausado"
+                        },
                         fontSize = 10.sp,
-                        color = if (service.status == "active") Color(0xFF4CAF50) else Color.Gray,
+                        color = when (service.status) {
+                            "active" -> Color(0xFF4CAF50)
+                            "pending_approval" -> Color(0xFFFF9800) // Naranja para aviso
+                            else -> Color.Gray
+                        },
                         fontWeight = FontWeight.Bold
                     )
                 }

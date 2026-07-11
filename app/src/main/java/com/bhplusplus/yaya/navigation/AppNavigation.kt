@@ -43,6 +43,8 @@ import com.bhplusplus.yaya.ui.screens.my_services.MyServicesScreen
 import com.bhplusplus.yaya.ui.screens.admin.AdminDashboardScreen
 import com.bhplusplus.yaya.ui.screens.chat.ChatScreen
 
+import android.util.Log
+
 /**
  * DEFINICIÓN DE RUTAS (PANTALLAS) CON SEGURIDAD DE TIPOS
  */
@@ -76,15 +78,19 @@ fun AppNavigation() {
     // Función centralizada para decidir a dónde ir según el rol
     val checkRoleAndNavigate: () -> Unit = {
         scope.launch {
-            val session = SupabaseManager.client.auth.currentSessionOrNull()
-            if (session != null) {
-                try {
+            try {
+                val session = SupabaseManager.client.auth.currentSessionOrNull()
+                if (session != null) {
                     val userId = session.user?.id ?: throw Exception("User not found")
+                    
+                    // Consultamos el perfil con un pequeño reintento interno o directo a la tabla
                     val profile = SupabaseManager.client.postgrest["profiles"]
                         .select { filter { eq("id", userId) } }
                         .decodeSingle<UserProfile>()
 
-                    if (profile.role == "admin") {
+                    Log.d("Navigation", "Rol detectado en DB: ${profile.role}")
+
+                    if (profile.role.equals("admin", ignoreCase = true)) {
                         navController.navigate(AdminDashboardRoute) {
                             popUpTo(0) { inclusive = true }
                         }
@@ -93,21 +99,27 @@ fun AppNavigation() {
                             popUpTo(0) { inclusive = true }
                         }
                     }
-                } catch (e: Exception) {
-                    val role = session.user?.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
-                    if (role == "admin") {
-                        navController.navigate(AdminDashboardRoute) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    } else {
-                        navController.navigate(HomeRoute) {
-                            popUpTo(0) { inclusive = true }
-                        }
+                } else {
+                    navController.navigate(WelcomeRoute) {
+                        popUpTo(0) { inclusive = true }
                     }
                 }
-            } else {
-                navController.navigate(WelcomeRoute) {
-                    popUpTo(0) { inclusive = true }
+            } catch (e: Exception) {
+                Log.e("Navigation", "Error al validar rol: ${e.message}")
+                // Fallback a metadata si la tabla profiles falla
+                val session = SupabaseManager.client.auth.currentSessionOrNull()
+                val role = session?.user?.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
+                
+                Log.d("Navigation", "Rol detectado en Metadata (Fallback): $role")
+                
+                if (role.equals("admin", ignoreCase = true)) {
+                    navController.navigate(AdminDashboardRoute) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                } else {
+                    navController.navigate(HomeRoute) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             }
         }

@@ -67,7 +67,7 @@ fun HomeScreen(
                     }
                 },
                 actions = {
-                    // Acceso rápido a notificaciones/estados según el rol
+                    // Acceso rápido a notificaciones/estados según el rol con Badge (Hito 4)
                     IconButton(onClick = {
                         if (viewModel.userRole == "provider" || viewModel.userRole == "admin") {
                             onIncomingRequestsClick()
@@ -75,11 +75,24 @@ fun HomeScreen(
                             onMyOrders()
                         }
                     }) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications, 
-                            contentDescription = "Notificaciones",
-                            tint = MaterialTheme.colorScheme.onSecondary
-                        )
+                        BadgedBox(
+                            badge = {
+                                if (viewModel.notificationCount > 0) {
+                                    Badge(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = Color.White
+                                    ) {
+                                        Text(viewModel.notificationCount.toString())
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications, 
+                                contentDescription = "Notificaciones",
+                                tint = MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

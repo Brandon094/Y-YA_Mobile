@@ -53,10 +53,11 @@ class ProfileViewModel : ViewModel() {
                             .decodeSingle<UserProfile>()
                         
                         userProfile = profile
+                        Log.d("ProfileVM", "Perfil cargado exitosamente: ${profile.full_name}")
                     } catch (e: Exception) {
-                        Log.w("ProfileVM", "Registro no encontrado en 'profiles'. Intentando recuperar de metadata.")
+                        Log.e("ProfileVM", "Error al leer tabla profiles: ${e.message}")
                         
-                        // 2. Si no existe en la tabla, intentamos reconstruir un perfil básico desde la Metadata de Auth
+                        // 2. Si no existe en la tabla, intentamos recuperar de Metadata
                         // Esto evita que la pantalla salga totalmente vacía.
                         val metadata = user.userMetadata
                         if (metadata != null) {
