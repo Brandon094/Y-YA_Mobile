@@ -26,8 +26,11 @@ import androidx.navigation.toRoute
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.SupabaseManager
 import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import com.bhplusplus.yaya.data.models.UserProfile
+import kotlinx.serialization.json.jsonPrimitive
 
 import com.bhplusplus.yaya.ui.screens.profile.ProfileScreen
 import com.bhplusplus.yaya.ui.screens.edit_profile.EditProfileScreen
@@ -37,6 +40,7 @@ import com.bhplusplus.yaya.ui.screens.create_service.CreateServiceScreen
 import com.bhplusplus.yaya.ui.screens.my_orders.MyOrdersScreen
 import com.bhplusplus.yaya.ui.screens.incoming_requests.IncomingRequestsScreen
 import com.bhplusplus.yaya.ui.screens.my_services.MyServicesScreen
+import com.bhplusplus.yaya.ui.screens.admin.AdminDashboardScreen
 
 /**
  * DEFINICIÓN DE RUTAS (PANTALLAS) CON SEGURIDAD DE TIPOS
@@ -47,6 +51,7 @@ import com.bhplusplus.yaya.ui.screens.my_services.MyServicesScreen
 @Serializable object ResetRoute
 @Serializable object RegisterRoute
 @Serializable object HomeRoute
+@Serializable object AdminDashboardRoute // Hito 5: Ruta de Administración
 @Serializable object ProfileRoute
 @Serializable object EditProfileRoute
 @Serializable data class CreateServiceRoute(val serviceId: String? = null)
@@ -66,13 +71,38 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     
-    // LaunchedEffect para verificar sesión al iniciar
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(2000) // 2 segundos de Splash para que luzca el logo
         val session = SupabaseManager.client.auth.currentSessionOrNull()
         if (session != null) {
-            navController.navigate(HomeRoute) {
-                popUpTo(LoadingRoute) { inclusive = true }
+            try {
+                // Hito 5: Lógica de Redirección por Rol
+                val userId = session.user?.id ?: throw Exception("User not found")
+                val profile = SupabaseManager.client.postgrest["profiles"]
+                    .select { filter { eq("id", userId) } }
+                    .decodeSingle<UserProfile>()
+
+                if (profile.role == "admin") {
+                    navController.navigate(AdminDashboardRoute) {
+                        popUpTo(LoadingRoute) { inclusive = true }
+                    }
+                } else {
+                    navController.navigate(HomeRoute) {
+                        popUpTo(LoadingRoute) { inclusive = true }
+                    }
+                }
+            } catch (e: Exception) {
+                // Backup con metadata si falla el perfil
+                val role = session.user?.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
+                if (role == "admin") {
+                    navController.navigate(AdminDashboardRoute) {
+                        popUpTo(LoadingRoute) { inclusive = true }
+                    }
+                } else {
+                    navController.navigate(HomeRoute) {
+                        popUpTo(LoadingRoute) { inclusive = true }
+                    }
+                }
             }
         } else {
             navController.navigate(WelcomeRoute) {
@@ -154,6 +184,20 @@ fun AppNavigation() {
                         SupabaseManager.client.auth.signOut()
                         navController.navigate(LoginRoute) {
                             popUpTo(HomeRoute) { inclusive = true }
+                        }
+                    }
+                }
+            )
+        }
+
+        // Dashboard de Administración (Hito 5)
+        composable<AdminDashboardRoute> {
+            AdminDashboardScreen(
+                onLogout = {
+                    scope.launch {
+                        SupabaseManager.client.auth.signOut()
+                        navController.navigate(WelcomeRoute) {
+                            popUpTo(AdminDashboardRoute) { inclusive = true }
                         }
                     }
                 }

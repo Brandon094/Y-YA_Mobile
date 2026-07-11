@@ -108,7 +108,7 @@ class CreateServiceViewModel : ViewModel() {
                     estimated_time = estimatedTime,
                     materials_included = materialsIncluded,
                     extra_cost = extraCostVal,
-                    status = "active"
+                    status = "pending_approval" // Hito 5: Requiere aprobación del admin
                 )
 
                 if (serviceId == null) {

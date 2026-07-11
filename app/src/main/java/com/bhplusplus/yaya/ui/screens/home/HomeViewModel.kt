@@ -53,9 +53,13 @@ class HomeViewModel : ViewModel() {
                     .select()
                     .decodeList<Category>()
 
-                // 2. Obtener todos los servicios
+                // 2. Obtener todos los servicios (Filtrando por estado activo para usuarios normales)
                 allServices = SupabaseManager.client.postgrest["services"]
-                    .select()
+                    .select {
+                        filter {
+                            eq("status", "active") // Solo servicios aprobados
+                        }
+                    }
                     .decodeList<Service>()
                 
                 applyFilters() // Inicializamos la lista filtrada
