@@ -10,7 +10,11 @@ Este documento describe las medidas de seguridad implementadas en YÁYA para pro
 ## 2. Seguridad en Base de Datos (RLS)
 El sistema utiliza **Row Level Security (RLS)** de PostgreSQL para asegurar que los datos no sean accedidos de forma no autorizada:
 - **Profiles:** Un usuario solo puede editar su propio perfil (donde `auth.uid() = id`).
-- **Services:** Cualquier usuario autenticado puede leer servicios activos, pero solo el dueño (`provider_id`) puede editarlos o eliminarlos.
+- **Services:** 
+    - **Lectura:** Usuarios autenticados ven servicios con `status = 'active'`. Dueños ven sus servicios en cualquier estado.
+    - **Inserción:** Usuarios autenticados pueden crear servicios vinculados a su propio `auth.uid()`.
+    - **Actualización:** Solo el dueño (`provider_id`) puede editar sus servicios.
+    - **Administración:** Los perfiles con rol `admin` tienen bypass de RLS para moderación total.
 - **Requests:** Solo el cliente que solicita (`client_id`) y el prestador que recibe (`provider_id`) tienen acceso a ver y actualizar los detalles de una solicitud específica.
 
 ## 3. Protección de API Keys

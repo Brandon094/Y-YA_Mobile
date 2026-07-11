@@ -79,6 +79,7 @@ Gestión de órdenes y servicios según el rol.
     - [x] Lógica: Función de Activar/Desactivar visibilidad.
 - [x] **Crear Servicio**
     - [x] UI: Formulario completo con categorías y precios.
+    - [x] UX: Diálogo de éxito con aviso de moderación administrativa tras la creación.
 - [x] **Dashboard Administrativo (Hito 5)**
     - [x] UI: Sistema de pestañas para Pendientes, Usuarios y Reportes.
     - [x] Lógica: Moderación de servicios (Aprobar/Rechazar).

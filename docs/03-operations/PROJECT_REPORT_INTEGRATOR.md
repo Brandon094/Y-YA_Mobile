@@ -85,6 +85,7 @@ Este módulo implementa el ciclo de vida completo de los datos (Create, Read, Up
 | 5 | Navegación Insegura | Migración de String routes a objetos `@Serializable`. |
 | 6 | Redirección Retrasada | Centralización de lógica de roles para navegación inmediata tras Login. |
 | 7 | UX Silenciosa | Implementación de `EmptyServicesView` para feedback en búsquedas vacías. |
+| 8 | Bloqueo RLS (42501) | Implementación de políticas de inserción en Supabase para permitir la creación de servicios a usuarios autenticados. |
 
 **Evidencia de Corrección (Persistencia de Sesión):**
 ![Persistencia Supabase](../assets/SupaBase.png)
