@@ -32,6 +32,7 @@ El núcleo de descubrimiento de servicios.
     - [x] Búsqueda: Filtrado por texto (Local Search).
     - [x] Filtros: Selección de categorías funcional.
     - [x] Roles: Visualización de FAB (+) solo para prestadores/admin.
+    - [x] UX: Vista de estados vacíos (`EmptyServicesView`) para búsquedas sin resultados.
 
 ---
 
@@ -90,7 +91,7 @@ Gestión de órdenes y servicios según el rol.
 Funcionalidades críticas para el cierre de la versión 1.0.
 
 - [ ] **Chat en Tiempo Real**
-- [ ] **Sistema de Calificaciones (Ratings)**
+- [x] **Sistema de Calificaciones (Ratings)**
 - [ ] **Notificaciones Push**
 
 ---

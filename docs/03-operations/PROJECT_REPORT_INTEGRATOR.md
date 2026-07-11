@@ -26,8 +26,8 @@
 
 ![Diagrama Entidad Relación](../assets/DiagramER.png)
 ### 3. Estado de Módulos
-- **Desarrollados:** Auth (Login/Registro), Perfil Universal, Catálogo Dinámico, Módulo de Negociación (Contraofertas), Gestión de Servicios (CRUD), Validación de Disponibilidad, Dashboard Administrativo y Sistema de Reportes de Comportamiento (Hito 5).
-- **Pendientes:** Chat en tiempo real (Hito 2), Sistema de Calificaciones (Ratings).
+- **Desarrollados:** Auth (Login/Registro), Perfil Universal, Catálogo Dinámico, Módulo de Negociación (Contraofertas), Gestión de Servicios (CRUD), Validación de Disponibilidad, Dashboard Administrativo, Sistema de Reportes de Comportamiento y Sistema de Calificaciones (Hito 2/5).
+- **Pendientes:** Chat en tiempo real (Hito 2), Multimedia/Storage (Hito 3).
 
 ---
 
@@ -83,6 +83,8 @@ Este módulo implementa el ciclo de vida completo de los datos (Create, Read, Up
 | 3 | Fricción de Roles | Arquitectura de Perfil Único Multi-rol en PostgreSQL. |
 | 4 | Metadata Inexistente | Lógica de recuperación de perfil desde metadatos de Auth. |
 | 5 | Navegación Insegura | Migración de String routes a objetos `@Serializable`. |
+| 6 | Redirección Retrasada | Centralización de lógica de roles para navegación inmediata tras Login. |
+| 7 | UX Silenciosa | Implementación de `EmptyServicesView` para feedback en búsquedas vacías. |
 
 **Evidencia de Corrección (Persistencia de Sesión):**
 ![Persistencia Supabase](../assets/SupaBase.png)
