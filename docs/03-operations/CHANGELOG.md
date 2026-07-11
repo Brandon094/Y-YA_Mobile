@@ -7,6 +7,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [0.1.0-alpha] - 2025-03-05
 ### Añadido (MVP+ Milestone)
+- **Hito 2: Sistema de Reputación:** 
+    - Implementación de flujo de calificaciones (1-5 estrellas) y reseñas.
+    - Nuevo modelo de datos `Rating` vinculado a las solicitudes completadas.
 - **Hito 5: Dashboard Administrativo:** 
     - Implementación de panel de control para moderación de servicios.
     - Sistema de reportes de comportamiento con consultas relacionales.

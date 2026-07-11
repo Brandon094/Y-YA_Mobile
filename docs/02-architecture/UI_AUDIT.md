@@ -69,6 +69,7 @@ Gestión de órdenes y servicios según el rol.
 - [x] **Mis Pedidos (Cliente)**
     - [x] UI: Listado con badges de estado (`pending`, `accepted`, etc.).
     - [x] Lógica: Sistema de negociación de contraofertas funcional.
+    - [x] Reputación: Flujo de calificación (estrellas y comentarios) para servicios completados.
 - [x] **Solicitudes Recibidas (Prestador)**
     - [x] UI: Interfaz para aceptar/rechazar o contraofertar.
     - [x] ViewModel: Actualización de estados en tiempo real.

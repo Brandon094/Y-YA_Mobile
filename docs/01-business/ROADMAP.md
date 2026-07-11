@@ -20,9 +20,9 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 ## Hito 2: Comunicación y Sistema de Reputación
 **Objetivo:** Generar confianza entre cliente y prestador dentro de la plataforma.
 - [ ] **Chat en Tiempo Real:** Implementación de mensajería bidireccional utilizando `Supabase Realtime`.
-- [ ] **Sistema de Calificaciones (Ratings):** 
+- [x] **Sistema de Calificaciones (Ratings):** 
     - Envío de reseñas y puntuación (1-5 estrellas) al completar un servicio.
-    - Visualización del promedio de reputación en el perfil del prestador.
+    - Visualización de reputación real en el catálogo (Cierre de ciclo).
 
 ## Hito 3: Multimedia y Gestión de Activos (Storage)
 **Objetivo:** Enriquecer el contenido visual de la plataforma.
