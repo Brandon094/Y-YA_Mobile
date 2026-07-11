@@ -70,51 +70,57 @@ import com.bhplusplus.yaya.ui.screens.admin.AdminDashboardScreen
 fun AppNavigation() {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
-    
-    LaunchedEffect(Unit) {
-        kotlinx.coroutines.delay(2000) // 2 segundos de Splash para que luzca el logo
-        val session = SupabaseManager.client.auth.currentSessionOrNull()
-        if (session != null) {
-            try {
-                // Hito 5: Lógica de Redirección por Rol
-                val userId = session.user?.id ?: throw Exception("User not found")
-                val profile = SupabaseManager.client.postgrest["profiles"]
-                    .select { filter { eq("id", userId) } }
-                    .decodeSingle<UserProfile>()
 
-                if (profile.role == "admin") {
-                    navController.navigate(AdminDashboardRoute) {
-                        popUpTo(LoadingRoute) { inclusive = true }
+    // Función centralizada para decidir a dónde ir según el rol
+    val checkRoleAndNavigate: () -> Unit = {
+        scope.launch {
+            val session = SupabaseManager.client.auth.currentSessionOrNull()
+            if (session != null) {
+                try {
+                    val userId = session.user?.id ?: throw Exception("User not found")
+                    val profile = SupabaseManager.client.postgrest["profiles"]
+                        .select { filter { eq("id", userId) } }
+                        .decodeSingle<UserProfile>()
+
+                    if (profile.role == "admin") {
+                        navController.navigate(AdminDashboardRoute) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate(HomeRoute) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
-                } else {
-                    navController.navigate(HomeRoute) {
-                        popUpTo(LoadingRoute) { inclusive = true }
+                } catch (e: Exception) {
+                    val role = session.user?.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
+                    if (role == "admin") {
+                        navController.navigate(AdminDashboardRoute) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate(HomeRoute) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 }
-            } catch (e: Exception) {
-                // Backup con metadata si falla el perfil
-                val role = session.user?.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
-                if (role == "admin") {
-                    navController.navigate(AdminDashboardRoute) {
-                        popUpTo(LoadingRoute) { inclusive = true }
-                    }
-                } else {
-                    navController.navigate(HomeRoute) {
-                        popUpTo(LoadingRoute) { inclusive = true }
-                    }
+            } else {
+                navController.navigate(WelcomeRoute) {
+                    popUpTo(0) { inclusive = true }
                 }
-            }
-        } else {
-            navController.navigate(WelcomeRoute) {
-                popUpTo(LoadingRoute) { inclusive = true }
             }
         }
+    }
+    
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(2000) // 2 segundos de Splash
+        checkRoleAndNavigate()
     }
 
     NavHost(
         navController = navController,
         startDestination = LoadingRoute
     ) {
+        // ... (resto del NavHost)
         // Pantalla de Carga Inicial
         composable<LoadingRoute> {
             Box(
@@ -143,9 +149,7 @@ fun AppNavigation() {
         composable<LoginRoute> {
             LoginScreen(
                 onLoginSuccess = { 
-                    navController.navigate(HomeRoute) {
-                        popUpTo(WelcomeRoute) { inclusive = true }
-                    }
+                    checkRoleAndNavigate()
                 },
                 onNavigateToReset = { navController.navigate(ResetRoute) },
                 onNavigateToRegister = { navController.navigate(RegisterRoute) }
