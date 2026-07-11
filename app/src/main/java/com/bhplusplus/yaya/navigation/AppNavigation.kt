@@ -41,6 +41,7 @@ import com.bhplusplus.yaya.ui.screens.my_orders.MyOrdersScreen
 import com.bhplusplus.yaya.ui.screens.incoming_requests.IncomingRequestsScreen
 import com.bhplusplus.yaya.ui.screens.my_services.MyServicesScreen
 import com.bhplusplus.yaya.ui.screens.admin.AdminDashboardScreen
+import com.bhplusplus.yaya.ui.screens.chat.ChatScreen
 
 /**
  * DEFINICIÓN DE RUTAS (PANTALLAS) CON SEGURIDAD DE TIPOS
@@ -59,6 +60,7 @@ import com.bhplusplus.yaya.ui.screens.admin.AdminDashboardScreen
 @Serializable object IncomingRequestsRoute
 @Serializable object MyServicesRoute
 @Serializable data class ServiceDetailRoute(val serviceId: String)
+@Serializable data class ChatRoute(val receiverId: String, val receiverName: String) // Hito 2: Chat
 @Serializable data class ContratacionRoute(val serviceId: String)
 @Serializable data class ConfirmacionRoute(val serviceId: String, val requestId: String)
 
@@ -208,6 +210,16 @@ fun AppNavigation() {
             )
         }
 
+        // Chat en Tiempo Real (Hito 2)
+        composable<ChatRoute> { backStackEntry ->
+            val route: ChatRoute = backStackEntry.toRoute()
+            ChatScreen(
+                receiverId = route.receiverId,
+                receiverName = route.receiverName,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
         // Perfil
         composable<ProfileRoute> {
             ProfileScreen(
@@ -248,14 +260,20 @@ fun AppNavigation() {
         // Mis Pedidos
         composable<MyOrdersRoute> {
             MyOrdersScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onChatClick = { id, name ->
+                    navController.navigate(ChatRoute(id, name))
+                }
             )
         }
 
         // Solicitudes Recibidas (Prestador)
         composable<IncomingRequestsRoute> {
             IncomingRequestsScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onChatClick = { id, name ->
+                    navController.navigate(ChatRoute(id, name))
+                }
             )
         }
 
@@ -275,7 +293,10 @@ fun AppNavigation() {
             ServiceDetailScreen(
                 serviceId = route.serviceId,
                 onBack = { navController.popBackStack() },
-                onContratar = { navController.navigate(ContratacionRoute(route.serviceId)) }
+                onContratar = { navController.navigate(ContratacionRoute(route.serviceId)) },
+                onChatClick = { id, name ->
+                    navController.navigate(ChatRoute(id, name))
+                }
             )
         }
 

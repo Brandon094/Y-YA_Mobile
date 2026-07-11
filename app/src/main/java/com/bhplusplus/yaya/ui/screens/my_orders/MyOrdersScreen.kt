@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Star
@@ -33,6 +34,7 @@ import com.bhplusplus.yaya.data.models.ServiceRequest
 @Composable
 fun MyOrdersScreen(
     onBack: () -> Unit,
+    onChatClick: (String, String) -> Unit, // receiverId, receiverName
     viewModel: MyOrdersViewModel = viewModel()
 ) {
     var showNegotiationDialog by remember { mutableStateOf<ServiceRequest?>(null) }
@@ -125,7 +127,11 @@ fun MyOrdersScreen(
                             onAccept = { viewModel.acceptProposal(order.id!!) },
                             onReject = { viewModel.cancelRequest(order.id!!) },
                             onNegotiate = { showNegotiationDialog = order },
-                            onRate = { showRatingDialog = order }
+                            onRate = { showRatingDialog = order },
+                            onChat = {
+                                val providerId = order.services?.provider_id ?: ""
+                                onChatClick(providerId, "Prestador")
+                            }
                         )
                     }
                 }
@@ -140,7 +146,8 @@ fun OrderItem(
     onAccept: () -> Unit,
     onReject: () -> Unit,
     onNegotiate: () -> Unit,
-    onRate: () -> Unit
+    onRate: () -> Unit,
+    onChat: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -157,8 +164,14 @@ fun OrderItem(
                 Text(
                     text = order.services?.title ?: "Servicio",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    fontSize = 18.sp,
+                    modifier = Modifier.weight(1f)
                 )
+                
+                IconButton(onClick = onChat) {
+                    Icon(Icons.Default.Chat, contentDescription = "Chatear", tint = MaterialTheme.colorScheme.primary)
+                }
+
                 StatusBadge(order.status)
             }
             

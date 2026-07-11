@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.OutlinedFlag
@@ -46,6 +47,7 @@ fun ServiceDetailScreen(
     serviceId: String, 
     onBack: () -> Unit,
     onContratar: () -> Unit,
+    onChatClick: (String, String) -> Unit, // receiverId, receiverName
     viewModel: ServiceDetailViewModel = viewModel()
 ) {
     val scope = rememberCoroutineScope()
@@ -102,7 +104,10 @@ fun ServiceDetailScreen(
                     provider = provider,
                     onBack = onBack,
                     onContratar = onContratar,
-                    onReportClick = { showReportDialog = true }
+                    onReportClick = { showReportDialog = true },
+                    onChatClick = {
+                        provider?.let { onChatClick(it.id, it.full_name) }
+                    }
                 )
             }
         }
@@ -165,7 +170,8 @@ fun ServiceDetailContent(
     provider: UserProfile?,
     onBack: () -> Unit,
     onContratar: () -> Unit,
-    onReportClick: () -> Unit
+    onReportClick: () -> Unit,
+    onChatClick: () -> Unit
 ) {
     val currencyFormatter = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
 
@@ -322,6 +328,20 @@ fun ServiceDetailContent(
                                 Text(" 4.9 (45 reseñas)", fontSize = 12.sp, color = Color.Gray)
                             }
                         }
+                        
+                        Spacer(Modifier.weight(1f))
+                        
+                        // Botón de Chat (Hito 2)
+                        IconButton(
+                            onClick = onChatClick,
+                            enabled = provider != null,
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                contentColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Icon(Icons.Default.Chat, contentDescription = "Chatear")
+                        }
                     }
                 }
 
@@ -426,6 +446,7 @@ fun ServiceDetailPreview() {
         ),
         onBack = {},
         onContratar = {},
-        onReportClick = {}
+        onReportClick = {},
+        onChatClick = {}
     )
 }
