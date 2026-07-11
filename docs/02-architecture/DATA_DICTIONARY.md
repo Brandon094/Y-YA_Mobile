@@ -41,8 +41,19 @@ Ofertas específicas publicadas por los prestadores.
 | `estimated_time`| varchar | | Tiempo estimado de duración. |
 | `materials_included`| boolean | DEFAULT false | Indica si incluye materiales. |
 | `extra_cost` | numeric | DEFAULT 0.00 | Costos adicionales comunes. |
-| `status` | varchar | CHECK (active, inactive) | Estado de visibilidad. |
+| `status` | varchar | CHECK (active, inactive, pending_approval) | Estado de visibilidad (Aprobación en Hito 5). |
 | `created_at` | timestamptz | DEFAULT now() | Fecha de publicación del servicio. |
+
+## 8. Tabla: `reports` (Hito 5)
+Registro de denuncias por mal comportamiento para moderación administrativa.
+
+| Campo | Tipo | Restricciones | Descripción |
+| :--- | :--- | :--- | :--- |
+| `id` | uuid | PK | ID del reporte. |
+| `reporter_id` | uuid | FK (profiles.id) | Usuario que realiza la denuncia. |
+| `reported_user_id` | uuid | FK (profiles.id) | Usuario denunciado. |
+| `reason` | text | NOT NULL | Motivo detallado del reporte. |
+| `created_at` | timestamptz | DEFAULT now() | Fecha del reporte. |
 
 ## 4. Tabla: `availability`
 Gestión de horarios de los prestadores.

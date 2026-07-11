@@ -40,10 +40,10 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 
 ## Hito 5: Panel Administrativo y Moderación (Calidad del Sistema)
 **Objetivo:** Garantizar la integridad de la plataforma y evitar servicios "basura".
-- [ ] **Dashboard Admin:** Interfaz exclusiva para el rol `admin` con métricas de uso.
-- [ ] **Módulo de Moderación:** Herramientas para validar, pausar o eliminar servicios sospechosos.
-- [ ] **Reportes de Comportamiento:** Sistema de denuncias de usuarios por incumplimiento o mala conducta.
-- [ ] **Auditoría de Servicios:** Flujo de aprobación para nuevos servicios de prestadores no verificados.
+- [x] **Dashboard Admin:** Interfaz exclusiva para el rol `admin` con métricas de uso.
+- [x] **Módulo de Moderación:** Herramientas para validar, pausar o eliminar servicios sospechosos.
+- [x] **Reportes de Comportamiento:** Implementación de tabla `public.reports` y sistema de denuncias visuales.
+- [x] **Auditoría de Servicios:** Flujo de aprobación para nuevos servicios de prestadores no verificados.
 
 ## Hito 6: Finalización de Manuales y Lanzamiento
 - [ ] **Manual Técnico Completo:** Documentación de la API de Supabase y esquemas de seguridad.

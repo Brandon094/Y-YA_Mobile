@@ -28,9 +28,15 @@ El proyecto sigue el patrón de arquitectura **MVVM (Model-View-ViewModel)** rec
 ## 5. Gestión de Estado
 Se utiliza `StateFlow` y `SharedFlow` dentro de los ViewModels para exponer el estado a la UI de forma segura frente al ciclo de vida.
 
-## 6. Modelos de Datos Críticos (Hito 1)
+## 6. Modelos de Datos Críticos
 - **Availability:** Mapea la disponibilidad semanal de los prestadores para validación en tiempo real.
 - **ServiceRequest:** Evolucionado para incluir `final_price`, permitiendo la persistencia del acuerdo económico tras la negociación.
+- **Report (Hito 5):** Estructura relacional para la gestión de denuncias por mal comportamiento.
+
+## 7. Módulo Administrativo
+El sistema cuenta con un Dashboard centralizado que permite la moderación proactiva mediante:
+- **Auditoría de Servicios:** Interfaz para aprobar talento nuevo antes de su publicación en el catálogo.
+- **Supervisión de Usuarios:** Acceso a la base de datos de perfiles y denuncias activas para garantizar la seguridad del ecosistema.
 
 ---
 *Última actualización: Junio 2026*

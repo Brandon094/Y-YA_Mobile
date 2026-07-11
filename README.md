@@ -25,6 +25,7 @@ Toda la información técnica, de negocio y operativa está centralizada en la c
 - **[Informe Técnico Integrador](./docs/03-operations/PROJECT_REPORT_INTEGRATOR.md):** Documento oficial para el Taller de Codificación.
 - **[Manual del Usuario](./docs/03-operations/manuals/USER_MANUAL.md):** Guía para Clientes y Prestadores.
 - **[Manual del Administrador](./docs/03-operations/manuals/ADMIN_MANUAL.md):** Guía de moderación y gestión.
+- **[Ecosistema de Agentes](./docs/agents/README.md):** Definición de roles especializados (Senior, UI, Data, Logic).
 - **[Manual Técnico](./docs/03-operations/manuals/TECHNICAL_MANUAL.md):** Estándares de desarrollo y stack.
 - **[Guía del Desarrollador (Guidelines)](./docs/03-operations/DEVELOPER_GUIDELINES.md):** Reglas de oro del código.
 - **[Guía de Configuración (Setup)](./docs/03-operations/SETUP_GUIDE.md):** Pasos para iniciar el desarrollo.

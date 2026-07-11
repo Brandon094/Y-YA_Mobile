@@ -77,6 +77,11 @@ Gestión de órdenes y servicios según el rol.
     - [x] Lógica: Función de Activar/Desactivar visibilidad.
 - [x] **Crear Servicio**
     - [x] UI: Formulario completo con categorías y precios.
+- [x] **Dashboard Administrativo (Hito 5)**
+    - [x] UI: Sistema de pestañas para Pendientes, Usuarios y Reportes.
+    - [x] Lógica: Moderación de servicios (Aprobar/Rechazar).
+    - [x] Lógica: Visualización de reportes con Joins complejos.
+    - [x] Seguridad: Redirección automática por rol `admin`.
 
 ---
 

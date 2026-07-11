@@ -7,6 +7,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [0.1.0-alpha] - 2025-03-05
 ### Añadido (MVP+ Milestone)
+- **Hito 5: Dashboard Administrativo:** 
+    - Implementación de panel de control para moderación de servicios.
+    - Sistema de reportes de comportamiento con consultas relacionales.
+    - Lógica de redirección por rol en el flujo de inicio de sesión.
+- **Ecosistema de Agentes Especializados:** Definición de roles (Senior, UI, Datos, Negocio, Docs) y Orquestador Maestro para la gobernanza del proyecto.
 - **Hito 1: Refinamiento Operativo:** 
     - Implementación de lógica de validación de disponibilidad en tiempo real contra `public.availability`.
     - Evolución del modelo económico con soporte para `final_price` en el flujo de negociación.
