@@ -204,6 +204,11 @@ fun HomeScreen(
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
+            } else if (viewModel.filteredServices.isEmpty()) {
+                EmptyServicesView(
+                    searchQuery = viewModel.searchQuery,
+                    onClearSearch = { viewModel.onSearchQueryChange("") }
+                )
             } else {
                 // Lista filtrada
                 LazyColumn {
@@ -211,6 +216,51 @@ fun HomeScreen(
                         ServiceItem(service, onClick = { onServiceClick(service) })
                     }
                 }
+            }
+        }
+    }
+}
+
+/**
+ * VISTA DE ESTADO VACÍO (UX)
+ * Se muestra cuando no hay servicios que coincidan con la búsqueda o categoría.
+ */
+@Composable
+fun EmptyServicesView(searchQuery: String, onClearSearch: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = null,
+            modifier = Modifier.size(80.dp),
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "No encontramos servicios",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Text(
+            text = if (searchQuery.isNotEmpty()) 
+                "No hay resultados para \"$searchQuery\". Prueba con otra palabra." 
+                else "Aún no hay servicios disponibles en esta categoría.",
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+        
+        if (searchQuery.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(onClick = onClearSearch) {
+                Text("Limpiar búsqueda")
             }
         }
     }
