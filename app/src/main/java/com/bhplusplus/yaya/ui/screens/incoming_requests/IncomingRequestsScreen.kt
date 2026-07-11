@@ -31,6 +31,7 @@ import com.bhplusplus.yaya.data.models.ServiceRequest
 @Composable
 fun IncomingRequestsScreen(
     onBack: () -> Unit,
+    onChatClick: (String, String) -> Unit, // receiverId, receiverName
     viewModel: IncomingRequestsViewModel = viewModel()
 ) {
     var showNegotiationDialog by remember { mutableStateOf<ServiceRequest?>(null) }
@@ -107,7 +108,10 @@ fun IncomingRequestsScreen(
                             request = request,
                             onAccept = { viewModel.updateRequestStatus(request.id!!, "accepted") },
                             onReject = { viewModel.updateRequestStatus(request.id!!, "cancelled") },
-                            onNegotiate = { showNegotiationDialog = request }
+                            onNegotiate = { showNegotiationDialog = request },
+                            onChat = {
+                                onChatClick(request.client_id, request.client?.full_name ?: "Cliente")
+                            }
                         )
                     }
                 }
@@ -124,7 +128,8 @@ fun IncomingRequestItem(
     request: ServiceRequest,
     onAccept: () -> Unit,
     onReject: () -> Unit,
-    onNegotiate: () -> Unit
+    onNegotiate: () -> Unit,
+    onChat: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -147,6 +152,11 @@ fun IncomingRequestItem(
                         fontSize = 16.sp
                     )
                 }
+                
+                IconButton(onClick = onChat) {
+                    Icon(Icons.Default.Chat, contentDescription = "Chatear", tint = MaterialTheme.colorScheme.primary)
+                }
+
                 StatusBadge(request.status)
             }
 
