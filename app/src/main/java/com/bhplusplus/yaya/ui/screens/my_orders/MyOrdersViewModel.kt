@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.ServiceRequest
+import com.bhplusplus.yaya.data.models.Rating
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -23,6 +24,9 @@ class MyOrdersViewModel : ViewModel() {
         private set
 
     var isLoading by mutableStateOf(false)
+        private set
+
+    var isSubmittingRating by mutableStateOf(false)
         private set
 
     init {
@@ -91,6 +95,40 @@ class MyOrdersViewModel : ViewModel() {
                 fetchMyOrders()
             } catch (e: Exception) {
                 Log.e("MyOrdersVM", "Error al contraofertar: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Envía una calificación para un servicio completado.
+     */
+    fun submitRating(request: ServiceRequest, score: Int, comment: String, onResult: (Boolean) -> Unit) {
+        val clientId = request.client_id
+        val providerId = request.services?.provider_id ?: return
+        val requestId = request.id ?: return
+
+        viewModelScope.launch {
+            isSubmittingRating = true
+            try {
+                val rating = Rating(
+                    request_id = requestId,
+                    client_id = clientId,
+                    provider_id = providerId,
+                    score = score,
+                    comment = comment
+                )
+                
+                SupabaseManager.client.postgrest["ratings"].insert(rating)
+                
+                // Marcamos la orden como "calificada" (opcional: podrías añadir una columna calificada a requests)
+                // Por ahora solo refrescamos la lista
+                fetchMyOrders()
+                onResult(true)
+            } catch (e: Exception) {
+                Log.e("MyOrdersVM", "Error al enviar calificación: ${e.message}")
+                onResult(false)
+            } finally {
+                isSubmittingRating = false
             }
         }
     }

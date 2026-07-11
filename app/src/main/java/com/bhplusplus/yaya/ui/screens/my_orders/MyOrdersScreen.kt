@@ -10,6 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,7 +28,6 @@ import com.bhplusplus.yaya.data.models.ServiceRequest
 
 /**
  * PANTALLA DE MIS PEDIDOS (VISTA CLIENTE)
- * Ahora permite responder a contraofertas del prestador.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +37,21 @@ fun MyOrdersScreen(
 ) {
     var showNegotiationDialog by remember { mutableStateOf<ServiceRequest?>(null) }
     var counterPrice by remember { mutableStateOf("") }
+    
+    var showRatingDialog by remember { mutableStateOf<ServiceRequest?>(null) }
+
+    // Dialogo para Calificación (Hito 2)
+    if (showRatingDialog != null) {
+        RatingDialog(
+            onDismiss = { showRatingDialog = null },
+            onConfirm = { score, comment ->
+                viewModel.submitRating(showRatingDialog!!, score, comment) {
+                    showRatingDialog = null
+                }
+            },
+            isSubmitting = viewModel.isSubmittingRating
+        )
+    }
 
     // Dialogo para que el cliente haga una nueva oferta
     if (showNegotiationDialog != null) {
@@ -108,7 +124,8 @@ fun MyOrdersScreen(
                             order = order,
                             onAccept = { viewModel.acceptProposal(order.id!!) },
                             onReject = { viewModel.cancelRequest(order.id!!) },
-                            onNegotiate = { showNegotiationDialog = order }
+                            onNegotiate = { showNegotiationDialog = order },
+                            onRate = { showRatingDialog = order }
                         )
                     }
                 }
@@ -122,7 +139,8 @@ fun OrderItem(
     order: ServiceRequest,
     onAccept: () -> Unit,
     onReject: () -> Unit,
-    onNegotiate: () -> Unit
+    onNegotiate: () -> Unit,
+    onRate: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -208,8 +226,82 @@ fun OrderItem(
                     }
                 }
             }
+
+            // ACCIÓN DE CALIFICAR (Solo si está completado)
+            if (order.status == "completed") {
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = onRate,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFB800))
+                ) {
+                    Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color.White)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Calificar Prestador", fontWeight = FontWeight.Bold, color = Color.White)
+                }
+            }
         }
     }
+}
+
+@Composable
+fun RatingDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (Int, String) -> Unit,
+    isSubmitting: Boolean
+) {
+    var score by remember { mutableIntStateOf(5) }
+    var comment by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Calificar Servicio", fontWeight = FontWeight.Bold) },
+        text = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("¿Cómo calificarías el trabajo recibido?", fontSize = 14.sp)
+                Spacer(Modifier.height(16.dp))
+                
+                // Selector de estrellas
+                Row {
+                    for (i in 1..5) {
+                        IconButton(onClick = { score = i }) {
+                            Icon(
+                                imageVector = if (i <= score) Icons.Default.Star else Icons.Default.StarOutline,
+                                contentDescription = null,
+                                tint = if (i <= score) Color(0xFFFFB800) else Color.Gray
+                            )
+                        }
+                    }
+                }
+                
+                Spacer(Modifier.height(16.dp))
+                
+                OutlinedTextField(
+                    value = comment,
+                    onValueChange = { comment = it },
+                    label = { Text("Escribe un comentario (opcional)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(score, comment) },
+                enabled = !isSubmitting,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFB800))
+            ) {
+                if (isSubmitting) CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
+                else Text("Enviar Calificación", color = Color.White)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, enabled = !isSubmitting) {
+                Text("Cancelar")
+            }
+        }
+    )
 }
 
 @Composable
