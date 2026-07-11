@@ -54,9 +54,36 @@ fun CreateServiceScreen(
     var selectedCategoryId by remember { mutableStateOf<String?>(null) }
     var selectedCategoryName by remember { mutableStateOf("Selecciona una categoría") }
     var expanded by remember { mutableStateOf(false) }
+    var showSuccessDialog by remember { mutableStateOf(false) }
 
     val isLoading by viewModel.isLoading.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
+
+    // Diálogo de éxito y moderación
+    if (showSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = { /* No permitir cerrar sin botón */ },
+            title = { Text("¡Servicio Publicado!", fontWeight = FontWeight.Bold) },
+            text = {
+                Text(
+                    "Tu talento ha sido registrado con éxito. " +
+                    "Para garantizar la calidad de YÁYA, un administrador revisará tu servicio pronto. " +
+                    "Recibirás una notificación cuando sea aprobado y visible para todos.",
+                    fontSize = 14.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showSuccessDialog = false
+                        onServiceCreated()
+                    }
+                ) {
+                    Text("Entendido")
+                }
+            }
+        )
+    }
 
     // Si recibimos un ID, cargamos los datos del servicio para editar
     LaunchedEffect(serviceId) {
@@ -202,8 +229,16 @@ fun CreateServiceScreen(
 
             Button(
                 onClick = {
-                    viewModel.saveService(serviceId, title, description, price, selectedCategoryId, estimatedTime, materialsIncluded, extraCost) {
-                        if (it) onServiceCreated()
+                    viewModel.saveService(serviceId, title, description, price, selectedCategoryId, estimatedTime, materialsIncluded, extraCost) { success ->
+                        if (success) {
+                            if (serviceId == null) {
+                                // Si es nuevo, mostramos el aviso de moderación
+                                showSuccessDialog = true
+                            } else {
+                                // Si es edición, navegamos directamente
+                                onServiceCreated()
+                            }
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
