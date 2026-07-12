@@ -34,9 +34,14 @@ Se utiliza `StateFlow` y `SharedFlow` dentro de los ViewModels para exponer el e
 - **Report (Hito 5):** Estructura relacional para la gestión de denuncias por mal comportamiento.
 
 ## 7. Módulo Administrativo
-El sistema cuenta con un Dashboard centralizado que permite la moderación proactiva mediante:
-- **Auditoría de Servicios:** Interfaz para aprobar talento nuevo antes de su publicación en el catálogo.
-- **Supervisión de Usuarios:** Acceso a la base de datos de perfiles y denuncias activas para garantizar la seguridad del ecosistema.
+El sistema cuenta con un Dashboard centralizado que permite la moderación proactiva mediante auditoría de servicios y supervisión de usuarios.
+
+## 8. Sistema de Mensajería y Notificaciones
+- **Realtime:** Los mensajes de chat se sincronizan mediante suscripciones a canales de Supabase Realtime, filtrando por el ID de los participantes para seguridad.
+- **Push Engine:** Utiliza **Supabase Edge Functions** escritas en TypeScript/Deno.
+    - El disparador es un **Webhook** sobre la tabla `requests`.
+    - La función genera un token OAuth2 para la API V1 de Firebase.
+    - Se integra con **Firebase Cloud Messaging (FCM)** para la entrega final al dispositivo.
 
 ---
 *Última actualización: Junio 2026*

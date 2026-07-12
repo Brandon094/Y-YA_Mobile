@@ -31,8 +31,12 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 
 ## Hito 4: Escalabilidad, Notificaciones y Legal
 **Objetivo:** Preparar la aplicación para el lanzamiento comercial y cumplimiento normativo.
-- [ ] **Sistema de Notificaciones Push:** Alertas en tiempo real sobre cambios de estado en pedidos y nuevos mensajes.
-- [ ] **Modelo SaaS (Suscripciones):** Implementación de planes para prestadores con restricciones de visibilidad y funcionalidades.
+- [x] **Sistema de Notificaciones Push (Infraestructura):** 
+    - Integración de Firebase Cloud Messaging (FCM).
+    - Gestión de tokens de dispositivo en el perfil del usuario.
+    - Implementación de Badges visuales en tiempo real para solicitudes pendientes.
+- [ ] **Automatización de Avisos:** Implementación de Edge Functions en Supabase para disparo automático de notificaciones.
+- [ ] **Modelo SaaS (Suscripciones):** Implementación de planes para prestadores.
 - [ ] **Cumplimiento Legal:** Integración de pantallas de Términos y Condiciones, y Políticas de Privacidad.
 - [ ] **Pasarela de Pagos (Post-MVP):** Integración con proveedores locales para pagos in-app.
 

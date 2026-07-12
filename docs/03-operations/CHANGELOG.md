@@ -7,6 +7,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [0.1.0-alpha] - 2025-03-05
 ### Añadido (MVP+ Milestone)
+- **Hito 4: Infraestructura de Notificaciones:**
+    - Integración de Firebase Cloud Messaging (FCM) para recepción de alertas push.
+    - Implementación de Badges (numerito) dinámicos en la campana de notificaciones del Home.
+    - Lógica de sincronización de tokens de dispositivo con el perfil de Supabase.
+    - Soporte para permisos de notificación en Android 13+.
 - **Hito 2: Chat en Tiempo Real:** 
     - Implementación de mensajería instantánea bidireccional.
     - Integración con `Supabase Realtime` para actualizaciones sin recarga.

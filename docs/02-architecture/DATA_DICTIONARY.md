@@ -15,6 +15,7 @@ Información de identidad de los usuarios, vinculada a `auth.users`.
 | `address` | text | | Dirección física. |
 | `role` | varchar | CHECK (client, provider, admin) | Rol asignado en la plataforma. |
 | `avatar_url` | text | | URL de la imagen de perfil. |
+| `fcm_token` | text | | Token de Firebase para notificaciones push (Hito 4). |
 | `created_at` | timestamptz | DEFAULT now() | Fecha de creación del perfil. |
 
 ## 2. Tabla: `categories`

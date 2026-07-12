@@ -88,15 +88,15 @@ Gestión de órdenes y servicios según el rol.
 
 ---
 
-## 🔴 6. Próximas Implementaciones (MVP+)
-Funcionalidades críticas para el cierre de la versión 1.0.
+## 🟡 6. Notificaciones y Reactividad (Hito 4)
+Gestión de avisos y feedback en tiempo real.
 
-- [x] **Chat en Tiempo Real**
-    - [x] UI: Interfaz de burbujas con scroll automático.
-    - [x] Lógica: Suscripción a `messages` vía Supabase Realtime.
-    - [x] Navegación: Accesos desde Detalle, Mis Pedidos y Solicitudes.
-- [x] **Sistema de Calificaciones (Ratings)**
-- [ ] **Notificaciones Push**
+- [x] **Infraestructura FCM**
+    - [x] Lógica: Generación y persistencia de tokens de registro.
+    - [x] UX: Solicitar permisos de notificación en Android 13+.
+- [x] **Badges de Notificación**
+    - [x] UI: Indicador numérico en el icono de campana (Home).
+    - [x] Lógica: Conteo dinámico de solicitudes pendientes.
 
 ---
 **Leyenda:**

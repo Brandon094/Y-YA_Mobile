@@ -44,10 +44,18 @@ YÁYA rompe la fricción tradicional de las plataformas de servicios al permitir
 - Un usuario con rol `provider` puede contratar servicios de otros prestadores sin necesidad de un perfil secundario.
 - Esta arquitectura simplifica la gestión de sesiones y la integridad de los datos en Supabase.
 
-## 6. Lógica de Negocio y Validaciones (Hito 1)
-El sistema implementa validaciones críticas en el lado del cliente (ViewModel) para asegurar la integridad operativa:
-- **Validación de Disponibilidad:** Antes de confirmar una reserva, el sistema consulta la tabla `availability`. Cruza el día de la semana (`day_of_week`) y el rango horario (`start_time`, `end_time`) para habilitar o deshabilitar la contratación.
-- **Negociación de Precios:** El campo `final_price` evoluciona dinámicamente durante el flujo de contraofertas, permitiendo que tanto el cliente como el prestador actualicen el valor económico del servicio de forma persistente.
+## 6. Lógica de Negocio y Reactividad
+El sistema implementa validaciones críticas y procesos reactivos:
+- **Validación de Disponibilidad:** Cruce de horarios en tiempo real contra la tabla `availability`.
+- **Chat en Tiempo Real:** Uso de `Supabase Realtime` (Postgres Changes) para sincronizar mensajes sin latencia perceptible.
+- **Automatización via Edge Functions:** Uso de funciones en el servidor (Deno) disparadas por Webhooks para tareas asíncronas como el envío de notificaciones push vía Firebase.
+
+## 7. Sistema de Notificaciones (Push Architecture)
+YÁYA utiliza una arquitectura híbrida para alertas:
+1. **Registro:** El cliente Android genera un token FCM y lo sincroniza con `public.profiles`.
+2. **Evento:** Un `INSERT` en la tabla `requests` activa un Webhook.
+3. **Procesamiento:** Una `Edge Function` en Supabase recibe el evento, se autentica con Google Cloud y envía el mensaje a Firebase.
+4. **Entrega:** Firebase entrega la notificación al dispositivo destino.
 
 ## 7. Manejo de Errores y Estados Globales
 Cada pantalla implementa un modelo de estado robusto:

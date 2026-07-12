@@ -17,6 +17,19 @@
 - **RF-08:** El cliente podrá enviar una solicitud de servicio a un prestador.
 - **RF-09:** El prestador podrá aceptar o rechazar solicitudes.
 
+### Comunicación y Reputación (Hito 2)
+- **RF-10:** El sistema permitirá la comunicación en tiempo real entre cliente y prestador mediante un chat interno.
+- **RF-11:** El cliente podrá calificar (1-5 estrellas) y reseñar al prestador tras finalizar un servicio.
+
+### Notificaciones y Reactividad (Hito 4)
+- **RF-12:** El sistema enviará notificaciones push automáticas ante eventos clave (nuevas solicitudes, mensajes).
+- **RF-13:** La interfaz mostrará indicadores visuales (badges) de actividad pendiente.
+
+### Moderación y Administración (Hito 5)
+- **RF-14:** El sistema contará con un panel administrativo para la moderación de contenidos.
+- **RF-15:** El administrador podrá aprobar o rechazar nuevos servicios antes de su publicación.
+- **RF-16:** Los usuarios podrán reportar comportamientos inadecuados para revisión administrativa.
+
 ## 2. Requisitos No Funcionales (RNF)
 
 ### Rendimiento

@@ -26,8 +26,8 @@
 
 ![Diagrama Entidad Relación](../assets/DiagramER.png)
 ### 3. Estado de Módulos
-- **Desarrollados:** Auth (Login/Registro), Perfil Universal, Catálogo Dinámico, Módulo de Negociación (Contraofertas), Gestión de Servicios (CRUD), Validación de Disponibilidad, Dashboard Administrativo, Sistema de Reportes de Comportamiento y Sistema de Calificaciones (Hito 2/5).
-- **Pendientes:** Chat en tiempo real (Hito 2), Multimedia/Storage (Hito 3).
+- **Desarrollados:** Auth, Perfil Universal, Catálogo Dinámico, Negociación, CRUD de Servicios, Validación de Disponibilidad, Dashboard Admin, Reportes, Calificaciones, Chat en Tiempo Real e Infraestructura de Notificaciones Push (Hitos 1-5).
+- **Pendientes:** Multimedia/Storage (Hito 3), Automatización de Alertas via Edge Functions.
 
 ---
 
