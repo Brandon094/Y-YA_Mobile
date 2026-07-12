@@ -49,6 +49,9 @@ class LoginViewModel : ViewModel() {
                     this.password = password
                 }
 
+                // Hito 4: Sincronizar Token de Notificaciones tras login exitoso
+                SupabaseManager.syncFcmToken()
+
                 _isLoading.value = false
                 onResult(true) // Notificamos éxito
             } catch (e: Exception) {
