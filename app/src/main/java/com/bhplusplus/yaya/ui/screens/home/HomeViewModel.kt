@@ -68,6 +68,9 @@ class HomeViewModel : ViewModel() {
                 // 3. Obtener rol del usuario y contar notificaciones
                 val user = SupabaseManager.client.auth.currentUserOrNull()
                 if (user != null) {
+                    // Sincronizar Token de Notificaciones proactivamente
+                    SupabaseManager.syncFcmToken()
+
                     try {
                         val profile = SupabaseManager.client.postgrest["profiles"]
                             .select { filter { eq("id", user.id) } }
