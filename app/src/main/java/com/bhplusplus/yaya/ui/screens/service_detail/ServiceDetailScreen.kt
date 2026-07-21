@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.OutlinedFlag
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.EventAvailable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -376,6 +377,30 @@ fun ServiceDetailContent(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
+                // DISPONIBILIDAD
+                if (service.working_days.isNotEmpty()) {
+                    val dayNames = listOf("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
+                    val formattedDays = service.working_days.mapNotNull { if(it in 1..7) dayNames[it-1] else null }.joinToString(", ")
+                    val timeRange = "${service.start_time.substring(0, 5)} - ${service.end_time.substring(0, 5)}"
+                    
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.EventAvailable, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Spacer(Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = "Días de atención: $formattedDays",
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = "Horario: $timeRange",
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
                 // CONDICIONES Y MATERIALES
                 Text(
                     text = stringResource(R.string.service_detail_whats_included_label),
@@ -432,8 +457,8 @@ fun ServiceDetailPreview() {
             title = "Limpieza de Apartamento",
             description = "Servicio profesional de limpieza profunda para apartamentos y casas. Incluye aspirado, trapeado y desinfección.",
             price = 85000.0,
+            estimated_time = "4 horas",
             materials_included = true,
-            estimated_time = "4 horas"
         ),
         provider = UserProfile(
             id = "1",

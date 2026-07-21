@@ -79,7 +79,7 @@ Este módulo implementa el ciclo de vida completo de los datos (Create, Read, Up
 | # | Error Identificado | Solución Técnica |
 | :--- | :--- | :--- |
 | 1 | Pérdida de Sesión | Implementación de `SettingsSessionManager` con persistencia local. |
-| 2 | Disponibilidad Ciega | Validación proactiva contra tabla `availability`. |
+| 2 | Disponibilidad Ciega | Validación proactiva contra campos `working_days` y rangos horarios en `services`, más validación contra `availability`. |
 | 3 | Fricción de Roles | Arquitectura de Perfil Único Multi-rol en PostgreSQL. |
 | 4 | Metadata Inexistente | Lógica de recuperación de perfil desde metadatos de Auth. |
 | 5 | Navegación Insegura | Migración de String routes a objetos `@Serializable`. |

@@ -77,12 +77,15 @@ class CreateServiceViewModel : ViewModel() {
         price: String, 
         categoryId: String?, 
         estimatedTime: String,
+        workingDays: List<Int>,
+        startTime: String,
+        endTime: String,
         materialsIncluded: Boolean,
         extraCost: String,
         onResult: (Boolean) -> Unit
     ) {
-        if (title.isBlank() || description.isBlank() || price.isBlank() || categoryId == null) {
-            _errorMessage.value = "Completa los campos obligatorios"
+        if (title.isBlank() || description.isBlank() || price.isBlank() || categoryId == null || workingDays.isEmpty()) {
+            _errorMessage.value = "Completa los campos y selecciona al menos un día de trabajo"
             onResult(false)
             return
         }
@@ -106,9 +109,12 @@ class CreateServiceViewModel : ViewModel() {
                     description = description,
                     price = priceVal,
                     estimated_time = estimatedTime,
+                    working_days = workingDays,
+                    start_time = startTime,
+                    end_time = endTime,
                     materials_included = materialsIncluded,
                     extra_cost = extraCostVal,
-                    status = "pending_approval" // Hito 5: Requiere aprobación del admin
+                    // Hito 5: Requiere aprobación del admin
                 )
 
                 if (serviceId == null) {
@@ -123,6 +129,9 @@ class CreateServiceViewModel : ViewModel() {
                             set("price", priceVal)
                             set("category_id", categoryId)
                             set("estimated_time", estimatedTime)
+                            set("working_days", workingDays)
+                            set("start_time", startTime)
+                            set("end_time", endTime)
                             set("materials_included", materialsIncluded)
                             set("extra_cost", extraCostVal)
                         }

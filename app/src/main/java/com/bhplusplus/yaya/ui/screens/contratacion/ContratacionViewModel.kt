@@ -80,7 +80,7 @@ class ContratacionViewModel : ViewModel() {
      * Valida la disponibilidad del prestador para el día y hora seleccionados.
      */
     fun checkAvailability() {
-        val providerId = service?.provider_id ?: return
+        val currentService = service ?: return
         if (fecha.isBlank()) return
 
         viewModelScope.launch {
@@ -88,6 +88,30 @@ class ContratacionViewModel : ViewModel() {
                 val date = LocalDate.parse(fecha)
                 val dayOfWeek = date.dayOfWeek.value // 1 (Lunes) a 7 (Domingo)
 
+                // 1. Validar contra los días específicos del servicio (Day Picker UX)
+                if (currentService.working_days.isNotEmpty() && !currentService.working_days.contains(dayOfWeek)) {
+                    isAvailable = false
+                    val dayNames = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
+                    val allowed = currentService.working_days.map { dayNames[it-1] }.joinToString(", ")
+                    errorMessage = "Este servicio solo se presta los días: $allowed"
+                    return@launch
+                }
+
+                // 2. Validar contra el horario específico de este servicio
+                if (hora.isNotEmpty()) {
+                    val selectedTime = LocalTime.parse(hora)
+                    val startTime = LocalTime.parse(currentService.start_time)
+                    val endTime = LocalTime.parse(currentService.end_time)
+
+                    if (selectedTime.isBefore(startTime) || selectedTime.isAfter(endTime)) {
+                        isAvailable = false
+                        errorMessage = "Hora fuera del rango de atención del servicio ($startTime - $endTime)."
+                        return@launch
+                    }
+                }
+
+                // 3. Validar contra el horario general del prestador (Tabla availability - si aplica)
+                val providerId = currentService.provider_id ?: return@launch
                 val result = SupabaseManager.client.postgrest["availability"]
                     .select {
                         filter {
@@ -98,8 +122,10 @@ class ContratacionViewModel : ViewModel() {
                     .decodeList<com.bhplusplus.yaya.data.models.Availability>()
 
                 if (result.isEmpty()) {
-                    isAvailable = false
-                    errorMessage = "El prestador no trabaja este día."
+                    // Si no hay disponibilidad configurada en la tabla, permitimos por defecto 
+                    // para no bloquear el flujo del MVP, confiando en el campo de texto informativo.
+                    isAvailable = true
+                    errorMessage = null
                 } else {
                     // Si hay hora, validamos el rango
                     if (hora.isNotEmpty()) {

@@ -28,7 +28,6 @@ import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
 import java.time.Instant
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 /**
@@ -281,7 +280,7 @@ fun CampoFormulario(label: String, value: String, enabled: Boolean, placeholder:
 @Composable
 fun ContratacionPreview() {
     ContratacionContent(
-        service = Service(title = "Limpieza"), provider = null,
+        service = Service(title = "Limpieza",), provider = null,
         direccion = "", onDireccionChange = {}, 
         fecha = "", onFechaClick = {},
         hora = "", onHoraClick = {},

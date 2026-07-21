@@ -29,7 +29,7 @@ El proyecto sigue el patrón de arquitectura **MVVM (Model-View-ViewModel)** rec
 Se utiliza `StateFlow` y `SharedFlow` dentro de los ViewModels para exponer el estado a la UI de forma segura frente al ciclo de vida.
 
 ## 6. Modelos de Datos Críticos
-- **Availability:** Mapea la disponibilidad semanal de los prestadores para validación en tiempo real.
+- **Service Availability:** Sistema híbrido que utiliza `working_days` (array de enteros) y rangos horarios (`start_time`, `end_time`) directamente en la tabla `services` para una disponibilidad granular por talento. Se mantiene la tabla `availability` para horarios globales del prestador.
 - **ServiceRequest:** Evolucionado para incluir `final_price`, permitiendo la persistencia del acuerdo económico tras la negociación.
 - **Report (Hito 5):** Estructura relacional para la gestión de denuncias por mal comportamiento.
 
@@ -42,6 +42,9 @@ El sistema cuenta con un Dashboard centralizado que permite la moderación proac
     - El disparador es un **Webhook** sobre la tabla `requests`.
     - La función genera un token OAuth2 para la API V1 de Firebase.
     - Se integra con **Firebase Cloud Messaging (FCM)** para la entrega final al dispositivo.
+
+## 9. Cumplimiento y Legal
+El proyecto incluye una sección dedicada (`docs/04-legal`) con los lineamientos de privacidad y uso de la plataforma, alineados con el tratamiento de datos personales y la intermediación de servicios.
 
 ---
 *Última actualización: Junio 2026*

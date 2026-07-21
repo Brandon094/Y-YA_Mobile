@@ -25,6 +25,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Lógica de redirección por rol inmediata tras el inicio de sesión exitoso.
 - **Ecosistema de Agentes Especializados:** Definición de roles (Senior, UI, Datos, Negocio, Docs) y Orquestador Maestro para la gobernanza del proyecto.
 - **Hito 1: Refinamiento Operativo:** 
+    - Implementación de disponibilidad estructurada por servicio: Migración de campo de texto a `working_days` (array), `start_time` y `end_time` (time) en la tabla `services`.
+    - Nuevo Componente UI "Day Picker": Selección interactiva de días de la semana (L-D) con feedback visual en la creación de servicios.
+    - Lógica de Validación Triple: Cruce proactivo en tiempo real de días del servicio, rango horario del servicio y horario general del prestador en el flujo de contratación.
     - Implementación de lógica de validación de disponibilidad en tiempo real contra `public.availability`.
     - Evolución del modelo económico con soporte para `final_price` en el flujo de negociación.
     - Optimización de UX en Home con estados vacíos (`EmptyServicesView`) para búsquedas y filtros.

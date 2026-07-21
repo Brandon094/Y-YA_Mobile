@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -48,6 +49,9 @@ fun CreateServiceScreen(
     var description by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var estimatedTime by remember { mutableStateOf("") }
+    var selectedDays by remember { mutableStateOf<Set<Int>>(emptySet()) }
+    var startTime by remember { mutableStateOf("08:00") }
+    var endTime by remember { mutableStateOf("18:00") }
     var materialsIncluded by remember { mutableStateOf(false) }
     var extraCost by remember { mutableStateOf("0") }
     
@@ -93,6 +97,9 @@ fun CreateServiceScreen(
                 description = service.description
                 price = service.price.toString()
                 estimatedTime = service.estimated_time ?: ""
+                selectedDays = service.working_days.toSet()
+                startTime = service.start_time.substring(0, 5)
+                endTime = service.end_time.substring(0, 5)
                 materialsIncluded = service.materials_included
                 extraCost = service.extra_cost.toString()
                 selectedCategoryId = service.category_id
@@ -206,6 +213,72 @@ fun CreateServiceScreen(
                 enabled = !isLoading, shape = RoundedCornerShape(12.dp)
             )
 
+            // DISPONIBILIDAD (Day Picker UX)
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Días de prestación del servicio:",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val days = listOf("L", "M", "M", "J", "V", "S", "D")
+                    days.forEachIndexed { index, name ->
+                        val dayNumber = index + 1
+                        val isSelected = selectedDays.contains(dayNumber)
+                        
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray.copy(alpha = 0.3f),
+                                    shape = CircleShape
+                                )
+                                .clickable(enabled = !isLoading) {
+                                    selectedDays = if (isSelected) selectedDays - dayNumber else selectedDays + dayNumber
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = name,
+                                color = if (isSelected) Color.White else Color.Gray,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                }
+            }
+
+            // SELECTORES DE HORA
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = startTime,
+                    onValueChange = { startTime = it },
+                    label = { Text("Hora Inicio") },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("08:00") },
+                    enabled = !isLoading,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                OutlinedTextField(
+                    value = endTime,
+                    onValueChange = { endTime = it },
+                    label = { Text("Hora Fin") },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("18:00") },
+                    enabled = !isLoading,
+                    shape = RoundedCornerShape(12.dp)
+                )
+            }
+
             // MATERIALES
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = materialsIncluded, onCheckedChange = { materialsIncluded = it }, enabled = !isLoading)
@@ -229,7 +302,7 @@ fun CreateServiceScreen(
 
             Button(
                 onClick = {
-                    viewModel.saveService(serviceId, title, description, price, selectedCategoryId, estimatedTime, materialsIncluded, extraCost) { success ->
+                    viewModel.saveService(serviceId, title, description, price, selectedCategoryId, estimatedTime, selectedDays.toList().sorted(), startTime, endTime, materialsIncluded, extraCost) { success ->
                         if (success) {
                             if (serviceId == null) {
                                 // Si es nuevo, mostramos el aviso de moderación

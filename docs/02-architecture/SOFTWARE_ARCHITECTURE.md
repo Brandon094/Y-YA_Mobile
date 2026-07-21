@@ -46,7 +46,7 @@ YÁYA rompe la fricción tradicional de las plataformas de servicios al permitir
 
 ## 6. Lógica de Negocio y Reactividad
 El sistema implementa validaciones críticas y procesos reactivos:
-- **Validación de Disponibilidad:** Cruce de horarios en tiempo real contra la tabla `availability`.
+- **Validación de Disponibilidad:** Cruce de horarios en tiempo real contra los campos `working_days`, `start_time` y `end_time` en la tabla `services` (disponibilidad granular) y la tabla `availability` (horario global del prestador).
 - **Chat en Tiempo Real:** Uso de `Supabase Realtime` (Postgres Changes) para sincronizar mensajes sin latencia perceptible.
 - **Automatización via Edge Functions:** Uso de funciones en el servidor (Deno) disparadas por Webhooks para tareas asíncronas como el envío de notificaciones push vía Firebase.
 

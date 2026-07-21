@@ -42,6 +42,9 @@ Ofertas específicas publicadas por los prestadores.
 | `estimated_time`| varchar | | Tiempo estimado de duración. |
 | `materials_included`| boolean | DEFAULT false | Indica si incluye materiales. |
 | `extra_cost` | numeric | DEFAULT 0.00 | Costos adicionales comunes. |
+| `working_days` | integer[] | DEFAULT '{}' | Lista de días (1=Lunes, 7=Domingo) en que se presta el servicio. |
+| `start_time` | time | DEFAULT '08:00:00' | Hora de inicio de la jornada para este servicio. |
+| `end_time` | time | DEFAULT '18:00:00' | Hora de finalización de la jornada para este servicio. |
 | `status` | varchar | CHECK (active, inactive, pending_approval) | Estado de visibilidad (Aprobación en Hito 5). |
 | `created_at` | timestamptz | DEFAULT now() | Fecha de publicación del servicio. |
 
