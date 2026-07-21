@@ -77,11 +77,24 @@ fun HomeScreen(
                 actions = {
                     // Acceso rápido al listado de chats
                     IconButton(onClick = onChatListClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Chat,
-                            contentDescription = "Mis Chats",
-                            tint = MaterialTheme.colorScheme.onSecondary
-                        )
+                        BadgedBox(
+                            badge = {
+                                if (viewModel.unreadMessagesCount > 0) {
+                                    Badge(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = Color.White
+                                    ) {
+                                        Text(viewModel.unreadMessagesCount.toString())
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Chat,
+                                contentDescription = "Mis Chats",
+                                tint = MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
                     }
 
                     // Acceso rápido a notificaciones/estados según el rol con Badge (Hito 4)

@@ -40,6 +40,30 @@ class ChatViewModel : ViewModel() {
         
         fetchMessages(receiverId)
         subscribeToMessages(receiverId)
+        markMessagesAsRead(receiverId)
+    }
+
+    /**
+     * Marca todos los mensajes recibidos del otro usuario como leídos.
+     */
+    private fun markMessagesAsRead(otherUserId: String) {
+        val currentUserId = currentUser?.id ?: return
+        
+        viewModelScope.launch {
+            try {
+                SupabaseManager.client.postgrest["messages"].update({
+                    set("is_read", true)
+                }) {
+                    filter {
+                        eq("sender_id", otherUserId)
+                        eq("receiver_id", currentUserId)
+                        eq("is_read", false)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error al marcar como leído: ${e.message}")
+            }
+        }
     }
 
     /**
@@ -101,6 +125,11 @@ class ChatViewModel : ViewModel() {
                 // Usamos el Dispatcher Main para actualizar la UI
                 if (messages.none { it.id == newMessage.id }) {
                     messages = (messages + newMessage).sortedBy { it.sent_at }
+                }
+
+                // Si nosotros somos los receptores, lo marcamos como leído de inmediato (el "visto")
+                if (newMessage.receiver_id == currentUserId && !newMessage.is_read) {
+                    markMessagesAsRead(receiverId)
                 }
             }
         }.launchIn(viewModelScope)

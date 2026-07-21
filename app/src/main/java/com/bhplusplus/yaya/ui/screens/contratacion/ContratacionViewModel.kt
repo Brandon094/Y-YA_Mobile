@@ -17,6 +17,7 @@ import java.time.LocalTime
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import android.util.Log
+import java.time.ZoneId
 
 /**
  * VIEWMODEL PARA LA PANTALLA DE CONTRATACIÓN
@@ -181,8 +182,8 @@ class ContratacionViewModel : ViewModel() {
                 val time = LocalTime.parse(hora)
                 val combinedDateTime = LocalDateTime.of(date, time)
                 
-                // Formatear para Supabase (Timestamptz)
-                val scheduledDate = combinedDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
+                // Formatear para Supabase con Zona Horaria (Timestamptz)
+                val scheduledDate = combinedDateTime.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 
                 val request = ServiceRequest(
                     client_id = clientId,
@@ -201,8 +202,14 @@ class ContratacionViewModel : ViewModel() {
 
                 onResult(true, response.id)
             } catch (e: Exception) {
-                Log.e("ContratacionVM", "Error al crear: ${e.message}")
-                errorMessage = "Error al procesar la reserva. Verifica los datos."
+                Log.e("ContratacionVM", "Error fatal al crear reserva: ${e.message}", e)
+                
+                val errorMsg = e.message ?: ""
+                errorMessage = when {
+                    errorMsg.contains("42501") -> "Error de permisos (RLS). Contacta al administrador."
+                    errorMsg.contains("foreign key") -> "Error de vinculación de datos."
+                    else -> "Error al procesar la reserva: ${e.localizedMessage}"
+                }
                 onResult(false, null)
             } finally {
                 isLoading = false

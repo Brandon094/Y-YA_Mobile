@@ -4,12 +4,12 @@ Si los mensajes no llegan en tiempo real o las notificaciones no suenan, sigue e
 
 ---
 
-## 1. Habilitar Realtime para Mensajes ⚡
+## 1. Habilitar Realtime para Mensajes, Servicios y Solicitudes ⚡
 Por defecto, Supabase no escucha los cambios en las tablas por seguridad.
 1. Ve a **Database** -> **Replication**.
 2. En la tabla de publicaciones (usualmente llamada `supabase_realtime`), haz clic en **Source**.
-3. Asegúrate de que la tabla `messages` esté seleccionada (marcada con el check).
-4. **¡Importante!** Sin esto, el chat nunca será instantáneo.
+3. Asegúrate de que las tablas **`messages`**, **`services`** y **`requests`** estén seleccionadas (marcadas con el check).
+4. **¡Importante!** Sin esto, los cambios en la lista de servicios, el chat y los contadores (badges) nunca serán instantáneos.
 
 ---
 

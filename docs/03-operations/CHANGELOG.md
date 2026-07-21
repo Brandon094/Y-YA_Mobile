@@ -15,6 +15,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Hito 2: Chat en Tiempo Real:** 
     - Implementación de mensajería instantánea bidireccional.
     - Nuevo Componente "ChatListScreen": Centro de mensajes centralizado para acceder a todas las conversaciones activas.
+    - Lógica de "Visto" (Double Check): Marcación automática de mensajes como leídos en la base de datos al abrir la conversación.
     - Integración con `Supabase Realtime` para actualizaciones sin recarga.
     - Puntos de contacto en Detalle de Servicio, Mis Pedidos y Solicitudes Recibidas.
 - **Hito 2: Sistema de Reputación:** 
@@ -26,6 +27,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Lógica de redirección por rol inmediata tras el inicio de sesión exitoso.
 - **Ecosistema de Agentes Especializados:** Definición de roles (Senior, UI, Datos, Negocio, Docs) y Orquestador Maestro para la gobernanza del proyecto.
 - **Hito 1: Refinamiento Operativo:** 
+    - Reactividad Total: Implementación de suscripciones Realtime para listas de servicios, historial propio y contadores de la barra superior (Badges).
+    - Badge de Mensajes: Indicador visual en tiempo real de mensajes no leídos en el Home.
     - Implementación de disponibilidad estructurada por servicio: Migración de campo de texto a `working_days` (array), `start_time` y `end_time` (time) en la tabla `services`.
     - Nuevo Componente UI "Day Picker": Selección interactiva de días de la semana (L-D) con feedback visual en la creación de servicios.
     - Lógica de Validación Triple: Cruce proactivo en tiempo real de días del servicio, rango horario del servicio y horario general del prestador en el flujo de contratación.

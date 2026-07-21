@@ -11,6 +11,12 @@ import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.data.SupabaseManager
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.channel
+import io.github.jan.supabase.realtime.decodeRecord
+import io.github.jan.supabase.realtime.postgresChangeFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import android.util.Log
 import kotlinx.serialization.json.jsonPrimitive
@@ -38,6 +44,7 @@ class HomeViewModel : ViewModel() {
 
     var userRole by mutableStateOf<String?>(null)
     var notificationCount by mutableStateOf(0)
+    var unreadMessagesCount by mutableStateOf(0)
     var isLoading by mutableStateOf(false)
         private set
 
@@ -65,6 +72,9 @@ class HomeViewModel : ViewModel() {
                 
                 applyFilters() // Inicializamos la lista filtrada
 
+                // Activar suscripción Realtime para servicios
+                subscribeToServices()
+
                 // 3. Obtener rol del usuario y contar notificaciones
                 val user = SupabaseManager.client.auth.currentUserOrNull()
                 if (user != null) {
@@ -79,6 +89,11 @@ class HomeViewModel : ViewModel() {
                         
                         // Contar notificaciones según el rol (Hito 4)
                         fetchNotificationCount(user.id, profile.role)
+                        fetchUnreadMessagesCount(user.id)
+
+                        // Activar suscripciones reactivas para Badges
+                        subscribeToRequests(user.id, profile.role)
+                        subscribeToUnreadMessages(user.id)
                     } catch (e: Exception) {
                         Log.w("HomeViewModel", "Perfil no encontrado en DB, usando metadata.")
                         // Recuperamos el rol desde los metadatos de Auth para no bloquear la UI
@@ -89,6 +104,48 @@ class HomeViewModel : ViewModel() {
                 Log.e("HomeViewModel", "ERROR: ${e.message}")
             } finally {
                 isLoading = false
+            }
+        }
+    }
+
+    /**
+     * Se suscribe a cambios en tiempo real en la tabla 'services'.
+     */
+    private fun subscribeToServices() {
+        val channel = SupabaseManager.client.channel("services_home")
+        
+        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = "services"
+        }.onEach { action ->
+            when (action) {
+                is PostgresAction.Insert -> {
+                    val newService = action.decodeRecord<Service>()
+                    if (newService.status == "active") {
+                        allServices = allServices + newService
+                    }
+                }
+                is PostgresAction.Update -> {
+                    val updatedService = action.decodeRecord<Service>()
+                    allServices = if (updatedService.status == "active") {
+                        allServices.filter { it.id != updatedService.id } + updatedService
+                    } else {
+                        allServices.filter { it.id != updatedService.id }
+                    }
+                }
+                is PostgresAction.Delete -> {
+                    val deletedId = action.oldRecord["id"]?.jsonPrimitive?.content
+                    allServices = allServices.filter { it.id != deletedId }
+                }
+                else -> {}
+            }
+            applyFilters()
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            try {
+                channel.subscribe()
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error subscribing to services: ${e.message}")
             }
         }
     }
@@ -118,6 +175,60 @@ class HomeViewModel : ViewModel() {
                 Log.e("HomeViewModel", "Error al contar notificaciones: ${e.message}")
             }
         }
+    }
+
+    /**
+     * Cuenta mensajes no leídos dirigidos al usuario actual.
+     */
+    private fun fetchUnreadMessagesCount(userId: String) {
+        viewModelScope.launch {
+            try {
+                val count = SupabaseManager.client.postgrest["messages"]
+                    .select {
+                        filter {
+                            eq("receiver_id", userId)
+                            eq("is_read", false)
+                        }
+                    }
+                    .decodeList<com.bhplusplus.yaya.data.models.Message>()
+                    .size
+                unreadMessagesCount = count
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error al contar mensajes no leídos: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Se suscribe a cambios en las solicitudes para actualizar el contador de notificaciones.
+     */
+    private fun subscribeToRequests(userId: String, role: String) {
+        if (role != "provider" && role != "admin") return
+
+        val channel = SupabaseManager.client.channel("requests_notifications")
+        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = "requests"
+        }.onEach {
+            // Refrescamos el conteo real ante cualquier cambio (Insert, Update, Delete)
+            fetchNotificationCount(userId, role)
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch { channel.subscribe() }
+    }
+
+    /**
+     * Se suscribe a mensajes nuevos para actualizar el contador de no leídos.
+     */
+    private fun subscribeToUnreadMessages(userId: String) {
+        val channel = SupabaseManager.client.channel("messages_notifications")
+        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = "messages"
+        }.onEach { action ->
+            // Si llega un mensaje nuevo donde somos el receptor, o si se marca algo como leído
+            fetchUnreadMessagesCount(userId)
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch { channel.subscribe() }
     }
 
     /**

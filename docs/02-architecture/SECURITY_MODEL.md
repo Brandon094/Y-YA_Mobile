@@ -15,7 +15,14 @@ El sistema utiliza **Row Level Security (RLS)** de PostgreSQL para asegurar que 
     - **Inserción:** Usuarios autenticados pueden crear servicios vinculados a su propio `auth.uid()`.
     - **Actualización:** Solo el dueño (`provider_id`) puede editar sus servicios.
     - **Administración:** Los perfiles con rol `admin` tienen bypass de RLS para moderación total.
-- **Requests:** Solo el cliente que solicita (`client_id`) y el prestador que recibe (`provider_id`) tienen acceso a ver y actualizar los detalles de una solicitud específica.
+- **Requests:** Solo el cliente que solicita (`client_id`) y el prestador que recibe el servicio (`provider_id` vía join) pueden ver y actualizar el estado o precio de una solicitud (Negociación).
+- **Messages:** 
+    - **Lectura:** Usuarios solo ven mensajes donde son remitentes o destinatarios.
+    - **Inserción:** Usuarios solo pueden enviar mensajes bajo su propio ID.
+    - **Actualización:** Solo el destinatario puede marcar un mensaje como leído (`is_read = true`).
+- **Availability:** Lectura pública para usuarios autenticados; edición restringida exclusivamente al dueño del perfil de prestador.
+- **Ratings:** Lectura pública; inserción restringida al cliente que realizó la solicitud del servicio.
+- **Reports:** Cualquier usuario puede reportar; visualización restringida al autor del reporte y a los administradores.
 
 ## 3. Protección de API Keys
 - **Nivel de Acceso:** Se utiliza la `anon_key` de Supabase, la cual es pública por diseño pero está limitada por las políticas de RLS mencionadas anteriormente.
