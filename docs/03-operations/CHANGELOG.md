@@ -14,6 +14,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Soporte para permisos de notificación en Android 13+.
 - **Hito 2: Chat en Tiempo Real:** 
     - Implementación de mensajería instantánea bidireccional.
+    - Nuevo Componente "ChatListScreen": Centro de mensajes centralizado para acceder a todas las conversaciones activas.
     - Integración con `Supabase Realtime` para actualizaciones sin recarga.
     - Puntos de contacto en Detalle de Servicio, Mis Pedidos y Solicitudes Recibidas.
 - **Hito 2: Sistema de Reputación:** 

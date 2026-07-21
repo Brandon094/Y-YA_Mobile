@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Add
@@ -52,6 +53,7 @@ fun HomeScreen(
     onProfileClick: () -> Unit,        // Navega al perfil del usuario
     onMyOrders: () -> Unit,            // Navega a mis pedidos (Cliente)
     onIncomingRequestsClick: () -> Unit, // Navega a solicitudes recibidas (Prestador)
+    onChatListClick: () -> Unit,       // Navega al listado de chats
     onCreateServiceClick: () -> Unit,  // Navega a la creación de servicio
     onLogout: () -> Unit,              // Regresa al login tras cerrar sesión
     viewModel: HomeViewModel = viewModel()
@@ -73,6 +75,15 @@ fun HomeScreen(
                     }
                 },
                 actions = {
+                    // Acceso rápido al listado de chats
+                    IconButton(onClick = onChatListClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Chat,
+                            contentDescription = "Mis Chats",
+                            tint = MaterialTheme.colorScheme.onSecondary
+                        )
+                    }
+
                     // Acceso rápido a notificaciones/estados según el rol con Badge (Hito 4)
                     IconButton(onClick = {
                         if (viewModel.userRole == "provider" || viewModel.userRole == "admin") {
@@ -436,6 +447,7 @@ fun HomeScreenPreview() {
         onProfileClick = {}, 
         onMyOrders = {},
         onIncomingRequestsClick = {},
+        onChatListClick = {},
         onCreateServiceClick = {}, 
         onLogout = {}
     )

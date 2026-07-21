@@ -42,6 +42,7 @@ import com.bhplusplus.yaya.ui.screens.incoming_requests.IncomingRequestsScreen
 import com.bhplusplus.yaya.ui.screens.my_services.MyServicesScreen
 import com.bhplusplus.yaya.ui.screens.admin.AdminDashboardScreen
 import com.bhplusplus.yaya.ui.screens.chat.ChatScreen
+import com.bhplusplus.yaya.ui.screens.chat.ChatListScreen
 
 import android.util.Log
 
@@ -61,6 +62,7 @@ import android.util.Log
 @Serializable object MyOrdersRoute
 @Serializable object IncomingRequestsRoute
 @Serializable object MyServicesRoute
+@Serializable object ChatListRoute // Nueva ruta para el listado de chats
 @Serializable data class ServiceDetailRoute(val serviceId: String)
 @Serializable data class ChatRoute(val receiverId: String, val receiverName: String) // Hito 2: Chat
 @Serializable data class ContratacionRoute(val serviceId: String)
@@ -196,6 +198,7 @@ fun AppNavigation() {
                 onProfileClick = { navController.navigate(ProfileRoute) },
                 onMyOrders = { navController.navigate(MyOrdersRoute) },
                 onIncomingRequestsClick = { navController.navigate(IncomingRequestsRoute) },
+                onChatListClick = { navController.navigate(ChatListRoute) },
                 onCreateServiceClick = { navController.navigate(CreateServiceRoute()) },
                 onLogout = {
                     scope.launch {
@@ -229,6 +232,16 @@ fun AppNavigation() {
                 receiverId = route.receiverId,
                 receiverName = route.receiverName,
                 onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Listado de Chats
+        composable<ChatListRoute> {
+            ChatListScreen(
+                onBack = { navController.popBackStack() },
+                onChatClick = { id, name ->
+                    navController.navigate(ChatRoute(id, name))
+                }
             )
         }
 
