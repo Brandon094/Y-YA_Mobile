@@ -222,8 +222,18 @@ fun EmptyState(message: String) {
 @Composable
 fun AdminDashboardPreview() {
     val sampleServices = listOf(
-        Service(id = "1", title = "Reparación de PC", description = "Servicio técnico a domicilio", price = 50000.0),
-        Service(id = "2", title = "Limpieza de Sofá", description = "Limpieza profunda con vapor", price = 80000.0)
+        Service(
+            id = "1",
+            title = "Reparación de PC",
+            description = "Servicio técnico a domicilio",
+            price = 50000.0,
+        ),
+        Service(
+            id = "2",
+            title = "Limpieza de Sofá",
+            description = "Limpieza profunda con vapor",
+            price = 80000.0,
+        )
     )
     val sampleProfiles = listOf(
         UserProfile(id = "1", full_name = "Brandon Daza", role = "admin"),

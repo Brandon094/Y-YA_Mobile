@@ -16,5 +16,6 @@ data class UserProfile(
     val document_id: String? = null,
     val birth_date: String? = null,
     val address: String? = null,
-    val avatar_url: String? = null
+    val avatar_url: String? = null,
+    val fcm_token: String? = null
 )

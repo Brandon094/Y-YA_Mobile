@@ -15,6 +15,9 @@ data class Service(
     val description: String = "",
     val price: Double = 0.0,
     val estimated_time: String? = null,   // Tiempo estimado (ej: "2 horas")
+    val working_days: List<Int> = emptyList(), // [1, 2, 3] para Lunes, Martes, Miércoles
+    val start_time: String = "08:00:00",  // Hora de inicio
+    val end_time: String = "18:00:00",    // Hora de fin
     val materials_included: Boolean = false,
     val extra_cost: Double = 0.0,
     val status: String = "pending_approval", // active, inactive, pending_approval (Hito 5)

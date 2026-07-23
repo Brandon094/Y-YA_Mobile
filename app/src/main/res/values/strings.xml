@@ -138,6 +138,7 @@
     <string name="create_service_field_title">Título del servicio</string>
     <string name="create_service_field_description">Descripción detallada</string>
     <string name="create_service_field_price">Precio sugerido (Ej: 50000)</string>
+    <string name="create_service_field_availability">Disponibilidad (Ej: Lunes a Viernes 8am - 6pm)</string>
     <string name="create_service_button">Publicar talento</string>
 
     <!-- My Orders Screen -->

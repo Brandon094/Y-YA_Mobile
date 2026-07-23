@@ -13,7 +13,8 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 
 ## Hito 1: Refinamiento Operativo y Lógica de Negocio
 **Objetivo:** Asegurar que el flujo transaccional sea robusto y preciso.
-- [x] **Sincronización de Disponibilidad:** Validación en tiempo real del selector de fecha/hora contra la tabla `public.availability`.
+- [x] **Disponibilidad Granular:** Implementación de selección de días (`working_days`) y rangos horarios por servicio individual.
+- [x] **Sincronización de Disponibilidad:** Validación en tiempo real del selector de fecha/hora contra la tabla `public.availability` y reglas del servicio.
 - [x] **Evolución del Modelo Económico:** Implementación del campo `final_price` en solicitudes para reflejar acuerdos tras negociaciones.
 - [ ] **Optimización de UI/UX:** Refinamiento de transiciones y estados de carga (Shimmer effect).
 
@@ -31,9 +32,13 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 
 ## Hito 4: Escalabilidad, Notificaciones y Legal
 **Objetivo:** Preparar la aplicación para el lanzamiento comercial y cumplimiento normativo.
-- [ ] **Sistema de Notificaciones Push:** Alertas en tiempo real sobre cambios de estado en pedidos y nuevos mensajes.
-- [ ] **Modelo SaaS (Suscripciones):** Implementación de planes para prestadores con restricciones de visibilidad y funcionalidades.
-- [ ] **Cumplimiento Legal:** Integración de pantallas de Términos y Condiciones, y Políticas de Privacidad.
+- [x] **Sistema de Notificaciones Push (Infraestructura):** 
+    - Integración de Firebase Cloud Messaging (FCM).
+    - Gestión de tokens de dispositivo en el perfil del usuario.
+    - Implementación de Badges visuales en tiempo real para solicitudes pendientes.
+- [ ] **Automatización de Avisos:** Implementación de Edge Functions en Supabase para disparo automático de notificaciones.
+- [ ] **Modelo SaaS (Suscripciones):** Implementación de planes para prestadores.
+- [x] **Cumplimiento Legal:** Integración de borradores oficiales de Términos y Condiciones, y Políticas de Privacidad (v0.2.0).
 - [ ] **Pasarela de Pagos (Post-MVP):** Integración con proveedores locales para pagos in-app.
 
 ---

@@ -8,19 +8,20 @@
 - **Plataforma:** Android
 
 ## Especificaciones de Software
-- **Min SDK:** 24 (Android 7.0 Nougat)
-- **Target SDK:** 34 (Android 14)
-- **Lenguaje:** Kotlin
+- **Min SDK:** 26 (Android 8.0 Oreo)
+- **Target SDK:** 36 (Android 15+)
+- **Lenguaje:** Kotlin 2.2.10 (K2)
 - **Base de Datos:** PostgreSQL (vía Supabase)
-- **Autenticación:** Supabase Auth (Email, Google)
+- **Autenticación:** Supabase Auth
+- **Notificaciones:** Firebase Cloud Messaging (FCM)
 
-## Funcionalidades Clave (MVP+)
-1. **Cuenta Universal (No Doble Fricción):** Un mismo usuario puede actuar como Cliente y Prestador sin cambiar de cuenta, facilitando la fluidez del ecosistema.
-2. **Catálogo Dinámico:** Exploración y filtrado de servicios en tiempo real.
-3. **Flujo de Negociación:** Sistema de contraofertas entre cliente y prestador para acordar precios finales.
-4. **Gestión Operativa:** Panel de solicitudes recibidas para prestadores y historial de pedidos para clientes.
-5. **Administración de Perfil:** Edición completa de datos personales sincronizada con Supabase.
-6. **Publicación de Servicios:** Herramientas para que el prestador cree y gestione su oferta de talento.
+## Funcionalidades Clave (MVP+ v0.2.0)
+1. **Cuenta Universal (No Doble Fricción):** Un mismo usuario puede actuar como Cliente y Prestador.
+2. **Chat en Tiempo Real:** Comunicación instantánea bidireccional vía Supabase Realtime.
+3. **Sistema de Reputación:** Calificaciones y reseñas dinámicas post-servicio.
+4. **Notificaciones Push:** Alertas automáticas para nuevas solicitudes y mensajes.
+5. **Dashboard Administrativo:** Panel de control para moderación de servicios y usuarios.
+6. **Catálogo y Negociación:** Exploración de talentos y flujo de contraofertas funcional.
 
 ## Entorno de Desarrollo
 - **IDE:** Android Studio Ladybug | 2024.2.1+

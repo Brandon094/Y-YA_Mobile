@@ -6,9 +6,15 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.SettingsSessionManager
+import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.ktor.client.engine.okhttp.OkHttp
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * GESTOR DE CONEXIÓN CON SUPABASE
@@ -50,6 +56,37 @@ object SupabaseManager {
             }
             install(Postgrest)
             install(Realtime)
+        }
+    }
+
+    /**
+     * Recupera el token actual de FCM y lo sincroniza con el perfil en Supabase.
+     */
+    @OptIn(DelicateCoroutinesApi::class)
+    fun syncFcmToken() {
+        try {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (!task.isSuccessful) return@addOnCompleteListener
+
+                val token = task.result
+                val user = client.auth.currentUserOrNull()
+
+                if (user != null && token != null) {
+                    GlobalScope.launch {
+                        try {
+                            client.postgrest["profiles"].update({
+                                set("fcm_token", token)
+                            }) {
+                                filter { eq("id", user.id) }
+                            }
+                        } catch (e: Exception) {
+                            // Error silencioso en background
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Firebase no inicializado o error de SDK
         }
     }
 }

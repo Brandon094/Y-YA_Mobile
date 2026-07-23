@@ -17,6 +17,7 @@ import java.time.LocalTime
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import android.util.Log
+import java.time.ZoneId
 
 /**
  * VIEWMODEL PARA LA PANTALLA DE CONTRATACIÓN
@@ -80,7 +81,7 @@ class ContratacionViewModel : ViewModel() {
      * Valida la disponibilidad del prestador para el día y hora seleccionados.
      */
     fun checkAvailability() {
-        val providerId = service?.provider_id ?: return
+        val currentService = service ?: return
         if (fecha.isBlank()) return
 
         viewModelScope.launch {
@@ -88,6 +89,30 @@ class ContratacionViewModel : ViewModel() {
                 val date = LocalDate.parse(fecha)
                 val dayOfWeek = date.dayOfWeek.value // 1 (Lunes) a 7 (Domingo)
 
+                // 1. Validar contra los días específicos del servicio (Day Picker UX)
+                if (currentService.working_days.isNotEmpty() && !currentService.working_days.contains(dayOfWeek)) {
+                    isAvailable = false
+                    val dayNames = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
+                    val allowed = currentService.working_days.map { dayNames[it-1] }.joinToString(", ")
+                    errorMessage = "Este servicio solo se presta los días: $allowed"
+                    return@launch
+                }
+
+                // 2. Validar contra el horario específico de este servicio
+                if (hora.isNotEmpty()) {
+                    val selectedTime = LocalTime.parse(hora)
+                    val startTime = LocalTime.parse(currentService.start_time)
+                    val endTime = LocalTime.parse(currentService.end_time)
+
+                    if (selectedTime.isBefore(startTime) || selectedTime.isAfter(endTime)) {
+                        isAvailable = false
+                        errorMessage = "Hora fuera del rango de atención del servicio ($startTime - $endTime)."
+                        return@launch
+                    }
+                }
+
+                // 3. Validar contra el horario general del prestador (Tabla availability - si aplica)
+                val providerId = currentService.provider_id ?: return@launch
                 val result = SupabaseManager.client.postgrest["availability"]
                     .select {
                         filter {
@@ -98,8 +123,10 @@ class ContratacionViewModel : ViewModel() {
                     .decodeList<com.bhplusplus.yaya.data.models.Availability>()
 
                 if (result.isEmpty()) {
-                    isAvailable = false
-                    errorMessage = "El prestador no trabaja este día."
+                    // Si no hay disponibilidad configurada en la tabla, permitimos por defecto 
+                    // para no bloquear el flujo del MVP, confiando en el campo de texto informativo.
+                    isAvailable = true
+                    errorMessage = null
                 } else {
                     // Si hay hora, validamos el rango
                     if (hora.isNotEmpty()) {
@@ -155,8 +182,8 @@ class ContratacionViewModel : ViewModel() {
                 val time = LocalTime.parse(hora)
                 val combinedDateTime = LocalDateTime.of(date, time)
                 
-                // Formatear para Supabase (Timestamptz)
-                val scheduledDate = combinedDateTime.format(DateTimeFormatter.ISO_DATE_TIME)
+                // Formatear para Supabase con Zona Horaria (Timestamptz)
+                val scheduledDate = combinedDateTime.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 
                 val request = ServiceRequest(
                     client_id = clientId,
@@ -175,8 +202,14 @@ class ContratacionViewModel : ViewModel() {
 
                 onResult(true, response.id)
             } catch (e: Exception) {
-                Log.e("ContratacionVM", "Error al crear: ${e.message}")
-                errorMessage = "Error al procesar la reserva. Verifica los datos."
+                Log.e("ContratacionVM", "Error fatal al crear reserva: ${e.message}", e)
+                
+                val errorMsg = e.message ?: ""
+                errorMessage = when {
+                    errorMsg.contains("42501") -> "Error de permisos (RLS). Contacta al administrador."
+                    errorMsg.contains("foreign key") -> "Error de vinculación de datos."
+                    else -> "Error al procesar la reserva: ${e.localizedMessage}"
+                }
                 onResult(false, null)
             } finally {
                 isLoading = false

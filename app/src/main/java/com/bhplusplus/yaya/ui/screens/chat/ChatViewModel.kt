@@ -40,6 +40,30 @@ class ChatViewModel : ViewModel() {
         
         fetchMessages(receiverId)
         subscribeToMessages(receiverId)
+        markMessagesAsRead(receiverId)
+    }
+
+    /**
+     * Marca todos los mensajes recibidos del otro usuario como leídos.
+     */
+    private fun markMessagesAsRead(otherUserId: String) {
+        val currentUserId = currentUser?.id ?: return
+        
+        viewModelScope.launch {
+            try {
+                SupabaseManager.client.postgrest["messages"].update({
+                    set("is_read", true)
+                }) {
+                    filter {
+                        eq("sender_id", otherUserId)
+                        eq("receiver_id", currentUserId)
+                        eq("is_read", false)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error al marcar como leído: ${e.message}")
+            }
+        }
     }
 
     /**
@@ -84,7 +108,9 @@ class ChatViewModel : ViewModel() {
     private fun subscribeToMessages(receiverId: String) {
         val currentUserId = currentUser?.id ?: return
         
-        val channel = SupabaseManager.client.channel("chat_channel")
+        // Usamos un nombre de canal único por conversación para evitar colisiones
+        val channelId = if (currentUserId < receiverId) "${currentUserId}_$receiverId" else "${receiverId}_$currentUserId"
+        val channel = SupabaseManager.client.channel("chat_$channelId")
         
         // Escuchamos inserciones en la tabla messages
         channel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
@@ -96,15 +122,25 @@ class ChatViewModel : ViewModel() {
             if ((newMessage.sender_id == currentUserId && newMessage.receiver_id == receiverId) ||
                 (newMessage.sender_id == receiverId && newMessage.receiver_id == currentUserId)) {
                 
-                // Evitamos duplicados si el mensaje ya fue añadido por la carga inicial o envío local
+                // Usamos el Dispatcher Main para actualizar la UI
                 if (messages.none { it.id == newMessage.id }) {
-                    messages = messages + newMessage
+                    messages = (messages + newMessage).sortedBy { it.sent_at }
+                }
+
+                // Si nosotros somos los receptores, lo marcamos como leído de inmediato (el "visto")
+                if (newMessage.receiver_id == currentUserId && !newMessage.is_read) {
+                    markMessagesAsRead(receiverId)
                 }
             }
         }.launchIn(viewModelScope)
 
         viewModelScope.launch {
-            channel.subscribe()
+            try {
+                channel.subscribe()
+                Log.d("ChatViewModel", "Suscrito al canal: chat_$channelId")
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error al suscribirse: ${e.message}")
+            }
         }
     }
 
