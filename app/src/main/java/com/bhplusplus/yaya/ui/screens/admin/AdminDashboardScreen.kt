@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -21,6 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.tooling.preview.Preview
+import coil3.compose.AsyncImage
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.data.models.Report
@@ -137,11 +141,26 @@ fun AdminServiceCard(service: Service, onApprove: (String) -> Unit, onReject: (S
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(Modifier.padding(16.dp)) {
-            Text(service.title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text(service.description, fontSize = 14.sp, color = Color.Gray, maxLines = 2)
-            Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Precio: $${service.price}", fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.primary)
+                if (service.provider?.avatar_url != null) {
+                    AsyncImage(
+                        model = service.provider.avatar_url,
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp).clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(Modifier.width(12.dp))
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(service.title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text("Por: ${service.provider?.full_name ?: "Desconocido"}", fontSize = 12.sp, color = Color.Gray)
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            Text(service.description, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
+            Spacer(Modifier.height(12.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Precio: $${service.price}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = { onReject(service.id!!) }) {
                     Icon(Icons.Default.Close, contentDescription = "Rechazar", tint = Color.Red)
@@ -161,7 +180,18 @@ fun UsersList(profiles: List<UserProfile>) {
             ListItem(
                 headlineContent = { Text(profile.full_name) },
                 supportingContent = { Text("Rol: ${profile.role} | ID: ${profile.document_id ?: "N/A"}") },
-                leadingContent = { Icon(Icons.Default.Person, null) },
+                leadingContent = { 
+                    if (profile.avatar_url != null) {
+                        AsyncImage(
+                            model = profile.avatar_url,
+                            contentDescription = null,
+                            modifier = Modifier.size(40.dp).clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(Icons.Default.Person, null)
+                    }
+                },
                 trailingContent = {
                     if (profile.role == "admin") {
                         Badge(containerColor = MaterialTheme.colorScheme.primary) { Text("Admin") }
@@ -196,14 +226,34 @@ fun ReportCard(report: Report) {
     ) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Red, modifier = Modifier.size(16.dp))
+                if (report.reported?.avatar_url != null) {
+                    AsyncImage(
+                        model = report.reported.avatar_url,
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp).clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Red, modifier = Modifier.size(16.dp))
+                }
                 Spacer(Modifier.width(8.dp))
                 Text("Denunciado: ${report.reported?.full_name ?: "ID: " + report.reported_user_id}", fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.height(4.dp))
             Text("Motivo: ${report.reason}", fontSize = 14.sp)
             Spacer(Modifier.height(8.dp))
-            Text("Reportado por: ${report.reporter?.full_name ?: "Usuario"}", fontSize = 12.sp, color = Color.Gray)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (report.reporter?.avatar_url != null) {
+                    AsyncImage(
+                        model = report.reporter.avatar_url,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp).clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(Modifier.width(4.dp))
+                }
+                Text("Reportado por: ${report.reporter?.full_name ?: "Usuario"}", fontSize = 12.sp, color = Color.Gray)
+            }
         }
     }
 }

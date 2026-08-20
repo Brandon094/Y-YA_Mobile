@@ -47,9 +47,9 @@ class AdminViewModel : ViewModel() {
             isLoading = true
             errorMessage = null
             try {
-                // 1. Cargar servicios que requieren aprobación
+                // 1. Cargar servicios que requieren aprobación con Join del prestador
                 pendingServices = SupabaseManager.client.postgrest["services"]
-                    .select {
+                    .select(Columns.raw("*, provider_profile:provider_id(*)")) {
                         filter {
                             eq("status", "pending_approval")
                         }

@@ -38,6 +38,8 @@ Se utiliza `StateFlow` y `SharedFlow` dentro de los ViewModels para exponer el e
 
 ## 7. Módulo Administrativo
 El sistema cuenta con un Dashboard centralizado que permite la moderación proactiva mediante auditoría de servicios y supervisión de usuarios.
+- **Identidad Visual:** Integración de Avatares mediante Coil 3 en todas las vistas administrativas para facilitar el reconocimiento de perfiles.
+- **Relaciones de Datos:** Uso de consultas asíncronas con embebido de perfiles (Joins) para reducir la carga de red.
 
 ## 8. Sistema de Mensajería y Notificaciones
 - **Realtime:** Los mensajes de chat se sincronizan mediante suscripciones a canales de Supabase Realtime, filtrando por el ID de los participantes para seguridad.

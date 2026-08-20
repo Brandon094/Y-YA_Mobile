@@ -43,6 +43,7 @@ class HomeViewModel : ViewModel() {
     var selectedCategoryId by mutableStateOf<String?>(null)
 
     var userRole by mutableStateOf<String?>(null)
+    var userProfile by mutableStateOf<UserProfile?>(null)
     var notificationCount by mutableStateOf(0)
     var unreadMessagesCount by mutableStateOf(0)
     var isLoading by mutableStateOf(false)
@@ -86,6 +87,7 @@ class HomeViewModel : ViewModel() {
                             .select { filter { eq("id", user.id) } }
                             .decodeSingle<UserProfile>()
                         userRole = profile.role
+                        userProfile = profile
                         
                         // Contar notificaciones según el rol (Hito 4)
                         fetchNotificationCount(user.id, profile.role)

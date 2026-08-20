@@ -89,6 +89,7 @@ Este módulo implementa el ciclo de vida completo de los datos (Create, Read, Up
 | 9 | Multimedia Estática | Integración de Supabase Storage y Coil 3 para portafolios dinámicos y avatares reales. |
 | 10 | Visualización Multimedia | Implementación de visor de imágenes a pantalla completa en detalles de servicio para mejorar la confianza del cliente. |
 | 11 | Navegación Inmersiva | Integración de HorizontalPager en el visor multimedia para navegación por gestos (Swipe) entre imágenes de portafolio. |
+| 12 | Identidad Visual Admin | Integración de avatares en el Panel Administrativo y Home para humanizar la plataforma y facilitar la moderación. |
 
 **Evidencia de Corrección (Persistencia de Sesión):**
 ![Persistencia Supabase](../assets/SupaBase.png)

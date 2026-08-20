@@ -7,6 +7,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [0.1.0-alpha] - 2025-03-05
 ### Añadido (MVP+ Milestone)
+- **Refinamiento UI/UX Transversal:**
+    - Implementación de Avatares dinámicos en el Dashboard Administrativo (Listado de usuarios, reportes y aprobación de servicios).
+    - Integración de foto de perfil del usuario actual en la barra de navegación del Home Screen.
+    - Optimización de consultas relacionales (Postgrest Joins) para la recuperación eficiente de metadatos de perfiles.
 - **Hito 3: Multimedia y Gestión de Activos:**
     - Integración de Supabase Storage con soporte para buckets de 'avatars' y 'portfolios'.
     - Implementación de carga dinámica de imágenes mediante Coil 3.

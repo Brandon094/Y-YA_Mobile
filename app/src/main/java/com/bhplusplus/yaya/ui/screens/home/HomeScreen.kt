@@ -26,6 +26,9 @@ import androidx.compose.material.icons.filled.Work
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -67,11 +70,20 @@ fun HomeScreen(
                 title = { Text(stringResource(R.string.home_top_bar_title)) },
                 navigationIcon = {
                     IconButton(onClick = onProfileClick) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = stringResource(R.string.home_profile_desc),
-                            tint = MaterialTheme.colorScheme.onSecondary
-                        )
+                        if (viewModel.userProfile?.avatar_url != null) {
+                            AsyncImage(
+                                model = viewModel.userProfile?.avatar_url,
+                                contentDescription = stringResource(R.string.home_profile_desc),
+                                modifier = Modifier.size(32.dp).clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = stringResource(R.string.home_profile_desc),
+                                tint = MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
                     }
                 },
                 actions = {
