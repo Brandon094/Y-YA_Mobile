@@ -23,6 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import com.bhplusplus.yaya.R
 
 /**
@@ -82,16 +85,27 @@ fun ProfileScreen(
                 Box(
                     modifier = Modifier
                         .size(110.dp)
-                        .background(MaterialTheme.colorScheme.surface, CircleShape)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface)
                         .padding(4.dp)
                         .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_logo),
-                        contentDescription = stringResource(R.string.profile_avatar_desc),
-                        modifier = Modifier.size(65.dp)
-                    )
+                    if (profile?.avatar_url != null) {
+                        AsyncImage(
+                            model = profile.avatar_url,
+                            contentDescription = stringResource(R.string.profile_avatar_desc),
+                            modifier = Modifier.fillMaxSize().clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = stringResource(R.string.profile_avatar_desc),
+                            modifier = Modifier.size(65.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))

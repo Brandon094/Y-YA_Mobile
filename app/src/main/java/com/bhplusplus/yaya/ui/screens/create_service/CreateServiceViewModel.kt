@@ -10,8 +10,10 @@ import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.Category
 import com.bhplusplus.yaya.data.models.Service
+import com.bhplusplus.yaya.data.models.ServiceImage
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.launch
 import android.util.Log
 
@@ -30,6 +32,9 @@ class CreateServiceViewModel : ViewModel() {
     // Lista de categorías obtenidas de la base de datos
     var categories by mutableStateOf<List<Category>>(emptyList())
         private set
+
+    // Imágenes seleccionadas para el portafolio (ByteArray para subir)
+    var selectedImages by mutableStateOf<List<ByteArray>>(emptyList())
 
     init {
         fetchCategories()
@@ -117,11 +122,19 @@ class CreateServiceViewModel : ViewModel() {
                     // Hito 5: Requiere aprobación del admin
                 )
 
+                val finalServiceId: String
+
                 if (serviceId == null) {
-                    // Nuevo
-                    SupabaseManager.client.postgrest["services"].insert(serviceData)
+                    // Nuevo - Insertamos y recuperamos el ID generado
+                    val insertedService = SupabaseManager.client.postgrest["services"]
+                        .insert(serviceData) {
+                            select()
+                        }
+                        .decodeSingle<Service>()
+                    finalServiceId = insertedService.id ?: throw Exception("Error al obtener ID")
                 } else {
                     // Editar
+                    finalServiceId = serviceId
                     SupabaseManager.client.postgrest["services"].update(
                         {
                             set("title", title)
@@ -137,6 +150,21 @@ class CreateServiceViewModel : ViewModel() {
                         }
                     ) {
                         filter { eq("id", serviceId) }
+                    }
+                }
+
+                // SUBIR IMÁGENES DEL PORTAFOLIO
+                if (selectedImages.isNotEmpty()) {
+                    selectedImages.forEachIndexed { index, bytes ->
+                        val fileName = "${finalServiceId}_img_$index.jpg"
+                        val url = SupabaseManager.uploadImage("portfolios", fileName, bytes)
+                        
+                        // Guardar referencia en la tabla service_images
+                        val serviceImage = ServiceImage(
+                            service_id = finalServiceId,
+                            image_url = url
+                        )
+                        SupabaseManager.client.postgrest["service_images"].insert(serviceImage)
                     }
                 }
 

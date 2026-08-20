@@ -4,6 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +20,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.EventAvailable
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,9 +35,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import androidx.compose.ui.draw.clip
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
+import com.bhplusplus.yaya.data.models.ServiceImage
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -103,6 +110,7 @@ fun ServiceDetailScreen(
                 ServiceDetailContent(
                     service = service,
                     provider = provider,
+                    serviceImages = viewModel.serviceImages,
                     onBack = onBack,
                     onContratar = onContratar,
                     onReportClick = { showReportDialog = true },
@@ -169,12 +177,60 @@ fun ReportDialog(
 fun ServiceDetailContent(
     service: Service,
     provider: UserProfile?,
+    serviceImages: List<ServiceImage> = emptyList(),
     onBack: () -> Unit,
     onContratar: () -> Unit,
     onReportClick: () -> Unit,
     onChatClick: () -> Unit
 ) {
     val currencyFormatter = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
+    var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
+
+    // VISOR DE IMAGEN EN PANTALLA COMPLETA CON NAVEGACIÓN (SWIPE)
+    if (selectedImageIndex != null && serviceImages.isNotEmpty()) {
+        val pagerState = rememberPagerState(initialPage = selectedImageIndex!!) { serviceImages.size }
+        
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { selectedImageIndex = null },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black),
+                contentAlignment = Alignment.Center
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize(),
+                    pageSpacing = 16.dp
+                ) { page ->
+                    AsyncImage(
+                        model = serviceImages[page].image_url,
+                        contentDescription = "Imagen ampliada ${page + 1}",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+                // Botón Cerrar
+                IconButton(
+                    onClick = { selectedImageIndex = null },
+                    modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
+                ) {
+                    Icon(Icons.Default.Close, contentDescription = "Cerrar", tint = Color.White)
+                }
+
+                // Indicador de página (ej: 1/5)
+                Text(
+                    text = "${pagerState.currentPage + 1} / ${serviceImages.size}",
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 32.dp),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -235,20 +291,50 @@ fun ServiceDetailContent(
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Header Visual
+            // Header Visual (Galería de imágenes o Placeholder)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
-                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)),
+                    .height(240.dp)
+                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_logo),
-                    contentDescription = null,
-                    modifier = Modifier.size(120.dp),
-                    contentScale = ContentScale.Fit
-                )
+                if (serviceImages.isNotEmpty()) {
+                    // Carrusel simple si hay imágenes
+                    androidx.compose.foundation.lazy.LazyRow(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(0.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        items(serviceImages.size) { index ->
+                            AsyncImage(
+                                model = serviceImages[index].image_url,
+                                contentDescription = "Imagen del servicio $index",
+                                modifier = Modifier
+                                    .fillParentMaxWidth()
+                                    .fillMaxHeight()
+                                    .clickable { selectedImageIndex = index },
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                } else {
+                    // Placeholder si no hay fotos
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Default.Image,
+                            contentDescription = null,
+                            modifier = Modifier.size(60.dp),
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "Sin fotos del portafolio", 
+                            fontSize = 12.sp, 
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                        )
+                    }
+                }
             }
 
             Column(modifier = Modifier.padding(24.dp)) {
@@ -311,11 +397,28 @@ fun ServiceDetailContent(
                         modifier = Modifier.padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Avatar del prestador dinámico
                         Box(
-                            modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.primary, CircleShape),
+                            modifier = Modifier
+                                .size(45.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Person, contentDescription = null, tint = Color.White)
+                            if (provider?.avatar_url != null) {
+                                AsyncImage(
+                                    model = provider.avatar_url,
+                                    contentDescription = "Avatar de ${provider.full_name}",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Person, 
+                                    contentDescription = null, 
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                         Spacer(Modifier.width(12.dp))
                         Column {

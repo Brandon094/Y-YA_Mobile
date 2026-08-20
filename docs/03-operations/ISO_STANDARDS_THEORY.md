@@ -4,8 +4,8 @@ theme: gaia
 paginate: true
 backgroundColor: #ffffff
 color: #2d3436
-header: '![w:32 h:32](../../app/src/main/res/drawable/ic_logo.xml) **Calidad de Software | BH++ Team**'
-footer: 'Brandon Daza | ADSO 2025 | ISO 25010 • 12207 • 27001'
+header: '![w:32 h:32](./ic_logo.png) **Calidad de Software | BH++ Team**'
+footer: 'Brandon Daza | ADSO 2026 | ISO 25010 • 12207 • 27001'
 style: |
   section {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -163,4 +163,4 @@ Aplicar ISO/IEC no es burocracia, es la diferencia entre un **juguete tecnológi
 
 # 🙏 ¡Gracias por su atención!
 
-*BH++ Team | Engineering Excellence 2025*
+*BH++ Team | Engineering Excellence 2026*

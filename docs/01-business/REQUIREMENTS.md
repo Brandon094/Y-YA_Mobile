@@ -24,9 +24,15 @@
 - **RF-13:** **Sistema de Visto:** Los mensajes deben marcarse como leídos automáticamente al abrir la conversación.
 - **RF-14:** El cliente podrá calificar (1-5 estrellas) y reseñar al prestador tras finalizar un servicio.
 
+### Multimedia y Portafolio (Hito 3)
+- **RF-15:** **Fotos de Perfil:** Los usuarios podrán subir y actualizar su avatar desde la pantalla de edición de perfil.
+- **RF-16:** **Portafolio de Servicios:** Los prestadores podrán subir múltiples imágenes (galería) que demuestren la calidad de sus trabajos anteriores al crear o editar un servicio.
+- **RF-17:** **Visualización Avanzada:** El sistema permitirá la navegación gestual (Swipe) y zoom táctil en un visor a pantalla completa con indicadores de paginación para las imágenes del portafolio.
+- **RF-18:** **Visualización Dinámica (Performance):** El sistema cargará imágenes de forma eficiente (Lazy Loading) mediante Coil 3 para optimizar el consumo de datos y memoria.
+
 ### Notificaciones y Reactividad
-- **RF-15:** El sistema enviará notificaciones push automáticas (FCM) ante nuevos mensajes o solicitudes.
-- **RF-16:** **Badges Dinámicos:** La interfaz mostrará contadores en tiempo real sobre los iconos de notificaciones y mensajes en la barra superior.
+- **RF-18:** El sistema enviará notificaciones push automáticas (FCM) ante nuevos mensajes o solicitudes.
+- **RF-19:** **Badges Dinámicos:** La interfaz mostrará contadores en tiempo real sobre los iconos de notificaciones y mensajes en la barra superior.
 
 ### Moderación y Administración (Hito 5)
 - **RF-17:** El sistema contará con un Dashboard Administrativo para métricas y control de usuarios.

@@ -28,7 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.utils.ImageUtils
 
 /**
  * PANTALLA DE CREACIÓN Y EDICIÓN DE SERVICIO
@@ -43,6 +51,15 @@ fun CreateServiceScreen(
     viewModel: CreateServiceViewModel = viewModel()
 ) {
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = { uris ->
+            val byteArrayList = uris.mapNotNull { ImageUtils.uriToByteArray(context, it) }
+            viewModel.selectedImages = viewModel.selectedImages + byteArrayList
+        }
+    )
 
     // ESTADOS
     var title by remember { mutableStateOf("") }
@@ -294,6 +311,69 @@ fun CreateServiceScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     enabled = !isLoading, shape = RoundedCornerShape(12.dp)
                 )
+            }
+
+            // PORTAFOLIO DE IMÁGENES
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Portafolio del servicio (Imágenes):",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.height(8.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Botón para añadir imágenes
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                            .clickable {
+                                photoPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.AddPhotoAlternate, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    }
+
+                    // Lista de imágenes seleccionadas (Vista previa)
+                    // Para simplificar, mostramos las primeras 3
+                    viewModel.selectedImages.take(3).forEach { bytes ->
+                        Box(
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                        ) {
+                            AsyncImage(
+                                model = bytes,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                    
+                    if (viewModel.selectedImages.size > 3) {
+                        Box(
+                            modifier = Modifier.size(80.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("+${viewModel.selectedImages.size - 3}", fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+                
+                if (viewModel.selectedImages.isNotEmpty()) {
+                    TextButton(onClick = { viewModel.selectedImages = emptyList() }) {
+                        Text("Limpiar imágenes", color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
+                    }
+                }
             }
 
             if (!errorMessage.isNullOrEmpty()) {

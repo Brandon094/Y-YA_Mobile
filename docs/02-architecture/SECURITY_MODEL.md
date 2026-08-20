@@ -23,6 +23,9 @@ El sistema utiliza **Row Level Security (RLS)** de PostgreSQL para asegurar que 
 - **Availability:** Lectura pública para usuarios autenticados; edición restringida exclusivamente al dueño del perfil de prestador.
 - **Ratings:** Lectura pública; inserción restringida al cliente que realizó la solicitud del servicio.
 - **Reports:** Cualquier usuario puede reportar; visualización restringida al autor del reporte y a los administradores.
+- **Storage (Buckets):**
+    - **avatars:** Lectura pública; escritura/eliminación restringida al dueño del perfil (`auth.uid()`).
+    - **portfolios:** Lectura pública; escritura/eliminación restringida al prestador dueño del servicio.
 
 ## 3. Protección de API Keys
 - **Nivel de Acceso:** Se utiliza la `anon_key` de Supabase, la cual es pública por diseño pero está limitada por las políticas de RLS mencionadas anteriormente.

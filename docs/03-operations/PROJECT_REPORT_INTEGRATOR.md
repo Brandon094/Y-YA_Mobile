@@ -26,8 +26,8 @@
 
 ![Diagrama Entidad Relación](../assets/DiagramER.png)
 ### 3. Estado de Módulos
-- **Desarrollados:** Auth, Perfil Universal, Catálogo Dinámico, Negociación, CRUD de Servicios, Validación de Disponibilidad, Dashboard Admin, Reportes, Calificaciones, Chat en Tiempo Real e Infraestructura de Notificaciones Push (Hitos 1-5).
-- **Pendientes:** Multimedia/Storage (Hito 3), Automatización de Alertas via Edge Functions.
+- **Desarrollados:** Auth, Perfil Universal, Catálogo Dinámico, Negociación, CRUD de Servicios, Validación de Disponibilidad, Dashboard Admin, Reportes, Calificaciones, Chat en Tiempo Real, Multimedia/Storage (Portafolios y Avatares) e Infraestructura de Notificaciones Push (Hitos 1-5).
+- **Pendientes:** Automatización de Alertas via Edge Functions.
 
 ---
 
@@ -86,6 +86,9 @@ Este módulo implementa el ciclo de vida completo de los datos (Create, Read, Up
 | 6 | Redirección Retrasada | Centralización de lógica de roles para navegación inmediata tras Login. |
 | 7 | UX Silenciosa | Implementación de `EmptyServicesView` para feedback en búsquedas vacías. |
 | 8 | Bloqueo RLS (42501) | Implementación de políticas de inserción en Supabase para permitir la creación de servicios a usuarios autenticados. |
+| 9 | Multimedia Estática | Integración de Supabase Storage y Coil 3 para portafolios dinámicos y avatares reales. |
+| 10 | Visualización Multimedia | Implementación de visor de imágenes a pantalla completa en detalles de servicio para mejorar la confianza del cliente. |
+| 11 | Navegación Inmersiva | Integración de HorizontalPager en el visor multimedia para navegación por gestos (Swipe) entre imágenes de portafolio. |
 
 **Evidencia de Corrección (Persistencia de Sesión):**
 ![Persistencia Supabase](../assets/SupaBase.png)

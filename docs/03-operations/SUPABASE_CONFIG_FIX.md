@@ -70,3 +70,28 @@ He realizado los siguientes ajustes en la App:
 3. **`SupabaseManager`:** Verifiqué que el plugin de `Realtime` esté instalado correctamente.
 
 **¡Dale Play a la App y asegúrate de marcar el check de "Replication" en Supabase!** Eso debería revivir el chat de inmediato. 🚀🔥
+
+---
+
+## 4. Configurar Almacenamiento (Storage) 📸
+Para que las fotos de perfil y portafolios funcionen, debes crear los contenedores en Supabase.
+
+### Paso A: Crear Buckets
+En la sección **Storage**:
+1. Crea un bucket llamado `avatars` y márcalo como **Public**.
+2. Crea un bucket llamado `portfolios` y márcalo como **Public**.
+
+### Paso B: Configurar Políticas de Seguridad (RLS)
+Ejecuta este SQL para proteger los archivos:
+
+```sql
+-- Lectura pública para todos
+CREATE POLICY "Acceso público lectura" ON storage.objects FOR SELECT USING (true);
+
+-- Solo dueños pueden subir/editar sus fotos
+CREATE POLICY "Usuarios manejan sus archivos" ON storage.objects 
+FOR ALL TO authenticated 
+USING (bucket_id IN ('avatars', 'portfolios'));
+```
+
+*Nota: La App asume que los archivos en 'avatars' siguen el patrón 'id_avatar.jpg'.*

@@ -25,6 +25,11 @@ Este documento sirve como guía oficial para el proceso de verificación de requ
 - **CUANDO** el Cliente envía un mensaje nuevo.
 - **ENTONCES** el mensaje debe aparecer instantáneamente en la pantalla del Prestador y marcarse como "leído" (`is_read: true`) en la base de datos de forma automática.
 
+### Escenario 3: Gestión de Portafolio Multimedia
+- **DADO** que un Prestador está creando un nuevo servicio.
+- **CUANDO** selecciona múltiples imágenes de su galería y guarda el servicio.
+- **ENTONCES** el sistema debe subir los archivos al bucket de Storage, generar URLs públicas y persistirlas en la tabla `service_images` para su visualización en el catálogo.
+
 ---
 
 ## 3. Matriz de Calidad ISO/IEC 25010 (Checklist)

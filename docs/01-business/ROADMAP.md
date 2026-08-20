@@ -16,7 +16,9 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 - [x] **Disponibilidad Granular:** Implementación de selección de días (`working_days`) y rangos horarios por servicio individual.
 - [x] **Sincronización de Disponibilidad:** Validación en tiempo real del selector de fecha/hora contra la tabla `public.availability` y reglas del servicio.
 - [x] **Evolución del Modelo Económico:** Implementación del campo `final_price` en solicitudes para reflejar acuerdos tras negociaciones.
-- [ ] **Optimización de UI/UX:** Refinamiento de transiciones y estados de carga (Shimmer effect).
+- [ ] **Optimización de UI/UX:** Refinamiento de transiciones, animaciones y estados de carga (Shimmer effect).
+
+---
 
 ## Hito 2: Comunicación y Sistema de Reputación
 **Objetivo:** Generar confianza entre cliente y prestador dentro de la plataforma.
@@ -25,17 +27,21 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
     - Envío de reseñas y puntuación (1-5 estrellas) al completar un servicio.
     - Visualización de reputación real en el catálogo (Cierre de ciclo).
 
-## Hito 3: Multimedia y Gestión de Activos (Storage)
+---
+
+## Hito 3: Multimedia y Gestión de Activos (Storage) - 🟢 COMPLETO
 **Objetivo:** Enriquecer el contenido visual de la plataforma.
-- [ ] **Gestión de Avatares:** Integración con Supabase Storage para fotos de perfil dinámicas.
-- [ ] **Portafolio de Servicios:** Galería de imágenes para que los prestadores muestren trabajos anteriores en sus anuncios.
+- [x] **Gestión de Avatares:** Integración con Supabase Storage para fotos de perfil dinámicas.
+- [x] **Portafolio de Servicios:** Galería de imágenes para que los prestadores muestren trabajos anteriores en sus anuncios.
+- [x] **Visor Premium:** Navegación por gestos (Swipe) en pantalla completa para portafolios.
 
 ## Hito 4: Escalabilidad, Notificaciones y Legal
 **Objetivo:** Preparar la aplicación para el lanzamiento comercial y cumplimiento normativo.
-- [x] **Sistema de Notificaciones Push (Infraestructura):** 
-    - Integración de Firebase Cloud Messaging (FCM).
-    - Gestión de tokens de dispositivo en el perfil del usuario.
-    - Implementación de Badges visuales en tiempo real para solicitudes pendientes.
+- [ ] **Sistema de Notificaciones Push:** 
+    - [x] Integración de Firebase Cloud Messaging (FCM) en Android.
+    - [x] Gestión de tokens de dispositivo en la base de datos.
+    - [x] Lógica de Badges en tiempo real (Realtime).
+    - [ ] **Fase de Pruebas:** Depuración de Edge Functions y Webhooks de disparo (Pendiente de operatividad final).
 - [ ] **Automatización de Avisos:** Implementación de Edge Functions en Supabase para disparo automático de notificaciones.
 - [ ] **Modelo SaaS (Suscripciones):** Implementación de planes para prestadores.
 - [x] **Cumplimiento Legal:** Integración de borradores oficiales de Términos y Condiciones, y Políticas de Privacidad (v0.2.0).

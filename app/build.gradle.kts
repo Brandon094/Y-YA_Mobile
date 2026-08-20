@@ -56,6 +56,11 @@ dependencies {
     implementation(libs.supabase.postgrest.kt)
     implementation(libs.supabase.auth.kt)
     implementation(libs.supabase.realtime.kt)
+    implementation(libs.supabase.storage.kt)
+
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // Ktor
     implementation(libs.ktor.client.okhttp)

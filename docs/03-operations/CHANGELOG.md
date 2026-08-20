@@ -7,11 +7,24 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [0.1.0-alpha] - 2025-03-05
 ### Añadido (MVP+ Milestone)
-- **Hito 4: Infraestructura de Notificaciones:**
-    - Integración de Firebase Cloud Messaging (FCM) para recepción de alertas push.
-    - Implementación de Badges (numerito) dinámicos en la campana de notificaciones del Home.
+- **Hito 3: Multimedia y Gestión de Activos:**
+    - Integración de Supabase Storage con soporte para buckets de 'avatars' y 'portfolios'.
+    - Implementación de carga dinámica de imágenes mediante Coil 3.
+    - Nuevo modelo de datos `ServiceImage` y tabla `service_images` para portafolios múltiples.
+    - Funcionalidad de selección y subida de foto de perfil (Avatar) en tiempo real.
+    - Soporte para subida múltiple de imágenes de trabajos realizados en la creación de servicios.
+    - Desarrollo de Carrusel Visual de portafolio en la pantalla de detalle del servicio.
+    - Implementación de visor de imágenes a pantalla completa con soporte para navegación gestual (Swipe) mediante HorizontalPager.
+    - Sistema de indicadores de posición (Pagination) para galerías extensas.
+- **Hito 4: Infraestructura de Notificaciones (In Progress):**
+    - Integración de Firebase Cloud Messaging (FCM) para recepción de alertas push (Lado cliente).
+    - Implementación de Badges (numerito) dinámicos en la campana de notificaciones y chat del Home (Realtime).
     - Lógica de sincronización de tokens de dispositivo con el perfil de Supabase.
-    - Soporte para permisos de notificación en Android 13+.
+    - *Nota: Pendiente activación de Edge Functions y Webhooks para disparo automático desde el servidor.*
+- **Documentación de Calidad y Auditoría:**
+    - Implementación de matriz de calidad basada en el estándar ISO/IEC 25010.
+    - Definición de historias de usuario bajo metodología BDD (Given-When-Then) para flujos críticos.
+    - Creación de presentaciones teóricas sobre fundamentos de calidad de software (Fase 1 Taller).
 - **Hito 2: Chat en Tiempo Real:** 
     - Implementación de mensajería instantánea bidireccional.
     - Nuevo Componente "ChatListScreen": Centro de mensajes centralizado para acceder a todas las conversaciones activas.

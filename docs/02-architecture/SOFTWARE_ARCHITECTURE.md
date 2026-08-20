@@ -18,6 +18,7 @@ YÁYA implementa **MVVM** para separar la lógica de negocio de la interfaz de u
 ### 1.3. Capa de Datos (Data Layer)
 - **Repositories:** Actualmente, se cuenta con `ServiceRepository` para proporcionar datos estáticos destinados a *Previews* y pruebas rápidas.
 - **DataSources (Supabase):** La lógica de persistencia dinámica reside directamente en los ViewModels, los cuales interactúan con el cliente global de Supabase (`SupabaseManager.client`) para realizar operaciones CRUD y consultas relacionales complejas mediante Postgrest.
+- **Multimedia Storage:** Integración con **Supabase Storage** para la gestión de activos binarios (imágenes). Se utilizan buckets específicos (`avatars`, `portfolios`) con políticas de acceso público para lectura y restringido para escritura.
 
 ## 2. Flujo de Datos (Reactive Stream)
 El flujo de información es unidireccional (UDF - Unidirectional Data Flow):
@@ -37,6 +38,8 @@ Utilizamos el sistema de navegación basado en tipos de Kotlin (Navigation Compo
 Se utiliza un enfoque de **Inyección de Dependencias** (DI) para desacoplar los componentes.
 - Componentes clave como `SupabaseClient` se inicializan a nivel de aplicación.
 - Los ViewModels reciben sus repositorios mediante sus constructores.
+- **Gestión de Imágenes:** Se integra **Coil 3** como el motor principal de carga y caché de imágenes, permitiendo la visualización eficiente de avatares y portafolios desde URLs remotas.
+- **Patrones UX Multimedia:** Implementación de **HorizontalPager** de Jetpack Compose para carruseles inmersivos y visores de pantalla completa con navegación gestual.
 
 ## 5. Lógica de Roles y Cuenta Universal
 YÁYA rompe la fricción tradicional de las plataformas de servicios al permitir que un mismo `id` de perfil contenga las capacidades de ambos roles. 

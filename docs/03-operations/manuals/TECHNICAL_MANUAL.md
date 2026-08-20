@@ -15,8 +15,10 @@ El proyecto sigue el patrón de arquitectura **MVVM (Model-View-ViewModel)** rec
 - **Lenguaje:** Kotlin 2.2.10 con Coroutines y Flow para programación reactiva.
 - **UI Framework:** Jetpack Compose (Material 3) con Compose Compiler 2.2.10.
 - **Inyección de Dependencias:** Gestión manual mediante ViewModels y `SupabaseManager` (Singleton).
-- **Backend:** Supabase 3.6.0 (PostgreSQL, Auth, Realtime).
+- **Backend:** Supabase 3.6.0 (PostgreSQL, Auth, Realtime, Storage).
 - **Networking:** Ktor Client 3.0.3 para peticiones REST.
+- **Image Loading:** Coil 3.1.0 para renderizado y caché de multimedia.
+- **Image Viewer:** Implementación de diálogos personalizados con HorizontalPager para visualización de portafolios a pantalla completa y navegación gestual.
 - **Serialización:** Kotlinx Serialization 1.7.3.
 - **Persistencia de Sesión:** Multiplatform Settings 1.2.0.
 
@@ -32,6 +34,7 @@ Se utiliza `StateFlow` y `SharedFlow` dentro de los ViewModels para exponer el e
 - **Service Availability:** Sistema híbrido que utiliza `working_days` (array de enteros) y rangos horarios (`start_time`, `end_time`) directamente en la tabla `services` para una disponibilidad granular por talento. Se mantiene la tabla `availability` para horarios globales del prestador.
 - **ServiceRequest:** Evolucionado para incluir `final_price`, permitiendo la persistencia del acuerdo económico tras la negociación.
 - **Report (Hito 5):** Estructura relacional para la gestión de denuncias por mal comportamiento.
+- **ServiceImage (Hito 3):** Tabla dedicada para el almacenamiento de múltiples URLs de portafolio vinculadas a un `service_id`, permitiendo galerías dinámicas.
 
 ## 7. Módulo Administrativo
 El sistema cuenta con un Dashboard centralizado que permite la moderación proactiva mediante auditoría de servicios y supervisión de usuarios.
