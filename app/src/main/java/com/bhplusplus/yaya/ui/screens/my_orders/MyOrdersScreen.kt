@@ -6,22 +6,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.Gavel
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Payments
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarOutline
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,6 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -224,7 +215,9 @@ fun MyOrdersScreen(
                             onChat = {
                                 val providerId = order.services?.provider_id ?: ""
                                 onChatClick(providerId, "Prestador")
-                            }
+                            },
+                            isCounterOfferActive = viewModel.isCounterOfferActive(order),
+                            formattedDate = viewModel.formatDate(order.scheduled_date)
                         )
                     }
                 }
@@ -240,7 +233,9 @@ fun OrderItem(
     onReject: () -> Unit,
     onNegotiate: () -> Unit,
     onRate: () -> Unit,
-    onChat: () -> Unit
+    onChat: () -> Unit,
+    isCounterOfferActive: Boolean,
+    formattedDate: String
 ) {
     Card(
         modifier = Modifier
@@ -292,7 +287,7 @@ fun OrderItem(
                         Text(
                             text = order.services?.provider?.full_name ?: "Prestador Independiente",
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -307,9 +302,7 @@ fun OrderItem(
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 DetailRow(Icons.Default.LocationOn, order.service_address)
                 DetailRow(Icons.Default.Payments, "Oferta actual: $${order.final_price.toInt()}")
-                order.scheduled_date?.let {
-                    DetailRow(Icons.Default.Event, it.take(10)) // Mostramos solo la fecha YYYY-MM-DD
-                }
+                DetailRow(Icons.Default.Event, formattedDate)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -319,40 +312,49 @@ fun OrderItem(
                 text = "ESTADO DE LA NEGOCIACIÓN",
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
                 letterSpacing = 0.5.sp
             )
             Spacer(Modifier.height(8.dp))
             
             Surface(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
                 shape = RoundedCornerShape(16.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
             ) {
                 Row(
                     modifier = Modifier.padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.Top
                 ) {
-                    Icon(Icons.Default.Info, null, modifier = Modifier.size(16.dp), tint = Color.Gray)
-                    Spacer(Modifier.width(10.dp))
-                    Text(
-                        text = order.request_description ?: "Sin historial de negociación",
-                        fontSize = 12.sp,
-                        lineHeight = 16.sp,
-                        color = Color.DarkGray
+                    Icon(
+                        imageVector = Icons.Default.Info, 
+                        contentDescription = null, 
+                        modifier = Modifier.size(16.dp).padding(top = 2.dp), 
+                        tint = MaterialTheme.colorScheme.primary
                     )
+                    Spacer(Modifier.width(10.dp))
+                    Box(
+                        modifier = Modifier
+                            .heightIn(max = 120.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Text(
+                            text = order.request_description ?: "Sin historial de negociación",
+                            fontSize = 13.sp,
+                            lineHeight = 18.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
             // ACCIONES
             if (order.status == "pending") {
-                val isCounterOffer = order.request_description?.contains("Contraoferta Prestador") == true
-                
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (isCounterOffer) {
+                if (isCounterOfferActive) {
                     Surface(
-                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+                        color = MaterialTheme.colorScheme.primaryContainer,
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
                     ) {
@@ -364,12 +366,12 @@ fun OrderItem(
                                 Icons.Default.NotificationsActive,
                                 contentDescription = null,
                                 modifier = Modifier.size(18.dp),
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             Spacer(Modifier.width(10.dp))
                             Text(
                                 "Nueva oferta recibida. ¿Aceptas?",
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 fontWeight = FontWeight.ExtraBold,
                                 fontSize = 13.sp
                             )
@@ -388,7 +390,7 @@ fun OrderItem(
                             .size(52.dp)
                             .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
                     ) {
-                        Icon(Icons.Default.Chat, contentDescription = "Chat", tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                        Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "Chat", tint = MaterialTheme.colorScheme.onSecondaryContainer)
                     }
 
                     // Botón para contraofertar
@@ -402,7 +404,7 @@ fun OrderItem(
                     }
 
                     // Botón Aceptar (Solo si hay contraoferta)
-                    if (isCounterOffer) {
+                    if (isCounterOfferActive) {
                         Button(
                             onClick = onAccept,
                             modifier = Modifier.weight(1.2f).height(52.dp),
@@ -505,11 +507,11 @@ fun RatingDialog(
 @Composable
 fun StatusBadge(status: String) {
     val (backgroundColor, textColor, label) = when (status) {
-        "pending" -> Triple(Color(0xFFFFF4E5), Color(0xFFFF9800), "Pendiente")
-        "accepted" -> Triple(Color(0xFFE8F5E9), Color(0xFF4CAF50), "Confirmada")
-        "completed" -> Triple(Color(0xFFE3F2FD), Color(0xFF2196F3), "Completada")
-        "cancelled" -> Triple(Color(0xFFFFEBEE), Color(0xFFF44336), "Cancelada")
-        else -> Triple(Color.LightGray, Color.DarkGray, status)
+        "pending" -> Triple(MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer, "Pendiente")
+        "accepted" -> Triple(Color(0xFFE8F5E9), Color(0xFF4CAF50), "Confirmada") // Mantener verde éxito
+        "completed" -> Triple(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer, "Completada")
+        "cancelled" -> Triple(MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer, "Cancelada")
+        else -> Triple(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurfaceVariant, status)
     }
 
     Surface(
@@ -546,9 +548,60 @@ fun DetailRow(icon: ImageVector, text: String) {
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier.size(18.dp),
-            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
         )
         Spacer(Modifier.width(12.dp))
-        Text(text = text, fontSize = 14.sp, color = Color.DarkGray)
+        Text(
+            text = text, 
+            fontSize = 14.sp, 
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MyOrdersPreview() {
+    val dummyService = com.bhplusplus.yaya.data.models.Service(
+        title = "Limpieza de Hogar",
+        price = 50000.0,
+        provider_id = "1"
+    )
+    
+    val dummyOrder = ServiceRequest(
+        id = "1",
+        client_id = "2",
+        service_id = "1",
+        final_price = 55000.0,
+        request_description = "🚩 Contraoferta Prestador: $55000",
+        service_address = "Calle 123 #45-67",
+        scheduled_date = "2026-08-30T10:00:00Z",
+        status = "pending",
+        services = dummyService
+    )
+
+    MaterialTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF8F9FA))
+                .padding(16.dp)
+        ) {
+            Text(
+                "Vista Previa: Mis Pedidos",
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            OrderItem(
+                order = dummyOrder,
+                onAccept = {},
+                onReject = {},
+                onNegotiate = {},
+                onRate = {},
+                onChat = {},
+                isCounterOfferActive = true,
+                formattedDate = "2026-08-30"
+            )
+        }
     }
 }

@@ -61,6 +61,21 @@ class MyOrdersViewModel : ViewModel() {
     }
 
     /**
+     * Determina si hay una contraoferta activa por parte del prestador que el cliente deba revisar.
+     */
+    fun isCounterOfferActive(request: ServiceRequest): Boolean {
+        return request.status == "pending" && 
+               request.request_description?.contains("Contraoferta Prestador") == true
+    }
+
+    /**
+     * Formatea la fecha para visualización simple (YYYY-MM-DD).
+     */
+    fun formatDate(date: String?): String {
+        return date?.take(10) ?: "Fecha no definida"
+    }
+
+    /**
      * El cliente acepta la propuesta del prestador (Cambia estado a accepted).
      */
     fun acceptProposal(requestId: String) {

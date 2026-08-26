@@ -16,50 +16,55 @@ Por defecto, Supabase no escucha los cambios en las tablas por seguridad.
 ## 2. Configurar Webhooks de Notificaciones 🔔
 Para que las notificaciones lleguen al celular, Supabase debe avisarle a Firebase.
 
-### Paso A: Crear la Edge Function
-Crea una función llamada `push-notifications` en Supabase con este código (Deno/TypeScript):
+### Paso A: Preparar la Base de Datos
+Ejecuta esto en el SQL Editor para que los Webhooks puedan detectar cambios de precio:
+```sql
+ALTER TABLE requests REPLICA IDENTITY FULL;
+```
+
+### Paso B: Crear/Actualizar la Edge Function
+Usa este código optimizado que maneja Negociación y Estados:
 
 ```typescript
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 serve(async (req) => {
   const payload = await req.json()
-  const { record, table, type } = payload
+  const { record, old_record, type, table } = payload
+
+  if (table !== 'requests') return new Response("Not requests")
 
   let targetUserId = ""
   let title = ""
   let body = ""
 
-  if (table === 'messages' && type === 'INSERT') {
-    targetUserId = record.receiver_id
-    title = "Nuevo mensaje en YÁYA"
-    body = record.content
-  } else if (table === 'requests' && type === 'INSERT') {
-    targetUserId = record.provider_id // Para el prestador
-    title = "¡Nueva Solicitud de Servicio!"
+  if (type === 'INSERT') {
+    targetUserId = record.provider_id
+    title = "¡Nueva Solicitud! 🚩"
     body = "Alguien quiere contratar tu talento."
+  } else if (type === 'UPDATE') {
+    if (record.final_price !== old_record.final_price) {
+      const isProvider = record.request_description.includes("Contraoferta Prestador")
+      targetUserId = isProvider ? record.client_id : record.provider_id
+      title = isProvider ? "Nueva Contraoferta 💸" : "Nueva Oferta Recibida 💰"
+      body = "Revisa los detalles de la negociación en la App."
+    } else if (record.status !== old_record.status) {
+      targetUserId = record.client_id
+      title = "Estado Actualizado 🔄"
+      body = `Tu pedido ahora está: ${record.status}`
+    }
   }
-
-  // 1. Obtener el FCM Token del usuario destino desde la tabla 'profiles'
-  // Aquí deberías hacer un fetch a tu API de Supabase para traer el fcm_token del targetUserId
-
-  // 2. Enviar a Firebase (Requiere SERVICE_ACCOUNT_JSON en los secrets de Supabase)
-  // ... lógica de envío via Firebase V1 API ...
-
-  return new Response(JSON.stringify({ status: "ok" }), { headers: { "Content-Type": "application/json" } })
+  // ... lógica de envío FCM ...
 })
 ```
 
-### Paso B: Activar los Webhooks
+### Paso C: Activar los Webhooks
 En **Database** -> **Webhooks**:
-1. **Webhook para Mensajes:**
-   - Tabla: `messages`
-   - Eventos: `INSERT`
-   - Destino: Tu Edge Function `push-notifications`.
-2. **Webhook para Solicitudes:**
+1. **Webhook para Solicitudes:**
    - Tabla: `requests`
-   - Eventos: `INSERT`
-   - Destino: Tu Edge Function `push-notifications`.
+   - Eventos: `INSERT` y `UPDATE`.
+   - Destino: Tu Edge Function.
 
 ---
 

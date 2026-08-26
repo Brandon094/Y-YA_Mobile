@@ -35,10 +35,12 @@ Toda la información técnica, de negocio y operativa está centralizada en la c
 
 ## 🚀 Características Principales
 
-- **Catálogo de Servicios:** Exploración intuitiva de diversas categorías.
-- **Perfiles Detallados:** Información clara de los prestadores.
-- **Flujo de Contratación:** Proceso simplificado y seguro.
-- **Gestión de Perfil:** Control total sobre datos y roles.
+- **Negociación Avanzada:** Sistema de subasta interactivo para acordar precios justos.
+- **Notificaciones Push:** Alertas automáticas para nuevas solicitudes y cambios de precio.
+- **Catálogo Dinámico:** Exploración intuitiva de diversas categorías de servicios.
+- **Perfiles Detallados:** Información clara y portafolios visuales de los prestadores.
+- **Flujo de Contratación:** Proceso Premium simplificado y transparente.
+- **Gestión de Perfil:** Control total sobre datos, roles y seguridad.
 
 ---
 

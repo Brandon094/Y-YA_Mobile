@@ -67,6 +67,21 @@ class IncomingRequestsViewModel : ViewModel() {
     }
 
     /**
+     * Determina si hay una oferta pendiente por parte del cliente que el prestador deba revisar.
+     */
+    fun isClientOfferPending(request: ServiceRequest): Boolean {
+        return request.status == "pending" && 
+               request.request_description?.contains("Nueva oferta Cliente") == true
+    }
+
+    /**
+     * Formatea la fecha para visualización simple (YYYY-MM-DD).
+     */
+    fun formatDate(date: String?): String {
+        return date?.take(10) ?: "Fecha no definida"
+    }
+
+    /**
      * Envía una contraoferta (nuevo precio) al cliente.
      */
     fun sendCounterOffer(request: ServiceRequest, newPrice: String) {

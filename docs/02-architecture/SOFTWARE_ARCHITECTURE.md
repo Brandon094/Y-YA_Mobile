@@ -7,11 +7,12 @@ YÁYA implementa **MVVM** para separar la lógica de negocio de la interfaz de u
 
 ### 1.1. Capa de Vista (UI)
 - Construida íntegramente con **Jetpack Compose**.
-- Las funciones Composable son "stateless" en la medida de lo posible, recibiendo estados del ViewModel.
-- Uso de Material 3 para el sistema de diseño.
+- Las funciones Composable son "**stateless**" y "**tontas**" (Dumb Components), limitándose a renderizar datos procesados y banderas booleanas (ej. `isActionPending`) entregadas por el ViewModel.
+- Uso de Material 3 para el sistema de diseño, con soporte estricto para temas Claro y Oscuro.
 
 ### 1.2. Capa de ViewModel
-- Actúa como puente entre la Capa de Datos y la UI.
+- Actúa como el **Cerebro de Negocio** de cada pantalla.
+- Responsable del parsing de datos, formateo de fechas y cálculo de estados de flujo (ej. decidir si una oferta es una contraoferta o una nueva solicitud).
 - Gestiona el estado de la pantalla mediante `StateFlow`.
 - Sobrevive a cambios de configuración y maneja el ciclo de vida de las Coroutines.
 
@@ -54,11 +55,15 @@ El sistema implementa validaciones críticas y procesos reactivos:
 - **Automatización via Edge Functions:** Uso de funciones en el servidor (Deno) disparadas por Webhooks para tareas asíncronas como el envío de notificaciones push vía Firebase.
 
 ## 7. Sistema de Notificaciones (Push Architecture)
-YÁYA utiliza una arquitectura híbrida para alertas:
+YÁYA utiliza una arquitectura híbrida para alertas en tiempo real:
 1. **Registro:** El cliente Android genera un token FCM y lo sincroniza con `public.profiles`.
-2. **Evento:** Un `INSERT` en la tabla `requests` activa un Webhook.
-3. **Procesamiento:** Una `Edge Function` en Supabase recibe el evento, se autentica con Google Cloud y envía el mensaje a Firebase.
-4. **Entrega:** Firebase entrega la notificación al dispositivo destino.
+2. **Eventos de Disparo:**
+    - **INSERT:** Nueva solicitud de servicio.
+    - **UPDATE:** Cambios en el precio (Contraofertas) o cambios en el estado (`accepted`, `cancelled`).
+3. **Procesamiento Server-Side:** 
+    - Un Webhook en Supabase envía el payload a una **Edge Function** (TypeScript).
+    - La función compara el `record` con el `old_record` (requiere `REPLICA IDENTITY FULL`) para determinar el destinatario y el mensaje dinámico.
+4. **Entrega:** La función se autentica con la API V1 de Firebase y entrega la notificación al dispositivo destino.
 
 ## 7. Manejo de Errores y Estados Globales
 Cada pantalla implementa un modelo de estado robusto:

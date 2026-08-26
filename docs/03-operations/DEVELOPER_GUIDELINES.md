@@ -62,8 +62,9 @@ Al iniciar sesión, el agente debe saber que ya se han implementado:
 - **Catálogo Dinámico (Home):** Listado de servicios reales con barra de búsqueda funcional y filtrado por categorías desde SQL.
 - **Detalle de Servicio:** Visualización completa de información técnica, costos extra, materiales y datos del prestador real.
 - **Flujo de Contratación (Core):** Sistema de reserva dinámico con selectores de fecha y hora (Reloj/Calendario) sincronizado con la tabla `public.requests`.
-- **Ticket de Confirmación:** Resumen real de la reservación con datos dinámicos tras éxito en Base de Datos.
-- **Mis Pedidos (Cliente):** Historial completo de solicitudes con badges de estado dinámicos (`pending`, `accepted`, `completed`). Incluye **Sistema de Negociación** para responder a contraofertas del prestador.
+- **Ticket de Solicitud:** Pantalla de "Solicitud Enviada" con resumen real y gestión de expectativas.
+- **Negociación Premium (Bidireccional):** Sistema de subasta con botones `+/-`, regla de precio mínimo y sincronización de historial en "Mis Pedidos" y "Solicitudes Recibidas".
+- **Infraestructura de Notificaciones:** Sistema completo de Small Icons monocromáticos y Edge Functions para automatización de alertas.
 - **Gestión de Perfil:** Edición completa de datos sincronizada con esquema SQL (Cédula, Dirección, Nacimiento).
 - **Publicación de Servicios:** Formulario para prestadores con lógica de categorías y costos de materiales.
 - **Mis Servicios:** Panel de administración para que el prestador pueda editar o pausar (activar/desactivar) sus publicaciones existentes.

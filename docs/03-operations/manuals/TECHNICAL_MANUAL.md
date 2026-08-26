@@ -42,11 +42,12 @@ El sistema cuenta con un Dashboard centralizado que permite la moderación proac
 - **Relaciones de Datos:** Uso de consultas asíncronas con embebido de perfiles (Joins) para reducir la carga de red.
 
 ## 8. Sistema de Mensajería y Notificaciones
-- **Realtime:** Los mensajes de chat se sincronizan mediante suscripciones a canales de Supabase Realtime, filtrando por el ID de los participantes para seguridad.
+- **Realtime:** Los mensajes de chat se sincronizan mediante suscripciones a canales de Supabase Realtime.
 - **Push Engine:** Utiliza **Supabase Edge Functions** escritas en TypeScript/Deno.
-    - El disparador es un **Webhook** sobre la tabla `requests`.
-    - La función genera un token OAuth2 para la API V1 de Firebase.
-    - Se integra con **Firebase Cloud Messaging (FCM)** para la entrega final al dispositivo.
+    - **Disparador:** Webhooks sobre la tabla `requests` configurados para `INSERT` y `UPDATE`.
+    - **Lógica de Negocio:** La función detecta cambios de precio para notificar contraofertas a la contraparte.
+    - **Seguridad:** Requiere `REPLICA IDENTITY FULL` en Postgres para la trazabilidad de cambios.
+    - **FCM V1:** Autenticación mediante JWT de Google Cloud para el envío de notificaciones de alta prioridad.
 
 ## 9. Cumplimiento y Legal
 El proyecto incluye una sección dedicada (`docs/04-legal`) con los lineamientos de privacidad y uso de la plataforma, alineados con el tratamiento de datos personales y la intermediación de servicios.
