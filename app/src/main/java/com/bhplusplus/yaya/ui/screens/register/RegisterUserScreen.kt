@@ -96,7 +96,7 @@ fun RegisterScreen(
                     if (selectedDate != null) {
                         // Convertimos los milisegundos a una fecha legible en formato ISO
                         val date = Instant.ofEpochMilli(selectedDate)
-                            .atZone(ZoneId.systemDefault())
+                            .atZone(ZoneId.of("UTC"))
                             .toLocalDate()
                         // El formato YYYY-MM-DD es el estándar que pide Supabase
                         birthDate = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
