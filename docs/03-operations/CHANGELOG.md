@@ -25,6 +25,12 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Historial de negociación estilizado y botones de acción Premium (Chat, Aceptar, Negociar).
 - **Ajuste de Flujo de Reserva:**
     - Cambio semántico de la pantalla de confirmación a **"¡Solicitud enviada!"** para una gestión transparente de las expectativas del usuario.
+- **Rediseño de Splash Screen Premium:**
+    - Implementación de la **Splash Screen API oficial** de Android, eliminando el doble splash heredado.
+    - Nuevo diseño minimalista: Isotipo coral centrado en un contenedor circular blanco con fondo de marca (`#E85C5C`).
+    - Optimización de forma: Uso de esquinas redondeadas extremas (`1000dp`) para asegurar un aspecto suave y profesional.
+    - Inclusión de marca corporativa: Añadido el sello **"Powered by BH++"** mediante `windowSplashScreenBrandingImage` en dispositivos Android 12+.
+    - Soporte completo para Modo Oscuro con fondo *Deep Midnight*.
 - **Reactividad y Feedback Pro (Issue #8):**
     - Implementación de **Reactividad Total en Tiempo Real** mediante suscripciones a canales de Supabase en Home, Pedidos, Solicitudes y Mensajes.
     - Integración del componente **Pull-to-Refresh (Material 3)** en todas las listas principales para sincronización manual a demanda.

@@ -9,21 +9,12 @@ import com.bhplusplus.yaya.ui.screens.register.RegisterScreen
 import com.bhplusplus.yaya.ui.screens.reset.ResetPasswordScreen
 import com.bhplusplus.yaya.ui.screens.service_detail.ServiceDetailScreen
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.SupabaseManager
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
@@ -47,24 +38,23 @@ import com.bhplusplus.yaya.ui.screens.chat.ChatListScreen
 import android.util.Log
 
 /**
- * DEFINICIÓN DE RUTAS (PANTALLAS) CON SEGURIDAD DE TIPOS
+ * DEFINICIÓN DE RUTAS (PANTALLA) CON SEGURIDAD DE TIPOS
  */
-@Serializable object LoadingRoute
 @Serializable object WelcomeRoute
 @Serializable object LoginRoute
 @Serializable object ResetRoute
 @Serializable object RegisterRoute
 @Serializable object HomeRoute
-@Serializable object AdminDashboardRoute // Hito 5: Ruta de Administración
+@Serializable object AdminDashboardRoute 
 @Serializable object ProfileRoute
 @Serializable object EditProfileRoute
 @Serializable data class CreateServiceRoute(val serviceId: String? = null)
 @Serializable object MyOrdersRoute
 @Serializable object IncomingRequestsRoute
 @Serializable object MyServicesRoute
-@Serializable object ChatListRoute // Nueva ruta para el listado de chats
+@Serializable object ChatListRoute 
 @Serializable data class ServiceDetailRoute(val serviceId: String)
-@Serializable data class ChatRoute(val receiverId: String, val receiverName: String) // Hito 2: Chat
+@Serializable data class ChatRoute(val receiverId: String, val receiverName: String) 
 @Serializable data class ContratacionRoute(val serviceId: String)
 @Serializable data class ConfirmacionRoute(val serviceId: String, val requestId: String)
 
@@ -73,84 +63,36 @@ import android.util.Log
  * Utiliza Jetpack Compose Navigation con Type-Safety.
  */
 @Composable
-fun AppNavigation() {
+fun AppNavigation(startRoute: Any) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
 
-    // Función centralizada para decidir a dónde ir según el rol
-    val checkRoleAndNavigate: () -> Unit = {
+    // Función para manejar redirecciones tras login/registro
+    val navigateByRole: () -> Unit = {
         scope.launch {
             try {
-                val session = SupabaseManager.client.auth.currentSessionOrNull()
-                if (session != null) {
-                    val userId = session.user?.id ?: throw Exception("User not found")
-                    
-                    // Consultamos el perfil con un pequeño reintento interno o directo a la tabla
+                val user = SupabaseManager.client.auth.currentUserOrNull()
+                if (user != null) {
                     val profile = SupabaseManager.client.postgrest["profiles"]
-                        .select { filter { eq("id", userId) } }
+                        .select { filter { eq("id", user.id) } }
                         .decodeSingle<UserProfile>()
 
-                    Log.d("Navigation", "Rol detectado en DB: ${profile.role}")
-
                     if (profile.role.equals("admin", ignoreCase = true)) {
-                        navController.navigate(AdminDashboardRoute) {
-                            popUpTo(0) { inclusive = true }
-                        }
+                        navController.navigate(AdminDashboardRoute) { popUpTo(0) { inclusive = true } }
                     } else {
-                        navController.navigate(HomeRoute) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    }
-                } else {
-                    navController.navigate(WelcomeRoute) {
-                        popUpTo(0) { inclusive = true }
+                        navController.navigate(HomeRoute) { popUpTo(0) { inclusive = true } }
                     }
                 }
             } catch (e: Exception) {
-                Log.e("Navigation", "Error al validar rol: ${e.message}")
-                // Fallback a metadata si la tabla profiles falla
-                val session = SupabaseManager.client.auth.currentSessionOrNull()
-                val role = session?.user?.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
-                
-                Log.d("Navigation", "Rol detectado en Metadata (Fallback): $role")
-                
-                if (role.equals("admin", ignoreCase = true)) {
-                    navController.navigate(AdminDashboardRoute) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                } else {
-                    navController.navigate(HomeRoute) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
+                navController.navigate(HomeRoute) { popUpTo(0) { inclusive = true } }
             }
         }
-    }
-    
-    LaunchedEffect(Unit) {
-        kotlinx.coroutines.delay(2000) // 2 segundos de Splash
-        checkRoleAndNavigate()
     }
 
     NavHost(
         navController = navController,
-        startDestination = LoadingRoute
+        startDestination = startRoute
     ) {
-        // Pantalla de Carga Inicial
-        composable<LoadingRoute> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo_splash),
-                    contentDescription = "YÁYA Splash",
-                    modifier = Modifier.size(200.dp)
-                )
-            }
-        }
-
         // Bienvenida
         composable<WelcomeRoute> {
             WelcomeScreen(
@@ -162,9 +104,7 @@ fun AppNavigation() {
         // Login
         composable<LoginRoute> {
             LoginScreen(
-                onLoginSuccess = { 
-                    checkRoleAndNavigate()
-                },
+                onLoginSuccess = { navigateByRole() },
                 onNavigateToReset = { navController.navigate(ResetRoute) },
                 onNavigateToRegister = { navController.navigate(RegisterRoute) }
             )
@@ -201,7 +141,7 @@ fun AppNavigation() {
                 onLogout = {
                     scope.launch {
                         SupabaseManager.client.auth.signOut()
-                        navController.navigate(LoginRoute) {
+                        navController.navigate(WelcomeRoute) {
                             popUpTo(HomeRoute) { inclusive = true }
                         }
                     }
@@ -209,7 +149,7 @@ fun AppNavigation() {
             )
         }
 
-        // Dashboard de Administración (Hito 5)
+        // Dashboard de Administración
         composable<AdminDashboardRoute> {
             AdminDashboardScreen(
                 onLogout = {
@@ -223,7 +163,7 @@ fun AppNavigation() {
             )
         }
 
-        // Chat en Tiempo Real (Hito 2)
+        // Chat en Tiempo Real
         composable<ChatRoute> { backStackEntry ->
             val route: ChatRoute = backStackEntry.toRoute()
             ChatScreen(
@@ -290,7 +230,7 @@ fun AppNavigation() {
             )
         }
 
-        // Solicitudes Recibidas (Prestador)
+        // Solicitudes Recibidas
         composable<IncomingRequestsRoute> {
             IncomingRequestsScreen(
                 onBack = { navController.popBackStack() },
@@ -300,7 +240,7 @@ fun AppNavigation() {
             )
         }
 
-        // Mis Servicios Publicados (Prestador)
+        // Mis Servicios Publicados
         composable<MyServicesRoute> {
             MyServicesScreen(
                 onBack = { navController.popBackStack() },
@@ -354,5 +294,5 @@ fun AppNavigation() {
 @Preview(showBackground = true)
 @Composable
 fun AppNavigationPreview() {
-    AppNavigation()
+    AppNavigation(WelcomeRoute)
 }

@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Tema Principal de la App (Jetpack Compose) -->
-    <style name="Theme.Yáya2" parent="android:Theme.Material.Light.NoActionBar" />
-
-    <!-- Tema para el Splash Screen (Soporte Modo Claro) -->
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <!-- Fondo de marca Premium -->
         <item name="windowSplashScreenBackground">#E85C5C</item>
-
-        <!-- Icono redondo con logo centrado -->
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+
+        <!-- Branding Image solo disponible en API 31+ -->
+        <item name="android:windowSplashScreenBrandingImage">@drawable/ic_branding_bh</item>
 
         <item name="postSplashScreenTheme">@style/Theme.Yáya2</item>
     </style>

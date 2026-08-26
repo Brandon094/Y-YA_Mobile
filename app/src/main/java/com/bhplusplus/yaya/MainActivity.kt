@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.bhplusplus.yaya.data.SupabaseManager
@@ -20,6 +21,8 @@ import com.bhplusplus.yaya.ui.theme.YYATheme
  */
 class MainActivity : ComponentActivity() {
 
+    private val viewModel: MainViewModel by viewModels()
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -29,25 +32,29 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Instalamos el Splash Screen API antes de super.onCreate
-        installSplashScreen()
+        // Instalamos el Splash Screen API oficial
+        val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
         
-        // Inicializamos Supabase con persistencia de sesión
+        // Mantenemos el Splash visible hasta que el ViewModel determine la ruta inicial
+        splashScreen.setKeepOnScreenCondition {
+            viewModel.isCheckingSession
+        }
+
+        // Inicializamos Supabase
         SupabaseManager.initialize(applicationContext)
 
-        // Habilita el diseño de borde a borde (edge-to-edge) para una experiencia moderna
+        // Habilita el diseño moderno de borde a borde
         enableEdgeToEdge()
 
         // Solicitar permiso de notificaciones en Android 13+
         askNotificationPermission()
 
         setContent {
-            // Aplicamos el Tema Global de la aplicación definido en UI/Theme
             YYATheme {
-                // Lanzamos el componente de Navegación que controla todas las pantallas
-                AppNavigation()
+                // Pasamos la ruta inicial calculada por el ViewModel
+                AppNavigation(startRoute = viewModel.initialRoute)
             }
         }
     }
