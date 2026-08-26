@@ -8,22 +8,36 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarOutline
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.layout.ContentScale
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.ServiceRequest
 
@@ -55,31 +69,110 @@ fun MyOrdersScreen(
         )
     }
 
-    // Dialogo para que el cliente haga una nueva oferta
+    // Dialogo para que el cliente haga una nueva oferta (Premium UX)
     if (showNegotiationDialog != null) {
+        val currentOrder = showNegotiationDialog!!
+        val basePrice = currentOrder.services?.price ?: 0.0
+
+        // Inicializamos con el precio actual de la solicitud
+        LaunchedEffect(currentOrder) {
+            counterPrice = currentOrder.final_price.toInt().toString()
+        }
+
         AlertDialog(
             onDismissRequest = { showNegotiationDialog = null },
-            title = { Text("Nueva Propuesta") },
+            title = { 
+                Text(
+                    "Ajustar mi Oferta", 
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                ) 
+            },
             text = {
-                Column {
-                    Text("Ingresa tu nueva oferta para el prestador:", fontSize = 14.sp)
-                    Spacer(Modifier.height(16.dp))
-                    OutlinedTextField(
-                        value = counterPrice,
-                        onValueChange = { counterPrice = it },
-                        label = { Text("Tu Oferta") },
-                        prefix = { Text("$") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        "Precio base del servicio: $${basePrice.toInt()}",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "Última contraoferta: $${currentOrder.final_price.toInt()}",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(Modifier.height(20.dp))
+                    
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        FilledIconButton(
+                            onClick = {
+                                val current = counterPrice.toDoubleOrNull() ?: 0.0
+                                // No permitimos bajar del precio base
+                                if (current > basePrice) {
+                                    counterPrice = (current - 5000).coerceAtLeast(basePrice).toInt().toString()
+                                }
+                            },
+                            enabled = (counterPrice.toDoubleOrNull() ?: 0.0) > basePrice,
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            )
+                        ) {
+                            Icon(Icons.Default.Remove, "Menos")
+                        }
+
+                        OutlinedTextField(
+                            value = counterPrice,
+                            onValueChange = { newValue ->
+                                val numeric = newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
+                                counterPrice = if (numeric < basePrice) basePrice.toInt().toString() else numeric.toInt().toString()
+                            },
+                            modifier = Modifier.width(130.dp).padding(horizontal = 8.dp),
+                            textStyle = LocalTextStyle.current.copy(
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            ),
+                            prefix = { Text("$") },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        FilledIconButton(
+                            onClick = {
+                                val current = counterPrice.toDoubleOrNull() ?: 0.0
+                                counterPrice = (current + 5000).toInt().toString()
+                            },
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            )
+                        ) {
+                            Icon(Icons.Default.Add, "Más")
+                        }
+                    }
+                    
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        "No puedes ofertar menos del precio base",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
                     )
                 }
             },
             confirmButton = {
-                Button(onClick = {
-                    viewModel.sendNewOffer(showNegotiationDialog!!, counterPrice)
-                    showNegotiationDialog = null
-                    counterPrice = ""
-                }) { Text("Enviar") }
+                Button(
+                    onClick = {
+                        viewModel.sendNewOffer(currentOrder, counterPrice)
+                        showNegotiationDialog = null
+                        counterPrice = ""
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = (counterPrice.toDoubleOrNull() ?: 0.0) >= basePrice
+                ) { Text("Enviar Oferta") }
             },
             dismissButton = {
                 TextButton(onClick = { showNegotiationDialog = null }) { Text("Cancelar") }
@@ -150,108 +243,200 @@ fun OrderItem(
     onChat: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            // HEADER: Avatar + Nombre + Estado
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
-                Text(
-                    text = order.services?.title ?: "Servicio",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    modifier = Modifier.weight(1f)
-                )
-                
-                IconButton(onClick = onChat) {
-                    Icon(Icons.Default.Chat, contentDescription = "Chatear", tint = MaterialTheme.colorScheme.primary)
+                Row(modifier = Modifier.weight(1f)) {
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (order.services?.provider?.avatar_url != null) {
+                            AsyncImage(
+                                model = order.services.provider.avatar_url,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                    }
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            text = order.services?.title ?: "Servicio",
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = order.services?.provider?.full_name ?: "Prestador Independiente",
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                    }
                 }
-
                 StatusBadge(order.status)
             }
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Text(text = "Ubicación: ${order.service_address}", fontSize = 14.sp, color = Color.Gray)
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Historial de negociación
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Column(modifier = Modifier.padding(12.dp)) {
-                    Text("Historial / Detalles:", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                    Text(text = order.request_description ?: "Sin detalles", fontSize = 14.sp)
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // DETALLES: Ubicación, Precio y Fecha
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                DetailRow(Icons.Default.LocationOn, order.service_address)
+                DetailRow(Icons.Default.Payments, "Oferta actual: $${order.final_price.toInt()}")
+                order.scheduled_date?.let {
+                    DetailRow(Icons.Default.Event, it.take(10)) // Mostramos solo la fecha YYYY-MM-DD
                 }
             }
 
-            // ACCIONES DE NEGOCIACIÓN (Solo si está pendiente)
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // SECCIÓN DE NEGOCIACIÓN / HISTORIAL
+            Text(
+                text = "ESTADO DE LA NEGOCIACIÓN",
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                letterSpacing = 0.5.sp
+            )
+            Spacer(Modifier.height(8.dp))
+            
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(16.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.Info, null, modifier = Modifier.size(16.dp), tint = Color.Gray)
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                        text = order.request_description ?: "Sin historial de negociación",
+                        fontSize = 12.sp,
+                        lineHeight = 16.sp,
+                        color = Color.DarkGray
+                    )
+                }
+            }
+
+            // ACCIONES
             if (order.status == "pending") {
                 val isCounterOffer = order.request_description?.contains("Contraoferta Prestador") == true
                 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (isCounterOffer) {
-                    Text("¡El prestador propuso otro precio!", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                    Spacer(Modifier.height(8.dp))
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.NotificationsActive,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(Modifier.width(10.dp))
+                            Text(
+                                "Nueva oferta recibida. ¿Aceptas?",
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
                 }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Botón para contraofertar de nuevo o negociar
-                    OutlinedButton(
-                        onClick = onNegotiate,
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp)
+                    // Botón CHAT (Importante en negociación)
+                    IconButton(
+                        onClick = onChat,
+                        modifier = Modifier
+                            .size(52.dp)
+                            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
                     ) {
-                        Icon(Icons.Default.Gavel, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("Negociar", fontSize = 12.sp)
+                        Icon(Icons.Default.Chat, contentDescription = "Chat", tint = MaterialTheme.colorScheme.onSecondaryContainer)
                     }
 
-                    // Botón para aceptar (si el cliente está de acuerdo con el precio)
+                    // Botón para contraofertar
+                    OutlinedButton(
+                        onClick = onNegotiate,
+                        modifier = Modifier.weight(1f).height(52.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text("Negociar", fontWeight = FontWeight.Bold)
+                    }
+
+                    // Botón Aceptar (Solo si hay contraoferta)
                     if (isCounterOffer) {
                         Button(
                             onClick = onAccept,
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp)
+                            modifier = Modifier.weight(1.2f).height(52.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = ButtonDefaults.buttonElevation(4.dp)
                         ) {
-                            Text("Aceptar", fontSize = 12.sp)
+                            Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text("Aceptar", fontWeight = FontWeight.ExtraBold)
                         }
-                    }
-
-                    // Botón para cancelar/rechazar
-                    TextButton(
-                        onClick = onReject,
-                        modifier = Modifier.weight(0.8f),
-                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                    ) {
-                        Text("Cancelar", fontSize = 12.sp)
+                    } else {
+                        // Botón Cancelar si no hay contraoferta pendiente
+                        TextButton(
+                            onClick = onReject,
+                            modifier = Modifier.height(52.dp)
+                        ) {
+                            Text("Cancelar", color = MaterialTheme.colorScheme.error)
+                        }
                     }
                 }
             }
 
             // ACCIÓN DE CALIFICAR (Solo si está completado)
             if (order.status == "completed") {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 Button(
                     onClick = onRate,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFB800))
                 ) {
-                    Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color.White)
+                    Icon(Icons.Default.Star, null, tint = Color.White)
                     Spacer(Modifier.width(8.dp))
-                    Text("Calificar Prestador", fontWeight = FontWeight.Bold, color = Color.White)
+                    Text("CALIFICAR SERVICIO", fontWeight = FontWeight.ExtraBold, color = Color.White)
                 }
             }
         }
@@ -351,5 +536,19 @@ fun EmptyOrdersView() {
         Icon(imageVector = Icons.Default.History, contentDescription = null, modifier = Modifier.size(80.dp), tint = Color.LightGray)
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Aún no tienes pedidos", color = Color.Gray)
+    }
+}
+
+@Composable
+fun DetailRow(icon: ImageVector, text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+        )
+        Spacer(Modifier.width(12.dp))
+        Text(text = text, fontSize = 14.sp, color = Color.DarkGray)
     }
 }

@@ -73,11 +73,13 @@ class IncomingRequestsViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val priceVal = newPrice.toDoubleOrNull() ?: 0.0
-                val updatedDescription = "${request.request_description}\n--- Contraoferta Prestador: $$newPrice"
+                val formattedPrice = "$${priceVal.toInt()}"
+                val updatedDescription = "${request.request_description}\n🚩 Contraoferta Prestador: $formattedPrice"
                 
                 SupabaseManager.client.postgrest["requests"].update({
                     set("request_description", updatedDescription)
-                    set("final_price", priceVal) // Hito 1: Actualización de precio en negociación
+                    set("final_price", priceVal)
+                    set("status", "pending") // Aseguramos que siga pendiente
                 }) {
                     filter { eq("id", request.id!!) }
                 }

@@ -20,6 +20,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.layout.ContentScale
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.ServiceRequest
 
@@ -37,31 +41,95 @@ fun IncomingRequestsScreen(
     var showNegotiationDialog by remember { mutableStateOf<ServiceRequest?>(null) }
     var counterPrice by remember { mutableStateOf("") }
 
-    // Dialogo de Contraoferta
+    // Dialogo de Contraoferta (Premium UX)
     if (showNegotiationDialog != null) {
+        val currentRequest = showNegotiationDialog!!
+        
+        // Inicializamos con el precio actual de la solicitud
+        LaunchedEffect(currentRequest) {
+            counterPrice = currentRequest.final_price.toInt().toString()
+        }
+
         AlertDialog(
             onDismissRequest = { showNegotiationDialog = null },
-            title = { Text("Proponer otro precio") },
+            title = { 
+                Text(
+                    "Proponer Contraoferta", 
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                ) 
+            },
             text = {
-                Column {
-                    Text("Ingresa el valor que consideras justo para este trabajo:", fontSize = 14.sp)
-                    Spacer(Modifier.height(16.dp))
-                    OutlinedTextField(
-                        value = counterPrice,
-                        onValueChange = { counterPrice = it },
-                        label = { Text("Nuevo Precio") },
-                        prefix = { Text("$") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        "Precio propuesto por cliente: $${currentRequest.final_price.toInt()}",
+                        fontSize = 13.sp,
+                        color = Color.Gray
+                    )
+                    Spacer(Modifier.height(20.dp))
+                    
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        FilledIconButton(
+                            onClick = {
+                                val current = counterPrice.toDoubleOrNull() ?: 0.0
+                                counterPrice = (current - 5000).coerceAtLeast(0.0).toInt().toString()
+                            },
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            )
+                        ) {
+                            Icon(Icons.Default.Remove, "Menos")
+                        }
+
+                        OutlinedTextField(
+                            value = counterPrice,
+                            onValueChange = { counterPrice = it.filter { char -> char.isDigit() } },
+                            modifier = Modifier.width(130.dp).padding(horizontal = 8.dp),
+                            textStyle = LocalTextStyle.current.copy(
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            ),
+                            prefix = { Text("$") },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        FilledIconButton(
+                            onClick = {
+                                val current = counterPrice.toDoubleOrNull() ?: 0.0
+                                counterPrice = (current + 5000).toInt().toString()
+                            },
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            )
+                        ) {
+                            Icon(Icons.Default.Add, "Más")
+                        }
+                    }
+                    
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        "Incrementos de $5,000",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Gray.copy(alpha = 0.6f)
                     )
                 }
             },
             confirmButton = {
-                Button(onClick = {
-                    viewModel.sendCounterOffer(showNegotiationDialog!!, counterPrice)
-                    showNegotiationDialog = null
-                    counterPrice = ""
-                }) { Text("Enviar Propuesta") }
+                Button(
+                    onClick = {
+                        viewModel.sendCounterOffer(currentRequest, counterPrice)
+                        showNegotiationDialog = null
+                        counterPrice = ""
+                    },
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("Enviar Propuesta") }
             },
             dismissButton = {
                 TextButton(onClick = { showNegotiationDialog = null }) { Text("Cancelar") }
@@ -144,8 +212,29 @@ fun IncomingRequestItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.AccountCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (request.client?.avatar_url != null) {
+                            AsyncImage(
+                                model = request.client.avatar_url,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Person, 
+                                contentDescription = null, 
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    Spacer(Modifier.width(12.dp))
                     Text(
                         text = request.client?.full_name ?: "Cliente",
                         fontWeight = FontWeight.Bold,

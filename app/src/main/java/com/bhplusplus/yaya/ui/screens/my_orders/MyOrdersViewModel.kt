@@ -43,7 +43,7 @@ class MyOrdersViewModel : ViewModel() {
                 val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
                 if (userId != null) {
                     val result = SupabaseManager.client.postgrest["requests"]
-                        .select(Columns.raw("*, services(*)")) {
+                        .select(Columns.raw("*, services(*, provider_profile:provider_id(*))")) {
                             filter {
                                 eq("client_id", userId)
                             }
@@ -85,10 +85,21 @@ class MyOrdersViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val priceVal = newPrice.toDoubleOrNull() ?: 0.0
-                val updatedDescription = "${request.request_description}\n--- Nueva oferta Cliente: $$newPrice"
+                val basePrice = request.services?.price ?: 0.0
+
+                // Validación de seguridad: No ofertar menos del precio base
+                if (priceVal < basePrice) {
+                    Log.w("MyOrdersVM", "Oferta rechazada: Menor al precio base ($basePrice)")
+                    return@launch
+                }
+
+                val formattedPrice = "$${priceVal.toInt()}"
+                val updatedDescription = "${request.request_description}\n🔹 Nueva oferta Cliente: $formattedPrice"
+                
                 SupabaseManager.client.postgrest["requests"].update({
                     set("request_description", updatedDescription)
-                    set("final_price", priceVal) // Hito 1: Actualización de precio en negociación
+                    set("final_price", priceVal)
+                    set("status", "pending")
                 }) {
                     filter { eq("id", request.id!!) }
                 }
