@@ -45,10 +45,9 @@ El sistema cuenta con un Dashboard centralizado que permite la moderación proac
 - **Realtime:** Los mensajes de chat se sincronizan mediante suscripciones a canales de Supabase Realtime.
 - **Feedback de Chat:** Implementación de `ChatSummary` para procesar historiales masivos, extrayendo el último mensaje, contadores de no leídos y marcas de tiempo, con ordenamiento automático por actividad reciente.
 - **Push Engine:** Utiliza **Supabase Edge Functions** escritas en TypeScript/Deno.
-    - **Disparador:** Webhooks sobre la tabla `requests` configurados para `INSERT` y `UPDATE`.
-    - **Lógica de Negocio:** La función detecta cambios de precio para notificar contraofertas a la contraparte.
-    - **Seguridad:** Requiere `REPLICA IDENTITY FULL` en Postgres para la trazabilidad de cambios.
-    - **FCM V1:** Autenticación mediante JWT de Google Cloud para el envío de notificaciones de alta prioridad.
+    - **Disparador:** Webhooks sobre las tablas `requests` (`INSERT`/`UPDATE`) y `messages` (`INSERT`).
+    - **Lógica de Negocio:** La función detecta el destinatario (ya sea por cambio de precio o por mensaje nuevo) y recupera su `fcm_token`.
+    - **FCM V1:** Autenticación mediante JWT de Google Cloud para el envío de notificaciones de alta prioridad con el icono de marca.
 
 ## 9. Cumplimiento y Legal
 El proyecto incluye una sección dedicada (`docs/04-legal`) con los lineamientos de privacidad y uso de la plataforma, alineados con el tratamiento de datos personales y la intermediación de servicios.

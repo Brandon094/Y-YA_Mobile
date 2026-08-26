@@ -23,48 +23,92 @@ ALTER TABLE requests REPLICA IDENTITY FULL;
 ```
 
 ### Paso B: Crear/Actualizar la Edge Function
-Usa este código optimizado que maneja Negociación y Estados:
+Usa este **Código Unificado Pro** que gestiona Solicitudes, Negociación y Chats en una sola función:
 
 ```typescript
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { JWT } from "https://esm.sh/google-auth-library@8.1.1"
 
 serve(async (req) => {
-  const payload = await req.json()
-  const { record, old_record, type, table } = payload
+  try {
+    const payload = await req.json()
+    const { record, old_record, type, table } = payload 
 
-  if (table !== 'requests') return new Response("Not requests")
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SERVICE_ROLE_KEY') ?? ''
+    )
 
-  let targetUserId = ""
-  let title = ""
-  let body = ""
+    let targetUserId = ""
+    let title = ""
+    let body = ""
 
-  if (type === 'INSERT') {
-    targetUserId = record.provider_id
-    title = "¡Nueva Solicitud! 🚩"
-    body = "Alguien quiere contratar tu talento."
-  } else if (type === 'UPDATE') {
-    if (record.final_price !== old_record.final_price) {
-      const isProvider = record.request_description.includes("Contraoferta Prestador")
-      targetUserId = isProvider ? record.client_id : record.provider_id
-      title = isProvider ? "Nueva Contraoferta 💸" : "Nueva Oferta Recibida 💰"
-      body = "Revisa los detalles de la negociación en la App."
-    } else if (record.status !== old_record.status) {
-      targetUserId = record.client_id
-      title = "Estado Actualizado 🔄"
-      body = `Tu pedido ahora está: ${record.status}`
+    // --- TABLA: REQUESTS (Pedidos y Subasta) ---
+    if (table === 'requests') {
+      const { data: serviceData } = await supabase
+        .from('services').select('provider_id, title').eq('id', record.service_id).single()
+
+      if (type === 'INSERT') {
+        targetUserId = serviceData.provider_id
+        title = "¡Nueva Solicitud en YÁYA! 🚩"
+        body = `Tienes un nuevo pedido para: ${serviceData.title}.`
+      } 
+      else if (type === 'UPDATE') {
+        if (record.final_price !== old_record.final_price) {
+          const desc = record.request_description || ""
+          if (desc.includes("Contraoferta Prestador")) {
+            targetUserId = record.client_id
+            title = "Nueva Contraoferta 💸"
+            body = `El prestador propuso un nuevo precio para ${serviceData.title}.`
+          } else if (desc.includes("Nueva oferta Cliente")) {
+            targetUserId = serviceData.provider_id
+            title = "Nueva Oferta Recibida 💰"
+            body = `El cliente ajustó su oferta para ${serviceData.title}.`
+          }
+        } 
+        else if (record.status !== old_record.status) {
+          targetUserId = record.client_id
+          title = "Actualización de tu pedido 🔄"
+          const statusMap = { 'accepted': 'ha sido ACEPTADA ✅', 'cancelled': 'ha sido CANCELADA ❌', 'completed': 'ha sido COMPLETADA ✨' }
+          body = `Tu solicitud para ${serviceData.title} ${statusMap[record.status] || record.status}.`
+        }
+      }
     }
+    // --- TABLA: MESSAGES (Chat en Vivo) ---
+    else if (table === 'messages' && type === 'INSERT') {
+      targetUserId = record.receiver_id
+      const { data: sender } = await supabase.from('profiles').select('full_name').eq('id', record.sender_id).single()
+      title = sender ? `${sender.full_name} te envió un mensaje 💬` : "Nuevo Mensaje en YÁYA 💬"
+      body = record.content
+    }
+
+    if (!targetUserId) return new Response(JSON.stringify({ m: "No action" }))
+
+    const { data: profileData } = await supabase.from('profiles').select('fcm_token').eq('id', targetUserId).single()
+    if (!profileData?.fcm_token) return new Response(JSON.stringify({ m: "No token" }))
+
+    const response = await sendFCMNotification(profileData.fcm_token, title, body)
+    return new Response(JSON.stringify({ success: true, response }), { headers: { "Content-Type": "application/json" } })
+
+  } catch (error) {
+    console.error("Critical Error:", error.message)
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 })
   }
-  // ... lógica de envío FCM ...
 })
+
+async function sendFCMNotification(fcmToken: string, title: string, body: string) {
+  // Lógica de autenticación JWT y fetch a FCM V1 API...
+  // (Ver código completo en la consola de Supabase)
+}
 ```
 
 ### Paso C: Activar los Webhooks
-En **Database** -> **Webhooks**:
-1. **Webhook para Solicitudes:**
-   - Tabla: `requests`
-   - Eventos: `INSERT` y `UPDATE`.
-   - Destino: Tu Edge Function.
+Debes crear **dos webhooks** apuntando a la misma función unificada:
+1. **Webhook `requests_trigger`**:
+   - Tabla: `requests` | Eventos: `INSERT`, `UPDATE`.
+2. **Webhook `messages_trigger`**:
+   - Tabla: `messages` | Eventos: `INSERT`.
 
 ---
 

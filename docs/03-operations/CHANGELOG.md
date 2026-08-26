@@ -7,10 +7,13 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [0.1.1-alpha] - 2026-08-26
 ### Añadido
-- **Infraestructura de Notificaciones:**
+- **Infraestructura de Notificaciones Pro:**
     - Configuración de **Small Icon monocromático** (`ic_noti.png`) para cumplimiento de guías de diseño de Android.
     - Implementación de canal de notificaciones y lógica de recepción en primer plano (`YayaMessagingService`).
-    - Despliegue de **Edge Function** en Supabase para notificaciones push automáticas en negociación de precios y cambios de estado.
+    - Despliegue de **Edge Function unificada** en Supabase para notificaciones push automáticas que cubren:
+        - **Chat:** Alerta inmediata al recibir un mensaje nuevo.
+        - **Negociación:** Notificaciones de cambios de precio (contraofertas).
+        - **Estados:** Avisos automáticos al aceptar o cancelar solicitudes.
 - **Negociación Premium UX:**
     - Nuevo **Selector de Oferta dinámico** con botones `+/-` e incrementos automáticos de $5.000.
     - Implementación de **Regla de Negocio de Precio Mínimo**: El cliente no puede ofertar menos del precio base del servicio.

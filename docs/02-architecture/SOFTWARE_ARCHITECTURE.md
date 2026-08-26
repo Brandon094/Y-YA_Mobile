@@ -58,15 +58,16 @@ El sistema implementa validaciones críticas y procesos reactivos:
 - **Validación de Disponibilidad:** Cruce de horarios en tiempo real contra los campos `working_days`, `start_time` y `end_time` en la tabla `services`.
 
 ## 7. Sistema de Notificaciones (Push Architecture)
-YÁYA utiliza una arquitectura híbrida para alertas en tiempo real:
+YÁYA utiliza una arquitectura híbrida para alertas en tiempo real mediante un **Motor Unificado de Notificaciones**:
 1. **Registro:** El cliente Android genera un token FCM y lo sincroniza con `public.profiles`.
-2. **Eventos de Disparo:**
-    - **INSERT:** Nueva solicitud de servicio.
-    - **UPDATE:** Cambios en el precio (Contraofertas) o cambios en el estado (`accepted`, `cancelled`).
+2. **Eventos de Disparo (Webhooks):**
+    - **Tabla `requests` (INSERT/UPDATE):** Nuevas solicitudes, cambios de precio (Contraofertas) o cambios en el estado (`accepted`, `cancelled`).
+    - **Tabla `messages` (INSERT):** Mensajes de chat entrantes.
 3. **Procesamiento Server-Side:** 
-    - Un Webhook en Supabase envía el payload a una **Edge Function** (TypeScript).
-    - La función compara el `record` con el `old_record` (requiere `REPLICA IDENTITY FULL`) para determinar el destinatario y el mensaje dinámico.
-4. **Entrega:** La función se autentica con la API V1 de Firebase y entrega la notificación al dispositivo destino.
+    - Una **Edge Function unificada** en Supabase recibe el payload.
+    - Identifica dinámicamente al destinatario (`provider_id`, `client_id` o `receiver_id`).
+    - Personaliza el mensaje (ej. incluye el nombre del remitente en el chat).
+4. **Entrega:** La función se autentica con la API V1 de Firebase y entrega la notificación de alta prioridad al dispositivo destino.
 
 ## 7. Manejo de Errores y Estados Globales
 Cada pantalla implementa un modelo de estado robusto:
