@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema Principal en Modo Oscuro -->
+    <style name="Theme.Yáya2" parent="android:Theme.Material.NoActionBar" />
+
+    <!-- Splash Screen en Modo Oscuro -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#0F172A</item> <!-- Deep Midnight -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.Yáya2</item>
+    </style>
+</resources>
