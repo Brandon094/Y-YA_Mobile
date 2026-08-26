@@ -5,8 +5,38 @@ Todas las modificaciones notables en este proyecto serán documentadas en este a
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1-alpha] - 2026-08-26
+### Añadido
+- **Infraestructura de Notificaciones:**
+    - Configuración de **Small Icon monocromático** (`ic_noti.png`) para cumplimiento de guías de diseño de Android.
+    - Implementación de canal de notificaciones y lógica de recepción en primer plano (`YayaMessagingService`).
+    - Despliegue de **Edge Function** en Supabase para notificaciones push automáticas en negociación de precios y cambios de estado.
+- **Negociación Premium UX:**
+    - Nuevo **Selector de Oferta dinámico** con botones `+/-` e incrementos automáticos de $5.000.
+    - Implementación de **Regla de Negocio de Precio Mínimo**: El cliente no puede ofertar menos del precio base del servicio.
+    - Rediseño de diálogos de contraoferta tanto para Prestador como para Cliente con iconografía clara (`🚩`, `🔹`).
+    - Sincronización de etiquetas de historial de negociación para reconocimiento automático de respuestas.
+- **Refinamiento UI/UX de Contratación:**
+    - Rediseño integral de la pantalla de contratación con tarjetas informativas para datos del sistema (Título, Precio Base).
+    - Agrupación lógica de campos de entrada (Ubicación, Fecha, Hora) para una mejor jerarquía visual.
+- **Rediseño de "Mis Pedidos" (Cliente):**
+    - Tarjetas de pedido de alto impacto visual con iconografía vectorial detallada (Ubicación, Precio, Fecha).
+    - Indicadores visuales de "Acción Requerida" con Action Badges para nuevas ofertas recibidas.
+    - Historial de negociación estilizado y botones de acción Premium (Chat, Aceptar, Negociar).
+- **Ajuste de Flujo de Reserva:**
+    - Cambio semántico de la pantalla de confirmación a **"¡Solicitud enviada!"** para una gestión transparente de las expectativas del usuario.
+
+### Corregido
+- **DatePicker:** Corrección de desfase de zona horaria (-1 día) al convertir milisegundos UTC a hora local (Colombia UTC-5).
+- **Notificaciones:** Eliminación de recuadro blanco en barra de estado mediante ícono monocromático configurado en Manifest.
+
 ## [0.1.0-alpha] - 2025-03-05
 ### Añadido (MVP+ Milestone)
+- **Personalización y Branding:**
+    - Implementación de **Dark Theme Premium** basado en tonos Deep Midnight (Slate) para reducir la fatiga visual.
+    - Integración de la **Splash Screen API** oficial de Android, con soporte dinámico para Modo Claro (Blanco) y Modo Oscuro (Deep Midnight).
+    - Sincronización automática de barras del sistema (Status Bar) con el tema dinámico.
+    - Adopción completa de tokens de diseño Material 3 (SurfaceVariant, Outline, Tertiary).
 - **Refinamiento UI/UX Transversal:**
     - Implementación de Avatares dinámicos en el Dashboard Administrativo (Listado de usuarios, reportes y aprobación de servicios).
     - Integración de foto de perfil del usuario actual en la barra de navegación del Home Screen.

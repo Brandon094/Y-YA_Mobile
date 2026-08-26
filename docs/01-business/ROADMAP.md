@@ -16,6 +16,8 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 - [x] **Disponibilidad Granular:** Implementación de selección de días (`working_days`) y rangos horarios por servicio individual.
 - [x] **Sincronización de Disponibilidad:** Validación en tiempo real del selector de fecha/hora contra la tabla `public.availability` y reglas del servicio.
 - [x] **Evolución del Modelo Económico:** Implementación del campo `final_price` en solicitudes para reflejar acuerdos tras negociaciones.
+- [x] **Tema Oscuro Premium:** Implementación de paleta Deep Midnight optimizada para legibilidad y ahorro de batería.
+- [x] **Splash Screen Adaptativa:** Migración a la API oficial con soporte para temas de sistema.
 - [ ] **Optimización de UI/UX:** Refinamiento de transiciones, animaciones y estados de carga (Shimmer effect).
 
 ---
@@ -37,12 +39,13 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 
 ## Hito 4: Escalabilidad, Notificaciones y Legal
 **Objetivo:** Preparar la aplicación para el lanzamiento comercial y cumplimiento normativo.
-- [ ] **Sistema de Notificaciones Push:** 
+- [x] **Sistema de Notificaciones Push:** 
     - [x] Integración de Firebase Cloud Messaging (FCM) en Android.
     - [x] Gestión de tokens de dispositivo en la base de datos.
     - [x] Lógica de Badges en tiempo real (Realtime).
-    - [ ] **Fase de Pruebas:** Depuración de Edge Functions y Webhooks de disparo (Pendiente de operatividad final).
-- [ ] **Automatización de Avisos:** Implementación de Edge Functions en Supabase para disparo automático de notificaciones.
+    - [x] **Small Icon Monocromático:** Configuración oficial para cumplimiento de guías de Android.
+    - [x] **Fase de Pruebas:** Depuración de Edge Functions y Webhooks de disparo (Operatividad básica completada).
+- [x] **Automatización de Avisos:** Implementación de Edge Functions en Supabase para disparo automático de notificaciones en negociación y estados.
 - [ ] **Modelo SaaS (Suscripciones):** Implementación de planes para prestadores.
 - [x] **Cumplimiento Legal:** Integración de borradores oficiales de Términos y Condiciones, y Políticas de Privacidad (v0.2.0).
 - [ ] **Pasarela de Pagos (Post-MVP):** Integración con proveedores locales para pagos in-app.
