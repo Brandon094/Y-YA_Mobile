@@ -65,8 +65,9 @@ Al iniciar sesión, el agente debe saber que ya se han implementado:
 - **Ticket de Solicitud:** Pantalla de "Solicitud Enviada" con resumen real y gestión de expectativas.
 - **Negociación Premium (Bidireccional):** Sistema de subasta con botones `+/-`, regla de precio mínimo y sincronización de historial en "Mis Pedidos" y "Solicitudes Recibidas".
 - **Infraestructura de Notificaciones:** Sistema completo de Small Icons monocromáticos y Edge Functions para automatización de alertas.
+- **Motor de Arranque (Zero-Flicker):** Implementación de la Splash Screen API oficial con navegación diferida hasta validación de sesión (paso directo Splash -> Home).
 - **Reactividad Total (Issue #8):** Implementación de Pull-to-Refresh y suscripciones Realtime en Home, Pedidos, Solicitudes y Mensajes.
-- **Chat Pro:** Listado de chats con badges de no leídos, vista previa del último mensaje y marcas de tiempo dinámicas.
+- **Chat Pro:** Listado de chats con badges de no leídos, vista previa del último mensaje, marcas de tiempo dinámicas y comparaciones insensibles a mayúsculas (UUID robustness).
 - **Gestión de Perfil:** Edición completa de datos sincronizada con esquema SQL (Cédula, Dirección, Nacimiento).
 - **Publicación de Servicios:** Formulario para prestadores con lógica de categorías y costos de materiales.
 - **Mis Servicios:** Panel de administración para que el prestador pueda editar o pausar (activar/desactivar) sus publicaciones existentes.

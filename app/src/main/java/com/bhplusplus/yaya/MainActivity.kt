@@ -17,7 +17,6 @@ import com.bhplusplus.yaya.ui.theme.YYATheme
 
 /**
  * ACTIVIDAD PRINCIPAL (PUNTO DE ENTRADA)
- * Configura el entorno de Jetpack Compose y lanza el sistema de navegación global.
  */
 class MainActivity : ComponentActivity() {
 
@@ -25,36 +24,29 @@ class MainActivity : ComponentActivity() {
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            // Permiso concedido
-        }
-    }
+    ) { _ -> }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Instalamos el Splash Screen API oficial
         val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
         
-        // Mantenemos el Splash visible hasta que el ViewModel determine la ruta inicial
+        // Mantenemos el Splash visible hasta que el ViewModel determine la ruta final
         splashScreen.setKeepOnScreenCondition {
             viewModel.isCheckingSession
         }
 
-        // Inicializamos Supabase
         SupabaseManager.initialize(applicationContext)
-
-        // Habilita el diseño moderno de borde a borde
         enableEdgeToEdge()
-
-        // Solicitar permiso de notificaciones en Android 13+
         askNotificationPermission()
 
         setContent {
             YYATheme {
-                // Pasamos la ruta inicial calculada por el ViewModel
-                AppNavigation(startRoute = viewModel.initialRoute)
+                // Solo renderizamos la navegación cuando el chequeo de sesión ha terminado
+                // y tenemos una ruta válida. Esto evita el parpadeo de la WelcomeScreen.
+                viewModel.initialRoute?.let { route ->
+                    AppNavigation(startRoute = route)
+                }
             }
         }
     }

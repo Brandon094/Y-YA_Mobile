@@ -15,6 +15,7 @@ YÁYA implementa **MVVM** para separar la lógica de negocio de la interfaz de u
 - Actúa como el **Cerebro de Negocio** de cada pantalla.
 - Responsable del parsing de datos, formateo de fechas y cálculo de estados de flujo (ej. decidir si una oferta es una contraoferta o una nueva solicitud).
 - Gestiona el estado de la pantalla mediante `StateFlow` y suscripciones reactivas.
+- **MainViewModel:** Controla el ciclo de vida del arranque, validando la sesión antes de liberar el Splash Screen nativo.
 - Sobrevive a cambios de configuración y maneja el ciclo de vida de las Coroutines.
 
 ### 1.3. Capa de Datos (Data Layer)
@@ -30,8 +31,9 @@ El flujo de información es unidireccional (UDF - Unidirectional Data Flow):
 4. El **ViewModel** procesa el resultado y actualiza el `StateFlow`.
 5. La **UI** observa el cambio y se recompone automáticamente.
 
-## 3. Navegación Type-Safe
+## 3. Navegación Type-Safe y Flujo de Arranque
 Utilizamos el sistema de navegación basado en tipos de Kotlin (Navigation Compose 2.8+):
+- **Motor de Arranque Directo (Zero-Flicker):** La aplicación utiliza la API oficial de Splash Screen sincronizada con `MainViewModel`. La navegación no se inicializa hasta que se confirma la ruta destino (`Home`, `Admin` o `Welcome`), eliminando parpadeos o pantallas intermedias.
 - Las rutas se definen como objetos `@Serializable`.
 - Se evitan los errores de tipado manual en los strings de las rutas.
 - Los argumentos se pasan de forma segura entre pantallas.

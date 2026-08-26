@@ -7,9 +7,9 @@ YÁYA es una aplicación móvil desarrollada para conectar prestadores de servic
 El proyecto sigue el patrón de arquitectura **MVVM (Model-View-ViewModel)** recomendado por Google, garantizando una separación clara de responsabilidades y facilitando las pruebas unitarias.
 
 ### 2.1. Capas del Proyecto
-- **UI (Capa de Presentación):** Implementada con Jetpack Compose. Contiene los `Screens` y sus respectivos `ViewModels`.
+- **UI (Capa de Presentación):** Implementada con Jetpack Compose. Utiliza el patrón de "Vistas Tontas" donde el estado es inyectado desde el ViewModel. Incluye sellos de branding corporativo ("Powered by BH++") integrados al pie de las pantallas de acceso.
 - **Data (Capa de Datos):** Gestiona la lógica de obtención de datos desde Supabase o almacenamiento local. Incluye Repositorios y Modelos.
-- **Navigation:** Centraliza la lógica de navegación utilizando Type-Safety para evitar errores en tiempo de ejecución.
+- **Navigation & Startup:** Centraliza la lógica de navegación utilizando Type-Safety. Incluye un motor de arranque coordinado entre `MainActivity` y `MainViewModel` para un paso directo desde el Splash Screen nativo a la ruta correspondiente.
 
 ## 3. Stack Tecnológico
 - **Lenguaje:** Kotlin 2.2.10 con Coroutines y Flow para programación reactiva.

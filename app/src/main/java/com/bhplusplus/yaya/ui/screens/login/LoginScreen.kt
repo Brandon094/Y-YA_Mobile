@@ -225,6 +225,17 @@ fun LoginScreen(
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // SELLO DE MARCA: Powered by BH++
+            Text(
+                text = "Powered by BH++",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
         }
     }
 }

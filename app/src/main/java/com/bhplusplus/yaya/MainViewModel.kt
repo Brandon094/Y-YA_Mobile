@@ -27,7 +27,8 @@ class MainViewModel : ViewModel() {
     var isCheckingSession by mutableStateOf(true)
         private set
 
-    var initialRoute: Any by mutableStateOf(WelcomeRoute)
+    // Usamos null inicial para forzar que no haya navegación prematura
+    var initialRoute: Any? by mutableStateOf(null)
         private set
 
     init {
@@ -37,8 +38,8 @@ class MainViewModel : ViewModel() {
     private fun checkSession() {
         viewModelScope.launch {
             try {
-                // Pequeño delay de cortesía para que el Splash se aprecie (Premium UX)
-                delay(1500.milliseconds)
+                // Delay de cortesía para el Splash nativo
+                delay(1000.milliseconds)
 
                 val session = SupabaseManager.client.auth.currentSessionOrNull()
                 if (session != null) {
@@ -58,16 +59,12 @@ class MainViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 Log.e("MainVM", "Error validando sesión: ${e.message}")
-                // Fallback a metadata si falla la tabla de perfiles
                 val session = SupabaseManager.client.auth.currentSessionOrNull()
                 val role = session?.user?.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
                 
-                initialRoute = if (role.equals("admin", ignoreCase = true)) {
-                    AdminDashboardRoute
-                } else {
-                    HomeRoute
-                }
+                initialRoute = if (role.equals("admin", ignoreCase = true)) AdminDashboardRoute else HomeRoute
             } finally {
+                // Solo liberamos el Splash cuando la ruta ya está definida
                 isCheckingSession = false
             }
         }

@@ -116,6 +116,17 @@ fun WelcomeScreen(
         ) {
             Text(stringResource(R.string.welcome_register_button), color = MaterialTheme.colorScheme.primary)
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // SELLO DE MARCA: Powered by BH++
+        Text(
+            text = "Powered by BH++",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
     }
 }
 

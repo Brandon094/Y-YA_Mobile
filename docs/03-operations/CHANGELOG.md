@@ -27,9 +27,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Cambio semántico de la pantalla de confirmación a **"¡Solicitud enviada!"** para una gestión transparente de las expectativas del usuario.
 - **Rediseño de Splash Screen Premium:**
     - Implementación de la **Splash Screen API oficial** de Android, eliminando el doble splash heredado.
-    - Nuevo diseño minimalista: Isotipo coral centrado en un contenedor circular blanco con fondo de marca (`#E85C5C`).
-    - Optimización de forma: Uso de esquinas redondeadas extremas (`1000dp`) para asegurar un aspecto suave y profesional.
-    - Inclusión de marca corporativa: Añadido el sello **"Powered by BH++"** mediante `windowSplashScreenBrandingImage` en dispositivos Android 12+.
+    - Nuevo diseño mediante **Icono Adaptativo**: Isotipo coral centrado con fondo blanco circular nativo, garantizando una forma perfecta en todos los dispositivos.
+    - Optimización de escala: Uso de `inset` del 30% para un aspecto elegante y minimalista.
+    - Sello de marca corporativa: Traslado del **"Powered by BH++"** como firma visual en el pie de las pantallas de Bienvenida y Login para una mejor integración con la UI.
+    - **Motor de Arranque Directo (Zero-Flicker):** Refactor de `MainActivity` para diferir la construcción de la UI hasta que `MainViewModel` confirme la sesión, permitiendo un paso instantáneo desde el Splash a la pantalla destino (Home/Admin).
     - Soporte completo para Modo Oscuro con fondo *Deep Midnight*.
 - **Reactividad y Feedback Pro (Issue #8):**
     - Implementación de **Reactividad Total en Tiempo Real** mediante suscripciones a canales de Supabase en Home, Pedidos, Solicitudes y Mensajes.
