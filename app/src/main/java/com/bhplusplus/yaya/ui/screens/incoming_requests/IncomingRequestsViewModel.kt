@@ -11,6 +11,11 @@ import com.bhplusplus.yaya.data.models.ServiceRequest
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.channel
+import io.github.jan.supabase.realtime.postgresChangeFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
@@ -56,12 +61,62 @@ class IncomingRequestsViewModel : ViewModel() {
                         .decodeList<ServiceRequest>()
                     
                     requests = result.sortedByDescending { it.created_at }
+
+                    // Activar suscripción Realtime para solicitudes
+                    subscribeToIncomingRequests(userId)
                 }
             } catch (e: Exception) {
                 Log.e("IncomingReqVM", "Error fetching requests: ${e.message}")
                 errorMessage = "No se pudieron cargar las solicitudes."
             } finally {
                 isLoading = false
+            }
+        }
+    }
+
+    /**
+     * Se suscribe a cambios en tiempo real en la tabla 'requests'.
+     */
+    private fun subscribeToIncomingRequests(userId: String) {
+        val channel = SupabaseManager.client.channel("incoming_requests_realtime")
+        
+        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = "requests"
+        }.onEach {
+            // Refrescamos la lista completa ante cualquier cambio (Insert, Update, Delete)
+            // Esto asegura que los Joins (servicios, perfiles) se mantengan actualizados.
+            fetchIncomingRequestsSilently()
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            try {
+                channel.subscribe()
+            } catch (e: Exception) {
+                Log.e("IncomingReqVM", "Error subscribing: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Carga las solicitudes sin activar el estado isLoading para no interrumpir la UX.
+     */
+    private fun fetchIncomingRequestsSilently() {
+        viewModelScope.launch {
+            try {
+                val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
+                if (userId != null) {
+                    val result = SupabaseManager.client.postgrest["requests"]
+                        .select(Columns.raw("*, services!inner(*), profiles:client_id(*)")) {
+                            filter {
+                                eq("services.provider_id", userId)
+                            }
+                        }
+                        .decodeList<ServiceRequest>()
+                    
+                    requests = result.sortedByDescending { it.created_at }
+                }
+            } catch (e: Exception) {
+                Log.e("IncomingReqVM", "Error silent fetch: ${e.message}")
             }
         }
     }

@@ -25,6 +25,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Historial de negociación estilizado y botones de acción Premium (Chat, Aceptar, Negociar).
 - **Ajuste de Flujo de Reserva:**
     - Cambio semántico de la pantalla de confirmación a **"¡Solicitud enviada!"** para una gestión transparente de las expectativas del usuario.
+- **Reactividad y Feedback Pro (Issue #8):**
+    - Implementación de **Reactividad Total en Tiempo Real** mediante suscripciones a canales de Supabase en Home, Pedidos, Solicitudes y Mensajes.
+    - Integración del componente **Pull-to-Refresh (Material 3)** en todas las listas principales para sincronización manual a demanda.
+    - Evolución del listado de chats con **Feedback visual avanzado**: Badges de mensajes no leídos, previsualización del último mensaje, marcas de tiempo dinámicas y ordenamiento automático por actividad reciente.
+    - Refactor arquitectónico para asegurar la consistencia de UUIDs en el filtrado de mensajes y perfiles.
 
 ### Corregido
 - **DatePicker:** Corrección de desfase de zona horaria (-1 día) al convertir milisegundos UTC a hora local (Colombia UTC-5).

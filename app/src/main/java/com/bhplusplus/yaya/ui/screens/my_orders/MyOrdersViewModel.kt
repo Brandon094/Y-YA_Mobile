@@ -12,6 +12,11 @@ import com.bhplusplus.yaya.data.models.Rating
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.channel
+import io.github.jan.supabase.realtime.postgresChangeFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
@@ -51,11 +56,60 @@ class MyOrdersViewModel : ViewModel() {
                         .decodeList<ServiceRequest>()
                     
                     orders = result.sortedByDescending { it.created_at }
+
+                    // Activar suscripción Realtime para pedidos
+                    subscribeToMyOrders(userId)
                 }
             } catch (e: Exception) {
                 Log.e("MyOrdersVM", "Error al cargar pedidos: ${e.message}")
             } finally {
                 isLoading = false
+            }
+        }
+    }
+
+    /**
+     * Se suscribe a cambios en tiempo real en la tabla 'requests'.
+     */
+    private fun subscribeToMyOrders(userId: String) {
+        val channel = SupabaseManager.client.channel("my_orders_realtime")
+        
+        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = "requests"
+        }.onEach {
+            // Refrescamos silenciosamente para mantener Joins actualizados
+            fetchMyOrdersSilently()
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            try {
+                channel.subscribe()
+            } catch (e: Exception) {
+                Log.e("MyOrdersVM", "Error subscribing: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Carga los pedidos sin activar el estado isLoading.
+     */
+    private fun fetchMyOrdersSilently() {
+        viewModelScope.launch {
+            try {
+                val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
+                if (userId != null) {
+                    val result = SupabaseManager.client.postgrest["requests"]
+                        .select(Columns.raw("*, services(*, provider_profile:provider_id(*))")) {
+                            filter {
+                                eq("client_id", userId)
+                            }
+                        }
+                        .decodeList<ServiceRequest>()
+                    
+                    orders = result.sortedByDescending { it.created_at }
+                }
+            } catch (e: Exception) {
+                Log.e("MyOrdersVM", "Error silent fetch: ${e.message}")
             }
         }
     }

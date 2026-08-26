@@ -12,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +47,7 @@ fun IncomingRequestsScreen(
 ) {
     var showNegotiationDialog by remember { mutableStateOf<ServiceRequest?>(null) }
     var counterPrice by remember { mutableStateOf("") }
+    val pullToRefreshState = rememberPullToRefreshState()
 
     // Dialogo de Contraoferta (Premium UX)
     if (showNegotiationDialog != null) {
@@ -159,35 +162,42 @@ fun IncomingRequestsScreen(
             )
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+        PullToRefreshBox(
+            isRefreshing = viewModel.isLoading,
+            onRefresh = { viewModel.fetchIncomingRequests() },
+            state = pullToRefreshState,
+            modifier = Modifier.padding(padding)
         ) {
-            if (viewModel.isLoading) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            } else if (viewModel.requests.isEmpty()) {
-                EmptyIncomingRequestsView()
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(viewModel.requests) { request ->
-                        IncomingRequestItem(
-                            request = request,
-                            onAccept = { viewModel.updateRequestStatus(request.id!!, "accepted") },
-                            onReject = { viewModel.updateRequestStatus(request.id!!, "cancelled") },
-                            onNegotiate = { showNegotiationDialog = request },
-                            onChat = {
-                                onChatClick(request.client_id, request.client?.full_name ?: "Cliente")
-                            },
-                            isClientOfferPending = viewModel.isClientOfferPending(request),
-                            formattedDate = viewModel.formatDate(request.scheduled_date)
-                        )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                if (viewModel.isLoading && viewModel.requests.isEmpty()) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                } else if (viewModel.requests.isEmpty()) {
+                    EmptyIncomingRequestsView()
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(viewModel.requests) { request ->
+                            IncomingRequestItem(
+                                request = request,
+                                onAccept = { viewModel.updateRequestStatus(request.id!!, "accepted") },
+                                onReject = { viewModel.updateRequestStatus(request.id!!, "cancelled") },
+                                onNegotiate = { showNegotiationDialog = request },
+                                onChat = {
+                                    onChatClick(request.client_id, request.client?.full_name ?: "Cliente")
+                                },
+                                isClientOfferPending = viewModel.isClientOfferPending(request),
+                                formattedDate = viewModel.formatDate(request.scheduled_date)
+                            )
+                        }
                     }
                 }
             }

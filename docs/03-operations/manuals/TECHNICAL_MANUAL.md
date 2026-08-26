@@ -43,6 +43,7 @@ El sistema cuenta con un Dashboard centralizado que permite la moderación proac
 
 ## 8. Sistema de Mensajería y Notificaciones
 - **Realtime:** Los mensajes de chat se sincronizan mediante suscripciones a canales de Supabase Realtime.
+- **Feedback de Chat:** Implementación de `ChatSummary` para procesar historiales masivos, extrayendo el último mensaje, contadores de no leídos y marcas de tiempo, con ordenamiento automático por actividad reciente.
 - **Push Engine:** Utiliza **Supabase Edge Functions** escritas en TypeScript/Deno.
     - **Disparador:** Webhooks sobre la tabla `requests` configurados para `INSERT` y `UPDATE`.
     - **Lógica de Negocio:** La función detecta cambios de precio para notificar contraofertas a la contraparte.

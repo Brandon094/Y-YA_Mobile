@@ -13,6 +13,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +48,7 @@ fun MyOrdersScreen(
     var counterPrice by remember { mutableStateOf("") }
     
     var showRatingDialog by remember { mutableStateOf<ServiceRequest?>(null) }
+    val pullToRefreshState = rememberPullToRefreshState()
 
     // Dialogo para Calificación (Hito 2)
     if (showRatingDialog != null) {
@@ -188,37 +191,44 @@ fun MyOrdersScreen(
             )
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+        PullToRefreshBox(
+            isRefreshing = viewModel.isLoading,
+            onRefresh = { viewModel.fetchMyOrders() },
+            state = pullToRefreshState,
+            modifier = Modifier.padding(padding)
         ) {
-            if (viewModel.isLoading) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            } else if (viewModel.orders.isEmpty()) {
-                EmptyOrdersView()
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(viewModel.orders) { order ->
-                        OrderItem(
-                            order = order,
-                            onAccept = { viewModel.acceptProposal(order.id!!) },
-                            onReject = { viewModel.cancelRequest(order.id!!) },
-                            onNegotiate = { showNegotiationDialog = order },
-                            onRate = { showRatingDialog = order },
-                            onChat = {
-                                val providerId = order.services?.provider_id ?: ""
-                                onChatClick(providerId, "Prestador")
-                            },
-                            isCounterOfferActive = viewModel.isCounterOfferActive(order),
-                            formattedDate = viewModel.formatDate(order.scheduled_date)
-                        )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                if (viewModel.isLoading && viewModel.orders.isEmpty()) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                } else if (viewModel.orders.isEmpty()) {
+                    EmptyOrdersView()
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(viewModel.orders) { order ->
+                            OrderItem(
+                                order = order,
+                                onAccept = { viewModel.acceptProposal(order.id!!) },
+                                onReject = { viewModel.cancelRequest(order.id!!) },
+                                onNegotiate = { showNegotiationDialog = order },
+                                onRate = { showRatingDialog = order },
+                                onChat = {
+                                    val providerId = order.services?.provider_id ?: ""
+                                    onChatClick(providerId, "Prestador")
+                                },
+                                isCounterOfferActive = viewModel.isCounterOfferActive(order),
+                                formattedDate = viewModel.formatDate(order.scheduled_date)
+                            )
+                        }
                     }
                 }
             }

@@ -10,6 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +37,8 @@ fun MyServicesScreen(
     onEditService: (String) -> Unit, // Navega a la pantalla de edición (CreateService con ID)
     viewModel: MyServicesViewModel = viewModel()
 ) {
+    val pullToRefreshState = rememberPullToRefreshState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -52,30 +56,37 @@ fun MyServicesScreen(
             )
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+        PullToRefreshBox(
+            isRefreshing = viewModel.isLoading,
+            onRefresh = { viewModel.fetchMyServices() },
+            state = pullToRefreshState,
+            modifier = Modifier.padding(padding)
         ) {
-            if (viewModel.isLoading) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            } else if (viewModel.services.isEmpty()) {
-                EmptyServicesView()
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(viewModel.services) { service ->
-                        MyServiceItem(
-                            service = service,
-                            onToggleStatus = { viewModel.toggleServiceStatus(service.id!!, service.status) },
-                            onDelete = { viewModel.deleteService(service.id!!) },
-                            onEdit = { onEditService(service.id!!) }
-                        )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                if (viewModel.isLoading && viewModel.services.isEmpty()) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
+                } else if (viewModel.services.isEmpty()) {
+                    EmptyServicesView()
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(viewModel.services) { service ->
+                            MyServiceItem(
+                                service = service,
+                                onToggleStatus = { viewModel.toggleServiceStatus(service.id!!, service.status) },
+                                onDelete = { viewModel.deleteService(service.id!!) },
+                                onEdit = { onEditService(service.id!!) }
+                            )
+                        }
                     }
                 }
             }

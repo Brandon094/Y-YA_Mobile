@@ -23,25 +23,27 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Work
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.AsyncImage
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.Service
-import androidx.compose.runtime.rememberCoroutineScope
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -62,6 +64,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel()
 ) {
     val scope = rememberCoroutineScope()
+    val pullToRefreshState = rememberPullToRefreshState()
     
     Scaffold(
         topBar = {
@@ -186,94 +189,100 @@ fun HomeScreen(
         }
     ) { padding ->
         // Contenido principal
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+        PullToRefreshBox(
+            isRefreshing = viewModel.isLoading,
+            onRefresh = { viewModel.loadData() },
+            state = pullToRefreshState,
+            modifier = Modifier.padding(padding)
         ) {
-            // 1. BARRA DE BÚSQUEDA
-            OutlinedTextField(
-                value = viewModel.searchQuery,
-                onValueChange = { viewModel.onSearchQueryChange(it) },
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Buscar servicios...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                trailingIcon = {
-                    if (viewModel.searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Limpiar")
-                        }
-                    }
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(24.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                )
-            )
-
-            // 2. SELECTOR DE CATEGORÍAS (Horizontal)
-            Text(
-                text = "Categorías",
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
             ) {
-                // Opción "Todas"
-                item {
-                    FilterChip(
-                        selected = viewModel.selectedCategoryId == null,
-                        onClick = { viewModel.onCategorySelect(null) },
-                        label = { Text("Todas") }
+                // 1. BARRA DE BÚSQUEDA
+                OutlinedTextField(
+                    value = viewModel.searchQuery,
+                    onValueChange = { viewModel.onSearchQueryChange(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    placeholder = { Text("Buscar servicios...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    trailingIcon = {
+                        if (viewModel.searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
+                                Icon(Icons.Default.Clear, contentDescription = "Limpiar")
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(24.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
                     )
-                }
-                // Categorías de la base de datos
-                items(viewModel.categories) { category ->
-                    FilterChip(
-                        selected = viewModel.selectedCategoryId == category.id,
-                        onClick = { viewModel.onCategorySelect(category.id) },
-                        label = { Text(category.name) }
-                    )
-                }
-            }
-
-            Text(
-                text = stringResource(R.string.home_select_service_label),
-                modifier = Modifier.padding(16.dp),
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-
-            // Si está cargando datos de Supabase, muestra un Spinner
-            if (viewModel.isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            } else if (viewModel.filteredServices.isEmpty()) {
-                EmptyServicesView(
-                    searchQuery = viewModel.searchQuery,
-                    onClearSearch = { viewModel.onSearchQueryChange("") }
                 )
-            } else {
-                // Lista filtrada
-                LazyColumn {
-                    items(viewModel.filteredServices) { service ->
-                        val category = viewModel.categories.find { it.id == service.category_id }
-                        ServiceItem(
-                            service = service, 
-                            categoryName = category?.name,
-                            onClick = { onServiceClick(service) }
+
+                // 2. SELECTOR DE CATEGORÍAS (Horizontal)
+                Text(
+                    text = "Categorías",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Opción "Todas"
+                    item {
+                        FilterChip(
+                            selected = viewModel.selectedCategoryId == null,
+                            onClick = { viewModel.onCategorySelect(null) },
+                            label = { Text("Todas") }
                         )
+                    }
+                    // Categorías de la base de datos
+                    items(viewModel.categories) { category ->
+                        FilterChip(
+                            selected = viewModel.selectedCategoryId == category.id,
+                            onClick = { viewModel.onCategorySelect(category.id) },
+                            label = { Text(category.name) }
+                        )
+                    }
+                }
+
+                Text(
+                    text = stringResource(R.string.home_select_service_label),
+                    modifier = Modifier.padding(16.dp),
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                // Si está cargando datos de Supabase y no es por pull-to-refresh, muestra un Spinner central
+                if (viewModel.isLoading && viewModel.filteredServices.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
+                } else if (viewModel.filteredServices.isEmpty()) {
+                    EmptyServicesView(
+                        searchQuery = viewModel.searchQuery,
+                        onClearSearch = { viewModel.onSearchQueryChange("") }
+                    )
+                } else {
+                    // Lista filtrada
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(viewModel.filteredServices) { service ->
+                            val category = viewModel.categories.find { it.id == service.category_id }
+                            ServiceItem(
+                                service = service, 
+                                categoryName = category?.name,
+                                onClick = { onServiceClick(service) }
+                            )
+                        }
                     }
                 }
             }

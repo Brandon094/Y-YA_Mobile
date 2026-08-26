@@ -9,11 +9,12 @@ YÁYA implementa **MVVM** para separar la lógica de negocio de la interfaz de u
 - Construida íntegramente con **Jetpack Compose**.
 - Las funciones Composable son "**stateless**" y "**tontas**" (Dumb Components), limitándose a renderizar datos procesados y banderas booleanas (ej. `isActionPending`) entregadas por el ViewModel.
 - Uso de Material 3 para el sistema de diseño, con soporte estricto para temas Claro y Oscuro.
+- **Pull-to-Refresh:** Implementación del patrón de refresco manual mediante `PullToRefreshBox` en todas las listas principales para garantizar la sincronización a demanda.
 
 ### 1.2. Capa de ViewModel
 - Actúa como el **Cerebro de Negocio** de cada pantalla.
 - Responsable del parsing de datos, formateo de fechas y cálculo de estados de flujo (ej. decidir si una oferta es una contraoferta o una nueva solicitud).
-- Gestiona el estado de la pantalla mediante `StateFlow`.
+- Gestiona el estado de la pantalla mediante `StateFlow` y suscripciones reactivas.
 - Sobrevive a cambios de configuración y maneja el ciclo de vida de las Coroutines.
 
 ### 1.3. Capa de Datos (Data Layer)
@@ -50,9 +51,9 @@ YÁYA rompe la fricción tradicional de las plataformas de servicios al permitir
 
 ## 6. Lógica de Negocio y Reactividad
 El sistema implementa validaciones críticas y procesos reactivos:
-- **Validación de Disponibilidad:** Cruce de horarios en tiempo real contra los campos `working_days`, `start_time` y `end_time` en la tabla `services` (disponibilidad granular) y la tabla `availability` (horario global del prestador).
-- **Chat en Tiempo Real:** Uso de `Supabase Realtime` (Postgres Changes) para sincronizar mensajes sin latencia perceptible.
-- **Automatización via Edge Functions:** Uso de funciones en el servidor (Deno) disparadas por Webhooks para tareas asíncronas como el envío de notificaciones push vía Firebase.
+- **Reactividad en Tiempo Real (Realtime):** Uso extensivo de `Supabase Realtime` (Postgres Changes) para sincronizar estados de pedidos, contraofertas y mensajes sin necesidad de recargar la pantalla. Los ViewModels implementan "Silent Fetching" tras eventos de base de datos para mantener la integridad de los Joins relacionales.
+- **Chat Avanzado:** Sistema de mensajería con feedback visual de mensajes no leídos, previsualización del último mensaje y ordenamiento cronológico dinámico.
+- **Validación de Disponibilidad:** Cruce de horarios en tiempo real contra los campos `working_days`, `start_time` y `end_time` en la tabla `services`.
 
 ## 7. Sistema de Notificaciones (Push Architecture)
 YÁYA utiliza una arquitectura híbrida para alertas en tiempo real:
