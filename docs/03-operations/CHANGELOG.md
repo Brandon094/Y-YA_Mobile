@@ -35,11 +35,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Sello de marca corporativa: Traslado del **"Powered by BH++"** como firma visual en el pie de las pantallas de Bienvenida y Login para una mejor integración con la UI.
     - **Motor de Arranque Directo (Zero-Flicker):** Refactor de `MainActivity` para diferir la construcción de la UI hasta que `MainViewModel` confirme la sesión, permitiendo un paso instantáneo desde el Splash a la pantalla destino (Home/Admin).
     - Soporte completo para Modo Oscuro con fondo *Deep Midnight*.
-- **Reactividad y Feedback Pro (Issue #8):**
-    - Implementación de **Reactividad Total en Tiempo Real** mediante suscripciones a canales de Supabase en Home, Pedidos, Solicitudes y Mensajes.
-    - Integración del componente **Pull-to-Refresh (Material 3)** en todas las listas principales para sincronización manual a demanda.
-    - Evolución del listado de chats con **Feedback visual avanzado**: Badges de mensajes no leídos, previsualización del último mensaje, marcas de tiempo dinámicas y ordenamiento automático por actividad reciente.
-    - Refactor arquitectónico para asegurar la consistencia de UUIDs en el filtrado de mensajes y perfiles.
+- **Chat Pro Avanzado:**
+    - Listado de chats con badges de no leídos, previsualización del último mensaje y marcas de tiempo dinámicas.
+    - Rediseño de la pantalla de chat con burbujas Premium, hora de mensaje e indicadores de lectura (Double Check).
+    - Optimización de UX: Implementación de **Gestión de Teclado (IME)** mediante `imePadding` para evitar el solapamiento del campo de texto al escribir.
+    - Robustez de datos: Comparación de UUIDs case-insensitive para asegurar la vinculación de mensajes en todos los roles.
 
 ### Corregido
 - **DatePicker:** Corrección de desfase de zona horaria (-1 día) al convertir milisegundos UTC a hora local (Colombia UTC-5).

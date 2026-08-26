@@ -9,6 +9,7 @@ YÁYA implementa **MVVM** para separar la lógica de negocio de la interfaz de u
 - Construida íntegramente con **Jetpack Compose**.
 - Las funciones Composable son "**stateless**" y "**tontas**" (Dumb Components), limitándose a renderizar datos procesados y banderas booleanas (ej. `isActionPending`) entregadas por el ViewModel.
 - Uso de Material 3 para el sistema de diseño, con soporte estricto para temas Claro y Oscuro.
+- **Gestión de Teclado (IME):** Implementación de `Modifier.imePadding()` en pantallas de entrada de datos y chat para asegurar que los componentes de entrada permanezcan visibles sobre el teclado virtual.
 - **Pull-to-Refresh:** Implementación del patrón de refresco manual mediante `PullToRefreshBox` en todas las listas principales para garantizar la sincronización a demanda.
 
 ### 1.2. Capa de ViewModel
