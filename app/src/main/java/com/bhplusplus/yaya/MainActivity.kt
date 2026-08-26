@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.navigation.AppNavigation
 import com.bhplusplus.yaya.ui.theme.YYATheme
@@ -28,6 +29,9 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Instalamos el Splash Screen API antes de super.onCreate
+        installSplashScreen()
+
         super.onCreate(savedInstanceState)
         
         // Inicializamos Supabase con persistencia de sesión

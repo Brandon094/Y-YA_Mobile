@@ -136,19 +136,17 @@ fun AppNavigation() {
         navController = navController,
         startDestination = LoadingRoute
     ) {
-        // ... (resto del NavHost)
         // Pantalla de Carga Inicial
         composable<LoadingRoute> {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFFFFDF9)),
+                    .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.logo_splash),
                     contentDescription = "YÁYA Splash",
-                    modifier = Modifier.size(250.dp)
+                    modifier = Modifier.size(200.dp)
                 )
             }
         }

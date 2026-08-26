@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +19,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.layout.ContentScale
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.Message
 import io.github.jan.supabase.auth.auth
@@ -57,9 +62,35 @@ fun ChatScreen(
         topBar = {
             TopAppBar(
                 title = { 
-                    Column {
-                        Text(receiverName, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                        Text("En línea", fontSize = 12.sp, color = Color.Green.copy(alpha = 0.7f))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.2f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (viewModel.receiverProfile?.avatar_url != null) {
+                                AsyncImage(
+                                    model = viewModel.receiverProfile?.avatar_url,
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Person, 
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = Color.White
+                                )
+                            }
+                        }
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text(receiverName, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            Text("En línea", fontSize = 11.sp, color = Color.Green.copy(alpha = 0.7f))
+                        }
                     }
                 },
                 navigationIcon = {

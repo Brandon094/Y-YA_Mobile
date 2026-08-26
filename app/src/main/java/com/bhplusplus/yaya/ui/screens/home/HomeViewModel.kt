@@ -11,6 +11,7 @@ import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.data.SupabaseManager
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.decodeRecord
@@ -62,9 +63,9 @@ class HomeViewModel : ViewModel() {
                     .select()
                     .decodeList<Category>()
 
-                // 2. Obtener todos los servicios (Filtrando por estado activo para usuarios normales)
+                // 2. Obtener todos los servicios (Filtrando por estado activo para usuarios normales) con Join del prestador
                 allServices = SupabaseManager.client.postgrest["services"]
-                    .select {
+                    .select(Columns.raw("*, provider_profile:provider_id(*)")) {
                         filter {
                             eq("status", "active") // Solo servicios aprobados
                         }

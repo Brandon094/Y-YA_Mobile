@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.Message
+import com.bhplusplus.yaya.data.models.UserProfile
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.PostgresAction
@@ -27,6 +28,9 @@ class ChatViewModel : ViewModel() {
     var messages by mutableStateOf<List<Message>>(emptyList())
         private set
 
+    var receiverProfile by mutableStateOf<UserProfile?>(null)
+        private set
+
     var isLoading by mutableStateOf(false)
         private set
 
@@ -38,9 +42,25 @@ class ChatViewModel : ViewModel() {
     fun initializeChat(receiverId: String) {
         if (currentUser == null) return
         
+        fetchReceiverProfile(receiverId)
         fetchMessages(receiverId)
         subscribeToMessages(receiverId)
         markMessagesAsRead(receiverId)
+    }
+
+    /**
+     * Carga el perfil del destinatario para mostrar su avatar.
+     */
+    private fun fetchReceiverProfile(receiverId: String) {
+        viewModelScope.launch {
+            try {
+                receiverProfile = SupabaseManager.client.postgrest["profiles"]
+                    .select { filter { eq("id", receiverId) } }
+                    .decodeSingle<UserProfile>()
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error al cargar perfil receptor: ${e.message}")
+            }
+        }
     }
 
     /**
