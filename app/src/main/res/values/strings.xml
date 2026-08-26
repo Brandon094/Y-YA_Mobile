@@ -113,20 +113,23 @@
     <string name="contratacion_date_placeholder">Selecciona la fecha</string>
     <string name="contratacion_time_field">Hora</string>
     <string name="contratacion_time_placeholder">Ej: Hoy 3:00 PM</string>
-    <string name="contratacion_offer_field">¿Cuánto ofrece?</string>
+    <string name="contratacion_base_price_field">Precio base del servicio</string>
+    <string name="contratacion_offer_field">Tu oferta de contratación</string>
     <string name="contratacion_button">Contratar</string>
     <string name="contratacion_unknown_provider">Prestador Independiente</string>
     <string name="contratacion_unknown_age">Información no disponible</string>
     <string name="contratacion_unknown_phone">Contactar por chat</string>
 
     <!-- Confirmation Screen -->
-    <string name="confirmation_success_title">¡Reserva confirmada!</string>
-    <string name="confirmation_success_message">Tu servicio ha sido reservado exitosamente.</string>
-    <string name="confirmation_details_title">Detalles de tu reserva</string>
+    <string name="confirmation_success_title">¡Solicitud enviada!</string>
+    <string name="confirmation_success_message">Tu propuesta ha sido enviada al prestador. Te notificaremos cuando sea aceptada o recibas una contraoferta.</string>
+    <string name="confirmation_details_title">Detalles de tu solicitud</string>
     <string name="confirmation_service_label">Servicio</string>
     <string name="confirmation_provider_label">Prestador</string>
     <string name="confirmation_date_label">Fecha</string>
     <string name="confirmation_location_label">Ubicación</string>
+    <string name="confirmation_base_price_label">Precio base del servicio</string>
+    <string name="confirmation_final_offer_label">Tu oferta final</string>
     <string name="confirmation_price_label">Precio</string>
     <string name="confirmation_time_label">Tiempo</string>
     <string name="confirmation_toast_finished">Reserva finalizada</string>

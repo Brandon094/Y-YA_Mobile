@@ -36,6 +36,33 @@ class ContratacionViewModel : ViewModel() {
     var hora by mutableStateOf("")  // Formato HH:mm
     var oferta by mutableStateOf("")
 
+    /**
+     * Ajusta la oferta asegurando que no sea inferior al precio base.
+     */
+    fun updateOferta(newValue: String) {
+        val numericValue = newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
+        val basePrice = service?.price ?: 0.0
+        
+        oferta = if (numericValue < basePrice) {
+            basePrice.toInt().toString()
+        } else {
+            numericValue.toInt().toString()
+        }
+    }
+
+    fun incrementarOferta() {
+        val current = oferta.toDoubleOrNull() ?: (service?.price ?: 0.0)
+        oferta = (current + 5000.0).toInt().toString()
+    }
+
+    fun decrementarOferta() {
+        val current = oferta.toDoubleOrNull() ?: (service?.price ?: 0.0)
+        val basePrice = service?.price ?: 0.0
+        if (current > basePrice) {
+            oferta = (current - 5000.0).coerceAtLeast(basePrice).toInt().toString()
+        }
+    }
+
     // Estados de control
     var isLoading by mutableStateOf(false)
         private set

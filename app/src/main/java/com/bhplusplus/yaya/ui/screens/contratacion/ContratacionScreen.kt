@@ -8,27 +8,34 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Calendar
+import java.text.NumberFormat
+import java.util.Locale
 
 /**
  * PANTALLA DE CONTRATACIÓN
@@ -58,7 +65,7 @@ fun PantallaContratacion(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
                         val date = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault())
+                            .atZone(ZoneId.of("UTC"))
                             .toLocalDate()
                         viewModel.fecha = date.toString() // YYYY-MM-DD
                         viewModel.checkAvailability() // Validar disponibilidad (Hito 1)
@@ -124,7 +131,9 @@ fun PantallaContratacion(
             hora = viewModel.hora,
             onHoraClick = { showTimePicker = true },
             oferta = viewModel.oferta,
-            onOfertaChange = { viewModel.oferta = it },
+            onOfertaChange = { viewModel.updateOferta(it) },
+            onIncrementar = { viewModel.incrementarOferta() },
+            onDecrementar = { viewModel.decrementarOferta() },
             isLoading = viewModel.isLoading,
             errorMessage = viewModel.errorMessage,
             isAvailable = viewModel.isAvailable, // Hito 1
@@ -154,6 +163,8 @@ fun ContratacionContent(
     onHoraClick: () -> Unit,
     oferta: String,
     onOfertaChange: (String) -> Unit,
+    onIncrementar: () -> Unit,
+    onDecrementar: () -> Unit,
     isLoading: Boolean,
     errorMessage: String?,
     isAvailable: Boolean, // Hito 1
@@ -182,88 +193,194 @@ fun ContratacionContent(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Tarjeta Prestador
+            // SECCIÓN 1: RESUMEN DEL SERVICIO (LECTURA)
+            Text(
+                text = stringResource(R.string.contratacion_details_section).uppercase(),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    InfoRow(Icons.Default.Build, stringResource(R.string.contratacion_service_field), service.title)
+                    HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                    InfoRow(Icons.Default.Payments, stringResource(R.string.contratacion_base_price_field), formatCurrency(service.price))
+                }
+            }
+
+            // SECCIÓN 2: DETALLES DE LA RESERVA (INTERACTIVO)
+            Text(
+                text = "TUS DATOS DE RESERVA",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
-                Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.size(50.dp).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape), contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
-                        Text(text = provider?.full_name ?: stringResource(R.string.contratacion_unknown_provider), fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Text(text = stringResource(R.string.contratacion_provider_label), fontSize = 12.sp, color = Color.Gray)
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    CampoFormulario(stringResource(R.string.contratacion_address_field), direccion, !isLoading, stringResource(R.string.contratacion_address_placeholder), onDireccionChange)
+                    
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        SelectorBoton(
+                            icon = Icons.Default.DateRange,
+                            label = if (fecha.isEmpty()) stringResource(R.string.contratacion_date_field) else fecha,
+                            modifier = Modifier.weight(1f),
+                            onClick = onFechaClick,
+                            enabled = !isLoading
+                        )
+                        SelectorBoton(
+                            icon = Icons.Default.AccessTime,
+                            label = if (hora.isEmpty()) stringResource(R.string.contratacion_time_field) else hora,
+                            modifier = Modifier.weight(1f),
+                            onClick = onHoraClick,
+                            enabled = !isLoading
+                        )
                     }
                 }
             }
 
-            // Formulario
+            // SECCIÓN 3: NEGOCIACIÓN DE PRECIO (PREMIUM SELECTOR)
+            Text(
+                text = stringResource(R.string.contratacion_offer_field).uppercase(),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(2.dp)
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(4.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(text = stringResource(R.string.contratacion_details_section), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.height(16.dp))
-                    
-                    CampoFormulario(stringResource(R.string.contratacion_service_field), service.title, false) {}
-                    CampoFormulario(stringResource(R.string.contratacion_address_field), direccion, !isLoading, stringResource(R.string.contratacion_address_placeholder), onDireccionChange)
-                    
-                    // Selector Fecha
-                    OutlinedTextField(
-                        value = fecha, onValueChange = {},
-                        label = { Text(stringResource(R.string.contratacion_date_field)) },
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).clickable { if(!isLoading) onFechaClick() },
-                        enabled = false, shape = RoundedCornerShape(12.dp),
-                        leadingIcon = { Icon(Icons.Default.DateRange, null, tint = MaterialTheme.colorScheme.primary) },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                            disabledBorderColor = MaterialTheme.colorScheme.outline
-                        )
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Ajusta tu oferta (Mínimo: ${formatCurrency(service.price)})",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
                     )
-
-                    // Selector Hora
-                    OutlinedTextField(
-                        value = hora, onValueChange = {},
-                        label = { Text(stringResource(R.string.contratacion_time_field)) },
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).clickable { if(!isLoading) onHoraClick() },
-                        enabled = false, shape = RoundedCornerShape(12.dp),
-                        leadingIcon = { Icon(Icons.Default.AccessTime, null, tint = MaterialTheme.colorScheme.primary) },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                            disabledBorderColor = MaterialTheme.colorScheme.outline
-                        )
-                    )
-
-                    CampoFormulario(stringResource(R.string.contratacion_offer_field), oferta, !isLoading, "", onOfertaChange)
-
-                    if (errorMessage != null) {
-                        Text(text = errorMessage, color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(vertical = 8.dp))
-                    }
-
-                    Button(
-                        onClick = onContratar,
-                        modifier = Modifier.fillMaxWidth().height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        enabled = !isLoading && direccion.isNotBlank() && fecha.isNotBlank() && hora.isNotBlank() && isAvailable
+                    Spacer(Modifier.height(12.dp))
+                    
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
-                        else Text(stringResource(R.string.contratacion_button), fontWeight = FontWeight.Bold)
+                        FilledIconButton(
+                            onClick = onDecrementar,
+                            enabled = !isLoading && (oferta.toDoubleOrNull() ?: 0.0) > service.price,
+                            colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                        ) {
+                            Icon(Icons.Default.Remove, contentDescription = "Menos")
+                        }
+
+                        OutlinedTextField(
+                            value = oferta,
+                            onValueChange = onOfertaChange,
+                            modifier = Modifier.width(140.dp).padding(horizontal = 8.dp),
+                            textStyle = LocalTextStyle.current.copy(
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            ),
+                            prefix = { Text("$") },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp),
+                            enabled = !isLoading
+                        )
+
+                        FilledIconButton(
+                            onClick = onIncrementar,
+                            enabled = !isLoading,
+                            colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Más")
+                        }
                     }
                 }
+            }
+
+            if (errorMessage != null) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(12.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            Spacer(Modifier.weight(1f))
+
+            Button(
+                onClick = onContratar,
+                modifier = Modifier.fillMaxWidth().height(60.dp),
+                shape = RoundedCornerShape(16.dp),
+                enabled = !isLoading && direccion.isNotBlank() && fecha.isNotBlank() && hora.isNotBlank() && isAvailable
+            ) {
+                if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
+                else Text(stringResource(R.string.contratacion_button), fontWeight = FontWeight.Bold, fontSize = 18.sp)
             }
         }
     }
+}
+
+@Composable
+fun InfoRow(icon: ImageVector, label: String, value: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+@Composable
+fun SelectorBoton(icon: ImageVector, label: String, modifier: Modifier, onClick: () -> Unit, enabled: Boolean) {
+    Surface(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = modifier.height(56.dp),
+        shape = RoundedCornerShape(12.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.width(8.dp))
+            Text(label, style = MaterialTheme.typography.bodyMedium, maxLines = 1)
+        }
+    }
+}
+
+fun formatCurrency(amount: Double): String {
+    return NumberFormat.getCurrencyInstance(Locale("es", "CO")).format(amount).replace(",00", "")
 }
 
 @Composable
@@ -284,7 +401,9 @@ fun ContratacionPreview() {
         direccion = "", onDireccionChange = {}, 
         fecha = "", onFechaClick = {},
         hora = "", onHoraClick = {},
-        oferta = "", onOfertaChange = {}, isLoading = false, errorMessage = null,
+        oferta = "", onOfertaChange = {}, 
+        onIncrementar = {}, onDecrementar = {},
+        isLoading = false, errorMessage = null,
         isAvailable = true,
         onBack = {}, onContratar = {}
     )
