@@ -21,7 +21,8 @@ class ConfirmacionViewModel : ViewModel() {
     var prestador by mutableStateOf("Cargando...")
     var fecha by mutableStateOf("")
     var ubicacion by mutableStateOf("")
-    var precio by mutableStateOf("")
+    var precioBase by mutableStateOf("")
+    var precioOfertado by mutableStateOf("")
     var tiempo by mutableStateOf("")
 
     var isLoading by mutableStateOf(false)
@@ -39,6 +40,7 @@ class ConfirmacionViewModel : ViewModel() {
                     .decodeSingle<ServiceRequest>()
                 
                 ubicacion = request.service_address
+                precioOfertado = "$ ${request.final_price.toInt()}"
                 
                 // Formatear fecha
                 request.scheduled_date?.let { 
@@ -57,7 +59,7 @@ class ConfirmacionViewModel : ViewModel() {
                     .decodeSingle<Service>()
                 
                 servicio = serviceResult.title
-                precio = "$ ${serviceResult.price}"
+                precioBase = "$ ${serviceResult.price.toInt()}"
                 tiempo = serviceResult.estimated_time ?: "N/A"
 
                 // 3. Cargar el Prestador para ver su nombre

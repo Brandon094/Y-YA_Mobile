@@ -7,12 +7,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,14 +71,19 @@ fun PantallaReservaConfirmada(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Ícono de confirmación
+        // Ícono de envío exitoso
         Box(
             modifier = Modifier
-                .size(100.dp)
+                .size(110.dp)
                 .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f), shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "✓", fontSize = 56.sp, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.Send,
+                contentDescription = null,
+                modifier = Modifier.size(56.dp),
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -117,22 +126,52 @@ fun PantallaReservaConfirmada(
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
                 Text(
-                    text = stringResource(R.string.confirmation_details_title),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    text = stringResource(R.string.confirmation_details_title).uppercase(),
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 12.dp),
+                    letterSpacing = 1.sp
                 )
 
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
                 Spacer(modifier = Modifier.height(16.dp))
 
-                DetalleReservaFila("🧹", stringResource(R.string.confirmation_service_label), viewModel.servicio)
-                DetalleReservaFila("👤", stringResource(R.string.confirmation_provider_label), viewModel.prestador)
-                DetalleReservaFila("📅", stringResource(R.string.confirmation_date_label), viewModel.fecha)
-                DetalleReservaFila("📍", stringResource(R.string.confirmation_location_label), viewModel.ubicacion)
-                DetalleReservaFila("💰", stringResource(R.string.confirmation_price_label), viewModel.precio)
-                DetalleReservaFila("⏱", stringResource(R.string.confirmation_time_label), viewModel.tiempo)
+                // BLOQUE 1: ¿QUIÉN Y QUÉ?
+                Text("SERVICIO Y PRESTADOR", style = MaterialTheme.typography.labelSmall, color = Color.Gray, letterSpacing = 0.5.sp)
+                DetalleReservaFila(Icons.Default.HomeRepairService, stringResource(R.string.confirmation_service_label), viewModel.servicio)
+                DetalleReservaFila(Icons.Default.Person, stringResource(R.string.confirmation_provider_label), viewModel.prestador)
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // BLOQUE 2: ¿CUÁNDO Y DÓNDE?
+                Text("CITA Y UBICACIÓN", style = MaterialTheme.typography.labelSmall, color = Color.Gray, letterSpacing = 0.5.sp)
+                DetalleReservaFila(Icons.Default.DateRange, stringResource(R.string.confirmation_date_label), viewModel.fecha)
+                DetalleReservaFila(Icons.Default.AccessTime, stringResource(R.string.confirmation_time_label), viewModel.tiempo)
+                DetalleReservaFila(Icons.Default.LocationOn, stringResource(R.string.confirmation_location_label), viewModel.ubicacion)
+
+                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // BLOQUE 3: RESUMEN ECONÓMICO
+                Text("RESUMEN DE NEGOCIACIÓN", style = MaterialTheme.typography.labelSmall, color = Color.Gray, letterSpacing = 0.5.sp)
+                DetalleReservaFila(Icons.Default.Payments, stringResource(R.string.confirmation_base_price_label), viewModel.precioBase)
+                
+                // Resaltar la oferta final
+                Surface(
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                ) {
+                    DetalleReservaFila(
+                        icono = Icons.Default.Schedule, 
+                        etiqueta = stringResource(R.string.confirmation_final_offer_label), 
+                        valor = viewModel.precioOfertado
+                    )
+                }
             }
         }
 
@@ -167,26 +206,34 @@ fun PantallaReservaConfirmada(
 }
 
 @Composable
-fun DetalleReservaFila(icono: String, etiqueta: String, valor: String) {
+fun DetalleReservaFila(icono: ImageVector, etiqueta: String, valor: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = icono, fontSize = 18.sp, modifier = Modifier.width(32.dp))
-        Text(
-            text = etiqueta,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            fontSize = 14.sp,
-            modifier = Modifier.width(100.dp)
+        Icon(
+            imageVector = icono,
+            contentDescription = null,
+            modifier = Modifier.size(22.dp),
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
         )
-        Text(
-            text = valor,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = etiqueta,
+                color = Color.Gray,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = valor,
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 
