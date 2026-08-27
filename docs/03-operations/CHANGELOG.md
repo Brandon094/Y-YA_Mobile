@@ -14,6 +14,17 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Rediseño de cabecera con **Isotipo Circular Premium** (140dp con fondo sutil).
     - Eliminación de texto redundante "YÁYA" para un look más limpio y profesional.
     - Implementación de scroll interno para evitar problemas de visualización en dispositivos con pantallas pequeñas.
+- **Rediseño Maestro de Home Screen:**
+    - Nueva barra superior con saludo personalizado (*"Hola, [Nombre]"*) e identidad de marca destacada.
+    - Barra de búsqueda integrada con diseño de bordes suaves y sección de categorías con encabezado dinámico.
+    - **Tarjetas de Servicio Premium:** Integración de Avatar del prestador con badge de categoría superpuesto, precio en formato Pill y visualización de disponibilidad refinada.
+- **Infraestructura de Formateo DRY:**
+    - Implementación de `FormatterUtils` para la centralización de lógica de moneda compacta (ej: **$ 50k**), extracción de fechas ISO y manejo de horas.
+- **Rediseño Premium de Flujos Core:**
+    - **Pantalla de Solicitud (Contratación):** Nueva interfaz con Header Hero, agrupación de datos en tarjetas y selector de oferta gigante optimizado para negociación.
+    - **Pantalla de Confirmación:** Transformación a un "Ticket Digital" con resumen detallado, banner de éxito inmersivo y recordatorios de chat.
+    - **Detalle del Servicio:** Nueva galería inmersiva de 300dp, efecto de solapamiento (Parallax) y visualización de disponibilidad mediante bolitas consistentes con el catálogo.
+    - **Mi Perfil:** Rediseño integral con categorización de opciones (Actividad, Talento, Configuración) y jerarquía visual mejorada.
 
 ### Cambiado
 - **Ciclo de Vida de Servicios (Cierre):**

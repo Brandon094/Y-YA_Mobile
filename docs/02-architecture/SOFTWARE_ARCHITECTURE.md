@@ -8,7 +8,7 @@ YÁYA implementa **MVVM** para separar la lógica de negocio de la interfaz de u
 ### 1.1. Capa de Vista (UI)
 - Construida íntegramente con **Jetpack Compose**.
 - Las funciones Composable son "**stateless**" y "**tontas**" (Dumb Components), limitándose a renderizar datos procesados y banderas booleanas entregadas por el ViewModel mediante modelos de **UiState** dedicados (ej. `MyOrderUiState`, `MessageUiState`).
-- **Inyección de Estados:** El ViewModel mapea los modelos de dominio (Supabase) a estados de UI simplificados, encargándose del formateo de monedas, fechas y lógica de visibilidad condicional.
+- **Inyección de Estados:** El ViewModel mapea los modelos de dominio (Supabase) a estados de UI simplificados, encargándose del formateo de monedas (estilo compacto $ 50k), fechas y lógica de visibilidad condicional mediante el principio **DRY** (utilizando `FormatterUtils`).
 - Uso de Material 3 para el sistema de diseño, con soporte estricto para temas Claro y Oscuro.
 - **Pull-to-Refresh:** Implementación del patrón de refresco manual mediante `PullToRefreshBox` en todas las listas principales para garantizar la sincronización a demanda.
 - **Feedback de Carga (Shimmers):** Sustitución progresiva de indicadores circulares por **Skeleton Screens** (Shimmer Effects) personalizados para mejorar la percepción de rendimiento y fluidez (Premium UX).
