@@ -34,6 +34,9 @@ import androidx.compose.ui.layout.ContentScale
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.ServiceRequest
 import com.bhplusplus.yaya.ui.components.RequestItemShimmer
+import com.bhplusplus.yaya.ui.components.atoms.YayaAvatar
+import com.bhplusplus.yaya.ui.components.atoms.YayaStatusBadge
+import com.bhplusplus.yaya.ui.components.molecules.DetailRow
 
 /**
  * PANTALLA DE MIS PEDIDOS (VISTA CLIENTE)
@@ -230,28 +233,17 @@ fun OrderItem(
                 verticalAlignment = Alignment.Top
             ) {
                 Row(modifier = Modifier.weight(1f)) {
-                    Box(
-                        modifier = Modifier.size(52.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (state.providerAvatarUrl != null) {
-                            AsyncImage(
-                                model = state.providerAvatarUrl,
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-                        } else {
-                            Icon(imageVector = Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
-                        }
-                    }
+                    YayaAvatar(
+                        imageUrl = state.providerAvatarUrl,
+                        size = 52.dp
+                    )
                     Spacer(Modifier.width(16.dp))
                     Column {
                         Text(text = state.serviceTitle, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
                         Text(text = state.providerName, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
-                StatusBadge(state.status)
+                YayaStatusBadge(state.status)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -443,34 +435,11 @@ fun RatingDialog(onDismiss: () -> Unit, onConfirm: (Int, String) -> Unit, isSubm
 }
 
 @Composable
-fun StatusBadge(status: String) {
-    val (backgroundColor, textColor, label) = when (status) {
-        "pending" -> Triple(MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer, "Pendiente")
-        "accepted" -> Triple(Color(0xFFE8F5E9), Color(0xFF4CAF50), "Confirmada")
-        "completed" -> Triple(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer, "Completada")
-        "cancelled" -> Triple(MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer, "Cancelada")
-        else -> Triple(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurfaceVariant, status)
-    }
-    Surface(color = backgroundColor, shape = RoundedCornerShape(8.dp)) {
-        Text(text = label, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = textColor)
-    }
-}
-
-@Composable
 fun EmptyOrdersView() {
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(imageVector = Icons.Default.History, contentDescription = null, modifier = Modifier.size(80.dp), tint = Color.LightGray)
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Aún no tienes pedidos", color = Color.Gray)
-    }
-}
-
-@Composable
-fun DetailRow(icon: ImageVector, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f))
-        Spacer(Modifier.width(12.dp))
-        Text(text = text, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

@@ -43,7 +43,14 @@ El objetivo es construir una plataforma de servicios líder, utilizando las tecn
 - **Control de Acceso:** La interfaz debe ocultar/mostrar elementos según el campo `role` del perfil del usuario (`client`, `provider`, `admin`).
 - **Persistencia:** La sesión debe inicializarse en `MainActivity` mediante `SupabaseManager.initialize(context)`.
 
-### D. Documentación Técnica
+### D. Metodología de Diseño Atómico (Atomic Design)
+Para garantizar la escalabilidad y consistencia de la UI, el proyecto sigue una estructura estricta de componentes en `ui/components/`:
+1. **Átomos (`atoms/`):** Bloques básicos indivisibles (Botones, Inputs, Avatares, Badges). No deben tener lógica de negocio.
+2. **Moléculas (`molecules/`):** Grupos de átomos que funcionan como una unidad (Item de lista simple, Selector de fecha, Indicador de calificación).
+3. **Organismos (`organisms/`):** Secciones complejas orquestadas (Tarjetas de servicio, Barras superiores, Carruseles).
+4. **Páginas (`screens/`):** Pantallas completas que orquestan organismos y se comunican con los ViewModels.
+
+### E. Documentación Técnica
 - **Código Auto-explicativo:** Las variables y funciones deben tener nombres claros en inglés o español (según el estándar del archivo).
 - **Comentarios de Cabecera:** Cada clase, ViewModel y función Composable compleja debe tener un comentario KDoc (/** ... */) que explique su propósito y parámetros.
 - **Mantenibilidad:** Documentar decisiones técnicas críticas o lógica de negocio compleja para facilitar el trabajo de futuros agentes o desarrolladores.
@@ -72,6 +79,7 @@ Al iniciar sesión, el agente debe saber que ya se han implementado:
 - **Motor de Arranque (Zero-Flicker):** Implementación de la Splash Screen API oficial con navegación diferida hasta validación de sesión (paso directo Splash -> Home).
 - **Reactividad Total (Issue #8):** Implementación de Pull-to-Refresh y suscripciones Realtime en Home, Pedidos, Solicitudes y Mensajes.
 - **Chat Pro:** Mensajería con `reverseLayout`, badges de no leídos, previsualización de último mensaje y marcas de tiempo dinámicas.
+- **Estandarización Atómica:** Refactorización integral de la UI bajo la metodología **Atomic Design**, centralizando componentes en `atoms/`, `molecules/` y `organisms/`.
 - **Handshake Flow:** Proceso de negociación con doble confirmación (`in_progress`) para blindar el precio acordado.
 - **Onboarding Dinámico:** Sistema de bienvenida interactivo basado en `HorizontalPager`.
 - **Minimalismo de Marca:** Política de cero redundancia visual (Logo > Texto).

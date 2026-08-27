@@ -35,6 +35,12 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Optimización de Accesibilidad (Universal Design):**
     - Layouts adaptativos para fuentes al **200%** mediante `FlowRow`, pesos dinámicos y `sizeIn`.
     - Blindaje de círculos de disponibilidad y textos de contacto en el Chat.
+- **Estandarización Atómica (Atomic Design):**
+    - Refactorización masiva de la interfaz de usuario bajo la metodología **Atomic Design**, creando librerías de componentes reutilizables en `ui/components/atoms`, `ui/components/molecules` y `ui/components/organisms`.
+    - **Átomos:** Implementación de `YayaButton`, `YayaTextField`, `YayaAvatar` y `YayaStatusBadge`.
+    - **Moléculas:** Implementación de `RatingIndicator`, `DayIndicator`, `CategorySelector`, `DetailRow` y `ChatContactItem`.
+    - **Organismos:** Implementación de `ServiceCard`, `HomeTopBar`, `SearchBarIntegrated` y `OnboardingCarousel`.
+    - Esta reestructuración garantiza consistencia visual absoluta y facilita el mantenimiento global de la marca BH++.
 - **Cumplimiento y Seguridad:** Opción de borrado de cuenta integrado en el perfil para cumplimiento con Google Play.
 
 ### Cambiado
