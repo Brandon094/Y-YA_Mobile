@@ -23,7 +23,9 @@
     <string name="welcome_register_button">Regístrate</string>
 
     <!-- Home Screen -->
-    <string name="home_top_bar_title">Buscar servicio</string>
+    <string name="home_top_bar_title">Explorar</string>
+    <string name="home_welcome_back">Hola, %s</string>
+    <string name="home_search_placeholder">¿Qué servicio necesitas hoy?</string>
     <string name="home_profile_desc">Mi Perfil</string>
     <string name="home_logout_desc">Cerrar sesión</string>
     <string name="home_select_service_label">Selecciona el servicio a contratar:</string>

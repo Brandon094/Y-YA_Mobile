@@ -1,6 +1,7 @@
 package com.bhplusplus.yaya.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,11 +53,30 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel()
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
+    val userName = remember(viewModel.userProfile?.full_name) {
+        viewModel.userProfile?.full_name?.substringBefore(" ") ?: ""
+    }
     
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.home_top_bar_title)) },
+                title = { 
+                    Column {
+                        Text(
+                            text = stringResource(R.string.app_brand_yaya),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        if (userName.isNotEmpty()) {
+                            Text(
+                                text = stringResource(R.string.home_welcome_back, userName),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onProfileClick) {
                         if (viewModel.userProfile?.avatar_url != null) {
@@ -184,65 +203,83 @@ fun HomeScreen(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
             ) {
-                // 1. BARRA DE BÚSQUEDA
-                OutlinedTextField(
-                    value = viewModel.searchQuery,
-                    onValueChange = { viewModel.onSearchQueryChange(it) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    placeholder = { Text("Buscar servicios...") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    trailingIcon = {
-                        if (viewModel.searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
-                                Icon(Icons.Default.Clear, contentDescription = "Limpiar")
+                // 1. BARRA DE BÚSQUEDA INTEGRADA
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.secondary,
+                    shape = RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp)
+                ) {
+                    OutlinedTextField(
+                        value = viewModel.searchQuery,
+                        onValueChange = { viewModel.onSearchQueryChange(it) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, bottom = 24.dp, top = 8.dp),
+                        placeholder = { 
+                            Text(
+                                stringResource(R.string.home_search_placeholder),
+                                fontSize = 14.sp
+                            ) 
+                        },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+                        trailingIcon = {
+                            if (viewModel.searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
+                                    Icon(Icons.Default.Clear, contentDescription = "Limpiar")
+                                }
                             }
-                        }
-                    },
-                    singleLine = true,
-                    shape = RoundedCornerShape(24.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent
+                        )
                     )
-                )
+                }
 
-                // 2. SELECTOR DE CATEGORÍAS (Horizontal)
+                Spacer(Modifier.height(16.dp))
+
+                // 2. SELECTOR DE CATEGORÍAS
                 Text(
-                    text = "Categorías",
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    fontSize = 14.sp,
+                    text = "¿Qué buscas hoy?",
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onBackground
                 )
+                
+                Spacer(Modifier.height(12.dp))
+
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     item {
                         FilterChip(
                             selected = viewModel.selectedCategoryId == null,
                             onClick = { viewModel.onCategorySelect(null) },
-                            label = { Text("Todas") }
+                            label = { Text("Ver todo") },
+                            leadingIcon = if (viewModel.selectedCategoryId == null) {
+                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                            } else null,
+                            shape = RoundedCornerShape(12.dp)
                         )
                     }
                     items(viewModel.categories) { category ->
                         FilterChip(
                             selected = viewModel.selectedCategoryId == category.id,
                             onClick = { viewModel.onCategorySelect(category.id) },
-                            label = { Text(category.name) }
+                            label = { Text(category.name) },
+                            shape = RoundedCornerShape(12.dp)
                         )
                     }
                 }
 
-                Text(
-                    text = stringResource(R.string.home_select_service_label),
-                    modifier = Modifier.padding(16.dp),
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+                Spacer(Modifier.height(8.dp))
 
                 if (viewModel.isLoading && viewModel.filteredServices.isEmpty()) {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -332,98 +369,155 @@ fun ServiceItem(state: ServiceUiState, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(24.dp), // Más redondeado para look moderno
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            // HEADER: Avatar + Nombre + Badge Categoría
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top // Cambiado a Top para manejar desbordes de texto
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Icono de la categoría
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = categoryIcon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
-                    )
+                // Foto del Prestador e Icono de Categoría combinados
+                Box(modifier = Modifier.size(48.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (state.providerAvatarUrl != null) {
+                            AsyncImage(
+                                model = state.providerAvatarUrl,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                    
+                    // Icono de categoría pequeño superpuesto
+                    Surface(
+                        modifier = Modifier
+                            .size(20.dp)
+                            .align(Alignment.BottomEnd),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primary,
+                        shadowElevation = 2.dp
+                    ) {
+                        Icon(
+                            imageVector = categoryIcon,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = state.title,
-                        style = MaterialTheme.typography.titleMedium,
+                        text = state.domain.provider?.full_name ?: "Prestador YÁYA",
+                        style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 3, // Aumentado para accesibilidad
-                        overflow = TextOverflow.Ellipsis,
-                        lineHeight = 20.sp
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                    
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(vertical = 4.dp)
+                    // Badge de Categoría mini
+                    Surface(
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(6.dp)
                     ) {
-                        if (state.totalRatings > 0) {
-                            Icon(
-                                Icons.Default.Star,
-                                contentDescription = null,
-                                tint = Color(0xFFFFB800),
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Text(
-                                text = " $ratingText (${state.totalRatings})",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.Gray
-                            )
-                            Spacer(Modifier.width(8.dp))
-                        }
+                        Text(
+                            text = (state.categoryName ?: "General").uppercase(),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
                     }
-                    
+                }
+
+                // Precio en un Pill destacado
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     Text(
-                        text = state.description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 3, // Aumentado para accesibilidad
-                        overflow = TextOverflow.Ellipsis,
-                        lineHeight = 16.sp
+                        text = state.formattedPrice,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // CUERPO: Título y Descripción
+            Text(
+                text = state.title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            Text(
+                text = state.description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                lineHeight = 16.sp
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // DIVIDER SUTIL
+            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // FOOTER: Calificación + Disponibilidad
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Rating con estilo compacto
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = if (state.totalRatings > 0) Color(0xFFFFB800) else Color.Gray.copy(alpha = 0.3f),
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = if (state.totalRatings > 0) "$ratingText (${state.totalRatings})" else "Sin reseñas",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (state.totalRatings > 0) MaterialTheme.colorScheme.onSurface else Color.Gray
                     )
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // Precio destacado (con peso controlado)
-                Text(
-                    text = state.formattedPrice,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.End
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // SECCIÓN INFERIOR: DÍAS Y HORARIO (Flexible para 200% font)
-            @OptIn(ExperimentalLayoutApi::class)
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // Días de atención
+                // Días (Optimizado para 200% Font Scale)
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     dayNames.forEachIndexed { index, name ->
                         val dayNumber = index + 1
@@ -432,38 +526,28 @@ fun ServiceItem(state: ServiceUiState, onClick: () -> Unit) {
                             modifier = Modifier
                                 .sizeIn(minWidth = 24.dp, minHeight = 24.dp) // Dinámico
                                 .background(
-                                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) 
+                                            else Color.Transparent,
                                     shape = CircleShape
                                 )
-                                .padding(4.dp),
+                                .border(
+                                    width = 1.dp,
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary 
+                                            else MaterialTheme.colorScheme.outlineVariant,
+                                    shape = CircleShape
+                                )
+                                .padding(4.dp), // Espacio interno para que el texto no toque bordes
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = name,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary 
+                                        else MaterialTheme.colorScheme.outlineVariant,
+                                maxLines = 1 // Evita saltos de línea dentro del círculo
                             )
                         }
-                    }
-                }
-
-                // Horario de atención
-                if (state.formattedTimeRange.isNotEmpty()) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.AccessTime,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(Modifier.width(6.dp))
-                        Text(
-                            text = state.formattedTimeRange,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontWeight = FontWeight.SemiBold
-                        )
                     }
                 }
             }
