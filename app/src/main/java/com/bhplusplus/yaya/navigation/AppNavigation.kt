@@ -137,6 +137,7 @@ fun AppNavigation(startRoute: Any) {
         // Dashboard de Administración
         composable<AdminDashboardRoute> {
             AdminDashboardScreen(
+                onBack = { navController.popBackStack() },
                 onLogout = {
                     scope.launch {
                         SupabaseManager.client.auth.signOut()

@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -40,6 +41,7 @@ import com.bhplusplus.yaya.utils.FormatterUtils
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminDashboardScreen(
+    onBack: () -> Unit,
     onLogout: () -> Unit,
     viewModel: AdminViewModel = viewModel()
 ) {
@@ -50,6 +52,7 @@ fun AdminDashboardScreen(
         reports = viewModel.reports,
         onApproveService = { viewModel.approveService(it) },
         onRejectService = { viewModel.rejectService(it) },
+        onBack = onBack,
         onLogout = onLogout
     )
 }
@@ -63,6 +66,7 @@ fun AdminDashboardContent(
     reports: List<Report>,
     onApproveService: (String) -> Unit,
     onRejectService: (String) -> Unit,
+    onBack: () -> Unit,
     onLogout: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -71,7 +75,16 @@ fun AdminDashboardContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Panel Administrativo YÁYA", fontWeight = FontWeight.Bold) },
+                title = { Text("Panel Administrativo", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = MaterialTheme.colorScheme.onSecondary
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = onLogout) {
                         Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Cerrar Sesión")
@@ -80,6 +93,7 @@ fun AdminDashboardContent(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
                     titleContentColor = MaterialTheme.colorScheme.onSecondary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSecondary,
                     actionIconContentColor = MaterialTheme.colorScheme.onSecondary
                 )
             )
@@ -340,6 +354,7 @@ fun AdminDashboardPreview() {
         reports = emptyList(),
         onApproveService = {},
         onRejectService = {},
+        onBack = {},
         onLogout = {}
     )
 }
