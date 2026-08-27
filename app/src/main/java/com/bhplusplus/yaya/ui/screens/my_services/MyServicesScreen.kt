@@ -21,9 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.bhplusplus.yaya.R
-import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.ui.components.ServiceItemShimmer
+import com.bhplusplus.yaya.ui.components.molecules.EmptyStateView
+import com.bhplusplus.yaya.ui.components.organisms.MyServiceCard
 
 /**
  * PANTALLA DE MIS SERVICIOS (VISTA PRESTADOR)
@@ -75,15 +75,19 @@ fun MyServicesScreen(
                         }
                     }
                 } else if (viewModel.services.isEmpty()) {
-                    EmptyServicesView()
+                    EmptyStateView(
+                        title = "Aún no has publicado servicios",
+                        description = "¡Publica tu primer talento ahora!",
+                        icon = Icons.Default.WorkOutline
+                    )
                 } else {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(viewModel.services) { uiState ->
-                            MyServiceItem(
+                            MyServiceCard(
                                 state = uiState,
                                 onToggleStatus = { viewModel.toggleServiceStatus(uiState.domain.id!!, uiState.domain.status) },
                                 onDelete = { viewModel.deleteService(uiState.domain.id!!) },
@@ -94,108 +98,5 @@ fun MyServicesScreen(
                 }
             }
         }
-    }
-}
-
-/**
- * Representa un servicio individual. Recibe un [MyServiceUiState].
- */
-@Composable
-fun MyServiceItem(
-    state: MyServiceUiState,
-    onToggleStatus: () -> Unit,
-    onDelete: () -> Unit,
-    onEdit: () -> Unit
-) {
-    var showDeleteDialog by remember { mutableStateOf(false) }
-
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("¿Eliminar servicio?") },
-            text = { Text("Se borrará permanentemente de la plataforma YÁYA.") },
-            confirmButton = {
-                Button(onClick = { onDelete(); showDeleteDialog = false }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)) {
-                    Text("Eliminar", color = Color.White)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancelar") }
-            }
-        )
-    }
-
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onEdit() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(text = state.title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Text(text = state.formattedPrice, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
-                }
-                
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Switch(
-                        checked = state.isActive,
-                        onCheckedChange = { if (!state.isPending) onToggleStatus() },
-                        enabled = !state.isPending,
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = MaterialTheme.colorScheme.primary,
-                            disabledCheckedThumbColor = Color.Gray.copy(alpha = 0.5f)
-                        )
-                    )
-                    Text(
-                        text = state.statusLabel,
-                        fontSize = 10.sp,
-                        color = Color(state.statusColor),
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(8.dp))
-            Text(text = state.description, fontSize = 14.sp, color = Color.Gray, maxLines = 2)
-            
-            Spacer(Modifier.height(16.dp))
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(onClick = onEdit) {
-                    Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text("Editar información", fontSize = 12.sp)
-                }
-
-                IconButton(onClick = { showDeleteDialog = true }) {
-                    Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun EmptyServicesView() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(Icons.Default.WorkOutline, contentDescription = null, modifier = Modifier.size(80.dp), tint = Color.LightGray)
-        Spacer(Modifier.height(16.dp))
-        Text(text = "Aún no has publicado servicios", color = Color.Gray)
-        Text(text = "¡Publica tu primer talento ahora!", fontSize = 14.sp, color = Color.LightGray)
     }
 }

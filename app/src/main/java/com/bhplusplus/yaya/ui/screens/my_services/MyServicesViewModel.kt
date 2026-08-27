@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.Service
+import com.bhplusplus.yaya.utils.FormatterUtils
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.PostgresAction
@@ -49,8 +50,6 @@ class MyServicesViewModel : ViewModel() {
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
-
-    private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CO"))
 
     init {
         fetchMyServices()
@@ -94,7 +93,7 @@ class MyServicesViewModel : ViewModel() {
         return MyServiceUiState(
             domain = service,
             title = service.title,
-            formattedPrice = currencyFormatter.format(service.price),
+            formattedPrice = FormatterUtils.formatCurrency(service.price),
             description = service.description,
             statusLabel = when (service.status) {
                 "active" -> "Activo"
