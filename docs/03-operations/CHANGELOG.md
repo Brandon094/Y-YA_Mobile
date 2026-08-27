@@ -38,8 +38,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Estandarización Atómica (Atomic Design):**
     - Refactorización masiva de la interfaz de usuario bajo la metodología **Atomic Design**, creando librerías de componentes reutilizables en `ui/components/atoms`, `ui/components/molecules` y `ui/components/organisms`.
     - **Átomos:** `YayaButton`, `YayaTextField`, `YayaAvatar`, `YayaStatusBadge`, `YayaSectionHeader` y `YayaBranding`.
-    - **Moléculas:** `RatingIndicator`, `DayIndicator`, `CategorySelector`, `DetailRow`, `ChatContactItem`, `ProfileOptionItem`, `UserListItem` y `EmptyStateView`.
-    - **Organismos:** `ServiceCard`, `HomeTopBar`, `AdminTopBar`, `AdminServiceCard`, `ReportSummaryCard`, `SearchBarIntegrated`, `OnboardingCarousel`, `ProfileHeroHeader` y `ProfileSectionCard`.
+    - **Moléculas:** `RatingIndicator`, `DayIndicator`, `CategorySelector`, `DetailRow`, `ChatContactItem`, `ProfileOptionItem`, `UserListItem`, `EmptyStateView`, `TimeSelectorPill` y `YayaTimePickerDialog`.
+    - **Organismos:** `ServiceCard`, `HomeTopBar`, `AdminTopBar`, `AdminServiceCard`, `ReportSummaryCard`, `SearchBarIntegrated`, `OnboardingCarousel`, `ProfileHeroHeader`, `ProfileSectionCard` y `AvailabilityDayCard`.
     - Esta reestructuración garantiza consistencia visual absoluta y facilita el mantenimiento global de la marca BH++.
 - **Cumplimiento y Seguridad:** Opción de borrado de cuenta integrado en el perfil para cumplimiento con Google Play.
 
