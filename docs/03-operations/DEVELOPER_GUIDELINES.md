@@ -71,11 +71,12 @@ Al iniciar sesión, el agente debe saber que ya se han implementado:
 - **Infraestructura de Notificaciones:** Sistema completo de Small Icons monocromáticos y Edge Functions para automatización de alertas.
 - **Motor de Arranque (Zero-Flicker):** Implementación de la Splash Screen API oficial con navegación diferida hasta validación de sesión (paso directo Splash -> Home).
 - **Reactividad Total (Issue #8):** Implementación de Pull-to-Refresh y suscripciones Realtime en Home, Pedidos, Solicitudes y Mensajes.
-- **Chat Pro:** Listado de chats con badges de no leídos, vista previa del último mensaje, marcas de tiempo dinámicas y comparaciones insensibles a mayúsculas (UUID robustness).
-- **Sistema de Reputación Blindado:** Calificaciones inmutables con visualización de histórico y bloqueo de duplicados.
-- **Onboarding Dinámico:** Sistema de bienvenida interactivo basado en `HorizontalPager` para educar al usuario antes del registro.
-- **Minimalismo de Marca:** Evitar duplicidad de marca (Logo + Texto) en cabeceras de pantallas de acceso para mantener la limpieza visual.
-- **Gestión de Perfil:** Edición completa de datos sincronizada con esquema SQL (Cédula, Dirección, Nacimiento).
+- **Chat Pro:** Mensajería con `reverseLayout`, badges de no leídos, previsualización de último mensaje y marcas de tiempo dinámicas.
+- **Handshake Flow:** Proceso de negociación con doble confirmación (`in_progress`) para blindar el precio acordado.
+- **Onboarding Dinámico:** Sistema de bienvenida interactivo basado en `HorizontalPager`.
+- **Minimalismo de Marca:** Política de cero redundancia visual (Logo > Texto).
+- **Gestión de Perfil:** Edición completa sincronizada con SQL y opción de borrado de cuenta.
+- **Maestro de Horarios:** Gestión centralizada de agenda del prestador con lógica upsert/delete.
 - **Publicación de Servicios:** Formulario para prestadores con lógica de categorías y costos de materiales.
 - **Mis Servicios:** Panel de administración para que el prestador pueda editar o pausar (activar/desactivar) sus publicaciones existentes.
 - **Dashboard del Prestador (Operatividad):** Interfaz de **Solicitudes Recibidas** terminada con acceso rápido desde el icono de notificaciones en el Home. Permite al prestador ver quién lo busca y gestionar el estado (Aceptar/Rechazar/Contraofertar/Finalizar) con persistencia en SQL.

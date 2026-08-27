@@ -12,7 +12,7 @@ YÁYA implementa **MVVM** para separar la lógica de negocio de la interfaz de u
 - Uso de Material 3 para el sistema de diseño, con soporte estricto para temas Claro y Oscuro.
 - **Flujo de Onboarding:** Implementación de un carrusel interactivo mediante `HorizontalPager` para comunicar la propuesta de valor.
 - **Pull-to-Refresh:** Implementación del patrón de refresco manual mediante `PullToRefreshBox` en todas las listas principales.
-- **Feedback de Carga (Shimmers):** Uso de **Skeleton Screens** (Shimmer Effects) personalizados para mejorar la percepción de fluidez durante la carga asíncrona.
+- **Feedback de Carga (Shimmers):** Uso de **Skeleton Screens** (Shimmer Effects) personalizados que replican la estructura exacta de cada pantalla (Home, Detalles, Pedidos) para mejorar la percepción de fluidez.
 - **Accesibilidad y Adaptabilidad:** 
     - Uso estricto de unidades `sp` para tipografía y `dp` para layouts.
     - Implementación de contenedores flexibles con `FlowRow`, `weights` dinámicos y `sizeIn` para soportar fuentes de hasta el **200%** sin desbordes.
@@ -66,8 +66,9 @@ El sistema implementa validaciones críticas y procesos reactivos:
     1. **Horario Maestro:** Validación contra `public.availability` (agenda del prestador).
     2. **Días del Servicio:** Validación contra `working_days` en `services`.
     3. **Rango Horario:** Validación contra las horas de inicio/fin del servicio específico.
-- **Flujo de Negociación "Handshake":** Implementación de un ciclo tripartito de seguridad:
-    - `Solicitud/Contraoferta` -> `Acuerdo de Precio` (Aceptar) -> `Confirmar Inicio` (Handshake del cliente) -> `Trabajo en Curso` -> `Finalización`.
+- **Flujo de Negociación "Handshake" (Doble Confirmación):** Implementación de un ciclo transaccional seguro y explícito:
+    - `Solicitud/Contraoferta` -> `Acuerdo de Precio` (Estado: `accepted`) -> `Confirmar Inicio` (Handshake del cliente - Estado: `in_progress`) -> `Trabajo en Curso` -> `Finalización` (por el prestador - Estado: `completed`).
+    - Este mecanismo garantiza que el trabajo solo pueda finalizarse si ambas partes confirmaron el inicio bajo el precio acordado, mitigando disputas comerciales.
 - **Sistema de Reputación Blindado:** Las calificaciones son inmutables y persistentes. El sistema valida registros previos para mostrar el histórico de estrellas y comentarios directamente en el historial de pedidos.
 - **Chat Avanzado:** Mensajería con `reverseLayout`, previsualización de último mensaje y gestión de no leídos procesada 100% en el ViewModel.
 

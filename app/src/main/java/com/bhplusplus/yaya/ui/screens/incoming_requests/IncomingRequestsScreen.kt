@@ -263,91 +263,88 @@ fun IncomingRequestItem(
                 }
             }
 
-            if (state.status == "pending" || state.status == "accepted") {
+            if (state.status == "pending" || state.status == "accepted" || state.status == "in_progress") {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (state.isClientOfferPending) {
-                    Surface(
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
-                    ) {
-                        Row(modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.NotificationsActive, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                            Spacer(Modifier.width(10.dp))
-                            Text("Nueva oferta recibida. ¿Aceptas?", color = MaterialTheme.colorScheme.onPrimaryContainer, fontWeight = FontWeight.ExtraBold, fontSize = 13.sp)
-                        }
-                    }
-                }
-
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // BOTÓN CHAT
+                    // BOTÓN CHAT (Siempre visible en estos estados)
                     IconButton(
                         onClick = onChat,
                         modifier = Modifier.size(52.dp).background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
                     ) { Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "Chatear", tint = MaterialTheme.colorScheme.onSecondaryContainer) }
 
-                    if (state.status == "in_progress") {
-                        // BOTÓN FINALIZAR (Solo en progreso)
-                        Button(
-                            onClick = onAccept, // Llama a 'completed'
-                            modifier = Modifier.weight(1f).height(52.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
-                        ) {
-                            Icon(Icons.Default.DoneAll, null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text("Finalizar Trabajo", fontWeight = FontWeight.ExtraBold)
-                        }
-                    } else if (state.status == "accepted") {
-                        // ESPERA DE CONFIRMACIÓN DEL CLIENTE
-                        Surface(
-                            modifier = Modifier.weight(1f).height(52.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text("Esperando al Cliente...", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
-                            }
-                        }
-                    } else {
-                        // BOTÓN NEGOCIAR
-                        OutlinedButton(
-                            onClick = onNegotiate,
-                            modifier = Modifier.weight(1f).height(52.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
-                        ) {
-                            Icon(Icons.Default.Gavel, null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(6.dp))
-                            Text("Negociar", fontWeight = FontWeight.Bold)
-                        }
-
-                        // BOTÓN ACEPTAR OFERTA
-                        if (state.isClientOfferPending) {
+                    when (state.status) {
+                        "in_progress" -> {
+                            // BOTÓN FINALIZAR (Solo en progreso)
                             Button(
-                                onClick = onAccept, // Llama a 'accepted'
-                                modifier = Modifier.weight(1.1f).height(52.dp),
+                                onClick = onAccept, // Llama a 'completed'
+                                modifier = Modifier.weight(1f).height(52.dp),
                                 shape = RoundedCornerShape(16.dp),
-                                elevation = ButtonDefaults.buttonElevation(4.dp)
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                             ) {
-                                Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
-                                Spacer(Modifier.width(6.dp))
-                                Text("Aceptar", fontWeight = FontWeight.ExtraBold)
+                                Icon(Icons.Default.DoneAll, null, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text("Finalizar Trabajo", fontWeight = FontWeight.ExtraBold)
                             }
-                        } else {
-                            TextButton(onClick = onReject, modifier = Modifier.height(52.dp)) {
-                                Text(stringResource(R.string.incoming_requests_reject), color = MaterialTheme.colorScheme.error)
+                        }
+                        "accepted" -> {
+                            // ESPERA DE CONFIRMACIÓN DEL CLIENTE
+                            Surface(
+                                modifier = Modifier.weight(1f).height(52.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text("Esperando al Cliente...", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+                                }
+                            }
+                        }
+                        else -> { // Estado 'pending'
+                            // BOTÓN NEGOCIAR
+                            OutlinedButton(
+                                onClick = onNegotiate,
+                                modifier = Modifier.weight(1f).height(52.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+                            ) {
+                                Icon(Icons.Default.Gavel, null, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(6.dp))
+                                Text("Negociar", fontWeight = FontWeight.Bold)
+                            }
+
+                            // BOTÓN ACEPTAR OFERTA
+                            if (state.isClientOfferPending) {
+                                Button(
+                                    onClick = onAccept, // Llama a 'accepted'
+                                    modifier = Modifier.weight(1.1f).height(52.dp),
+                                    shape = RoundedCornerShape(16.dp),
+                                    elevation = ButtonDefaults.buttonElevation(4.dp)
+                                ) {
+                                    Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
+                                    Spacer(Modifier.width(6.dp))
+                                    Text("Aceptar", fontWeight = FontWeight.ExtraBold)
+                                }
+                            } else {
+                                TextButton(onClick = onReject, modifier = Modifier.height(52.dp)) {
+                                    Text(stringResource(R.string.incoming_requests_reject), color = MaterialTheme.colorScheme.error)
+                                }
                             }
                         }
                     }
                 }
                 
-                // Opción de cancelar/rechazar si está aceptada (abajo pequeño)
-                if (state.isClientOfferPending || state.status == "accepted") {
+                // Opción de cancelar (abajo pequeño)
+                if (state.status == "accepted" || state.status == "in_progress" || state.isClientOfferPending) {
                     Spacer(Modifier.height(8.dp))
                     TextButton(onClick = onReject, modifier = Modifier.fillMaxWidth().height(48.dp)) {
-                        Text(if (state.status == "accepted") "Cancelar Servicio" else stringResource(R.string.incoming_requests_reject), color = MaterialTheme.colorScheme.error)
+                        Text(
+                            text = when (state.status) {
+                                "accepted" -> "Cancelar Servicio"
+                                "in_progress" -> "Cancelar Trabajo en Curso"
+                                else -> stringResource(R.string.incoming_requests_reject)
+                            }, 
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                 }
             }
@@ -360,6 +357,7 @@ fun StatusBadge(status: String) {
     val (backgroundColor, textColor, label) = when (status) {
         "pending" -> Triple(MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer, "Pendiente")
         "accepted" -> Triple(Color(0xFFE8F5E9), Color(0xFF4CAF50), "Aceptada")
+        "in_progress" -> Triple(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer, "En Curso")
         "completed" -> Triple(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer, "Completada")
         "cancelled" -> Triple(MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer, "Cancelada")
         else -> Triple(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurfaceVariant, status)

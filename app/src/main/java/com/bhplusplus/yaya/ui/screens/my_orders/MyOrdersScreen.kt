@@ -283,7 +283,7 @@ fun OrderItem(
                 }
             }
 
-            if (state.status == "pending" || state.status == "accepted") {
+            if (state.status == "pending" || state.status == "accepted" || state.status == "in_progress") {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (state.isCounterOfferActive) {
@@ -306,37 +306,52 @@ fun OrderItem(
                         modifier = Modifier.size(52.dp).background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
                     ) { Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "Chat", tint = MaterialTheme.colorScheme.onSecondaryContainer) }
 
-                    if (state.status == "accepted") {
-                        // BOTÓN PARA INICIAR TRABAJO (Doble Confirmación)
-                        Button(
-                            onClick = onAccept, // Reutilizamos el callback para confirmWorkStart
-                            modifier = Modifier.weight(1f).height(52.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
-                        ) {
-                            Icon(Icons.Default.PlayArrow, null, modifier = Modifier.size(20.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text("CONFIRMAR Y EMPEZAR", fontWeight = FontWeight.ExtraBold, fontSize = 13.sp)
-                        }
-                    } else {
-                        OutlinedButton(onClick = onNegotiate, modifier = Modifier.weight(1f).height(52.dp), shape = RoundedCornerShape(16.dp), border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)) {
-                            Text("Negociar", fontWeight = FontWeight.Bold)
-                        }
-
-                        if (state.isCounterOfferActive) {
-                            Button(
-                                onClick = onAccept,
-                                modifier = Modifier.weight(1.2f).height(52.dp),
-                                shape = RoundedCornerShape(16.dp),
-                                elevation = ButtonDefaults.buttonElevation(4.dp)
+                    when (state.status) {
+                        "in_progress" -> {
+                            // INDICADOR DE TRABAJO EN CURSO
+                            Surface(
+                                modifier = Modifier.weight(1f).height(52.dp),
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                                shape = RoundedCornerShape(16.dp)
                             ) {
-                                Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
-                                Spacer(Modifier.width(6.dp))
-                                Text("Aceptar", fontWeight = FontWeight.ExtraBold)
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text("Trabajo en Curso...", fontSize = 14.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
+                                }
                             }
-                        } else {
-                            TextButton(onClick = onReject, modifier = Modifier.height(52.dp)) {
-                                Text("Cancelar", color = MaterialTheme.colorScheme.error)
+                        }
+                        "accepted" -> {
+                            // BOTÓN PARA INICIAR TRABAJO (Doble Confirmación)
+                            Button(
+                                onClick = onAccept, // Reutilizamos el callback para confirmWorkStart
+                                modifier = Modifier.weight(1f).height(52.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                            ) {
+                                Icon(Icons.Default.PlayArrow, null, modifier = Modifier.size(20.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text("CONFIRMAR Y EMPEZAR", fontWeight = FontWeight.ExtraBold, fontSize = 13.sp)
+                            }
+                        }
+                        else -> { // Estado 'pending'
+                            OutlinedButton(onClick = onNegotiate, modifier = Modifier.weight(1f).height(52.dp), shape = RoundedCornerShape(16.dp), border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)) {
+                                Text("Negociar", fontWeight = FontWeight.Bold)
+                            }
+
+                            if (state.isCounterOfferActive) {
+                                Button(
+                                    onClick = onAccept,
+                                    modifier = Modifier.weight(1.2f).height(52.dp),
+                                    shape = RoundedCornerShape(16.dp),
+                                    elevation = ButtonDefaults.buttonElevation(4.dp)
+                                ) {
+                                    Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
+                                    Spacer(Modifier.width(6.dp))
+                                    Text("Aceptar", fontWeight = FontWeight.ExtraBold)
+                                }
+                            } else {
+                                TextButton(onClick = onReject, modifier = Modifier.height(52.dp)) {
+                                    Text("Cancelar", color = MaterialTheme.colorScheme.error)
+                                }
                             }
                         }
                     }
