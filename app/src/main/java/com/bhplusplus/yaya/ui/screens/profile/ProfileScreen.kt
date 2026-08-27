@@ -6,6 +6,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,6 +41,7 @@ fun ProfileScreen(
     onIncomingRequests: () -> Unit,
     onMyServices: () -> Unit,
     onAdminDashboard: () -> Unit,
+    onChatList: () -> Unit, // Añadido para navegación a chats
     onChangePassword: () -> Unit,
     onLogout: () -> Unit,
     onBack: () -> Unit,
@@ -132,7 +135,8 @@ fun ProfileScreen(
                             ProfileOptionItem(
                                 title = "Panel Administrativo",
                                 icon = Icons.Default.AdminPanelSettings,
-                                onClick = onAdminDashboard
+                                onClick = onAdminDashboard,
+                                badgeCount = viewModel.pendingAdminServicesCount
                             )
                         }
                     }
@@ -158,7 +162,8 @@ fun ProfileScreen(
                             ProfileOptionItem(
                                 title = stringResource(R.string.incoming_requests_title),
                                 icon = Icons.Default.MoveToInbox,
-                                onClick = onIncomingRequests
+                                onClick = onIncomingRequests,
+                                badgeCount = viewModel.pendingRequestsCount
                             )
                         }
                     }
@@ -168,11 +173,20 @@ fun ProfileScreen(
                     ProfileSectionCard(
                         modifier = Modifier.padding(bottom = 24.dp)
                     ) {
-                        ProfileOptionItem(
-                            title = stringResource(R.string.my_orders_title),
-                            icon = Icons.Default.History,
-                            onClick = onMyOrders
-                        )
+                        Column {
+                            ProfileOptionItem(
+                                title = stringResource(R.string.my_orders_title),
+                                icon = Icons.Default.History,
+                                onClick = onMyOrders
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                            ProfileOptionItem(
+                                title = "Mis Mensajes",
+                                icon = Icons.AutoMirrored.Filled.Chat,
+                                onClick = onChatList,
+                                badgeCount = viewModel.unreadMessagesCount
+                            )
+                        }
                     }
 
                     // --- SECCIÓN: CONFIGURACIÓN DE CUENTA ---
@@ -233,6 +247,7 @@ fun ProfileScreenPreview() {
             onIncomingRequests = {},
             onMyServices = {},
             onAdminDashboard = {},
+            onChatList = {},
             onChangePassword = {},
             onLogout = {},
             onBack = {}

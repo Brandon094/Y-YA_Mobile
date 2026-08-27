@@ -2,6 +2,7 @@ package com.bhplusplus.yaya.ui.components.molecules
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -22,7 +23,8 @@ fun ProfileOptionItem(
     icon: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isDestructive: Boolean = false
+    isDestructive: Boolean = false,
+    badgeCount: Int = 0
 ) {
     Surface(
         onClick = onClick,
@@ -62,6 +64,22 @@ fun ProfileOptionItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+
+            if (badgeCount > 0) {
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                ) {
+                    Text(
+                        text = badgeCount.toString(),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+            }
 
             if (!isDestructive) {
                 Icon(

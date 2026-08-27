@@ -178,6 +178,7 @@ fun AppNavigation(startRoute: Any) {
                 onIncomingRequests = { navController.navigate(IncomingRequestsRoute) },
                 onMyServices = { navController.navigate(MyServicesRoute) },
                 onAdminDashboard = { navController.navigate(AdminDashboardRoute) },
+                onChatList = { navController.navigate(ChatListRoute) },
                 onChangePassword = { navController.navigate(ResetRoute) },
                 onLogout = {
                     scope.launch {
