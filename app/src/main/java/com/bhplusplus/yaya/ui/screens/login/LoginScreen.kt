@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.ui.components.atoms.PoweredByBH
+import com.bhplusplus.yaya.ui.components.atoms.YayaLogo
 import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
 import com.bhplusplus.yaya.ui.components.atoms.YayaTextField
 import com.bhplusplus.yaya.ui.screens.login.LoginViewModel
@@ -80,20 +81,8 @@ fun LoginScreen(
         ) {
             Spacer(modifier = Modifier.weight(1f))
 
-            // Contenedor del Logo Circular
-            Box(
-                modifier = Modifier
-                    .size(140.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_logo),
-                    contentDescription = stringResource(R.string.login_logo_description),
-                    modifier = Modifier.size(100.dp)
-                )
-            }
+            // Átomo: Logo Circular
+            YayaLogo()
 
             Spacer(modifier = Modifier.height(16.dp))
 

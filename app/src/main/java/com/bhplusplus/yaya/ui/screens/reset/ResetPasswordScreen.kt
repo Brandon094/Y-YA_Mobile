@@ -1,8 +1,10 @@
 package com.bhplusplus.yaya.ui.screens.reset
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
@@ -13,12 +15,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.atoms.PoweredByBH
+import com.bhplusplus.yaya.ui.components.atoms.YayaLogo
 import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
 import com.bhplusplus.yaya.ui.components.atoms.YayaTextField
 import com.bhplusplus.yaya.ui.screens.reset.ResetPasswordViewModel
@@ -72,43 +77,55 @@ fun ResetPasswordScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Átomo: Logo (Añadido para look profesional)
+            YayaLogo(size = 120.dp, logoSize = 80.dp)
+
+            Spacer(modifier = Modifier.height(24.dp))
             
-            // Vista de ÉXITO: Aparece cuando Supabase confirma el envío del email
+            // Vista de ÉXITO
             if (isSuccess) {
                 Icon(
                     imageVector = Icons.Default.Email,
                     contentDescription = null,
                     modifier = Modifier.size(64.dp),
-                    tint = Color.Green
+                    tint = Color(0xFF4CAF50)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    stringResource(R.string.reset_password_success_title),
-                    fontSize = 20.sp,
+                    text = stringResource(R.string.reset_password_success_title),
+                    fontSize = 22.sp,
                     color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
-                    stringResource(R.string.reset_password_success_message),
+                    text = stringResource(R.string.reset_password_success_message),
                     modifier = Modifier.padding(16.dp),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    lineHeight = 20.sp
                 )
+                
+                Spacer(Modifier.height(16.dp))
+
                 YayaPrimaryButton(
                     text = stringResource(R.string.reset_password_back_to_login),
                     onClick = { onBack() }
                 )
             } else {
-                // Vista de FORMULARIO: Pide el correo del usuario
+                // Vista de FORMULARIO
                 Text(
-                    stringResource(R.string.reset_password_instructions),
-                    modifier = Modifier.padding(bottom = 24.dp),
+                    text = stringResource(R.string.reset_password_instructions),
+                    modifier = Modifier.padding(bottom = 32.dp),
                     color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    fontSize = 15.sp,
+                    lineHeight = 22.sp
                 )
 
                 YayaTextField(
@@ -117,21 +134,21 @@ fun ResetPasswordScreen(
                     label = stringResource(R.string.login_email_label),
                     placeholder = stringResource(R.string.reset_password_email_placeholder),
                     enabled = !isLoading,
-                    isError = errorMessage != null
+                    isError = errorMessage != null,
+                    leadingIcon = { Icon(Icons.Default.Email, null) }
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Mensaje de error (ej. correo no encontrado)
                 if (!errorMessage.isNullOrEmpty()) {
                     Text(
                         text = errorMessage!!,
-                        color = Color.Red,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        fontSize = 14.sp
                     )
                 }
 
-                // Botón para disparar la acción en Supabase
                 YayaPrimaryButton(
                     text = stringResource(R.string.reset_password_send_link),
                     onClick = { viewModel.sendResetPasswordEmail(email) },
@@ -139,6 +156,11 @@ fun ResetPasswordScreen(
                     isLoading = isLoading
                 )
             }
+
+            Spacer(modifier = Modifier.weight(1.5f))
+
+            // Sello de Marca
+            PoweredByBH(modifier = Modifier.padding(bottom = 16.dp))
         }
     }
 }
