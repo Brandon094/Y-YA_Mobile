@@ -9,16 +9,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,7 +30,8 @@ import coil3.compose.AsyncImage
 import com.bhplusplus.yaya.R
 
 /**
- * PANTALLA DE PERFIL DE USUARIO
+ * PANTALLA DE PERFIL DE USUARIO (Rediseño Premium)
+ * Organiza las opciones por categorías y optimiza la jerarquía visual.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,13 +47,48 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel()
 ) {
     val profile = viewModel.userProfile
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    // DIÁLOGO DE CONFIRMACIÓN DE BORRADO
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("¿Eliminar tu cuenta?", fontWeight = FontWeight.Bold) },
+            text = { 
+                Text("Esta acción eliminará tu perfil y datos de servicios de YÁYA de forma permanente. No podrás deshacerlo.") 
+            },
+            confirmButton = {
+                Button(
+                    onClick = { 
+                        viewModel.deleteAccount {
+                            showDeleteDialog = false
+                            onLogout()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    enabled = !viewModel.isDeletingAccount
+                ) {
+                    if (viewModel.isDeletingAccount) {
+                        CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
+                    } else {
+                        Text("Eliminar para siempre", color = Color.White)
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }, enabled = !viewModel.isDeletingAccount) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.profile_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { onBack() }) {
+                    IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = null,
@@ -74,141 +113,288 @@ fun ProfileScreen(
                     .padding(padding)
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
-                    .navigationBarsPadding() // RESPETA BOTONES DE NAVEGACIÓN
                     .verticalScroll(rememberScrollState())
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // --- CABECERA DE PERFIL ---
+                ProfileHeader(
+                    name = profile?.full_name ?: "Usuario YÁYA",
+                    email = viewModel.email,
+                    avatarUrl = profile?.avatar_url,
+                    role = profile?.role ?: "client"
+                )
 
-                // Sección del Avatar
-                Box(
-                    modifier = Modifier
-                        .size(110.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(4.dp)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (profile?.avatar_url != null) {
-                        AsyncImage(
-                            model = profile.avatar_url,
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize().clip(CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            modifier = Modifier.size(65.dp),
-                            tint = MaterialTheme.colorScheme.primary
+                Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)) {
+                    
+                    // --- SECCIÓN: GESTIÓN DE TALENTO (Solo Prestadores/Admin) ---
+                    if (profile?.role == "provider" || profile?.role == "admin") {
+                        ProfileSectionHeader("MI TALENTO")
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            elevation = CardDefaults.cardElevation(2.dp)
+                        ) {
+                            Column {
+                                ProfileOptionItem(
+                                    title = "Mi Horario de Trabajo",
+                                    icon = Icons.Default.Schedule,
+                                    onClick = onAvailability
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                                ProfileOptionItem(
+                                    title = "Mis Servicios Publicados",
+                                    icon = Icons.Default.Work,
+                                    onClick = onMyServices
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                                ProfileOptionItem(
+                                    title = stringResource(R.string.incoming_requests_title),
+                                    icon = Icons.Default.MoveToInbox,
+                                    onClick = onIncomingRequests
+                                )
+                            }
+                        }
+                        Spacer(Modifier.height(24.dp))
+                    }
+
+                    // --- SECCIÓN: MI ACTIVIDAD ---
+                    ProfileSectionHeader("MI ACTIVIDAD")
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(2.dp)
+                    ) {
+                        ProfileOptionItem(
+                            title = stringResource(R.string.my_orders_title),
+                            icon = Icons.Default.History,
+                            onClick = onMyOrders
                         )
                     }
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(Modifier.height(24.dp))
 
-                Text(
-                    text = profile?.full_name ?: "Cargando...",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+                    // --- SECCIÓN: CONFIGURACIÓN DE CUENTA ---
+                    ProfileSectionHeader("CONFIGURACIÓN")
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(2.dp)
+                    ) {
+                        Column {
+                            ProfileOptionItem(
+                                title = stringResource(R.string.profile_edit_option),
+                                icon = Icons.Default.Badge,
+                                onClick = onEditProfile
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                            ProfileOptionItem(
+                                title = stringResource(R.string.profile_change_password_option),
+                                icon = Icons.Default.Lock,
+                                onClick = onChangePassword
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                            // OPCIÓN DE BORRADO DE CUENTA (Requisito Google)
+                            ProfileOptionItem(
+                                title = "Eliminar mi cuenta",
+                                icon = Icons.Default.DeleteForever,
+                                onClick = { showDeleteDialog = true },
+                                isDestructive = true
+                            )
+                        }
+                    }
 
-                Text(
-                    text = viewModel.email,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                )
+                    Spacer(Modifier.height(40.dp))
 
-                Spacer(modifier = Modifier.height(32.dp))
+                    // --- BOTÓN CERRAR SESIÓN ---
+                    OutlinedButton(
+                        onClick = onLogout,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null)
+                        Spacer(Modifier.width(12.dp))
+                        Text(stringResource(R.string.profile_logout_button), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    }
 
-                // TARJETA DE INFORMACIÓN PERSONAL
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
+                    Spacer(Modifier.height(16.dp))
+                    
+                    // SELLO DE MARCA
+                    Box(
+                        modifier = Modifier.fillMaxWidth().navigationBarsPadding(),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Text(
-                            text = stringResource(R.string.profile_personal_info),
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(bottom = 12.dp)
+                            text = "Powered by BH++",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                            fontWeight = FontWeight.Bold
                         )
-                        
-                        InfoRow(icon = Icons.Default.Badge, label = stringResource(R.string.profile_document_id_label), value = profile?.document_id ?: "No registrado")
-                        InfoRow(icon = Icons.Default.Phone, label = stringResource(R.string.profile_phone_label), value = profile?.phone ?: "No registrado")
-                        InfoRow(icon = Icons.Default.Home, label = stringResource(R.string.profile_address_label), value = profile?.address ?: "No registrada")
-                        InfoRow(icon = Icons.Default.Cake, label = stringResource(R.string.profile_birth_date_label), value = profile?.birth_date ?: "No registrado")
-                        InfoRow(icon = Icons.Default.Star, label = stringResource(R.string.profile_role_label), value = if(profile?.role == "provider") "Prestador" else "Cliente")
                     }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // LISTA DE OPCIONES NAVEGABLES
-                if (profile?.role == "provider" || profile?.role == "admin") {
-                    ProfileOption("Mi Horario de Trabajo", Icons.Default.Schedule, onAvailability)
-                    ProfileOption("Mis Servicios Publicados", Icons.Default.Work, onMyServices)
-                    ProfileOption(stringResource(R.string.incoming_requests_title), Icons.Default.MoveToInbox, onIncomingRequests)
-                }
-
-                ProfileOption(stringResource(R.string.my_orders_title), Icons.Default.History, onMyOrders)
-                ProfileOption(stringResource(R.string.profile_edit_option), Icons.Default.Edit, onEditProfile)
-                ProfileOption(stringResource(R.string.profile_change_password_option), Icons.Default.Lock, onChangePassword)
-                
-                Spacer(modifier = Modifier.height(40.dp))
-
-                // Botón de Cerrar Sesión
-                Button(
-                    onClick = onLogout,
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Icon(Icons.Default.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.profile_logout_button), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
             }
         }
     }
 }
 
+/**
+ * Encabezado visual con la información principal del usuario.
+ */
 @Composable
-fun InfoRow(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
+fun ProfileHeader(
+    name: String,
+    email: String,
+    avatarUrl: String?,
+    role: String
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
+        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
     ) {
-        Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f), modifier = Modifier.size(22.dp))
-        Spacer(modifier = Modifier.width(16.dp))
-        Column {
-            Text(text = label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), fontWeight = FontWeight.Medium)
-            Text(text = value, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
+        Column(
+            modifier = Modifier
+                .padding(top = 32.dp, bottom = 40.dp, start = 24.dp, end = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(4.dp)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                if (avatarUrl != null) {
+                    AsyncImage(
+                        model = avatarUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize().clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(70.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = name,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = email,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Badge de Rol
+            Surface(
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = if (role == "provider") "PRESTADOR" else "CLIENTE",
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
         }
     }
 }
 
 @Composable
-fun ProfileOption(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit) {
+fun ProfileSectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+        letterSpacing = 1.sp
+    )
+}
+
+/**
+ * Item individual de la lista de opciones.
+ */
+@Composable
+fun ProfileOptionItem(
+    title: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    isDestructive: Boolean = false
+) {
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surface,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
-        shadowElevation = 2.dp
+        color = Color.Transparent, // El color lo da la Card contenedora
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
-                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        if (isDestructive) MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
+                        else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), 
+                        RoundedCornerShape(12.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
             }
+
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = title, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium)
-            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f), modifier = Modifier.size(16.dp))
+
+            Text(
+                text = title,
+                modifier = Modifier.weight(1f),
+                color = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            if (!isDestructive) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    modifier = Modifier.size(16.dp)
+                )
+            }
         }
     }
 }
@@ -216,14 +402,16 @@ fun ProfileOption(title: String, icon: androidx.compose.ui.graphics.vector.Image
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen(
-        onEditProfile = {},
-        onAvailability = {},
-        onMyOrders = {},
-        onIncomingRequests = {},
-        onMyServices = {},
-        onChangePassword = {},
-        onLogout = {},
-        onBack = {}
-    )
+    MaterialTheme {
+        ProfileScreen(
+            onEditProfile = {},
+            onAvailability = {},
+            onMyOrders = {},
+            onIncomingRequests = {},
+            onMyServices = {},
+            onChangePassword = {},
+            onLogout = {},
+            onBack = {}
+        )
+    }
 }

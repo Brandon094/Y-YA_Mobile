@@ -1,6 +1,5 @@
 package com.bhplusplus.yaya.utils
 
-import java.text.NumberFormat
 import java.util.Locale
 
 /**
@@ -10,15 +9,26 @@ import java.util.Locale
 object FormatterUtils {
 
     private val colombianLocale = Locale.forLanguageTag("es-CO")
-    private val currencyFormatter = NumberFormat.getCurrencyInstance(colombianLocale)
 
     /**
-     * Formatea un valor numérico a moneda colombiana (ej: $ 50.000).
-     * Elimina los decimales innecesarios para una UI más limpia.
+     * Formatea un valor numérico a moneda colombiana compacta (ej: $ 50k).
+     * Ideal para interfaces móviles con espacio reducido y un look más profesional.
      */
     fun formatCurrency(amount: Double?): String {
         if (amount == null) return "$ 0"
-        return currencyFormatter.format(amount).replace(",00", "")
+        return when {
+            amount >= 1_000_000 -> {
+                val millions = amount / 1_000_000
+                if (millions % 1 == 0.0) "$ ${millions.toInt()}M" 
+                else "$ ${String.format(colombianLocale, "%.1f", millions)}M"
+            }
+            amount >= 1_000 -> {
+                val thousands = amount / 1_000
+                if (thousands % 1 == 0.0) "$ ${thousands.toInt()}k" 
+                else "$ ${String.format(colombianLocale, "%.1f", thousands)}k"
+            }
+            else -> "$ ${amount.toInt()}"
+        }
     }
 
     /**

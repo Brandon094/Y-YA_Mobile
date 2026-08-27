@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -25,9 +26,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import com.bhplusplus.yaya.data.models.Report
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
-import com.bhplusplus.yaya.data.models.Report
+import com.bhplusplus.yaya.utils.FormatterUtils
 
 /**
  * PANTALLA DE DASHBOARD ADMINISTRATIVO (Hito 5)
@@ -137,35 +139,65 @@ fun PendingServicesList(
 fun AdminServiceCard(service: Service, onApprove: (String) -> Unit, onReject: (String) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp), // Más redondeado
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.Top) { // Top para fuentes grandes
                 if (service.provider?.avatar_url != null) {
                     AsyncImage(
                         model = service.provider.avatar_url,
                         contentDescription = null,
-                        modifier = Modifier.size(32.dp).clip(CircleShape),
+                        modifier = Modifier.size(40.dp).clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
                     Spacer(Modifier.width(12.dp))
                 }
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(service.title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Text("Por: ${service.provider?.full_name ?: "Desconocido"}", fontSize = 12.sp, color = Color.Gray)
+                    Text(
+                        text = service.title, 
+                        fontWeight = FontWeight.Bold, 
+                        fontSize = 18.sp,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = "Por: ${service.provider?.full_name ?: "Desconocido"}", 
+                        fontSize = 12.sp, 
+                        color = Color.Gray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
-            Spacer(Modifier.height(8.dp))
-            Text(service.description, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
             Spacer(Modifier.height(12.dp))
+            Text(
+                text = service.description, 
+                fontSize = 14.sp, 
+                color = MaterialTheme.colorScheme.onSurfaceVariant, 
+                maxLines = 3,
+                lineHeight = 18.sp
+            )
+            Spacer(Modifier.height(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Precio: $${service.price}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Text(
+                    text = "Precio: ${FormatterUtils.formatCurrency(service.price)}", 
+                    fontWeight = FontWeight.ExtraBold, 
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 16.sp
+                )
                 Spacer(Modifier.weight(1f))
-                IconButton(onClick = { onReject(service.id!!) }) {
+                IconButton(
+                    onClick = { onReject(service.id!!) },
+                    colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Red.copy(alpha = 0.1f))
+                ) {
                     Icon(Icons.Default.Close, contentDescription = "Rechazar", tint = Color.Red)
                 }
-                IconButton(onClick = { onApprove(service.id!!) }) {
+                Spacer(Modifier.width(8.dp))
+                IconButton(
+                    onClick = { onApprove(service.id!!) },
+                    colors = IconButtonDefaults.iconButtonColors(containerColor = Color(0xFF4CAF50).copy(alpha = 0.1f))
+                ) {
                     Icon(Icons.Default.Check, contentDescription = "Aprobar", tint = Color(0xFF4CAF50))
                 }
             }

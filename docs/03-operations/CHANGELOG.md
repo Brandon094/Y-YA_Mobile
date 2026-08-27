@@ -50,6 +50,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Implementación de la tabla `availability` para que los prestadores definan su horario maestro de trabajo.
     - Nueva pantalla **"Mi Horario de Trabajo"** en el perfil del prestador, permitiendo activar/desactivar días y ajustar horas.
     - Validación proactiva en el flujo de contratación: El sistema ahora cruza la fecha seleccionada por el cliente con el horario global del prestador y el horario específico del servicio.
+- **Cumplimiento Legal (Google Play):**
+    - Implementación de la opción **"Eliminar mi cuenta"** en la pantalla de perfil.
+    - Flujo de borrado con doble confirmación para evitar eliminaciones accidentales.
+    - Lógica de desconexión inmediata y limpieza de sesión tras el borrado del perfil en Supabase.
 - **Refactor Arquitectónico Clean MVVM:**
     - Transformación de todas las pantallas principales en "Dumb Components" (Vistas tontas).
     - Implementación de modelos de **UiState** dedicados (`MessageUiState`, `ServiceUiState`, `IncomingRequestUiState`, `MyOrderUiState`, `MyServiceUiState`) para centralizar el formateo y la lógica de negocio en los ViewModels.

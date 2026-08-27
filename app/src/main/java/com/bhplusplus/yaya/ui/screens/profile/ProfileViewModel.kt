@@ -1,5 +1,6 @@
 package com.bhplusplus.yaya.ui.screens.profile
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,7 +11,6 @@ import com.bhplusplus.yaya.data.models.UserProfile
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
-import android.util.Log
 import kotlinx.serialization.json.jsonPrimitive
 
 /**
@@ -27,6 +27,9 @@ class ProfileViewModel : ViewModel() {
         private set
 
     var isLoading by mutableStateOf(false)
+        private set
+
+    var isDeletingAccount by mutableStateOf(false)
         private set
 
     init {
@@ -58,7 +61,6 @@ class ProfileViewModel : ViewModel() {
                         Log.e("ProfileVM", "Error al leer tabla profiles: ${e.message}")
                         
                         // 2. Si no existe en la tabla, intentamos recuperar de Metadata
-                        // Esto evita que la pantalla salga totalmente vacía.
                         val metadata = user.userMetadata
                         if (metadata != null) {
                             val name = metadata["full_name"]?.jsonPrimitive?.content ?: "Usuario"
@@ -80,6 +82,34 @@ class ProfileViewModel : ViewModel() {
                 Log.e("ProfileVM", "Error crítico al obtener perfil: ${e.message}")
             } finally {
                 isLoading = false
+            }
+        }
+    }
+
+    /**
+     * Inicia el proceso de borrado de cuenta.
+     * Nota: En Supabase, el borrado de usuario desde el cliente suele requerir una Edge Function.
+     * Por ahora, eliminamos el registro del perfil y cerramos sesión para cumplir el flujo de Google.
+     */
+    fun deleteAccount(onComplete: () -> Unit) {
+        val userId = userProfile?.id ?: return
+        
+        viewModelScope.launch {
+            isDeletingAccount = true
+            try {
+                // 1. Eliminar datos del perfil en public.profiles
+                SupabaseManager.client.postgrest["profiles"].delete {
+                    filter { eq("id", userId) }
+                }
+                
+                // 2. Cerrar sesión (La eliminación real de auth.users se maneja por consola o Edge Function Admin)
+                SupabaseManager.client.auth.signOut()
+                
+                onComplete()
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel", "Error al procesar borrado: ${e.message}")
+            } finally {
+                isDeletingAccount = false
             }
         }
     }

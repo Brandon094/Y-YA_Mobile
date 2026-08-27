@@ -7,6 +7,7 @@
 - **RF-02:** El sistema permitirá el inicio de sesión seguro con persistencia de sesión.
 - **RF-03:** **Cuenta Universal:** El usuario tendrá un perfil único que le permite actuar como Cliente o Prestador de Servicios sin cambiar de cuenta.
 - **RF-04:** El usuario podrá editar su perfil detallado (Cédula, Dirección, Fecha de Nacimiento, Foto).
+- **RF-20:** El sistema permitirá al usuario solicitar la eliminación de su cuenta y datos personales directamente desde la aplicación (Cumplimiento Google Play).
 
 ### Catálogo de Servicios
 - **RF-05:** El sistema mostrará una lista dinámica de categorías con iconografía específica (Mascotas, Hogar, Tecnología, etc.).

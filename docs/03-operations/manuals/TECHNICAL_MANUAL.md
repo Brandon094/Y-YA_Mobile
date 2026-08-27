@@ -52,7 +52,7 @@ El sistema cuenta con un Dashboard centralizado que permite la moderación proac
     - **FCM V1:** Autenticación mediante JWT de Google Cloud para el envío de notificaciones de alta prioridad con el icono de marca.
 
 ## 9. Cumplimiento y Legal
-El proyecto incluye una sección dedicada (`docs/04-legal`) con los lineamientos de privacidad y uso de la plataforma, alineados con el tratamiento de datos personales y la intermediación de servicios.
+El proyecto incluye una sección dedicada (`docs/04-legal`) con los lineamientos de privacidad y uso de la plataforma. Para cumplir con las políticas de Google Play, se ha habilitado el **borrado de cuenta** desde el perfil, el cual elimina el registro en `public.profiles` y cierra la sesión del usuario. La purga completa de datos de autenticación se gestiona mediante procesos administrativos.
 
 ---
 *Última actualización: Junio 2026*

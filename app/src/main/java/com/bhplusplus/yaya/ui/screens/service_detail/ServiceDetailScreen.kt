@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.EventAvailable
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
@@ -31,6 +32,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,6 +45,7 @@ import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.data.models.ServiceImage
 import com.bhplusplus.yaya.data.models.Rating
+import com.bhplusplus.yaya.utils.FormatterUtils
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -188,7 +192,6 @@ fun ServiceDetailContent(
     onReportClick: () -> Unit,
     onChatClick: () -> Unit
 ) {
-    val currencyFormatter = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
     var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
     val ratingText = remember(averageRating) {
         String.format(Locale.getDefault(), "%.1f", averageRating)
@@ -362,7 +365,7 @@ fun ServiceDetailContent(
                         modifier = Modifier.weight(1f)
                     )
                     Text(
-                        text = currencyFormatter.format(service.price),
+                        text = FormatterUtils.formatCurrency(service.price),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = MaterialTheme.colorScheme.primary
@@ -390,12 +393,12 @@ fun ServiceDetailContent(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // INFO DEL PRESTADOR (Real desde public.profiles)
+                // INFO DEL PRESTADOR
                 Text(
-                    text = stringResource(R.string.service_detail_provider_label),
-                    fontSize = 14.sp,
+                    text = stringResource(R.string.service_detail_provider_label).uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Card(
@@ -431,11 +434,13 @@ fun ServiceDetailContent(
                             }
                         }
                         Spacer(Modifier.width(12.dp))
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) { // WEIGHT PARA ACCESIBILIDAD
                             Text(
                                 text = provider?.full_name ?: "Cargando prestador...",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
+                                fontSize = 16.sp,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
                             )
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFB800), modifier = Modifier.size(14.dp))
@@ -447,7 +452,7 @@ fun ServiceDetailContent(
                             }
                         }
                         
-                        Spacer(Modifier.weight(1f))
+                        Spacer(Modifier.width(8.dp))
                         
                         // Botón de Chat (Hito 2)
                         IconButton(
@@ -467,9 +472,10 @@ fun ServiceDetailContent(
 
                 // DESCRIPCIÓN
                 Text(
-                    text = stringResource(R.string.service_detail_description_label),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    text = stringResource(R.string.service_detail_description_label).uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -496,22 +502,61 @@ fun ServiceDetailContent(
 
                 // DISPONIBILIDAD
                 if (service.working_days.isNotEmpty()) {
-                    val dayNames = listOf("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
-                    val formattedDays = service.working_days.mapNotNull { if(it in 1..7) dayNames[it-1] else null }.joinToString(", ")
-                    val timeRange = "${service.start_time.substring(0, 5)} - ${service.end_time.substring(0, 5)}"
+                    val dayNames = listOf("L", "M", "M", "J", "V", "S", "D")
+                    val timeRange = "${FormatterUtils.formatTime(service.start_time)} - ${FormatterUtils.formatTime(service.end_time)}"
                     
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.EventAvailable, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                        Spacer(Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = "Días de atención: $formattedDays",
-                                fontWeight = FontWeight.SemiBold
-                            )
+                    Column {
+                        Text(
+                            text = "DISPONIBILIDAD DE ATENCIÓN",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        
+                        Spacer(Modifier.height(12.dp))
+                        
+                        // Círculos de días (FlowRow para accesibilidad)
+                        @OptIn(ExperimentalLayoutApi::class)
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            dayNames.forEachIndexed { index, name ->
+                                val dayNumber = index + 1
+                                val isSelected = service.working_days.contains(dayNumber)
+                                Box(
+                                    modifier = Modifier
+                                        .sizeIn(minWidth = 32.dp, minHeight = 32.dp)
+                                        .background(
+                                            color = if (isSelected) MaterialTheme.colorScheme.primary 
+                                                    else MaterialTheme.colorScheme.surfaceVariant,
+                                            shape = CircleShape
+                                        )
+                                        .padding(4.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = name,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSelected) Color.White 
+                                                else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(Modifier.height(12.dp))
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.AccessTime, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
                             Text(
                                 text = "Horario: $timeRange",
                                 fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                                fontWeight = FontWeight.Medium
                             )
                         }
                     }
@@ -520,9 +565,10 @@ fun ServiceDetailContent(
 
                 // SECCIÓN DE RESEÑAS
                 Text(
-                    text = "Reseñas de clientes",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    text = "RESEÑAS DE CLIENTES",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -544,9 +590,10 @@ fun ServiceDetailContent(
 
                 // CONDICIONES Y MATERIALES
                 Text(
-                    text = stringResource(R.string.service_detail_whats_included_label),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    text = stringResource(R.string.service_detail_whats_included_label).uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -569,7 +616,7 @@ fun ServiceDetailContent(
                 
                 if (!service.materials_included && service.extra_cost > 0) {
                     Text(
-                        text = "  + ${currencyFormatter.format(service.extra_cost)} ${stringResource(R.string.service_detail_extra_cost_label)}",
+                        text = "  + ${FormatterUtils.formatCurrency(service.extra_cost)} ${stringResource(R.string.service_detail_extra_cost_label)}",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 28.dp)
@@ -597,31 +644,37 @@ fun RatingItem(rating: Rating) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 // Estrellas
-                Row {
+                Row(modifier = Modifier.wrapContentWidth()) {
                     for (i in 1..5) {
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = null,
-                            modifier = Modifier.size(14.dp),
+                            modifier = Modifier.size(16.dp), // Ligeramente más grande
                             tint = if (i <= rating.score) Color(0xFFFFB800) else Color.Gray.copy(alpha = 0.3f)
                         )
                     }
                 }
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(12.dp))
                 Text(
                     text = rating.created_at?.take(10) ?: "",
-                    fontSize = 11.sp,
-                    color = Color.Gray
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End
                 )
             }
             if (!rating.comment.isNullOrBlank()) {
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
                     text = rating.comment,
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 20.sp
                 )
             }
         }
