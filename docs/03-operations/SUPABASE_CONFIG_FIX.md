@@ -143,4 +143,22 @@ FOR ALL TO authenticated
 USING (bucket_id IN ('avatars', 'portfolios'));
 ```
 
+---
+
+## 5. Políticas RLS para Disponibilidad (Availability) 📅
+Asegura que los prestadores solo puedan gestionar su propio horario:
+
+```sql
+-- Solo el dueño puede insertar/editar su disponibilidad
+CREATE POLICY "Dueños manejan su disponibilidad" ON public.availability
+FOR ALL TO authenticated
+USING (auth.uid() = provider_id)
+WITH CHECK (auth.uid() = provider_id);
+
+-- Cualquiera puede leer la disponibilidad para validar contratación
+CREATE POLICY "Lectura pública de disponibilidad" ON public.availability
+FOR SELECT TO authenticated
+USING (true);
+```
+
 *Nota: La App asume que los archivos en 'avatars' siguen el patrón 'id_avatar.jpg'.*

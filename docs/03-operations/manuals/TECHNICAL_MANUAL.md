@@ -31,9 +31,9 @@ El proyecto sigue el patrón de arquitectura **MVVM (Model-View-ViewModel)** rec
 Se utiliza `StateFlow` y `SharedFlow` dentro de los ViewModels para exponer el estado a la UI de forma segura frente al ciclo de vida.
 
 ## 6. Modelos de Datos Críticos
-- **Service Availability:** Sistema híbrido que utiliza `working_days` (array de enteros) y rangos horarios (`start_time`, `end_time`) directamente en la tabla `services` para una disponibilidad granular por talento. Se mantiene la tabla `availability` para horarios globales del prestador.
+- **Service Availability:** Sistema híbrido que utiliza `working_days` (array de enteros) y rangos horarios directamente en la tabla `services` para una disponibilidad granular. Se complementa con la tabla `public.availability`, gestionada mediante el `AvailabilityViewModel`, que actúa como el horario maestro del prestador.
 - **ServiceRequest:** Evolucionado para incluir `final_price`, permitiendo la persistencia del acuerdo económico tras la negociación. Soporta estados de ciclo de vida completo (`pending`, `accepted`, `completed`).
-- **Rating:** Modelo para la gestión de reputación. Incluye lógica de persistencia para `ratingScore` y `ratingComment` dentro del `MyOrderUiState` para visualización persistente y bloqueo de re-calificación.
+- **Rating:** Modelo para la gestión de reputación. El `MyOrdersViewModel` recupera registros existentes para bloquear re-calificaciones y mostrar el historial inmutable al usuario.
 - **Report (Hito 5):** Estructura relacional para la gestión de denuncias por mal comportamiento.
 - **ServiceImage (Hito 3):** Tabla dedicada para el almacenamiento de múltiples URLs de portafolio vinculadas a un `service_id`, permitiendo galerías dinámicas.
 
