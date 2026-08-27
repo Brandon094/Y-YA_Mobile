@@ -71,24 +71,7 @@ fun AppNavigation(startRoute: Any) {
 
     // Función para manejar redirecciones tras login/registro
     val navigateByRole: () -> Unit = {
-        scope.launch {
-            try {
-                val user = SupabaseManager.client.auth.currentUserOrNull()
-                if (user != null) {
-                    val profile = SupabaseManager.client.postgrest["profiles"]
-                        .select { filter { eq("id", user.id) } }
-                        .decodeSingle<UserProfile>()
-
-                    if (profile.role.equals("admin", ignoreCase = true)) {
-                        navController.navigate(AdminDashboardRoute) { popUpTo(0) { inclusive = true } }
-                    } else {
-                        navController.navigate(HomeRoute) { popUpTo(0) { inclusive = true } }
-                    }
-                }
-            } catch (e: Exception) {
-                navController.navigate(HomeRoute) { popUpTo(0) { inclusive = true } }
-            }
-        }
+        navController.navigate(HomeRoute) { popUpTo(0) { inclusive = true } }
     }
 
     NavHost(
@@ -193,6 +176,7 @@ fun AppNavigation(startRoute: Any) {
                 onMyOrders = { navController.navigate(MyOrdersRoute) },
                 onIncomingRequests = { navController.navigate(IncomingRequestsRoute) },
                 onMyServices = { navController.navigate(MyServicesRoute) },
+                onAdminDashboard = { navController.navigate(AdminDashboardRoute) },
                 onChangePassword = { navController.navigate(ResetRoute) },
                 onLogout = {
                     scope.launch {

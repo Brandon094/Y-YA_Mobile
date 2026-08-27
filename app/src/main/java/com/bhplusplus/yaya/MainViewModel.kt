@@ -7,8 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
-import com.bhplusplus.yaya.data.models.UserProfile
-import com.bhplusplus.yaya.navigation.AdminDashboardRoute
 import com.bhplusplus.yaya.navigation.HomeRoute
 import com.bhplusplus.yaya.navigation.WelcomeRoute
 import io.github.jan.supabase.auth.auth
@@ -43,26 +41,14 @@ class MainViewModel : ViewModel() {
 
                 val session = SupabaseManager.client.auth.currentSessionOrNull()
                 if (session != null) {
-                    val userId = session.user?.id ?: throw Exception("User not found")
-                    
-                    val profile = SupabaseManager.client.postgrest["profiles"]
-                        .select { filter { eq("id", userId) } }
-                        .decodeSingle<UserProfile>()
-
-                    initialRoute = if (profile.role.equals("admin", ignoreCase = true)) {
-                        AdminDashboardRoute
-                    } else {
-                        HomeRoute
-                    }
+                    initialRoute = HomeRoute
                 } else {
                     initialRoute = WelcomeRoute
                 }
             } catch (e: Exception) {
                 Log.e("MainVM", "Error validando sesión: ${e.message}")
                 val session = SupabaseManager.client.auth.currentSessionOrNull()
-                val role = session?.user?.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
-                
-                initialRoute = if (role.equals("admin", ignoreCase = true)) AdminDashboardRoute else HomeRoute
+                initialRoute = if (session != null) HomeRoute else WelcomeRoute
             } finally {
                 // Solo liberamos el Splash cuando la ruta ya está definida
                 isCheckingSession = false

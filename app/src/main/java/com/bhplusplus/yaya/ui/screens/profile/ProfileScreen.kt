@@ -41,6 +41,7 @@ fun ProfileScreen(
     onMyOrders: () -> Unit,
     onIncomingRequests: () -> Unit,
     onMyServices: () -> Unit,
+    onAdminDashboard: () -> Unit,
     onChangePassword: () -> Unit,
     onLogout: () -> Unit,
     onBack: () -> Unit,
@@ -125,6 +126,26 @@ fun ProfileScreen(
 
                 Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)) {
                     
+                    // --- SECCIÓN: PANEL DE CONTROL (Solo Admin) ---
+                    if (profile?.role == "admin") {
+                        ProfileSectionHeader("ADMINISTRACIÓN")
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                            ),
+                            elevation = CardDefaults.cardElevation(2.dp)
+                        ) {
+                            ProfileOptionItem(
+                                title = "Panel Administrativo",
+                                icon = Icons.Default.AdminPanelSettings,
+                                onClick = onAdminDashboard
+                            )
+                        }
+                        Spacer(Modifier.height(24.dp))
+                    }
+
                     // --- SECCIÓN: GESTIÓN DE TALENTO (Solo Prestadores/Admin) ---
                     if (profile?.role == "provider" || profile?.role == "admin") {
                         ProfileSectionHeader("MI TALENTO")
@@ -409,6 +430,7 @@ fun ProfileScreenPreview() {
             onMyOrders = {},
             onIncomingRequests = {},
             onMyServices = {},
+            onAdminDashboard = {},
             onChangePassword = {},
             onLogout = {},
             onBack = {}

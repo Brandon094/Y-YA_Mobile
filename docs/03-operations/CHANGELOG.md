@@ -7,6 +7,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [0.1.3-alpha] - 2026-08-27
 ### Añadido
+- **Evolución del Ciclo de Vida Admin:**
+    - Los administradores ahora aterrizan en la pantalla de Inicio (`Home`) igual que cualquier usuario, permitiéndoles interactuar con la app (contratar, chatear, etc.).
+    - Se implementó un acceso exclusivo al **Panel Administrativo** desde el perfil del usuario, visible únicamente para el rol `admin`.
+    - Eliminación de la redirección forzada al login, mejorando la fluidez y permitiendo al admin ser un actor activo en el ecosistema.
 - **Flujo de Negociación "Handshake" (Doble Confirmación):**
     - Implementación de un ciclo de seguridad tripartito: Negociación -> Acuerdo (`accepted`) -> Confirmación de Inicio (`in_progress`) -> Finalización (`completed`).
     - El cliente ahora tiene el poder de dar el visto bueno final al precio antes de iniciar el servicio.
