@@ -21,16 +21,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
-import com.bhplusplus.yaya.data.models.Service
 
 /**
- * PANTALLA DE CONFIRMACIÓN DE RESERVA
- * Muestra el resumen del servicio solicitado exitosamente con datos REALES de Supabase.
+ * PANTALLA DE CONFIRMACIÓN DE RESERVA (Rediseño Premium)
+ * Arquitectura MVVM: La View solo renderiza el estado procesado del ViewModel.
  */
 @Composable
 fun PantallaReservaConfirmada(
@@ -40,210 +40,220 @@ fun PantallaReservaConfirmada(
     viewModel: ConfirmacionViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val uiState = viewModel.uiState
 
-    // Carga de datos reales al iniciar
     LaunchedEffect(requestId) {
         viewModel.loadRequestData(requestId, serviceId)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary) // Fondo rojo corporativo
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Header YÁYA
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 48.dp, bottom = 8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(R.string.app_brand_yaya),
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary,
-                letterSpacing = 4.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Ícono de envío exitoso
-        Box(
-            modifier = Modifier
-                .size(110.dp)
-                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f), shape = CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.Send,
-                contentDescription = null,
-                modifier = Modifier.size(56.dp),
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(
-            text = stringResource(R.string.confirmation_success_title),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Banner informativo
-        Surface(
-            modifier = Modifier.padding(horizontal = 24.dp),
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.confirmation_success_message),
-                modifier = Modifier.padding(16.dp),
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onPrimary,
-                textAlign = TextAlign.Center,
-                lineHeight = 20.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Tarjeta de detalles (Ticket)
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            shape = RoundedCornerShape(24.dp),
-            elevation = CardDefaults.cardElevation(8.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-        ) {
-            Column(modifier = Modifier.padding(24.dp)) {
-                Text(
-                    text = stringResource(R.string.confirmation_details_title).uppercase(),
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 12.dp),
-                    letterSpacing = 1.sp
-                )
-
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // BLOQUE 1: ¿QUIÉN Y QUÉ?
-                Text("SERVICIO Y PRESTADOR", style = MaterialTheme.typography.labelSmall, color = Color.Gray, letterSpacing = 0.5.sp)
-                DetalleReservaFila(Icons.Default.HomeRepairService, stringResource(R.string.confirmation_service_label), viewModel.servicio)
-                DetalleReservaFila(Icons.Default.Person, stringResource(R.string.confirmation_provider_label), viewModel.prestador)
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // BLOQUE 2: ¿CUÁNDO Y DÓNDE?
-                Text("CITA Y UBICACIÓN", style = MaterialTheme.typography.labelSmall, color = Color.Gray, letterSpacing = 0.5.sp)
-                DetalleReservaFila(Icons.Default.DateRange, stringResource(R.string.confirmation_date_label), viewModel.fecha)
-                DetalleReservaFila(Icons.Default.AccessTime, stringResource(R.string.confirmation_time_label), viewModel.tiempo)
-                DetalleReservaFila(Icons.Default.LocationOn, stringResource(R.string.confirmation_location_label), viewModel.ubicacion)
-
-                Spacer(modifier = Modifier.height(12.dp))
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // BLOQUE 3: RESUMEN ECONÓMICO
-                Text("RESUMEN DE NEGOCIACIÓN", style = MaterialTheme.typography.labelSmall, color = Color.Gray, letterSpacing = 0.5.sp)
-                DetalleReservaFila(Icons.Default.Payments, stringResource(R.string.confirmation_base_price_label), viewModel.precioBase)
-                
-                // Resaltar la oferta final
-                Surface(
-                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
-                ) {
-                    DetalleReservaFila(
-                        icono = Icons.Default.Schedule, 
-                        etiqueta = stringResource(R.string.confirmation_final_offer_label), 
-                        valor = viewModel.precioOfertado
-                    )
+    Scaffold(
+        bottomBar = {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                tonalElevation = 8.dp,
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Box(modifier = Modifier.navigationBarsPadding()) {
+                    Button(
+                        onClick = {
+                            Toast.makeText(context, "¡Regresando al inicio!", Toast.LENGTH_SHORT).show()
+                            onContinuarClick()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.confirmation_continue_button).uppercase(),
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 16.sp
+                        )
+                    }
                 }
             }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Botón de acción principal
-        val finishedMsg = stringResource(R.string.confirmation_toast_finished)
-        Button(
-            onClick = { 
-                Toast.makeText(context, finishedMsg, Toast.LENGTH_SHORT).show()
-                onContinuarClick() 
-            },
+    ) { padding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, bottom = 40.dp)
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.onPrimary,
-                contentColor = MaterialTheme.colorScheme.primary
-            ),
-            elevation = ButtonDefaults.buttonElevation(4.dp)
+                .padding(padding)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // HEADER DE ÉXITO (Banner Premium)
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(top = 40.dp, bottom = 48.dp, start = 24.dp, end = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .background(Color.White.copy(alpha = 0.2f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(56.dp),
+                            tint = Color.White
+                        )
+                    }
+                    
+                    Spacer(Modifier.height(24.dp))
+                    
+                    Text(
+                        text = stringResource(R.string.confirmation_success_title),
+                        fontSize = 26.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    Spacer(Modifier.height(8.dp))
+                    
+                    Text(
+                        text = stringResource(R.string.confirmation_success_message),
+                        fontSize = 14.sp,
+                        color = Color.White.copy(alpha = 0.9f),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 20.sp
+                    )
+                }
+            }
+
+            if (viewModel.isLoading && uiState == null) {
+                Box(Modifier.fillMaxSize().padding(40.dp), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else if (uiState != null) {
+                // CUERPO: TICKET DE DETALLES
+                Column(modifier = Modifier.padding(24.dp)) {
+                    ConfirmationSectionHeader("RESUMEN DE TU SOLICITUD")
+                    
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        elevation = CardDefaults.cardElevation(2.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    ) {
+                        Column(modifier = Modifier.padding(20.dp)) {
+                            // BLOQUE: SERVICIO
+                            ConfirmationDetailRow(Icons.Default.Build, "Servicio", uiState.serviceTitle)
+                            ConfirmationDetailRow(Icons.Default.Person, "Prestador", uiState.providerName)
+                            
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                            
+                            // BLOQUE: CITA
+                            ConfirmationDetailRow(Icons.Default.Event, "Fecha", uiState.formattedDate)
+                            ConfirmationDetailRow(Icons.Default.AccessTime, "Hora programada", uiState.formattedTime)
+                            ConfirmationDetailRow(Icons.Default.LocationOn, "Lugar de atención", uiState.address)
+
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+
+                            // BLOQUE: ECONOMÍA
+                            ConfirmationDetailRow(Icons.Default.Payments, "Precio base", uiState.formattedBasePrice)
+                            
+                            Surface(
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(Icons.Default.Gavel, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                                    Spacer(Modifier.width(12.dp))
+                                    Column {
+                                        Text("TU OFERTA FINAL", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                                        Text(uiState.formattedOfferPrice, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // NOTA DE SEGURIDAD
+                    Surface(
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(20.dp))
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                "Recuerda que el prestador puede enviarte una contraoferta. Mantente atento al chat.",
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                lineHeight = 18.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ConfirmationDetailRow(icon: ImageVector, label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp).padding(top = 2.dp),
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(label, color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Medium)
             Text(
-                text = stringResource(R.string.confirmation_continue_button),
+                text = value,
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
 }
 
 @Composable
-fun DetalleReservaFila(icono: ImageVector, etiqueta: String, valor: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icono,
-            contentDescription = null,
-            modifier = Modifier.size(22.dp),
-            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = etiqueta,
-                color = Color.Gray,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium
-            )
-            Text(
-                text = valor,
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
+fun ConfirmationSectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.ExtraBold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 4.dp, bottom = 12.dp),
+        letterSpacing = 1.sp
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ConfirmacionPreview() {
-    // Para el preview, PantallaReservaConfirmada requiere serviceId y requestId
-    // Pero como tiene ViewModel interno, es mejor crear un content separado si quisiéramos preview limpio.
-    // Por ahora, simulamos los datos mínimos.
-    Surface {
-        Text("Previsualización no disponible directamente para pantallas con lógica de red intensa.")
+    MaterialTheme {
+        Box(Modifier.fillMaxSize().background(Color.White)) {
+            Text("Vista Previa de Confirmación")
+        }
     }
 }

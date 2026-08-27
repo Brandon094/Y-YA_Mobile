@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -156,10 +157,10 @@ fun ContratacionContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.contratacion_request_title), fontWeight = FontWeight.Bold) },
+                title = { Text("Programar Solicitud", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = MaterialTheme.colorScheme.onSecondary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -167,6 +168,29 @@ fun ContratacionContent(
                     titleContentColor = MaterialTheme.colorScheme.onSecondary
                 )
             )
+        },
+        bottomBar = {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                tonalElevation = 8.dp,
+                shadowElevation = 8.dp,
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Box(modifier = Modifier.navigationBarsPadding()) {
+                    Button(
+                        onClick = onContratar,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        enabled = uiState.canContratar
+                    ) {
+                        if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
+                        else Text("CONFIRMAR SOLICITUD", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
+                    }
+                }
+            }
         }
     ) { padding ->
         Column(
@@ -175,112 +199,208 @@ fun ContratacionContent(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // SECCIÓN 1: RESUMEN DEL SERVICIO
-            Text(
-                text = stringResource(R.string.contratacion_details_section).uppercase(),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
-
-            Card(
+            // HEADER HERO: Resumen del Servicio
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
+                shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    InfoRow(Icons.Default.Build, stringResource(R.string.contratacion_service_field), uiState.serviceTitle)
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outlineVariant)
-                    InfoRow(Icons.Default.Payments, stringResource(R.string.contratacion_base_price_field), uiState.formattedBasePrice)
-                }
-            }
-
-            // SECCIÓN 2: DATOS DE RESERVA
-            Text(text = "TUS DATOS DE RESERVA", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-
-            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), elevation = CardDefaults.cardElevation(2.dp)) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    CampoFormulario(stringResource(R.string.contratacion_address_field), direccion, !isLoading, stringResource(R.string.contratacion_address_placeholder), onDireccionChange)
-                    
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        SelectorBoton(
-                            icon = Icons.Default.DateRange,
-                            label = if (fecha.isEmpty()) stringResource(R.string.contratacion_date_field) else fecha,
-                            modifier = Modifier.weight(1f),
-                            onClick = onFechaClick,
-                            enabled = !isLoading
-                        )
-                        SelectorBoton(
-                            icon = Icons.Default.AccessTime,
-                            label = if (hora.isEmpty()) stringResource(R.string.contratacion_time_field) else hora,
-                            modifier = Modifier.weight(1f),
-                            onClick = onHoraClick,
-                            enabled = !isLoading
-                        )
+                Column(modifier = Modifier.padding(24.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (uiState.providerAvatarUrl != null) {
+                                AsyncImage(
+                                    model = uiState.providerAvatarUrl,
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Icon(Icons.Default.Person, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(30.dp))
+                            }
+                        }
+                        Spacer(Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(uiState.serviceTitle, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onBackground)
+                            Text("Con: ${uiState.providerName}", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+                        }
                     }
                 }
             }
 
-            // SECCIÓN 3: NEGOCIACIÓN (AJUSTE PARA FUENTES GRANDES)
-            Text(text = stringResource(R.string.contratacion_offer_field).uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-
-            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), elevation = CardDefaults.cardElevation(4.dp)) {
-                Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Ajusta tu oferta (Mínimo: ${uiState.formattedBasePrice})", style = MaterialTheme.typography.bodySmall, color = Color.Gray, textAlign = TextAlign.Center)
-                    Spacer(Modifier.height(12.dp))
-                    
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                        FilledIconButton(
-                            onClick = onDecrementar,
-                            enabled = !isLoading && !uiState.isOfferAtBase,
-                            colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                        ) { Icon(Icons.Default.Remove, contentDescription = "Menos") }
-
-                        OutlinedTextField(
-                            value = ofertaRaw,
-                            onValueChange = onOfertaChange,
-                            modifier = Modifier.weight(1f).padding(horizontal = 8.dp), // WEIGHT PARA NO DESBORDAR
-                            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                            prefix = { Text("$") },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(12.dp),
-                            enabled = !isLoading
-                        )
-
-                        FilledIconButton(
-                            onClick = onIncrementar,
-                            enabled = !isLoading,
-                            colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                        ) { Icon(Icons.Default.Add, contentDescription = "Más") }
+            Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
+                
+                // SECCIÓN: DONDE Y CUANDO
+                Column {
+                    ContratacionSectionHeader("DETALLES DE LA CITA")
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(2.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                            CampoFormularioPro(
+                                label = "Dirección de atención",
+                                value = direccion,
+                                onValueChange = onDireccionChange,
+                                icon = Icons.Default.LocationOn,
+                                enabled = !isLoading
+                            )
+                            
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                SelectorBotonPro(
+                                    icon = Icons.Default.CalendarMonth,
+                                    label = if (fecha.isEmpty()) "Fecha" else fecha,
+                                    modifier = Modifier.weight(1f),
+                                    onClick = onFechaClick,
+                                    enabled = !isLoading
+                                )
+                                SelectorBotonPro(
+                                    icon = Icons.Default.Schedule,
+                                    label = if (hora.isEmpty()) "Hora" else hora,
+                                    modifier = Modifier.weight(1f),
+                                    onClick = onHoraClick,
+                                    enabled = !isLoading
+                                )
+                            }
+                        }
                     }
-                    Spacer(Modifier.height(8.dp))
-                    Text(text = "Propuesta: ${uiState.formattedOffer}", fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary, fontSize = 20.sp)
                 }
-            }
 
-            if (errorMessage != null) {
-                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer), modifier = Modifier.fillMaxWidth()) {
-                    Text(text = errorMessage, color = MaterialTheme.colorScheme.onErrorContainer, fontSize = 13.sp, modifier = Modifier.padding(12.dp), textAlign = TextAlign.Center, lineHeight = 18.sp)
+                // SECCIÓN: TU OFERTA
+                Column {
+                    ContratacionSectionHeader("NEGOCIACIÓN DE PRECIO")
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(2.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "Precio Base: ${uiState.formattedBasePrice}",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color.Gray,
+                                fontWeight = FontWeight.Bold
+                            )
+                            
+                            Spacer(Modifier.height(16.dp))
+                            
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                FilledIconButton(
+                                    onClick = onDecrementar,
+                                    enabled = !isLoading && !uiState.isOfferAtBase,
+                                    modifier = Modifier.size(48.dp),
+                                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), contentColor = MaterialTheme.colorScheme.primary)
+                                ) { Icon(Icons.Default.Remove, null) }
+
+                                OutlinedTextField(
+                                    value = ofertaRaw,
+                                    onValueChange = onOfertaChange,
+                                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+                                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 24.sp),
+                                    prefix = { Text("$") },
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    shape = RoundedCornerShape(12.dp),
+                                    enabled = !isLoading
+                                )
+
+                                FilledIconButton(
+                                    onClick = onIncrementar,
+                                    enabled = !isLoading,
+                                    modifier = Modifier.size(48.dp),
+                                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = Color.White)
+                                ) { Icon(Icons.Default.Add, null) }
+                            }
+                            
+                            Spacer(Modifier.height(12.dp))
+                            Text(
+                                text = "Puedes proponer un valor mayor para agilizar la aceptación.",
+                                fontSize = 11.sp,
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center,
+                                lineHeight = 16.sp
+                            )
+                        }
+                    }
                 }
-            }
 
-            Spacer(Modifier.weight(1f))
-
-            Box(modifier = Modifier.navigationBarsPadding()) {
-                Button(
-                    onClick = onContratar,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp), // heightIn para fuentes grandes
-                    shape = RoundedCornerShape(16.dp),
-                    enabled = uiState.canContratar
-                ) {
-                    if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
-                    else Text(stringResource(R.string.contratacion_button), fontWeight = FontWeight.Bold, fontSize = 18.sp, textAlign = TextAlign.Center)
+                if (errorMessage != null) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Warning, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(12.dp))
+                            Text(text = errorMessage, color = MaterialTheme.colorScheme.onErrorContainer, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                        }
+                    }
                 }
+                
+                Spacer(Modifier.height(80.dp)) // Espacio para el botón flotante inferior
             }
+        }
+    }
+}
+
+@Composable
+fun ContratacionSectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.ExtraBold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 8.dp, bottom = 12.dp),
+        letterSpacing = 1.sp
+    )
+}
+
+@Composable
+fun CampoFormularioPro(label: String, value: String, icon: ImageVector, onValueChange: (String) -> Unit, enabled: Boolean) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        leadingIcon = { Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp)) },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+        enabled = enabled,
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+        )
+    )
+}
+
+@Composable
+fun SelectorBotonPro(icon: ImageVector, label: String, modifier: Modifier, onClick: () -> Unit, enabled: Boolean) {
+    Surface(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = modifier.heightIn(min = 56.dp),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+    ) {
+        Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.width(8.dp))
+            Text(label, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }
