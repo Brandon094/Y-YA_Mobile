@@ -25,6 +25,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 import com.bhplusplus.yaya.ui.screens.profile.ProfileScreen
 import com.bhplusplus.yaya.ui.screens.edit_profile.EditProfileScreen
+import com.bhplusplus.yaya.ui.screens.profile.AvailabilityScreen
 import com.bhplusplus.yaya.ui.screens.contratacion.PantallaContratacion
 import com.bhplusplus.yaya.ui.screens.confirmation.PantallaReservaConfirmada
 import com.bhplusplus.yaya.ui.screens.create_service.CreateServiceScreen
@@ -48,6 +49,7 @@ import android.util.Log
 @Serializable object AdminDashboardRoute 
 @Serializable object ProfileRoute
 @Serializable object EditProfileRoute
+@Serializable object AvailabilityRoute
 @Serializable data class CreateServiceRoute(val serviceId: String? = null)
 @Serializable object MyOrdersRoute
 @Serializable object IncomingRequestsRoute
@@ -187,6 +189,7 @@ fun AppNavigation(startRoute: Any) {
         composable<ProfileRoute> {
             ProfileScreen(
                 onEditProfile = { navController.navigate(EditProfileRoute) },
+                onAvailability = { navController.navigate(AvailabilityRoute) },
                 onMyOrders = { navController.navigate(MyOrdersRoute) },
                 onIncomingRequests = { navController.navigate(IncomingRequestsRoute) },
                 onMyServices = { navController.navigate(MyServicesRoute) },
@@ -206,6 +209,13 @@ fun AppNavigation(startRoute: Any) {
         // Editar Perfil
         composable<EditProfileRoute> {
             EditProfileScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Disponibilidad
+        composable<AvailabilityRoute> {
+            AvailabilityScreen(
                 onBack = { navController.popBackStack() }
             )
         }

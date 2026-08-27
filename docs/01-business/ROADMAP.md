@@ -14,7 +14,7 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 ## Hito 1: Refinamiento Operativo y Lógica de Negocio
 **Objetivo:** Asegurar que el flujo transaccional sea robusto y preciso.
 - [x] **Disponibilidad Granular:** Implementación de selección de días (`working_days`) y rangos horarios por servicio individual.
-- [x] **Sincronización de Disponibilidad:** Validación en tiempo real del selector de fecha/hora contra la tabla `public.availability` y reglas del servicio.
+- [x] **Sincronización de Disponibilidad:** Gestión de horario maestro mediante la tabla `public.availability` y validación en tiempo real en el flujo de contratación.
 - [x] **Evolución del Modelo Económico:** Implementación del campo `final_price` en solicitudes para reflejar acuerdos tras negociaciones.
 - [x] **Tema Oscuro Premium:** Implementación de paleta Deep Midnight optimizada para legibilidad y ahorro de batería.
 - [x] **Splash Screen Adaptativa:** Migración a la API oficial con soporte para temas de sistema.

@@ -46,6 +46,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Historial de negociación estilizado y botones de acción Premium (Chat, Aceptar, Negociar).
 - **Ajuste de Flujo de Reserva:**
     - Cambio semántico de la pantalla de confirmación a **"¡Solicitud enviada!"** para una gestión transparente de las expectativas del usuario.
+- **Sistema de Disponibilidad Global:**
+    - Implementación de la tabla `availability` para que los prestadores definan su horario maestro de trabajo.
+    - Nueva pantalla **"Mi Horario de Trabajo"** en el perfil del prestador, permitiendo activar/desactivar días y ajustar horas.
+    - Validación proactiva en el flujo de contratación: El sistema ahora cruza la fecha seleccionada por el cliente con el horario global del prestador y el horario específico del servicio.
 - **Refactor Arquitectónico Clean MVVM:**
     - Transformación de todas las pantallas principales en "Dumb Components" (Vistas tontas).
     - Implementación de modelos de **UiState** dedicados (`MessageUiState`, `ServiceUiState`, `IncomingRequestUiState`, `MyOrderUiState`, `MyServiceUiState`) para centralizar el formateo y la lógica de negocio en los ViewModels.
