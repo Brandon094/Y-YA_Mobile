@@ -8,9 +8,9 @@ YÁYA implementa **MVVM** para separar la lógica de negocio de la interfaz de u
 ### 1.1. Capa de Vista (UI)
 - Construida íntegramente con **Jetpack Compose**.
 - **Metodología Atomic Design:** La UI se descompone en una jerarquía de componentes reutilizables:
-    - **Átomos:** Componentes básicos e indivisibles (`YayaButton`, `YayaTextField`, `YayaAvatar`).
-    - **Moléculas:** Grupos de átomos con una funcionalidad simple (`RatingIndicator`, `DayIndicator`, `DetailRow`).
-    - **Organismos:** Secciones complejas y orquestadas de la interfaz (`ServiceCard`, `HomeTopBar`, `OnboardingCarousel`).
+    - **Átomos:** Componentes básicos e indivisibles (`YayaButton`, `YayaTextField`, `YayaAvatar`, `YayaLogo`).
+    - **Moléculas:** Grupos de átomos con una funcionalidad simple (`RatingIndicator`, `DayIndicator`, `DetailRow`, `ChatBubble`, `ChatInputBar`).
+    - **Organismos:** Secciones complejas y orquestadas de la interfaz (`ServiceCard`, `HomeTopBar`, `OnboardingCarousel`, `ChatHeader`).
 - Las funciones Composable son "**stateless**" y "**tontas**" (Dumb Components), limitándose a renderizar datos procesados y banderas booleanas entregadas por el ViewModel mediante modelos de **UiState** dedicados.
 - **Inyección de Estados:** El ViewModel mapea los modelos de dominio (Supabase) a estados de UI simplificados, encargándose del formateo de monedas (estilo compacto **$ 50k**), fechas y lógica de visibilidad condicional mediante el principio **DRY** (utilizando `FormatterUtils`).
 - Uso de Material 3 para el sistema de diseño, con soporte estricto para temas Claro y Oscuro.
