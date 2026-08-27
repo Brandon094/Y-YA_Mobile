@@ -9,6 +9,8 @@ YÁYA implementa **MVVM** para separar la lógica de negocio de la interfaz de u
 - Construida íntegramente con **Jetpack Compose**.
 - Las funciones Composable son "**stateless**" y "**tontas**" (Dumb Components), limitándose a renderizar datos procesados y banderas booleanas (ej. `isMe`, `formattedPrice`) entregadas por el ViewModel mediante modelos de **UiState** dedicados.
 - Uso de Material 3 para el sistema de diseño, con soporte estricto para temas Claro y Oscuro.
+- **Flujo de Onboarding:** Implementación de un carrusel interactivo mediante `HorizontalPager` en la pantalla de bienvenida para comunicar la propuesta de valor antes del acceso.
+- **Minimalismo Visual:** Adopción de una política de "Cero Redundancia", eliminando texto de marca cuando el logotipo (isotipo) ya está presente (ej. Pantalla de Login con Isotipo Circular).
 - **Pull-to-Refresh:** Implementación del patrón de refresco manual mediante `PullToRefreshBox` en todas las listas principales para garantizar la sincronización a demanda.
 - **Gestión de Teclado (IME):** Implementación de `Modifier.imePadding()` en pantallas de entrada de datos y chat para asegurar que los componentes de entrada permanezcan visibles sobre el teclado virtual.
 
@@ -55,8 +57,9 @@ YÁYA rompe la fricción tradicional de las plataformas de servicios al permitir
 ## 6. Lógica de Negocio y Reactividad
 El sistema implementa validaciones críticas y procesos reactivos:
 - **Reactividad en Tiempo Real (Realtime):** Uso extensivo de `Supabase Realtime` (Postgres Changes) para sincronizar estados de pedidos, contraofertas y mensajes sin necesidad de recargar la pantalla. Los ViewModels implementan "Silent Fetching" tras eventos de base de datos para mantener la integridad de los Joins relacionales.
+- **Ciclo de Vida Transaccional:** El flujo de servicios sigue una progresión lógica: `Solicitud` -> `Negociación` -> `Aceptación` -> `Finalización` (por el prestador) -> `Calificación` (por el cliente).
+- **Sistema de Reputación Blindado:** Las calificaciones son inmutables una vez enviadas. El sistema valida la existencia de registros previos en la tabla `ratings` para transformar la interfaz de "Formulario de Calificación" a "Resumen de Calificación" de forma automática.
 - **Chat Avanzado:** Sistema de mensajería con feedback visual de mensajes no leídos, previsualización del último mensaje y ordenamiento cronológico dinámico.
-- **Validación de Disponibilidad:** Cruce de horarios en tiempo real contra los campos `working_days`, `start_time` y `end_time` en la tabla `services`.
 
 ## 7. Sistema de Notificaciones (Push Architecture)
 YÁYA utiliza una arquitectura híbrida para alertas en tiempo real mediante un **Motor Unificado de Notificaciones**:

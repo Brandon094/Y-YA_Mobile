@@ -18,7 +18,8 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 - [x] **Evolución del Modelo Económico:** Implementación del campo `final_price` en solicitudes para reflejar acuerdos tras negociaciones.
 - [x] **Tema Oscuro Premium:** Implementación de paleta Deep Midnight optimizada para legibilidad y ahorro de batería.
 - [x] **Splash Screen Adaptativa:** Migración a la API oficial con soporte para temas de sistema.
-- [ ] **Optimización de UI/UX:** Refinamiento de transiciones, animaciones y estados de carga (Shimmer effect).
+- [x] **Onboarding Interactivo:** Sistema de carrusel dinámico para comunicar la propuesta de valor.
+- [ ] **Optimización de UI/UX:** Refinamiento de transiciones y estados de carga (Shimmer effect).
 
 ---
 

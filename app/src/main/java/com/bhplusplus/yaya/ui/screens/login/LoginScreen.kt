@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -43,6 +46,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -75,21 +79,22 @@ fun LoginScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Contenedor del Logo
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Contenedor del Logo Circular
             Box(
                 modifier = Modifier
-                    .size(120.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color.White),
+                    .size(140.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.logo_yaya_typographic), // Logo
-                    // Tipográfico
+                    painter = painterResource(id = R.drawable.ic_logo),
                     contentDescription = stringResource(R.string.login_logo_description),
                     modifier = Modifier.size(100.dp)
                 )
@@ -97,46 +102,34 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Título de la App
-            Text(
-                text = stringResource(R.string.app_title_yaya),
-                fontSize = 28.sp,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             Text(
                 text = stringResource(R.string.login_title),
                 fontSize = 32.sp,
                 color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Campo de texto para el Correo
             OutlinedTextField(
                 value = usuario,
-                onValueChange = {
-                    usuario = it
-                },
+                onValueChange = { usuario = it },
                 label = { Text(stringResource(R.string.login_email_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
                 isError = errorMessage != null,
+                shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                    errorBorderColor = MaterialTheme.colorScheme.error
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
                 )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo de texto para la Contraseña con opción de ver/ocultar
+            // Campo de texto para la Contraseña
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -145,11 +138,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
                 isError = errorMessage != null,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                    errorBorderColor = MaterialTheme.colorScheme.error
-                ),
+                shape = RoundedCornerShape(16.dp),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
@@ -162,8 +151,6 @@ fun LoginScreen(
                 }
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
             // Enlace para recuperar contraseña
             TextButton(
                 onClick = { onNavigateToReset() },
@@ -171,7 +158,8 @@ fun LoginScreen(
             ) {
                 Text(
                     text = stringResource(R.string.login_forgot_password),
-                    color = MaterialTheme.colorScheme.onBackground
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
 
@@ -186,23 +174,20 @@ fun LoginScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 enabled = !isLoading
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                 } else {
-                    Text(stringResource(R.string.login_button_text), color = Color.White)
+                    Text(stringResource(R.string.login_button_text), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // TextButton para crear una cuenta nueva (estilo similar a "¿Olvidó su contraseña?")
             TextButton(
                 onClick = { onNavigateToRegister() },
                 modifier = Modifier.fillMaxWidth(),
@@ -211,19 +196,13 @@ fun LoginScreen(
                 Text(
                     text = stringResource(R.string.login_no_account),
                     color = MaterialTheme.colorScheme.primary,
-                    fontSize = 14.sp
+                    fontWeight = FontWeight.Bold
                 )
             }
 
-            // Espacio para mostrar mensajes de error de Supabase
             if (!errorMessage.isNullOrEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = errorMessage!!,
-                    color = MaterialTheme.colorScheme.error,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
+                Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error, fontSize = 14.sp)
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -232,9 +211,9 @@ fun LoginScreen(
             Text(
                 text = "Powered by BH++",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 16.dp)
             )
         }
     }

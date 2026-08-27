@@ -34,7 +34,9 @@ data class MyOrderUiState(
     val description: String,
     val isCounterOfferActive: Boolean,
     val providerAvatarUrl: String?,
-    val isRated: Boolean = false
+    val isRated: Boolean = false,
+    val ratingScore: Int? = null,
+    val ratingComment: String? = null
 )
 
 /**
@@ -96,7 +98,7 @@ class MyOrdersViewModel : ViewModel() {
     }
 
     private fun mapToUiState(order: ServiceRequest): MyOrderUiState {
-        val hasBeenRated = clientRatings.any { it.request_id == order.id }
+        val existingRating = clientRatings.find { it.request_id == order.id }
         return MyOrderUiState(
             domain = order,
             serviceTitle = order.services?.title ?: "Servicio",
@@ -109,7 +111,9 @@ class MyOrdersViewModel : ViewModel() {
             isCounterOfferActive = order.status == "pending" && 
                                    order.request_description?.contains("Contraoferta Prestador") == true,
             providerAvatarUrl = order.services?.provider?.avatar_url,
-            isRated = hasBeenRated
+            isRated = existingRating != null,
+            ratingScore = existingRating?.score,
+            ratingComment = existingRating?.comment
         )
     }
 

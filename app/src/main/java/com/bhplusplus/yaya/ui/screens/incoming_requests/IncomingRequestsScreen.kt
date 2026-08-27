@@ -158,7 +158,13 @@ fun IncomingRequestsScreen(
                         items(viewModel.requests) { uiState ->
                             IncomingRequestItem(
                                 state = uiState,
-                                onAccept = { viewModel.updateRequestStatus(uiState.domain.id!!, "accepted") },
+                                onAccept = { 
+                                    if (uiState.status == "accepted") {
+                                        viewModel.updateRequestStatus(uiState.domain.id!!, "completed")
+                                    } else {
+                                        viewModel.updateRequestStatus(uiState.domain.id!!, "accepted")
+                                    }
+                                },
                                 onReject = { viewModel.updateRequestStatus(uiState.domain.id!!, "cancelled") },
                                 onNegotiate = { showNegotiationDialog = uiState },
                                 onChat = {
@@ -250,7 +256,7 @@ fun IncomingRequestItem(
                 }
             }
 
-            if (state.status == "pending") {
+            if (state.status == "pending" || state.status == "accepted") {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (state.isClientOfferPending) {
@@ -268,44 +274,62 @@ fun IncomingRequestItem(
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    // BOTÓN CHAT
                     IconButton(
                         onClick = onChat,
                         modifier = Modifier.size(52.dp).background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
                     ) { Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "Chatear", tint = MaterialTheme.colorScheme.onSecondaryContainer) }
 
-                    OutlinedButton(
-                        onClick = onNegotiate,
-                        modifier = Modifier.weight(1f).height(52.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
-                    ) {
-                        Icon(Icons.Default.Gavel, null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Text("Negociar", fontWeight = FontWeight.Bold)
-                    }
-
-                    if (state.isClientOfferPending) {
+                    if (state.status == "accepted") {
+                        // BOTÓN FINALIZAR (Solo cuando ya se aceptó y negoció)
                         Button(
-                            onClick = onAccept,
-                            modifier = Modifier.weight(1.1f).height(52.dp),
+                            onClick = onAccept, // Reutilizamos onAccept para cambiar a 'completed'
+                            modifier = Modifier.weight(1f).height(52.dp),
                             shape = RoundedCornerShape(16.dp),
-                            elevation = ButtonDefaults.buttonElevation(4.dp)
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                         ) {
-                            Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(6.dp))
-                            Text("Aceptar", fontWeight = FontWeight.ExtraBold)
+                            Icon(Icons.Default.DoneAll, null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text("Finalizar Trabajo", fontWeight = FontWeight.ExtraBold)
                         }
                     } else {
-                        TextButton(onClick = onReject, modifier = Modifier.height(52.dp)) {
-                            Text(stringResource(R.string.incoming_requests_reject), color = MaterialTheme.colorScheme.error)
+                        // BOTÓN NEGOCIAR
+                        OutlinedButton(
+                            onClick = onNegotiate,
+                            modifier = Modifier.weight(1f).height(52.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+                        ) {
+                            Icon(Icons.Default.Gavel, null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text("Negociar", fontWeight = FontWeight.Bold)
+                        }
+
+                        // BOTÓN ACEPTAR OFERTA
+                        if (state.isClientOfferPending) {
+                            Button(
+                                onClick = onAccept,
+                                modifier = Modifier.weight(1.1f).height(52.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = ButtonDefaults.buttonElevation(4.dp)
+                            ) {
+                                Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(6.dp))
+                                Text("Aceptar", fontWeight = FontWeight.ExtraBold)
+                            }
+                        } else {
+                            TextButton(onClick = onReject, modifier = Modifier.height(52.dp)) {
+                                Text(stringResource(R.string.incoming_requests_reject), color = MaterialTheme.colorScheme.error)
+                            }
                         }
                     }
                 }
                 
-                if (state.isClientOfferPending) {
+                // Opción de cancelar/rechazar si está aceptada (abajo pequeño)
+                if (state.isClientOfferPending || state.status == "accepted") {
                     Spacer(Modifier.height(8.dp))
                     TextButton(onClick = onReject, modifier = Modifier.fillMaxWidth().height(48.dp)) {
-                        Text(stringResource(R.string.incoming_requests_reject), color = MaterialTheme.colorScheme.error)
+                        Text(if (state.status == "accepted") "Cancelar Servicio" else stringResource(R.string.incoming_requests_reject), color = MaterialTheme.colorScheme.error)
                     }
                 }
             }

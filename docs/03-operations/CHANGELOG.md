@@ -5,6 +5,24 @@ Todas las modificaciones notables en este proyecto serán documentadas en este a
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2-alpha] - 2026-08-27
+### Añadido
+- **Onboarding Interactivo:**
+    - Transformación de la pantalla de bienvenida en un carrusel dinámico mediante `HorizontalPager`.
+    - 3 pasos narrativos: Descubre, Negocia y Confía, con indicadores de página (dots) dinámicos.
+- **Refinamiento Visual del Login:**
+    - Rediseño de cabecera con **Isotipo Circular Premium** (140dp con fondo sutil).
+    - Eliminación de texto redundante "YÁYA" para un look más limpio y profesional.
+    - Implementación de scroll interno para evitar problemas de visualización en dispositivos con pantallas pequeñas.
+
+### Cambiado
+- **Ciclo de Vida de Servicios (Cierre):**
+    - Implementación del flujo completo: Solicitud -> Negociación -> Aceptación -> **Finalización** (por el prestador) -> **Calificación** (por el cliente).
+    - El prestador ahora dispone del botón "Finalizar Trabajo" (color verde éxito) una vez que el servicio ha sido aceptado.
+- **Sistema de Reputación Blindado:**
+    - Las calificaciones ahora son **inmutables**. Una vez enviada la reseña, el botón desaparece y se muestra el **Historial de Calificación** con estrellas y comentario original.
+    - Sincronización automática de promedios en el Home y Detalle de Servicio tras cada calificación.
+
 ## [0.1.1-alpha] - 2026-08-26
 ### Añadido
 - **Infraestructura de Notificaciones Pro:**
@@ -45,11 +63,15 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Rediseño de la pantalla de chat con burbujas Premium, hora de mensaje e indicadores de lectura (Double Check).
     - Optimización de UX: Implementación de **Gestión de Teclado (IME)** mediante `imePadding` para evitar el solapamiento del campo de texto al escribir.
     - Robustez de datos: Comparación de UUIDs case-insensitive para asegurar la vinculación de mensajes en todos los roles.
-- **Sistema de Reputación Realtime:**
+- **Ciclo de Vida de Solicitudes Completo:**
+    - Se ha implementado el estado final de los servicios: ahora el prestador puede marcar un trabajo como **"Completado"** tras haber sido aceptado.
+    - Nuevo botón dinámico **"Finalizar Trabajo"** en el panel de Solicitudes Recibidas (Vista Prestador).
+    - El flujo ahora es: Solicitud -> Negociación -> Aceptación -> Finalización -> Calificación.
+- **Sistema de Reputación Blindado:**
     - Implementación completa de la lógica de **Calificaciones y Reseñas** vinculada a la tabla `ratings` de Supabase.
     - Visualización de **promedio de estrellas y conteo de reseñas** en las tarjetas del catálogo (Home).
     - Nueva sección de **Reseñas de Clientes** en el detalle del servicio, permitiendo leer comentarios previos sobre el prestador.
-    - Lógica de control en "Mis Pedidos": El sistema detecta automáticamente si un servicio ya fue calificado, ocultando el botón y mostrando un badge de confirmación.
+    - Lógica de control en "Mis Pedidos": El sistema detecta automáticamente si un servicio ya fue calificado, bloqueando el re-envío y mostrando el **Resumen Histórico de Calificación** (estrellas y comentario del usuario).
 
 ### Corregido
 - **DatePicker:** Corrección de desfase de zona horaria (-1 día) al convertir milisegundos UTC a hora local (Colombia UTC-5).

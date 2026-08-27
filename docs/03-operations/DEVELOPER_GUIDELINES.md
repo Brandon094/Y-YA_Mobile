@@ -68,6 +68,9 @@ Al iniciar sesión, el agente debe saber que ya se han implementado:
 - **Motor de Arranque (Zero-Flicker):** Implementación de la Splash Screen API oficial con navegación diferida hasta validación de sesión (paso directo Splash -> Home).
 - **Reactividad Total (Issue #8):** Implementación de Pull-to-Refresh y suscripciones Realtime en Home, Pedidos, Solicitudes y Mensajes.
 - **Chat Pro:** Listado de chats con badges de no leídos, vista previa del último mensaje, marcas de tiempo dinámicas y comparaciones insensibles a mayúsculas (UUID robustness).
+- **Sistema de Reputación Blindado:** Calificaciones inmutables con visualización de histórico y bloqueo de duplicados.
+- **Onboarding Dinámico:** Sistema de bienvenida interactivo basado en `HorizontalPager` para educar al usuario antes del registro.
+- **Minimalismo de Marca:** Evitar duplicidad de marca (Logo + Texto) en cabeceras de pantallas de acceso para mantener la limpieza visual.
 - **Gestión de Perfil:** Edición completa de datos sincronizada con esquema SQL (Cédula, Dirección, Nacimiento).
 - **Publicación de Servicios:** Formulario para prestadores con lógica de categorías y costos de materiales.
 - **Mis Servicios:** Panel de administración para que el prestador pueda editar o pausar (activar/desactivar) sus publicaciones existentes.
