@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
+import com.bhplusplus.yaya.ui.components.atoms.YayaTextField
 import com.bhplusplus.yaya.ui.screens.reset.ResetPasswordViewModel
 
 /**
@@ -96,12 +98,10 @@ fun ResetPasswordScreen(
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center
                 )
-                Button(
-                    onClick = { onBack() },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Text(stringResource(R.string.reset_password_back_to_login), color = Color.White)
-                }
+                YayaPrimaryButton(
+                    text = stringResource(R.string.reset_password_back_to_login),
+                    onClick = { onBack() }
+                )
             } else {
                 // Vista de FORMULARIO: Pide el correo del usuario
                 Text(
@@ -111,13 +111,11 @@ fun ResetPasswordScreen(
                     textAlign = TextAlign.Center
                 )
 
-                OutlinedTextField(
+                YayaTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text(stringResource(R.string.login_email_label)) },
-                    placeholder = { Text(stringResource(R.string.reset_password_email_placeholder)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
+                    label = stringResource(R.string.login_email_label),
+                    placeholder = stringResource(R.string.reset_password_email_placeholder),
                     enabled = !isLoading,
                     isError = errorMessage != null
                 )
@@ -134,25 +132,12 @@ fun ResetPasswordScreen(
                 }
 
                 // Botón para disparar la acción en Supabase
-                Button(
-                    onClick = {
-                        viewModel.sendResetPasswordEmail(email)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    ),
-                    enabled = !isLoading
-                ) {
-                    if (isLoading) {
-                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                    } else {
-                        Text(stringResource(R.string.reset_password_send_link), color = Color.White)
-                    }
-                }
+                YayaPrimaryButton(
+                    text = stringResource(R.string.reset_password_send_link),
+                    onClick = { viewModel.sendResetPasswordEmail(email) },
+                    enabled = email.isNotBlank(),
+                    isLoading = isLoading
+                )
             }
         }
     }

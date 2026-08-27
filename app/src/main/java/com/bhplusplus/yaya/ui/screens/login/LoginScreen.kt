@@ -43,6 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.atoms.PoweredByBH
+import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
+import com.bhplusplus.yaya.ui.components.atoms.YayaTextField
 import com.bhplusplus.yaya.ui.screens.login.LoginViewModel
 
 /**
@@ -104,33 +107,23 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             // Campo de texto para el Correo
-            OutlinedTextField(
+            YayaTextField(
                 value = usuario,
                 onValueChange = { usuario = it },
-                label = { Text(stringResource(R.string.login_email_label)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(R.string.login_email_label),
                 enabled = !isLoading,
-                isError = errorMessage != null,
-                shape = RoundedCornerShape(16.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                )
+                isError = errorMessage != null
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Campo de texto para la Contraseña
-            OutlinedTextField(
+            YayaTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text(stringResource(R.string.login_password_label)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(R.string.login_password_label),
                 enabled = !isLoading,
                 isError = errorMessage != null,
-                shape = RoundedCornerShape(16.dp),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
@@ -158,25 +151,16 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Botón de Inicio de Sesión
-            Button(
+            YayaPrimaryButton(
+                text = stringResource(R.string.login_button_text),
                 onClick = {
                     viewModel.login(usuario, password) { success ->
                         if (success) onLoginSuccess()
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                enabled = !isLoading
-            ) {
-                if (isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-                } else {
-                    Text(stringResource(R.string.login_button_text), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                }
-            }
+                enabled = true,
+                isLoading = isLoading
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -200,15 +184,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             // SELLO DE MARCA: Powered by BH++
-            Text(
-                text = "Powered by BH++",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .navigationBarsPadding()
-                    .padding(vertical = 16.dp)
-            )
+            PoweredByBH(modifier = Modifier.padding(vertical = 16.dp))
         }
     }
 }

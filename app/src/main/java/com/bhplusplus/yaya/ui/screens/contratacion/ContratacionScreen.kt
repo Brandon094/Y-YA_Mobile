@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
 import com.bhplusplus.yaya.ui.components.ContratacionShimmer
 import java.time.Instant
 import java.time.ZoneId
@@ -176,18 +177,13 @@ fun ContratacionContent(
                 color = MaterialTheme.colorScheme.surface
             ) {
                 Box(modifier = Modifier.navigationBarsPadding()) {
-                    Button(
+                    YayaPrimaryButton(
+                        text = "CONFIRMAR SOLICITUD",
                         onClick = onContratar,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        enabled = uiState.canContratar
-                    ) {
-                        if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
-                        else Text("CONFIRMAR SOLICITUD", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
-                    }
+                        modifier = Modifier.padding(16.dp),
+                        enabled = uiState.canContratar,
+                        isLoading = isLoading
+                    )
                 }
             }
         }

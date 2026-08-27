@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -29,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
+import com.bhplusplus.yaya.ui.components.atoms.YayaTextField
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -139,27 +140,23 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // CAMPO: NOMBRE COMPLETO
-        OutlinedTextField(
+        YayaTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text(stringResource(R.string.register_full_name)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            enabled = !isLoading, // Se deshabilita durante la carga
+            label = stringResource(R.string.register_full_name),
+            enabled = !isLoading,
             leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next), // Muestra tecla 'Siguiente'
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         // CAMPO: NÚMERO DE IDENTIFICACIÓN (DNI/CÉDULA)
-        OutlinedTextField(
+        YayaTextField(
             value = documentId,
             onValueChange = { documentId = it },
-            label = { Text(stringResource(R.string.register_id_number)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
+            label = stringResource(R.string.register_id_number),
             enabled = !isLoading,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
@@ -169,15 +166,15 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         // CAMPO: FECHA DE NACIMIENTO (Input no editable, lanza el selector)
-        OutlinedTextField(
+        YayaTextField(
             value = birthDate,
-            onValueChange = { }, // Bloqueado manual para evitar errores de formato
-            label = { Text(stringResource(R.string.register_birth_date)) },
-            placeholder = { Text(stringResource(R.string.register_select_date_placeholder)) },
+            onValueChange = { },
+            label = stringResource(R.string.register_birth_date),
+            placeholder = stringResource(R.string.register_select_date_placeholder),
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable { if (!isLoading) showDatePicker = true }, // Lanza el DatePicker
-            enabled = false, // Evita que aparezca el teclado estándar
+                .clickable { if (!isLoading) showDatePicker = true },
+            enabled = false,
+            readOnly = true,
             colors = OutlinedTextFieldDefaults.colors(
                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
                 disabledBorderColor = MaterialTheme.colorScheme.outline,
@@ -195,12 +192,10 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         // CAMPO: TELÉFONO DE CONTACTO
-        OutlinedTextField(
+        YayaTextField(
             value = phone,
             onValueChange = { phone = it },
-            label = { Text(stringResource(R.string.register_phone)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
+            label = stringResource(R.string.register_phone),
             enabled = !isLoading,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
@@ -210,12 +205,10 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         // CAMPO: DIRECCIÓN DE RESIDENCIA
-        OutlinedTextField(
+        YayaTextField(
             value = address,
             onValueChange = { address = it },
-            label = { Text(stringResource(R.string.register_address)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
+            label = stringResource(R.string.register_address),
             enabled = !isLoading,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
@@ -225,14 +218,12 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         // CAMPO: CORREO ELECTRÓNICO (Con validación visual)
-        OutlinedTextField(
+        YayaTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text(stringResource(R.string.register_email)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
+            label = stringResource(R.string.register_email),
             enabled = !isLoading,
-            isError = email.isNotEmpty() && !isEmailValid, // Marca error si el formato no es válido
+            isError = email.isNotEmpty() && !isEmailValid,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) }
@@ -241,17 +232,15 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         // CAMPO: CONTRASEÑA (Con Toggle de visibilidad y acción de finalizar)
-        OutlinedTextField(
+        YayaTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text(stringResource(R.string.register_password)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
+            label = stringResource(R.string.register_password),
             enabled = !isLoading,
-            isError = password.isNotEmpty() && !isPasswordValid, // Marca error si es muy corta
+            isError = password.isNotEmpty() && !isPasswordValid,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { performRegister() }), // Dispara el botón al dar 'Enter'
+            keyboardActions = KeyboardActions(onDone = { performRegister() }),
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -286,20 +275,12 @@ fun RegisterScreen(
         }
 
         // BOTÓN PRINCIPAL DE REGISTRO
-        Button(
+        YayaPrimaryButton(
+            text = stringResource(R.string.register_button),
             onClick = { performRegister() },
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-            enabled = !isLoading && isFormValid // Solo se activa si el formulario está perfecto
-        ) {
-            if (isLoading) {
-                // Indicador de progreso mientras se comunica con Supabase
-                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-            } else {
-                Text(stringResource(R.string.register_button), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            }
-        }
+            enabled = isFormValid,
+            isLoading = isLoading
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 

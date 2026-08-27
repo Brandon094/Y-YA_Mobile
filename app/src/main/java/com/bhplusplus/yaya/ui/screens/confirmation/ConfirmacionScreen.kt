@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
 import com.bhplusplus.yaya.ui.components.ContratacionShimmer
 
 /**
@@ -55,24 +56,14 @@ fun PantallaReservaConfirmada(
                 color = MaterialTheme.colorScheme.surface
             ) {
                 Box(modifier = Modifier.navigationBarsPadding()) {
-                    Button(
+                    YayaPrimaryButton(
+                        text = stringResource(R.string.confirmation_continue_button).uppercase(),
                         onClick = {
                             Toast.makeText(context, "¡Regresando al inicio!", Toast.LENGTH_SHORT).show()
                             onContinuarClick()
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.confirmation_continue_button).uppercase(),
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 16.sp
-                        )
-                    }
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
             }
         }
