@@ -37,9 +37,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Blindaje de círculos de disponibilidad y textos de contacto en el Chat.
 - **Estandarización Atómica (Atomic Design):**
     - Refactorización masiva de la interfaz de usuario bajo la metodología **Atomic Design**, creando librerías de componentes reutilizables en `ui/components/atoms`, `ui/components/molecules` y `ui/components/organisms`.
-    - **Átomos:** Implementación de `YayaButton`, `YayaTextField`, `YayaAvatar` y `YayaStatusBadge`.
-    - **Moléculas:** Implementación de `RatingIndicator`, `DayIndicator`, `CategorySelector`, `DetailRow` y `ChatContactItem`.
-    - **Organismos:** Implementación de `ServiceCard`, `HomeTopBar`, `SearchBarIntegrated` y `OnboardingCarousel`.
+    - **Átomos:** Implementación de `YayaButton`, `YayaTextField`, `YayaAvatar`, `YayaStatusBadge` y `YayaSectionHeader`.
+    - **Moléculas:** Implementación de `RatingIndicator`, `DayIndicator`, `CategorySelector`, `DetailRow`, `ChatContactItem` y `ProfileOptionItem`.
+    - **Organismos:** Implementación de `ServiceCard`, `HomeTopBar`, `SearchBarIntegrated`, `OnboardingCarousel`, `ProfileHeroHeader` y `ProfileSectionCard`.
     - Esta reestructuración garantiza consistencia visual absoluta y facilita el mantenimiento global de la marca BH++.
 - **Cumplimiento y Seguridad:** Opción de borrado de cuenta integrado en el perfil para cumplimiento con Google Play.
 
