@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.ContratacionShimmer
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Calendar
@@ -103,9 +104,7 @@ fun PantallaContratacion(
     val uiState = viewModel.uiState
 
     if (viewModel.isLoading && uiState == null) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-        }
+        ContratacionShimmer()
     } else if (uiState != null) {
         ContratacionContent(
             uiState = uiState,

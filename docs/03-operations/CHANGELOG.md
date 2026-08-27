@@ -93,7 +93,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Eliminación de procesamiento de strings, fechas y comparaciones de IDs dentro de las funciones Composable.
     - Mejora de la reactividad del Chat con `reverseLayout` y scroll automático inteligente.
 - **Experiencia de Usuario Premium (Issue #UX):**
-    - Implementación de **Shimmer Effect (Skeletons)** en todas las listas principales (Home, Pedidos, Solicitudes, Mensajes y Disponibilidad) para una carga visual fluida.
+    - Implementación de **Shimmer Effect (Skeletons)** en todas las listas y vistas principales (Home, Pedidos, Solicitudes, Mensajes, Disponibilidad y **Detalle del Servicio**) para una carga visual fluida.
     - Optimizaciones de **Accesibilidad**: Ajuste de layouts para soportar fuentes de hasta el 200%, incrementando límites de líneas y asegurando scroll en campos descriptivos.
 - **Rediseño de Splash Screen Premium:**
     - Implementación de la **Splash Screen API oficial** de Android, eliminando el doble splash heredado.

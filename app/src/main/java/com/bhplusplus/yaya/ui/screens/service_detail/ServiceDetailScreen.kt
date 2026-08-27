@@ -35,6 +35,7 @@ import com.bhplusplus.yaya.data.models.Rating
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.ServiceImage
 import com.bhplusplus.yaya.data.models.UserProfile
+import com.bhplusplus.yaya.ui.components.ServiceDetailShimmer
 import com.bhplusplus.yaya.utils.FormatterUtils
 import java.util.Locale
 
@@ -80,9 +81,7 @@ fun ServiceDetailScreen(
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             if (viewModel.isLoading) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
+                ServiceDetailShimmer()
             } else if (service != null) {
                 ServiceDetailContent(
                     service = service,
