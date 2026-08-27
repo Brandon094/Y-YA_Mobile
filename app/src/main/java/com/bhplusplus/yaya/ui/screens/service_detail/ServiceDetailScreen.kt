@@ -34,6 +34,8 @@ import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
 import com.bhplusplus.yaya.ui.components.atoms.YayaSectionHeader
 import com.bhplusplus.yaya.ui.components.molecules.DayIndicator
 import com.bhplusplus.yaya.ui.components.molecules.StatusBadgeDetail
+import com.bhplusplus.yaya.ui.components.molecules.YayaRatingItem
+import com.bhplusplus.yaya.ui.components.molecules.YayaReportDialog
 import com.bhplusplus.yaya.ui.components.organisms.ProviderCard
 import com.bhplusplus.yaya.ui.components.organisms.ServiceDetailGallery
 import com.bhplusplus.yaya.utils.FormatterUtils
@@ -60,7 +62,7 @@ fun ServiceDetailScreen(
     }
 
     if (showReportDialog) {
-        ReportDialog(
+        YayaReportDialog(
             onDismiss = { showReportDialog = false },
             onConfirm = { reason ->
                 viewModel.submitReport(reason) { success ->
@@ -190,7 +192,7 @@ fun ServiceDetailScreen(
                                 Text("Aún no hay reseñas para este prestador.", fontSize = 14.sp, color = Color.Gray)
                             } else {
                                 viewModel.ratings.take(3).forEach { rating -> 
-                                    RatingItem(rating)
+                                    YayaRatingItem(rating = rating)
                                     Spacer(Modifier.height(12.dp)) 
                                 }
                             }
@@ -202,72 +204,6 @@ fun ServiceDetailScreen(
             }
         }
     }
-}
-
-@Composable
-fun RatingItem(rating: Rating) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Row(modifier = Modifier.wrapContentWidth()) {
-                    for (i in 1..5) {
-                        Icon(
-                            imageVector = Icons.Default.Star, 
-                            contentDescription = null, 
-                            modifier = Modifier.size(14.dp), 
-                            tint = if (i <= rating.score) Color(0xFFFFB800) else Color.Gray.copy(alpha = 0.3f)
-                        )
-                    }
-                }
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    text = FormatterUtils.formatDate(rating.created_at), 
-                    fontSize = 11.sp, 
-                    color = Color.Gray, 
-                    modifier = Modifier.weight(1f), 
-                    textAlign = androidx.compose.ui.text.style.TextAlign.End
-                )
-            }
-            if (!rating.comment.isNullOrBlank()) {
-                Spacer(Modifier.height(6.dp))
-                Text(text = rating.comment, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, lineHeight = 20.sp)
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ReportDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit, isReporting: Boolean) {
-    val reasons = listOf("Servicio falso", "Acoso", "Fraude", "Spam", "Suplantación")
-    var selectedReason by remember { mutableStateOf(reasons[0]) }
-    AlertDialog(
-        onDismissRequest = onDismiss, 
-        title = { Text("Reportar Prestador", fontWeight = FontWeight.Bold) }, 
-        text = {
-            Column {
-                Text("Selecciona el motivo de la denuncia:", fontSize = 14.sp)
-                Spacer(Modifier.height(16.dp))
-                reasons.forEach { reason ->
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { selectedReason = reason }.padding(vertical = 4.dp)) {
-                        RadioButton(selected = (reason == selectedReason), onClick = { selectedReason = reason })
-                        Text(text = reason, modifier = Modifier.padding(start = 8.dp))
-                    }
-                }
-            }
-        }, 
-        confirmButton = {
-            Button(onClick = { onConfirm(selectedReason) }, enabled = !isReporting, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
-                if (isReporting) CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
-                else Text("Enviar Reporte", color = Color.White)
-            }
-        }, 
-        dismissButton = { TextButton(onClick = onDismiss, enabled = !isReporting) { Text("Cancelar") } }
-    )
 }
 
 @Preview(showBackground = true)

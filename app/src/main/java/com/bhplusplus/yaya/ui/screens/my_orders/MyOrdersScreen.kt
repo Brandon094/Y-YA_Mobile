@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -26,6 +25,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.ui.components.RequestItemShimmer
 import com.bhplusplus.yaya.ui.components.molecules.EmptyStateView
+import com.bhplusplus.yaya.ui.components.molecules.YayaNegotiationDialog
+import com.bhplusplus.yaya.ui.components.molecules.YayaRatingDialog
 import com.bhplusplus.yaya.ui.components.organisms.MyOrderCard
 
 /**
@@ -40,12 +41,11 @@ fun MyOrdersScreen(
     viewModel: MyOrdersViewModel = viewModel()
 ) {
     var showNegotiationDialog by remember { mutableStateOf<MyOrderUiState?>(null) }
-    var counterPrice by remember { mutableStateOf("") }
     var showRatingDialog by remember { mutableStateOf<MyOrderUiState?>(null) }
     val pullToRefreshState = rememberPullToRefreshState()
 
     if (showRatingDialog != null) {
-        RatingDialog(
+        YayaRatingDialog(
             onDismiss = { showRatingDialog = null },
             onConfirm = { score, comment ->
                 viewModel.submitRating(showRatingDialog!!.domain, score, comment) {
@@ -60,70 +60,16 @@ fun MyOrdersScreen(
         val current = showNegotiationDialog!!
         val basePrice = current.domain.services?.price ?: 0.0
 
-        LaunchedEffect(current) {
-            counterPrice = current.domain.final_price.toInt().toString()
-        }
-
-        AlertDialog(
-            onDismissRequest = { showNegotiationDialog = null },
-            title = { Text("Ajustar mi Oferta", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
-            text = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Precio base del servicio: $${basePrice.toInt()}", fontSize = 12.sp, color = Color.Gray)
-                    Spacer(Modifier.height(4.dp))
-                    Text("Última contraoferta: ${current.formattedPrice}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                    Spacer(Modifier.height(20.dp))
-                    
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                        FilledIconButton(
-                            onClick = {
-                                val price = counterPrice.toDoubleOrNull() ?: 0.0
-                                if (price > basePrice) counterPrice = (price - 5000).coerceAtLeast(basePrice).toInt().toString()
-                            },
-                            enabled = (counterPrice.toDoubleOrNull() ?: 0.0) > basePrice,
-                            colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                        ) { Icon(Icons.Default.Remove, "Menos") }
-
-                        OutlinedTextField(
-                            value = counterPrice,
-                            onValueChange = { newValue ->
-                                val numeric = newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
-                                counterPrice = if (numeric < basePrice) basePrice.toInt().toString() else numeric.toInt().toString()
-                            },
-                            modifier = Modifier.width(130.dp).padding(horizontal = 8.dp),
-                            textStyle = LocalTextStyle.current.copy(textAlign = androidx.compose.ui.text.style.TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                            prefix = { Text("$") },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-
-                        FilledIconButton(
-                            onClick = {
-                                val price = counterPrice.toDoubleOrNull() ?: 0.0
-                                counterPrice = (price + 5000).toInt().toString()
-                            },
-                            colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                        ) { Icon(Icons.Default.Add, "Más") }
-                    }
-                    
-                    Spacer(Modifier.height(12.dp))
-                    Text("No puedes ofertar menos del precio base", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f))
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.sendNewOffer(current.domain, counterPrice)
-                        showNegotiationDialog = null
-                        counterPrice = ""
-                    },
-                    shape = RoundedCornerShape(12.dp),
-                    enabled = (counterPrice.toDoubleOrNull() ?: 0.0) >= basePrice
-                ) { Text("Enviar Oferta") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showNegotiationDialog = null }) { Text("Cancelar") }
+        YayaNegotiationDialog(
+            title = "Ajustar mi Oferta",
+            initialPrice = current.domain.final_price,
+            minPrice = basePrice,
+            subtitle = "Última contraoferta: ${current.formattedPrice}",
+            errorLabel = "No puedes ofertar menos del precio base",
+            onDismiss = { showNegotiationDialog = null },
+            onConfirm = { price ->
+                viewModel.sendNewOffer(current.domain, price)
+                showNegotiationDialog = null
             }
         )
     }
@@ -201,32 +147,6 @@ fun MyOrdersScreen(
             }
         }
     }
-}
-
-@Composable
-fun RatingDialog(onDismiss: () -> Unit, onConfirm: (Int, String) -> Unit, isSubmitting: Boolean) {
-    var score by remember { mutableIntStateOf(5) }
-    var comment by remember { mutableStateOf("") }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("Calificar Servicio", fontWeight = FontWeight.Bold) }, text = {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("¿Cómo calificarías el trabajo recibido?", fontSize = 14.sp)
-            Spacer(Modifier.height(16.dp))
-            Row {
-                for (i in 1..5) {
-                    IconButton(onClick = { score = i }) {
-                        Icon(imageVector = if (i <= score) Icons.Default.Star else Icons.Default.StarOutline, contentDescription = null, tint = if (i <= score) Color(0xFFFFB800) else Color.Gray)
-                    }
-                }
-            }
-            Spacer(Modifier.height(16.dp))
-            OutlinedTextField(value = comment, onValueChange = { comment = it }, label = { Text("Escribe un comentario (opcional)") }, modifier = Modifier.fillMaxWidth(), minLines = 3)
-        }
-    }, confirmButton = {
-        Button(onClick = { onConfirm(score, comment) }, enabled = !isSubmitting, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFB800))) {
-            if (isSubmitting) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-            else Text("Enviar Calificación", color = Color.White)
-        }
-    }, dismissButton = { TextButton(onClick = onDismiss, enabled = !isSubmitting) { Text("Cancelar") } })
 }
 
 @Preview(showBackground = true)

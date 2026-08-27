@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.layout.ContentScale
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.ui.components.RequestItemShimmer
+import com.bhplusplus.yaya.ui.components.molecules.YayaNegotiationDialog
 import com.bhplusplus.yaya.ui.components.organisms.IncomingRequestCard
 import com.bhplusplus.yaya.ui.theme.YYATheme
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,73 +49,18 @@ fun IncomingRequestsScreen(
     viewModel: IncomingRequestsViewModel = viewModel()
 ) {
     var showNegotiationDialog by remember { mutableStateOf<IncomingRequestUiState?>(null) }
-    var counterPrice by remember { mutableStateOf("") }
     val pullToRefreshState = rememberPullToRefreshState()
 
     if (showNegotiationDialog != null) {
         val current = showNegotiationDialog!!
         
-        LaunchedEffect(current) {
-            counterPrice = current.domain.final_price.toInt().toString()
-        }
-
-        AlertDialog(
-            onDismissRequest = { showNegotiationDialog = null },
-            title = { Text("Proponer Contraoferta", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
-            text = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Precio propuesto por cliente: ${current.formattedPrice}", fontSize = 13.sp, color = Color.Gray)
-                    Spacer(Modifier.height(20.dp))
-                    
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        FilledIconButton(
-                            onClick = {
-                                val price = counterPrice.toDoubleOrNull() ?: 0.0
-                                counterPrice = (price - 5000).coerceAtLeast(0.0).toInt().toString()
-                            },
-                            colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                        ) { Icon(Icons.Default.Remove, "Menos") }
-
-                        OutlinedTextField(
-                            value = counterPrice,
-                            onValueChange = { counterPrice = it.filter { char -> char.isDigit() } },
-                            modifier = Modifier.width(130.dp).padding(horizontal = 8.dp),
-                            textStyle = LocalTextStyle.current.copy(textAlign = androidx.compose.ui.text.style.TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                            prefix = { Text("$") },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-
-                        FilledIconButton(
-                            onClick = {
-                                val price = counterPrice.toDoubleOrNull() ?: 0.0
-                                counterPrice = (price + 5000).toInt().toString()
-                            },
-                            colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                        ) { Icon(Icons.Default.Add, "Más") }
-                    }
-                    
-                    Spacer(Modifier.height(12.dp))
-                    Text("Incrementos de $5,000", style = MaterialTheme.typography.labelSmall, color = Color.Gray.copy(alpha = 0.6f))
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.sendCounterOffer(current.domain, counterPrice)
-                        showNegotiationDialog = null
-                        counterPrice = ""
-                    },
-                    shape = RoundedCornerShape(12.dp)
-                ) { Text("Enviar Propuesta") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showNegotiationDialog = null }) { Text("Cancelar") }
+        YayaNegotiationDialog(
+            initialPrice = current.domain.final_price,
+            subtitle = "Precio propuesto por cliente: ${current.formattedPrice}",
+            onDismiss = { showNegotiationDialog = null },
+            onConfirm = { price ->
+                viewModel.sendCounterOffer(current.domain, price)
+                showNegotiationDialog = null
             }
         )
     }

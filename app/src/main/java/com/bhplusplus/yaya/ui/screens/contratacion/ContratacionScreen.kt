@@ -27,6 +27,7 @@ import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
 import com.bhplusplus.yaya.ui.components.atoms.YayaSectionHeader
 import com.bhplusplus.yaya.ui.components.atoms.YayaTextField
 import com.bhplusplus.yaya.ui.components.molecules.PriceNegotiator
+import com.bhplusplus.yaya.ui.components.molecules.YayaSelectorButton
 import com.bhplusplus.yaya.ui.components.organisms.ProfileSectionCard
 import com.bhplusplus.yaya.ui.components.organisms.ServiceRequestHero
 import java.time.Instant
@@ -203,17 +204,16 @@ fun ContratacionContent(
                             )
                             
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                // Molécula reutilizada: Selector Botón Pro (Pendiente mover a molecules si se usa más)
-                                SelectorBotonPro(
-                                    icon = Icons.Default.CalendarMonth,
+                                YayaSelectorButton(
                                     label = if (fecha.isEmpty()) "Fecha" else fecha,
+                                    icon = Icons.Default.CalendarMonth,
                                     modifier = Modifier.weight(1f),
                                     onClick = onFechaClick,
                                     enabled = !isLoading
                                 )
-                                SelectorBotonPro(
-                                    icon = Icons.Default.Schedule,
+                                YayaSelectorButton(
                                     label = if (hora.isEmpty()) "Hora" else hora,
+                                    icon = Icons.Default.Schedule,
                                     modifier = Modifier.weight(1f),
                                     onClick = onHoraClick,
                                     enabled = !isLoading
@@ -252,23 +252,6 @@ fun ContratacionContent(
                 
                 Spacer(Modifier.height(80.dp))
             }
-        }
-    }
-}
-
-@Composable
-fun SelectorBotonPro(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, modifier: Modifier, onClick: () -> Unit, enabled: Boolean) {
-    Surface(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = modifier.heightIn(min = 56.dp),
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-    ) {
-        Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
-            Spacer(Modifier.width(8.dp))
-            Text(label, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }
