@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import com.bhplusplus.yaya.ui.components.ChatContactItemShimmer
 import com.bhplusplus.yaya.data.models.UserProfile
 
 /**
@@ -78,8 +79,10 @@ fun ChatListScreen(
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 if (viewModel.isLoading && viewModel.chatSummaries.isEmpty()) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(6) {
+                            ChatContactItemShimmer()
+                        }
                     }
                 } else if (viewModel.chatSummaries.isEmpty()) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

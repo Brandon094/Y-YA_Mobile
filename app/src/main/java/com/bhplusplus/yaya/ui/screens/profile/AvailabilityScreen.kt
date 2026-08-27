@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bhplusplus.yaya.ui.components.AvailabilityItemShimmer
 import java.util.Locale
 
 /**
@@ -86,8 +87,14 @@ fun AvailabilityScreen(
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 if (viewModel.isLoading && viewModel.daysState.all { !it.isWorking }) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(7) {
+                            AvailabilityItemShimmer()
+                        }
                     }
                 } else {
                     LazyColumn(

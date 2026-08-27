@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.Service
+import com.bhplusplus.yaya.ui.components.ServiceItemShimmer
 
 /**
  * PANTALLA DE MIS SERVICIOS (VISTA PRESTADOR)
@@ -64,8 +65,14 @@ fun MyServicesScreen(
                 modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
             ) {
                 if (viewModel.isLoading && viewModel.services.isEmpty()) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(3) {
+                            ServiceItemShimmer()
+                        }
                     }
                 } else if (viewModel.services.isEmpty()) {
                     EmptyServicesView()

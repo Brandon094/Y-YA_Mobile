@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.layout.ContentScale
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.RequestItemShimmer
 import com.bhplusplus.yaya.ui.theme.YYATheme
 import androidx.compose.ui.tooling.preview.Preview
 import com.bhplusplus.yaya.data.models.ServiceRequest
@@ -144,8 +145,14 @@ fun IncomingRequestsScreen(
                 modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
             ) {
                 if (viewModel.isLoading && viewModel.requests.isEmpty()) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(4) {
+                            RequestItemShimmer()
+                        }
                     }
                 } else if (viewModel.requests.isEmpty()) {
                     EmptyIncomingRequestsView()
@@ -250,7 +257,7 @@ fun IncomingRequestItem(
                 Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
                     Icon(imageVector = Icons.Default.Info, contentDescription = null, modifier = Modifier.size(16.dp).padding(top = 2.dp), tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(10.dp))
-                    Box(modifier = Modifier.heightIn(max = 120.dp).verticalScroll(rememberScrollState())) {
+                    Box(modifier = Modifier.heightIn(max = 200.dp).verticalScroll(rememberScrollState())) {
                         Text(text = state.description, fontSize = 13.sp, lineHeight = 18.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }

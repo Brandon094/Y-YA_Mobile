@@ -32,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.Service
+import com.bhplusplus.yaya.ui.components.ServiceItemShimmer
 import java.util.Locale
 
 /**
@@ -242,8 +243,10 @@ fun HomeScreen(
                 )
 
                 if (viewModel.isLoading && viewModel.filteredServices.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(5) {
+                            ServiceItemShimmer()
+                        }
                     }
                 } else if (viewModel.filteredServices.isEmpty()) {
                     EmptyServicesView(
@@ -359,7 +362,7 @@ fun ServiceItem(state: ServiceUiState, onClick: () -> Unit) {
                         text = state.title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 1,
+                        maxLines = 2, // Aumentado para accesibilidad
                         overflow = TextOverflow.Ellipsis
                     )
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -381,7 +384,7 @@ fun ServiceItem(state: ServiceUiState, onClick: () -> Unit) {
                             text = state.description,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
+                            maxLines = 2, // Aumentado para accesibilidad
                             overflow = TextOverflow.Ellipsis
                         )
                     }

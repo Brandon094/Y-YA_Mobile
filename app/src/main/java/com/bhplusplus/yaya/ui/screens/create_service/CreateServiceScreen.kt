@@ -209,7 +209,7 @@ fun CreateServiceScreen(
             OutlinedTextField(
                 value = description, onValueChange = { description = it },
                 label = { Text(stringResource(R.string.create_service_field_description)) },
-                modifier = Modifier.fillMaxWidth().height(120.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp),
                 enabled = !isLoading, shape = RoundedCornerShape(12.dp)
             )
 

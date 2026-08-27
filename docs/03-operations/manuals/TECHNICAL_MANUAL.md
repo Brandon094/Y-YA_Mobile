@@ -18,6 +18,7 @@ El proyecto sigue el patrón de arquitectura **MVVM (Model-View-ViewModel)** rec
 - **Backend:** Supabase 3.6.0 (PostgreSQL, Auth, Realtime, Storage).
 - **Networking:** Ktor Client 3.0.3 para peticiones REST.
 - **Image Loading:** Coil 3.1.0 para renderizado y caché de multimedia.
+- **UX Components:** Reutilización de `Shimmer.kt` para la implementación de Skeleton Screens, reduciendo el "layout shift" percibido por el usuario durante la carga asíncrona de datos.
 - **Image Viewer:** Implementación de diálogos personalizados con HorizontalPager para visualización de portafolios a pantalla completa y navegación gestual.
 - **Serialización:** Kotlinx Serialization 1.7.3.
 - **Persistencia de Sesión:** Multiplatform Settings 1.2.0.

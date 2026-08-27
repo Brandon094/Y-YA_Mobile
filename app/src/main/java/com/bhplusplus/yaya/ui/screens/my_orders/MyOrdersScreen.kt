@@ -33,6 +33,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.layout.ContentScale
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.ServiceRequest
+import com.bhplusplus.yaya.ui.components.RequestItemShimmer
 
 /**
  * PANTALLA DE MIS PEDIDOS (VISTA CLIENTE)
@@ -161,8 +162,14 @@ fun MyOrdersScreen(
                 modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
             ) {
                 if (viewModel.isLoading && viewModel.orders.isEmpty()) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(4) {
+                            RequestItemShimmer()
+                        }
                     }
                 } else if (viewModel.orders.isEmpty()) {
                     EmptyOrdersView()
@@ -264,7 +271,7 @@ fun OrderItem(
                 Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
                     Icon(imageVector = Icons.Default.Info, contentDescription = null, modifier = Modifier.size(16.dp).padding(top = 2.dp), tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(10.dp))
-                    Box(modifier = Modifier.heightIn(max = 120.dp).verticalScroll(rememberScrollState())) {
+                    Box(modifier = Modifier.heightIn(max = 200.dp).verticalScroll(rememberScrollState())) {
                         Text(text = state.description, fontSize = 13.sp, lineHeight = 18.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }

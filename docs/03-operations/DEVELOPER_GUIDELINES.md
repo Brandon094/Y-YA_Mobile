@@ -33,7 +33,11 @@ El objetivo es construir una plataforma de servicios líder, utilizando las tecn
 - **Validación Proactiva:** Los formularios deben validar el formato de email y longitud de contraseña en tiempo real.
 - **Estado del Botón:** El botón de acción principal debe estar deshabilitado (`enabled = false`) mientras el formulario no cumpla las validaciones.
 - **Navegación por Teclado:** Implementar `ImeAction.Next` para saltar campos y `ImeAction.Done` para ejecutar la acción principal.
-- **Feedback:** Mostrar siempre un `CircularProgressIndicator` durante las llamadas a Supabase.
+- **Feedback:** Mostrar siempre un estado de carga claro. Priorizar el uso de `shimmerEffect` (Skeletons) para listas y `CircularProgressIndicator` únicamente para acciones de envío (botones).
+- **Accesibilidad (Universal Design):**
+    - Todos los layouts deben ser probados con escala de fuente al 200%.
+    - Usar `Modifier.verticalScroll` en pantallas con múltiples campos de entrada.
+    - Evitar alturas fijas (`.height`) en componentes que contengan texto; preferir `heightIn` o `wrapContentHeight`.
 
 ### C. Seguridad y Roles
 - **Control de Acceso:** La interfaz debe ocultar/mostrar elementos según el campo `role` del perfil del usuario (`client`, `provider`, `admin`).
