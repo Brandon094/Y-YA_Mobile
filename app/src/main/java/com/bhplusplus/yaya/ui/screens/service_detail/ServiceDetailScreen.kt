@@ -41,6 +41,7 @@ import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.data.models.ServiceImage
+import com.bhplusplus.yaya.data.models.Rating
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -111,6 +112,8 @@ fun ServiceDetailScreen(
                     service = service,
                     provider = provider,
                     serviceImages = viewModel.serviceImages,
+                    ratings = viewModel.ratings,
+                    averageRating = viewModel.averageRating,
                     onBack = onBack,
                     onContratar = onContratar,
                     onReportClick = { showReportDialog = true },
@@ -178,6 +181,8 @@ fun ServiceDetailContent(
     service: Service,
     provider: UserProfile?,
     serviceImages: List<ServiceImage> = emptyList(),
+    ratings: List<Rating> = emptyList(),
+    averageRating: Double = 0.0,
     onBack: () -> Unit,
     onContratar: () -> Unit,
     onReportClick: () -> Unit,
@@ -185,6 +190,9 @@ fun ServiceDetailContent(
 ) {
     val currencyFormatter = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
     var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
+    val ratingText = remember(averageRating) {
+        String.format(Locale.getDefault(), "%.1f", averageRating)
+    }
 
     // VISOR DE IMAGEN EN PANTALLA COMPLETA CON NAVEGACIÓN (SWIPE)
     if (selectedImageIndex != null && serviceImages.isNotEmpty()) {
@@ -429,7 +437,11 @@ fun ServiceDetailContent(
                             )
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFB800), modifier = Modifier.size(14.dp))
-                                Text(" 4.9 (45 reseñas)", fontSize = 12.sp, color = Color.Gray)
+                                Text(
+                                    text = " $ratingText (${ratings.size} reseñas)",
+                                    fontSize = 12.sp,
+                                    color = Color.Gray
+                                )
                             }
                         }
                         
@@ -501,8 +513,32 @@ fun ServiceDetailContent(
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
+
+                // SECCIÓN DE RESEÑAS
+                Text(
+                    text = "Reseñas de clientes",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                if (ratings.isEmpty()) {
+                    Text(
+                        "Este prestador aún no tiene calificaciones.",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                } else {
+                    ratings.take(5).forEach { rating ->
+                        RatingItem(rating)
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 // CONDICIONES Y MATERIALES
                 Text(
@@ -546,6 +582,45 @@ fun ServiceDetailContent(
                 }
 
                 Spacer(modifier = Modifier.height(40.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun RatingItem(rating: Rating) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Estrellas
+                Row {
+                    for (i in 1..5) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                            tint = if (i <= rating.score) Color(0xFFFFB800) else Color.Gray.copy(alpha = 0.3f)
+                        )
+                    }
+                }
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = rating.created_at?.take(10) ?: "",
+                    fontSize = 11.sp,
+                    color = Color.Gray
+                )
+            }
+            if (!rating.comment.isNullOrBlank()) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = rating.comment,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }

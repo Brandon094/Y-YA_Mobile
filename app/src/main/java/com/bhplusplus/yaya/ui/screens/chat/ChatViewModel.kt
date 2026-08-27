@@ -20,6 +20,18 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
+ * Modelo de UI para representar un mensaje en la burbuja de chat.
+ * Evita que la View tenga que procesar IDs o fechas.
+ */
+data class MessageUiState(
+    val id: String,
+    val content: String,
+    val isMe: Boolean,
+    val formattedTime: String,
+    val isRead: Boolean
+)
+
+/**
  * VIEWMODEL PARA EL CHAT EN TIEMPO REAL (Hito 2)
  * Gestiona el historial de mensajes y la suscripción Realtime.
  */
@@ -28,11 +40,29 @@ class ChatViewModel : ViewModel() {
     var messages by mutableStateOf<List<Message>>(emptyList())
         private set
 
+    /**
+     * Entrega los mensajes procesados para la UI, ordenados de más reciente a más antiguo
+     * para el reverseLayout.
+     */
+    val uiMessages: List<MessageUiState> get() = messages
+        .sortedByDescending { it.sent_at ?: "" }
+        .map { msg ->
+            MessageUiState(
+                id = msg.id ?: "",
+                content = msg.content,
+                isMe = msg.sender_id.equals(currentUser?.id, ignoreCase = true),
+                formattedTime = msg.sent_at?.substringAfter("T")?.take(5) ?: "",
+                isRead = msg.is_read
+            )
+        }
+
     var receiverProfile by mutableStateOf<UserProfile?>(null)
         private set
 
     var isLoading by mutableStateOf(false)
         private set
+
+    val currentUserId: String? get() = SupabaseManager.client.auth.currentUserOrNull()?.id
 
     private val currentUser = SupabaseManager.client.auth.currentUserOrNull()
 

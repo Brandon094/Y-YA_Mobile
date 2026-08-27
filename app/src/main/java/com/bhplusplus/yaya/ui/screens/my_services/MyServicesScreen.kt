@@ -23,18 +23,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.Service
-import java.text.NumberFormat
-import java.util.Locale
 
 /**
  * PANTALLA DE MIS SERVICIOS (VISTA PRESTADOR)
- * Permite al prestador administrar su catálogo de talentos: editar, pausar o eliminar.
+ * Arquitectura MVVM: La View solo renderiza el estado procesado del ViewModel.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyServicesScreen(
     onBack: () -> Unit,
-    onEditService: (String) -> Unit, // Navega a la pantalla de edición (CreateService con ID)
+    onEditService: (String) -> Unit, // Navega a la pantalla de edición
     viewModel: MyServicesViewModel = viewModel()
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
@@ -63,9 +61,7 @@ fun MyServicesScreen(
             modifier = Modifier.padding(padding)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
             ) {
                 if (viewModel.isLoading && viewModel.services.isEmpty()) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -79,12 +75,12 @@ fun MyServicesScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(viewModel.services) { service ->
+                        items(viewModel.services) { uiState ->
                             MyServiceItem(
-                                service = service,
-                                onToggleStatus = { viewModel.toggleServiceStatus(service.id!!, service.status) },
-                                onDelete = { viewModel.deleteService(service.id!!) },
-                                onEdit = { onEditService(service.id!!) }
+                                state = uiState,
+                                onToggleStatus = { viewModel.toggleServiceStatus(uiState.domain.id!!, uiState.domain.status) },
+                                onDelete = { viewModel.deleteService(uiState.domain.id!!) },
+                                onEdit = { onEditService(uiState.domain.id!!) }
                             )
                         }
                     }
@@ -95,16 +91,15 @@ fun MyServicesScreen(
 }
 
 /**
- * Representa un servicio individual con controles de gestión.
+ * Representa un servicio individual. Recibe un [MyServiceUiState].
  */
 @Composable
 fun MyServiceItem(
-    service: Service,
+    state: MyServiceUiState,
     onToggleStatus: () -> Unit,
     onDelete: () -> Unit,
     onEdit: () -> Unit
 ) {
-    val currencyFormatter = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     if (showDeleteDialog) {
@@ -124,9 +119,7 @@ fun MyServiceItem(
     }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onEdit() }, // HACEMOS TODA LA TARJETA CLICKABLE PARA EDITAR (Mejor UX)
+        modifier = Modifier.fillMaxWidth().clickable { onEdit() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
@@ -138,54 +131,40 @@ fun MyServiceItem(
                 verticalAlignment = Alignment.Top
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = service.title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Text(text = currencyFormatter.format(service.price), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+                    Text(text = state.title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text(text = state.formattedPrice, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
                 }
-                
-                // Switch de Activación (Pausar/Activar)
-                val isPending = service.status == "pending_approval"
                 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Switch(
-                        checked = service.status == "active",
-                        onCheckedChange = { if (!isPending) onToggleStatus() },
-                        enabled = !isPending, // BLOQUEADO SI ESTÁ PENDIENTE
+                        checked = state.isActive,
+                        onCheckedChange = { if (!state.isPending) onToggleStatus() },
+                        enabled = !state.isPending,
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = MaterialTheme.colorScheme.primary,
                             disabledCheckedThumbColor = Color.Gray.copy(alpha = 0.5f)
                         )
                     )
                     Text(
-                        text = when (service.status) {
-                            "active" -> "Activo"
-                            "pending_approval" -> "En Revisión"
-                            else -> "Pausado"
-                        },
+                        text = state.statusLabel,
                         fontSize = 10.sp,
-                        color = when (service.status) {
-                            "active" -> Color(0xFF4CAF50)
-                            "pending_approval" -> Color(0xFFFF9800) // Naranja para aviso
-                            else -> Color.Gray
-                        },
+                        color = Color(state.statusColor),
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
 
             Spacer(Modifier.height(8.dp))
-            Text(text = service.description, fontSize = 14.sp, color = Color.Gray, maxLines = 2)
+            Text(text = state.description, fontSize = 14.sp, color = Color.Gray, maxLines = 2)
             
             Spacer(Modifier.height(16.dp))
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Indicador visual de que se puede editar
                 TextButton(onClick = onEdit) {
                     Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(8.dp))

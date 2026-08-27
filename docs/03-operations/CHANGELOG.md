@@ -28,6 +28,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Historial de negociación estilizado y botones de acción Premium (Chat, Aceptar, Negociar).
 - **Ajuste de Flujo de Reserva:**
     - Cambio semántico de la pantalla de confirmación a **"¡Solicitud enviada!"** para una gestión transparente de las expectativas del usuario.
+- **Refactor Arquitectónico Clean MVVM:**
+    - Transformación de todas las pantallas principales en "Dumb Components" (Vistas tontas).
+    - Implementación de modelos de **UiState** dedicados (`MessageUiState`, `ServiceUiState`, `IncomingRequestUiState`, `MyOrderUiState`, `MyServiceUiState`) para centralizar el formateo y la lógica de negocio en los ViewModels.
+    - Eliminación de procesamiento de strings, fechas y comparaciones de IDs dentro de las funciones Composable.
+    - Mejora de la reactividad del Chat con `reverseLayout` y scroll automático inteligente.
 - **Rediseño de Splash Screen Premium:**
     - Implementación de la **Splash Screen API oficial** de Android, eliminando el doble splash heredado.
     - Nuevo diseño mediante **Icono Adaptativo**: Isotipo coral centrado con fondo blanco circular nativo, garantizando una forma perfecta en todos los dispositivos.
@@ -40,6 +45,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Rediseño de la pantalla de chat con burbujas Premium, hora de mensaje e indicadores de lectura (Double Check).
     - Optimización de UX: Implementación de **Gestión de Teclado (IME)** mediante `imePadding` para evitar el solapamiento del campo de texto al escribir.
     - Robustez de datos: Comparación de UUIDs case-insensitive para asegurar la vinculación de mensajes en todos los roles.
+- **Sistema de Reputación Realtime:**
+    - Implementación completa de la lógica de **Calificaciones y Reseñas** vinculada a la tabla `ratings` de Supabase.
+    - Visualización de **promedio de estrellas y conteo de reseñas** en las tarjetas del catálogo (Home).
+    - Nueva sección de **Reseñas de Clientes** en el detalle del servicio, permitiendo leer comentarios previos sobre el prestador.
+    - Lógica de control en "Mis Pedidos": El sistema detecta automáticamente si un servicio ya fue calificado, ocultando el botón y mostrando un badge de confirmación.
 
 ### Corregido
 - **DatePicker:** Corrección de desfase de zona horaria (-1 día) al convertir milisegundos UTC a hora local (Colombia UTC-5).

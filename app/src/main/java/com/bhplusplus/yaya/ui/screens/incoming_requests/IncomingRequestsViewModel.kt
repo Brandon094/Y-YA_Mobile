@@ -19,12 +19,29 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
+ * Modelo de UI para una solicitud recibida por el prestador.
+ * Centraliza el formateo para mantener la View "tonta".
+ */
+data class IncomingRequestUiState(
+    val domain: ServiceRequest,
+    val clientName: String,
+    val serviceTitle: String,
+    val status: String,
+    val address: String,
+    val formattedPrice: String,
+    val formattedDate: String,
+    val description: String,
+    val isClientOfferPending: Boolean,
+    val clientAvatarUrl: String?
+)
+
+/**
  * VIEWMODEL PARA SOLICITUDES ENTRANTES (VISTA PRESTADOR)
  * Filtra las solicitudes de la tabla 'requests' que pertenecen a los servicios del prestador actual.
  */
 class IncomingRequestsViewModel : ViewModel() {
 
-    var requests by mutableStateOf<List<ServiceRequest>>(emptyList())
+    var requests by mutableStateOf<List<IncomingRequestUiState>>(emptyList())
         private set
 
     var isLoading by mutableStateOf(false)
@@ -60,7 +77,8 @@ class IncomingRequestsViewModel : ViewModel() {
                         }
                         .decodeList<ServiceRequest>()
                     
-                    requests = result.sortedByDescending { it.created_at }
+                    val sorted = result.sortedByDescending { it.created_at }
+                    requests = sorted.map { mapToUiState(it) }
 
                     // Activar suscripción Realtime para solicitudes
                     subscribeToIncomingRequests(userId)
@@ -72,6 +90,22 @@ class IncomingRequestsViewModel : ViewModel() {
                 isLoading = false
             }
         }
+    }
+
+    private fun mapToUiState(request: ServiceRequest): IncomingRequestUiState {
+        return IncomingRequestUiState(
+            domain = request,
+            clientName = request.client?.full_name ?: "Cliente",
+            serviceTitle = request.services?.title ?: "Servicio Solicitado",
+            status = request.status,
+            address = request.service_address,
+            formattedPrice = "$${request.final_price.toInt()}",
+            formattedDate = request.scheduled_date?.take(10) ?: "Fecha no definida",
+            description = request.request_description ?: "Sin detalles adicionales",
+            isClientOfferPending = request.status == "pending" && 
+                                   request.request_description?.contains("Nueva oferta Cliente") == true,
+            clientAvatarUrl = request.client?.avatar_url
+        )
     }
 
     /**
@@ -113,7 +147,8 @@ class IncomingRequestsViewModel : ViewModel() {
                         }
                         .decodeList<ServiceRequest>()
                     
-                    requests = result.sortedByDescending { it.created_at }
+                    val sorted = result.sortedByDescending { it.created_at }
+                    requests = sorted.map { mapToUiState(it) }
                 }
             } catch (e: Exception) {
                 Log.e("IncomingReqVM", "Error silent fetch: ${e.message}")

@@ -20,13 +20,33 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
+ * Modelo de UI para un pedido realizado por el cliente.
+ * Centraliza el formateo para mantener la View "tonta".
+ */
+data class MyOrderUiState(
+    val domain: ServiceRequest,
+    val serviceTitle: String,
+    val providerName: String,
+    val status: String,
+    val address: String,
+    val formattedPrice: String,
+    val formattedDate: String,
+    val description: String,
+    val isCounterOfferActive: Boolean,
+    val providerAvatarUrl: String?,
+    val isRated: Boolean = false
+)
+
+/**
  * VIEWMODEL PARA LA PANTALLA DE MIS PEDIDOS
  * Recupera el historial de solicitudes y permite negociar contraofertas.
  */
 class MyOrdersViewModel : ViewModel() {
 
-    var orders by mutableStateOf<List<ServiceRequest>>(emptyList())
+    var orders by mutableStateOf<List<MyOrderUiState>>(emptyList())
         private set
+
+    private var clientRatings = emptyList<Rating>()
 
     var isLoading by mutableStateOf(false)
         private set
@@ -47,6 +67,7 @@ class MyOrdersViewModel : ViewModel() {
             try {
                 val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
                 if (userId != null) {
+                    // 1. Obtener pedidos
                     val result = SupabaseManager.client.postgrest["requests"]
                         .select(Columns.raw("*, services(*, provider_profile:provider_id(*))")) {
                             filter {
@@ -55,7 +76,13 @@ class MyOrdersViewModel : ViewModel() {
                         }
                         .decodeList<ServiceRequest>()
                     
-                    orders = result.sortedByDescending { it.created_at }
+                    // 2. Obtener calificaciones ya hechas por el cliente para estos pedidos
+                    clientRatings = SupabaseManager.client.postgrest["ratings"]
+                        .select { filter { eq("client_id", userId) } }
+                        .decodeList<Rating>()
+
+                    val sorted = result.sortedByDescending { it.created_at }
+                    orders = sorted.map { mapToUiState(it) }
 
                     // Activar suscripción Realtime para pedidos
                     subscribeToMyOrders(userId)
@@ -66,6 +93,24 @@ class MyOrdersViewModel : ViewModel() {
                 isLoading = false
             }
         }
+    }
+
+    private fun mapToUiState(order: ServiceRequest): MyOrderUiState {
+        val hasBeenRated = clientRatings.any { it.request_id == order.id }
+        return MyOrderUiState(
+            domain = order,
+            serviceTitle = order.services?.title ?: "Servicio",
+            providerName = order.services?.provider?.full_name ?: "Prestador Independiente",
+            status = order.status,
+            address = order.service_address,
+            formattedPrice = "$${order.final_price.toInt()}",
+            formattedDate = order.scheduled_date?.take(10) ?: "Fecha no definida",
+            description = order.request_description ?: "Sin historial de negociación",
+            isCounterOfferActive = order.status == "pending" && 
+                                   order.request_description?.contains("Contraoferta Prestador") == true,
+            providerAvatarUrl = order.services?.provider?.avatar_url,
+            isRated = hasBeenRated
+        )
     }
 
     /**
@@ -106,7 +151,12 @@ class MyOrdersViewModel : ViewModel() {
                         }
                         .decodeList<ServiceRequest>()
                     
-                    orders = result.sortedByDescending { it.created_at }
+                    clientRatings = SupabaseManager.client.postgrest["ratings"]
+                        .select { filter { eq("client_id", userId) } }
+                        .decodeList<Rating>()
+
+                    val sorted = result.sortedByDescending { it.created_at }
+                    orders = sorted.map { mapToUiState(it) }
                 }
             } catch (e: Exception) {
                 Log.e("MyOrdersVM", "Error silent fetch: ${e.message}")

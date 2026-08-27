@@ -11,24 +11,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Devices
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.LocalShipping
-import androidx.compose.material.icons.filled.MedicalServices
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Pets
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Work
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +32,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.Service
-import java.text.NumberFormat
 import java.util.Locale
 
 /**
@@ -63,12 +50,10 @@ fun HomeScreen(
     onLogout: () -> Unit,              // Regresa al login tras cerrar sesión
     viewModel: HomeViewModel = viewModel()
 ) {
-    val scope = rememberCoroutineScope()
     val pullToRefreshState = rememberPullToRefreshState()
     
     Scaffold(
         topBar = {
-            // Barra superior con acceso al perfil y notificaciones (Solicitudes)
             TopAppBar(
                 title = { Text(stringResource(R.string.home_top_bar_title)) },
                 navigationIcon = {
@@ -90,7 +75,6 @@ fun HomeScreen(
                     }
                 },
                 actions = {
-                    // Acceso rápido al listado de chats
                     IconButton(onClick = onChatListClick) {
                         BadgedBox(
                             badge = {
@@ -112,7 +96,6 @@ fun HomeScreen(
                         }
                     }
 
-                    // Acceso rápido a notificaciones/estados según el rol con Badge (Hito 4)
                     IconButton(onClick = {
                         if (viewModel.userRole == "provider" || viewModel.userRole == "admin") {
                             onIncomingRequestsClick()
@@ -142,12 +125,12 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
-                    titleContentColor = MaterialTheme.colorScheme.onSecondary
+                    titleContentColor = MaterialTheme.colorScheme.onSecondary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSecondary
                 )
             )
         },
         floatingActionButton = {
-            // LÓGICA DE PERMISOS: Solo mostramos el botón si el usuario es 'provider' (Prestador) o 'admin'
             if (viewModel.userRole == "provider" || viewModel.userRole == "admin") {
                 FloatingActionButton(
                     onClick = onCreateServiceClick,
@@ -159,7 +142,6 @@ fun HomeScreen(
             }
         },
         bottomBar = {
-            // Barra inferior que contiene solo el botón de cerrar sesión
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 tonalElevation = 4.dp,
@@ -188,7 +170,6 @@ fun HomeScreen(
             }
         }
     ) { padding ->
-        // Contenido principal
         PullToRefreshBox(
             isRefreshing = viewModel.isLoading,
             onRefresh = { viewModel.loadData() },
@@ -237,7 +218,6 @@ fun HomeScreen(
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Opción "Todas"
                     item {
                         FilterChip(
                             selected = viewModel.selectedCategoryId == null,
@@ -245,7 +225,6 @@ fun HomeScreen(
                             label = { Text("Todas") }
                         )
                     }
-                    // Categorías de la base de datos
                     items(viewModel.categories) { category ->
                         FilterChip(
                             selected = viewModel.selectedCategoryId == category.id,
@@ -262,7 +241,6 @@ fun HomeScreen(
                     color = MaterialTheme.colorScheme.onBackground
                 )
 
-                // Si está cargando datos de Supabase y no es por pull-to-refresh, muestra un Spinner central
                 if (viewModel.isLoading && viewModel.filteredServices.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
@@ -273,14 +251,11 @@ fun HomeScreen(
                         onClearSearch = { viewModel.onSearchQueryChange("") }
                     )
                 } else {
-                    // Lista filtrada
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(viewModel.filteredServices) { service ->
-                            val category = viewModel.categories.find { it.id == service.category_id }
+                        items(viewModel.filteredServices) { uiState ->
                             ServiceItem(
-                                service = service, 
-                                categoryName = category?.name,
-                                onClick = { onServiceClick(service) }
+                                state = uiState, 
+                                onClick = { onServiceClick(uiState.domain) }
                             )
                         }
                     }
@@ -290,10 +265,6 @@ fun HomeScreen(
     }
 }
 
-/**
- * VISTA DE ESTADO VACÍO (UX)
- * Se muestra cuando no hay servicios que coincidan con la búsqueda o categoría.
- */
 @Composable
 fun EmptyServicesView(searchQuery: String, onClearSearch: () -> Unit) {
     Column(
@@ -335,19 +306,15 @@ fun EmptyServicesView(searchQuery: String, onClearSearch: () -> Unit) {
     }
 }
 
-/**
- * COMPONENTE DE TARJETA DE SERVICIO
- * Representa un ítem individual dentro de la lista del Home.
- * Ahora más compacto y con información de horarios, precios y días.
- */
 @Composable
-fun ServiceItem(service: Service, categoryName: String?, onClick: () -> Unit) {
-    val currencyFormatter = remember { NumberFormat.getCurrencyInstance(Locale("es", "CO")) }
+fun ServiceItem(state: ServiceUiState, onClick: () -> Unit) {
     val dayNames = listOf("L", "M", "M", "J", "V", "S", "D")
+    val ratingText = remember(state.averageRating) {
+        String.format(Locale.getDefault(), "%.1f", state.averageRating)
+    }
 
-    // Mapeo dinámico de iconos por categoría
-    val categoryIcon = remember(categoryName) {
-        when (categoryName?.lowercase()) {
+    val categoryIcon = remember(state.categoryName) {
+        when (state.categoryName?.lowercase()) {
             "mascotas", "mascota" -> Icons.Default.Pets
             "hogar", "casa", "limpieza" -> Icons.Default.Home
             "tecnología", "tecnologia" -> Icons.Default.Devices
@@ -371,7 +338,6 @@ fun ServiceItem(service: Service, categoryName: String?, onClick: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Icono de la categoría (Círculo de color suave)
                 Box(
                     modifier = Modifier
                         .size(44.dp)
@@ -390,24 +356,39 @@ fun ServiceItem(service: Service, categoryName: String?, onClick: () -> Unit) {
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = service.title,
+                        text = state.title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Text(
-                        text = service.description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (state.totalRatings > 0) {
+                            Icon(
+                                Icons.Default.Star,
+                                contentDescription = null,
+                                tint = Color(0xFFFFB800),
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Text(
+                                text = " $ratingText (${state.totalRatings})",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.Gray
+                            )
+                            Spacer(Modifier.width(8.dp))
+                        }
+                        Text(
+                            text = state.description,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
 
-                // Precio destacado en la esquina
                 Text(
-                    text = currencyFormatter.format(service.price),
+                    text = state.formattedPrice,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.primary
@@ -423,11 +404,10 @@ fun ServiceItem(service: Service, categoryName: String?, onClick: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Días de atención (Bolitas mini)
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     dayNames.forEachIndexed { index, name ->
                         val dayNumber = index + 1
-                        val isSelected = service.working_days.contains(dayNumber)
+                        val isSelected = state.workingDays.contains(dayNumber)
                         Box(
                             modifier = Modifier
                                 .size(20.dp)
@@ -447,12 +427,7 @@ fun ServiceItem(service: Service, categoryName: String?, onClick: () -> Unit) {
                     }
                 }
 
-                // Horario de atención
-                val timeRange = if (service.start_time.isNotEmpty()) {
-                    "${service.start_time.substring(0, 5)} - ${service.end_time.substring(0, 5)}"
-                } else ""
-
-                if (timeRange.isNotEmpty()) {
+                if (state.formattedTimeRange.isNotEmpty()) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.AccessTime,
@@ -462,7 +437,7 @@ fun ServiceItem(service: Service, categoryName: String?, onClick: () -> Unit) {
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            text = timeRange,
+                            text = state.formattedTimeRange,
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -476,13 +451,9 @@ fun ServiceItem(service: Service, categoryName: String?, onClick: () -> Unit) {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(
-        onServiceClick = {}, 
-        onProfileClick = {}, 
-        onMyOrders = {},
-        onIncomingRequestsClick = {},
-        onChatListClick = {},
-        onCreateServiceClick = {}, 
-        onLogout = {}
-    )
+    MaterialTheme {
+        Box(Modifier.fillMaxSize().background(Color.White)) {
+            Text("Vista Previa del Catálogo")
+        }
+    }
 }

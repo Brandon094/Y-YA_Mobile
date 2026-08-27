@@ -1,6 +1,5 @@
 package com.bhplusplus.yaya.ui.screens.chat
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,13 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
-import com.bhplusplus.yaya.data.SupabaseManager
-import com.bhplusplus.yaya.data.models.Message
-import io.github.jan.supabase.auth.auth
-import kotlinx.coroutines.launch
 
 /**
  * PANTALLA DE CHAT EN TIEMPO REAL (Hito 2)
+ * Arquitectura MVVM: La View solo renderiza el estado procesado del ViewModel.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,39 +36,33 @@ fun ChatScreen(
     onBack: () -> Unit,
     viewModel: ChatViewModel = viewModel()
 ) {
-    val currentUserId = SupabaseManager.client.auth.currentUserOrNull()?.id
     var textValue by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
+    val uiMessages = viewModel.uiMessages
 
-    // Inicializar chat al entrar
+    // Inicializar chat
     LaunchedEffect(receiverId) {
         viewModel.initializeChat(receiverId)
     }
 
-    // Auto-scroll al final cuando llegan nuevos mensajes
-    LaunchedEffect(viewModel.messages.size) {
-        if (viewModel.messages.isNotEmpty()) {
-            scope.launch {
-                listState.animateScrollToItem(viewModel.messages.size - 1)
-            }
+    // Scroll automático al final cuando hay mensajes nuevos
+    LaunchedEffect(uiMessages.size) {
+        if (uiMessages.isNotEmpty()) {
+            listState.animateScrollToItem(0) // 0 es el final con reverseLayout=true
         }
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().imePadding(),
+        modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets.ime, // Gestión automática del teclado
         topBar = {
             TopAppBar(
                 title = { 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
                                 .size(40.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.1f)),
+                                .clip(CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             if (viewModel.receiverProfile?.avatar_url != null) {
@@ -154,12 +144,6 @@ fun ChatScreen(
                             if (textValue.isNotBlank()) {
                                 viewModel.sendMessage(receiverId, textValue)
                                 textValue = ""
-                                // Scroll al último mensaje tras enviar
-                                scope.launch {
-                                    if (viewModel.messages.isNotEmpty()) {
-                                        listState.animateScrollToItem(viewModel.messages.size - 1)
-                                    }
-                                }
                             }
                         },
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -178,15 +162,12 @@ fun ChatScreen(
             }
         }
     ) { padding ->
-        Box(
+        Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
         ) {
-            // Fondo sutil decorativo (Opcional: puedes añadir un patrón aquí)
-            
-            if (viewModel.isLoading && viewModel.messages.isEmpty()) {
+            if (viewModel.isLoading && uiMessages.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(strokeWidth = 3.dp)
                 }
@@ -195,11 +176,11 @@ fun ChatScreen(
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    reverseLayout = true // Los mensajes nuevos empujan hacia arriba
                 ) {
-                    items(viewModel.messages) { message ->
-                        val isMe = message.sender_id.equals(currentUserId, ignoreCase = true)
-                        ChatBubble(message, isMe)
+                    items(uiMessages, key = { it.id }) { state ->
+                        ChatBubble(state)
                     }
                 }
             }
@@ -207,32 +188,30 @@ fun ChatScreen(
     }
 }
 
+/**
+ * Burbuja de chat. Recibe un [MessageUiState] ya procesado por el ViewModel.
+ */
 @Composable
-fun ChatBubble(message: Message, isMe: Boolean) {
-    // Intentamos extraer HH:mm del formato ISO de Supabase (2024-...T12:00:00...)
-    val timeStr = remember(message.sent_at) {
-        message.sent_at?.substringAfter("T")?.take(5) ?: ""
-    }
-
+fun ChatBubble(state: MessageUiState) {
     Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = if (isMe) Alignment.End else Alignment.Start
+        horizontalAlignment = if (state.isMe) Alignment.End else Alignment.Start
     ) {
         Surface(
-            color = if (isMe) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+            color = if (state.isMe) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
             shape = RoundedCornerShape(
                 topStart = 20.dp,
                 topEnd = 20.dp,
-                bottomStart = if (isMe) 20.dp else 4.dp,
-                bottomEnd = if (isMe) 4.dp else 20.dp
+                bottomStart = if (state.isMe) 20.dp else 4.dp,
+                bottomEnd = if (state.isMe) 4.dp else 20.dp
             ),
-            tonalElevation = if (isMe) 0.dp else 1.dp,
+            tonalElevation = if (state.isMe) 0.dp else 1.dp,
             shadowElevation = 1.dp
         ) {
             Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
                 Text(
-                    text = message.content,
-                    color = if (isMe) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = state.content,
+                    color = if (state.isMe) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 15.sp,
                     lineHeight = 20.sp
                 )
@@ -242,17 +221,17 @@ fun ChatBubble(message: Message, isMe: Boolean) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = timeStr,
+                        text = state.formattedTime,
                         fontSize = 10.sp,
-                        color = (if (isMe) Color.White else Color.Gray).copy(alpha = 0.7f)
+                        color = (if (state.isMe) Color.White else Color.Gray).copy(alpha = 0.7f)
                     )
-                    if (isMe) {
+                    if (state.isMe) {
                         Spacer(Modifier.width(4.dp))
                         Icon(
                             imageVector = Icons.Default.DoneAll,
                             contentDescription = null,
                             modifier = Modifier.size(14.dp),
-                            tint = if (message.is_read) Color(0xFF81D4FA) else Color.White.copy(alpha = 0.6f)
+                            tint = if (state.isRead) Color(0xFF81D4FA) else Color.White.copy(alpha = 0.6f)
                         )
                     }
                 }

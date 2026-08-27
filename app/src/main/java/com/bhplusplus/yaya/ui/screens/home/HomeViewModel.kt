@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.models.Category
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
+import com.bhplusplus.yaya.data.models.Rating
 import com.bhplusplus.yaya.data.SupabaseManager
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
@@ -22,6 +23,26 @@ import kotlinx.coroutines.launch
 import android.util.Log
 import kotlinx.serialization.json.jsonPrimitive
 
+import java.text.NumberFormat
+import java.util.Locale
+
+/**
+ * Modelo de UI para un servicio en el catálogo.
+ * Centraliza el formateo para mantener la View "tonta".
+ */
+data class ServiceUiState(
+    val domain: Service,
+    val title: String,
+    val description: String,
+    val formattedPrice: String,
+    val categoryName: String?,
+    val formattedTimeRange: String,
+    val workingDays: List<Int>,
+    val providerAvatarUrl: String?,
+    val averageRating: Double,
+    val totalRatings: Int
+)
+
 /**
  * LÓGICA DE NEGOCIO PARA LA PANTALLA PRINCIPAL
  * Gestiona el listado, la búsqueda y el filtrado por categorías.
@@ -31,9 +52,11 @@ class HomeViewModel : ViewModel() {
     // Lista original (sin filtrar) traída de Supabase
     private var allServices = emptyList<Service>()
 
-    // Lista que se muestra en la UI (ya filtrada)
-    var filteredServices by mutableStateOf<List<Service>>(emptyList())
+    // Lista que se muestra en la UI (procesada y filtrada)
+    var filteredServices by mutableStateOf<List<ServiceUiState>>(emptyList())
         private set
+
+    private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CO"))
 
     // Lista de categorías para el selector horizontal
     var categories by mutableStateOf<List<Category>>(emptyList())
@@ -50,6 +73,9 @@ class HomeViewModel : ViewModel() {
     var isLoading by mutableStateOf(false)
         private set
 
+    // Mapa para cachear calificaciones y no recalcular en cada filtro
+    private var serviceRatingsMap = emptyMap<String, List<Rating>>()
+
     init {
         loadData()
     }
@@ -64,7 +90,7 @@ class HomeViewModel : ViewModel() {
                     .decodeList<Category>()
 
                 // 2. Obtener todos los servicios (Filtrando por estado activo para usuarios normales) con Join del prestador
-                allServices = SupabaseManager.client.postgrest["services"]
+                val servicesResult = SupabaseManager.client.postgrest["services"]
                     .select(Columns.raw("*, provider_profile:provider_id(*)")) {
                         filter {
                             eq("status", "active") // Solo servicios aprobados
@@ -72,10 +98,24 @@ class HomeViewModel : ViewModel() {
                     }
                     .decodeList<Service>()
                 
+                allServices = servicesResult
+
+                // 3. Obtener todas las calificaciones para estos servicios
+                val serviceIds = allServices.mapNotNull { it.id }
+                if (serviceIds.isNotEmpty()) {
+                    val ratingsResult = SupabaseManager.client.postgrest["ratings"]
+                        .select()
+                        .decodeList<Rating>()
+                    
+                    // Agrupamos por provider_id (ya que las calificaciones son al prestador)
+                    serviceRatingsMap = ratingsResult.groupBy { it.provider_id }
+                }
+
                 applyFilters() // Inicializamos la lista filtrada
 
                 // Activar suscripción Realtime para servicios
                 subscribeToServices()
+                subscribeToRatings()
 
                 // 3. Obtener rol del usuario y contar notificaciones
                 val user = SupabaseManager.client.auth.currentUserOrNull()
@@ -151,6 +191,26 @@ class HomeViewModel : ViewModel() {
                 Log.e("HomeViewModel", "Error subscribing to services: ${e.message}")
             }
         }
+    }
+
+    /**
+     * Se suscribe a cambios en las calificaciones para actualizar el promedio visual.
+     */
+    private fun subscribeToRatings() {
+        val channel = SupabaseManager.client.channel("ratings_home")
+        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = "ratings"
+        }.onEach {
+            // Recargamos el mapa de calificaciones ante cualquier cambio
+            val ratingsResult = SupabaseManager.client.postgrest["ratings"]
+                .select()
+                .decodeList<Rating>()
+            
+            serviceRatingsMap = ratingsResult.groupBy { it.provider_id }
+            applyFilters()
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch { channel.subscribe() }
     }
 
     /**
@@ -235,16 +295,36 @@ class HomeViewModel : ViewModel() {
     }
 
     /**
-     * Filtra la lista localmente para que sea instantáneo para el usuario.
+     * Filtra y mapea los servicios a su estado de UI.
      */
     fun applyFilters() {
-        filteredServices = allServices.filter { service ->
+        val filtered = allServices.filter { service ->
             val matchesSearch = service.title.contains(searchQuery, ignoreCase = true) ||
                                service.description.contains(searchQuery, ignoreCase = true)
             
             val matchesCategory = selectedCategoryId == null || service.category_id == selectedCategoryId
             
             matchesSearch && matchesCategory
+        }
+
+        filteredServices = filtered.map { service ->
+            val category = categories.find { it.id == service.category_id }
+            val providerRatings = serviceRatingsMap[service.provider_id] ?: emptyList()
+            
+            ServiceUiState(
+                domain = service,
+                title = service.title,
+                description = service.description,
+                formattedPrice = currencyFormatter.format(service.price),
+                categoryName = category?.name,
+                formattedTimeRange = if (service.start_time.isNotEmpty()) {
+                    "${service.start_time.substring(0, 5)} - ${service.end_time.substring(0, 5)}"
+                } else "",
+                workingDays = service.working_days,
+                providerAvatarUrl = service.provider?.avatar_url,
+                averageRating = if (providerRatings.isNotEmpty()) providerRatings.map { it.score }.average() else 0.0,
+                totalRatings = providerRatings.size
+            )
         }
     }
 

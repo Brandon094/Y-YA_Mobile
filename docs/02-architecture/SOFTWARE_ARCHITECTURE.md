@@ -7,15 +7,15 @@ YÁYA implementa **MVVM** para separar la lógica de negocio de la interfaz de u
 
 ### 1.1. Capa de Vista (UI)
 - Construida íntegramente con **Jetpack Compose**.
-- Las funciones Composable son "**stateless**" y "**tontas**" (Dumb Components), limitándose a renderizar datos procesados y banderas booleanas (ej. `isActionPending`) entregadas por el ViewModel.
+- Las funciones Composable son "**stateless**" y "**tontas**" (Dumb Components), limitándose a renderizar datos procesados y banderas booleanas (ej. `isMe`, `formattedPrice`) entregadas por el ViewModel mediante modelos de **UiState** dedicados.
 - Uso de Material 3 para el sistema de diseño, con soporte estricto para temas Claro y Oscuro.
-- **Gestión de Teclado (IME):** Implementación de `Modifier.imePadding()` en pantallas de entrada de datos y chat para asegurar que los componentes de entrada permanezcan visibles sobre el teclado virtual.
 - **Pull-to-Refresh:** Implementación del patrón de refresco manual mediante `PullToRefreshBox` en todas las listas principales para garantizar la sincronización a demanda.
+- **Gestión de Teclado (IME):** Implementación de `Modifier.imePadding()` en pantallas de entrada de datos y chat para asegurar que los componentes de entrada permanezcan visibles sobre el teclado virtual.
 
 ### 1.2. Capa de ViewModel
 - Actúa como el **Cerebro de Negocio** de cada pantalla.
-- Responsable del parsing de datos, formateo de fechas y cálculo de estados de flujo (ej. decidir si una oferta es una contraoferta o una nueva solicitud).
-- Gestiona el estado de la pantalla mediante `StateFlow` y suscripciones reactivas.
+- Responsable del parsing de datos, formateo de fechas, cálculo de estados de flujo y mapeo a objetos de **UI State**.
+- Gestiona el estado de la pantalla mediante `StateFlow` o estados mutables de Compose (`mutableStateOf`) y suscripciones reactivas.
 - **MainViewModel:** Controla el ciclo de vida del arranque, validando la sesión antes de liberar el Splash Screen nativo.
 - Sobrevive a cambios de configuración y maneja el ciclo de vida de las Coroutines.
 

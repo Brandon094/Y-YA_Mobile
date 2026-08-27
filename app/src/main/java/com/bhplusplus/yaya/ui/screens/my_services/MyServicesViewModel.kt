@@ -18,6 +18,22 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.jsonPrimitive
+import java.text.NumberFormat
+import java.util.Locale
+
+/**
+ * Modelo de UI para un servicio en la gestión del prestador.
+ */
+data class MyServiceUiState(
+    val domain: Service,
+    val title: String,
+    val formattedPrice: String,
+    val description: String,
+    val statusLabel: String,
+    val statusColor: Long, // Color Hex
+    val isActive: Boolean,
+    val isPending: Boolean
+)
 
 /**
  * VIEWMODEL PARA LA GESTIÓN DE SERVICIOS PROPIOS (VISTA PRESTADOR)
@@ -25,7 +41,7 @@ import kotlinx.serialization.json.jsonPrimitive
  */
 class MyServicesViewModel : ViewModel() {
 
-    var services by mutableStateOf<List<Service>>(emptyList())
+    var services by mutableStateOf<List<MyServiceUiState>>(emptyList())
         private set
 
     var isLoading by mutableStateOf(false)
@@ -33,6 +49,8 @@ class MyServicesViewModel : ViewModel() {
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
+
+    private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CO"))
 
     init {
         fetchMyServices()
@@ -56,7 +74,8 @@ class MyServicesViewModel : ViewModel() {
                         }
                         .decodeList<Service>()
                     
-                    services = result.sortedByDescending { it.created_at }
+                    val sorted = result.sortedByDescending { it.created_at }
+                    services = sorted.map { mapToUiState(it) }
                     
                     // Activar suscripción Realtime para mis servicios
                     subscribeToMyServices(userId)
@@ -68,6 +87,28 @@ class MyServicesViewModel : ViewModel() {
                 isLoading = false
             }
         }
+    }
+
+    private fun mapToUiState(service: Service): MyServiceUiState {
+        val isPending = service.status == "pending_approval"
+        return MyServiceUiState(
+            domain = service,
+            title = service.title,
+            formattedPrice = currencyFormatter.format(service.price),
+            description = service.description,
+            statusLabel = when (service.status) {
+                "active" -> "Activo"
+                "pending_approval" -> "En Revisión"
+                else -> "Pausado"
+            },
+            statusColor = when (service.status) {
+                "active" -> 0xFF4CAF50
+                "pending_approval" -> 0xFFFF9800
+                else -> 0xFF9E9E9E
+            },
+            isActive = service.status == "active",
+            isPending = isPending
+        )
     }
 
     /**
@@ -83,19 +124,23 @@ class MyServicesViewModel : ViewModel() {
                 is PostgresAction.Insert -> {
                     val newService = action.decodeRecord<Service>()
                     if (newService.provider_id == userId) {
-                        services = (listOf(newService) + services).sortedByDescending { it.created_at }
+                        val currentList = services.map { it.domain }
+                        val updatedList = (listOf(newService) + currentList).sortedByDescending { it.created_at }
+                        services = updatedList.map { mapToUiState(it) }
                     }
                 }
                 is PostgresAction.Update -> {
                     val updatedService = action.decodeRecord<Service>()
                     if (updatedService.provider_id == userId) {
-                        services = services.map { if (it.id == updatedService.id) updatedService else it }
-                                           .sortedByDescending { it.created_at }
+                        val currentList = services.map { it.domain }
+                        val updatedList = currentList.map { if (it.id == updatedService.id) updatedService else it }
+                                                     .sortedByDescending { it.created_at }
+                        services = updatedList.map { mapToUiState(it) }
                     }
                 }
                 is PostgresAction.Delete -> {
                     val deletedId = action.oldRecord["id"]?.jsonPrimitive?.content
-                    services = services.filter { it.id != deletedId }
+                    services = services.filter { it.domain.id != deletedId }
                 }
                 else -> {}
             }
@@ -122,7 +167,7 @@ class MyServicesViewModel : ViewModel() {
                 }) {
                     filter { eq("id", serviceId) }
                 }
-                fetchMyServices() // Refrescamos la lista
+                // El suscriptor Realtime actualizará la lista
             } catch (e: Exception) {
                 Log.e("MyServicesVM", "Error toggling status: ${e.message}")
             }
@@ -138,7 +183,7 @@ class MyServicesViewModel : ViewModel() {
                 SupabaseManager.client.postgrest["services"].delete {
                     filter { eq("id", serviceId) }
                 }
-                fetchMyServices()
+                // El suscriptor Realtime actualizará la lista
             } catch (e: Exception) {
                 Log.e("MyServicesVM", "Error deleting service: ${e.message}")
             }
