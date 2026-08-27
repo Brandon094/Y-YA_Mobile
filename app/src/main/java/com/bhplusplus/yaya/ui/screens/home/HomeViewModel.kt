@@ -10,6 +10,7 @@ import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.Category
 import com.bhplusplus.yaya.data.models.Rating
 import com.bhplusplus.yaya.data.models.Service
+import com.bhplusplus.yaya.data.models.ServiceRequest
 import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.utils.FormatterUtils
 import io.github.jan.supabase.auth.auth
@@ -216,19 +217,29 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 if (role == "provider" || role == "admin") {
-                    // Si es prestador, cuenta solicitudes recibidas con estado 'pending'
+                    // FIX: Filtrar solicitudes que pertenecen a los servicios DEL PRESTADOR actual
                     val pendingCount = SupabaseManager.client.postgrest["requests"]
-                        .select {
+                        .select(Columns.raw("id, services!inner(provider_id)")) {
                             filter {
-                                // Necesitamos filtrar por los servicios que pertenecen a este prestador
-                                // Para simplificar en esta fase, buscamos solicitudes con estado pending
-                                // En una fase avanzada usaríamos un join o una RPC
                                 eq("status", "pending")
+                                eq("services.provider_id", userId)
                             }
                         }
-                        .decodeList<Service>() // Usamos Service solo para contar, no importa el tipo exacto
+                        .decodeList<ServiceRequest>()
                         .size
                     notificationCount = pendingCount
+                } else {
+                    // OPCIONAL: Para clientes, contar las solicitudes que esperan su Handshake
+                    val clientPending = SupabaseManager.client.postgrest["requests"]
+                        .select {
+                            filter {
+                                eq("client_id", userId)
+                                eq("status", "accepted")
+                            }
+                        }
+                        .decodeList<ServiceRequest>()
+                        .size
+                    notificationCount = clientPending
                 }
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error al contar notificaciones: ${e.message}")
@@ -262,8 +273,6 @@ class HomeViewModel : ViewModel() {
      * Se suscribe a cambios en las solicitudes para actualizar el contador de notificaciones.
      */
     private fun subscribeToRequests(userId: String, role: String) {
-        if (role != "provider" && role != "admin") return
-
         val channel = SupabaseManager.client.channel("requests_notifications")
         channel.postgresChangeFlow<PostgresAction>(schema = "public") {
             table = "requests"
