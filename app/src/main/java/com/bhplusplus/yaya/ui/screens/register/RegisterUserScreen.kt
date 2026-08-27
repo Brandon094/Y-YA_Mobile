@@ -121,6 +121,7 @@ fun RegisterScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .navigationBarsPadding() // RESPETA BOTONES DE NAVEGACIÓN
             .verticalScroll(rememberScrollState()) // Soporta scroll si la pantalla es pequeña
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally

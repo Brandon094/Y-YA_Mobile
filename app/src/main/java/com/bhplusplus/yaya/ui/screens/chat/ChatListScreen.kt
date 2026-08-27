@@ -152,7 +152,7 @@ fun ChatContactItem(summary: ChatSummary, onClick: () -> Unit) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.Top // Cambiado a Top para manejar fuentes grandes
                 ) {
                     Text(
                         text = contact.full_name,
@@ -160,14 +160,17 @@ fun ChatContactItem(summary: ChatSummary, onClick: () -> Unit) {
                         fontSize = 17.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f) // EL PESO ES CLAVE AQUÍ PARA QUE NO DESBORDE
                     )
                     
                     if (summary.lastMessageTime != null) {
+                        Spacer(Modifier.width(8.dp))
                         Text(
                             text = summary.lastMessageTime.substringAfter(" "),
                             fontSize = 11.sp,
-                            color = if (summary.unreadCount > 0) MaterialTheme.colorScheme.primary else Color.Gray
+                            color = if (summary.unreadCount > 0) MaterialTheme.colorScheme.primary else Color.Gray,
+                            modifier = Modifier.alignByBaseline()
                         )
                     }
                 }
@@ -179,34 +182,28 @@ fun ChatContactItem(summary: ChatSummary, onClick: () -> Unit) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val subtitleText = if (!summary.lastMessage.isNullOrBlank()) {
-                        summary.lastMessage
-                    } else {
-                        if (contact.role == "provider") "Prestador" else "Cliente"
-                    }
-
                     Text(
-                        text = subtitleText,
+                        text = summary.displaySubtitle, // Usamos la lógica ya procesada del ViewModel
                         fontSize = 13.sp,
                         color = if (summary.unreadCount > 0) MaterialTheme.colorScheme.onSurface else Color.Gray,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontWeight = if (summary.unreadCount > 0) FontWeight.Bold else FontWeight.Normal,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f) // EL PESO ES CLAVE AQUÍ PARA EL BADGE
                     )
 
                     if (summary.unreadCount > 0) {
                         Box(
                             modifier = Modifier
                                 .padding(start = 8.dp)
-                                .size(22.dp)
+                                .size(24.dp) // Un poco más grande para accesibilidad
                                 .background(MaterialTheme.colorScheme.primary, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = summary.unreadCount.toString(),
                                 color = Color.White,
-                                fontSize = 10.sp,
+                                fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }

@@ -25,7 +25,8 @@ data class ChatSummary(
     val contact: UserProfile,
     val lastMessage: String? = null,
     val unreadCount: Int = 0,
-    val lastMessageTime: String? = null
+    val lastMessageTime: String? = null,
+    val displaySubtitle: String = ""
 )
 
 /**
@@ -107,11 +108,18 @@ class ChatListViewModel : ViewModel() {
                 it.receiver_id.equals(currentUserId, ignoreCase = true) && !it.is_read 
             }
 
+            val subtitle = if (!lastMsg?.content.isNullOrBlank()) {
+                lastMsg!!.content
+            } else {
+                if (profile.role == "provider") "Prestador" else "Cliente"
+            }
+
             ChatSummary(
                 contact = profile,
                 lastMessage = lastMsg?.content,
                 unreadCount = unread,
-                lastMessageTime = lastMsg?.sent_at?.take(16)?.replace("T", " ")
+                lastMessageTime = lastMsg?.sent_at?.take(16)?.replace("T", " "),
+                displaySubtitle = subtitle
             )
         }.sortedByDescending { it.lastMessageTime ?: "" }
     }

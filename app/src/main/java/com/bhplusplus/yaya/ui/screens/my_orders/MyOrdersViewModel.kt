@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.ServiceRequest
 import com.bhplusplus.yaya.data.models.Rating
+import com.bhplusplus.yaya.utils.FormatterUtils
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -105,8 +106,8 @@ class MyOrdersViewModel : ViewModel() {
             providerName = order.services?.provider?.full_name ?: "Prestador Independiente",
             status = order.status,
             address = order.service_address,
-            formattedPrice = "$${order.final_price.toInt()}",
-            formattedDate = order.scheduled_date?.take(10) ?: "Fecha no definida",
+            formattedPrice = FormatterUtils.formatCurrency(order.final_price),
+            formattedDate = FormatterUtils.formatDate(order.scheduled_date),
             description = order.request_description ?: "Sin historial de negociación",
             isCounterOfferActive = order.status == "pending" && 
                                    order.request_description?.contains("Contraoferta Prestador") == true,

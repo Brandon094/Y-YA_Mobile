@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.ServiceRequest
+import com.bhplusplus.yaya.utils.FormatterUtils
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -99,8 +100,8 @@ class IncomingRequestsViewModel : ViewModel() {
             serviceTitle = request.services?.title ?: "Servicio Solicitado",
             status = request.status,
             address = request.service_address,
-            formattedPrice = "$${request.final_price.toInt()}",
-            formattedDate = request.scheduled_date?.take(10) ?: "Fecha no definida",
+            formattedPrice = FormatterUtils.formatCurrency(request.final_price),
+            formattedDate = FormatterUtils.formatDate(request.scheduled_date),
             description = request.request_description ?: "Sin detalles adicionales",
             isClientOfferPending = request.status == "pending" && 
                                    request.request_description?.contains("Nueva oferta Cliente") == true,

@@ -1,15 +1,17 @@
 package com.bhplusplus.yaya.ui.screens.home
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.Category
+import com.bhplusplus.yaya.data.models.Rating
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
-import com.bhplusplus.yaya.data.models.Rating
-import com.bhplusplus.yaya.data.SupabaseManager
+import com.bhplusplus.yaya.utils.FormatterUtils
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -20,11 +22,7 @@ import io.github.jan.supabase.realtime.postgresChangeFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import android.util.Log
 import kotlinx.serialization.json.jsonPrimitive
-
-import java.text.NumberFormat
-import java.util.Locale
 
 /**
  * Modelo de UI para un servicio en el catálogo.
@@ -55,8 +53,6 @@ class HomeViewModel : ViewModel() {
     // Lista que se muestra en la UI (procesada y filtrada)
     var filteredServices by mutableStateOf<List<ServiceUiState>>(emptyList())
         private set
-
-    private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CO"))
 
     // Lista de categorías para el selector horizontal
     var categories by mutableStateOf<List<Category>>(emptyList())
@@ -315,10 +311,10 @@ class HomeViewModel : ViewModel() {
                 domain = service,
                 title = service.title,
                 description = service.description,
-                formattedPrice = currencyFormatter.format(service.price),
+                formattedPrice = FormatterUtils.formatCurrency(service.price),
                 categoryName = category?.name,
                 formattedTimeRange = if (service.start_time.isNotEmpty()) {
-                    "${service.start_time.substring(0, 5)} - ${service.end_time.substring(0, 5)}"
+                    "${FormatterUtils.formatTime(service.start_time)} - ${FormatterUtils.formatTime(service.end_time)}"
                 } else "",
                 workingDays = service.working_days,
                 providerAvatarUrl = service.provider?.avatar_url,

@@ -53,23 +53,25 @@ fun AvailabilityScreen(
                 tonalElevation = 8.dp,
                 color = MaterialTheme.colorScheme.surface
             ) {
-                Button(
-                    onClick = {
-                        viewModel.saveAvailability {
-                            onBack()
+                Box(modifier = Modifier.navigationBarsPadding()) {
+                    Button(
+                        onClick = {
+                            viewModel.saveAvailability {
+                                onBack()
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        enabled = !viewModel.isSaving
+                    ) {
+                        if (viewModel.isSaving) {
+                            CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White, strokeWidth = 2.dp)
+                        } else {
+                            Text("Guardar Cambios", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .height(56.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    enabled = !viewModel.isSaving
-                ) {
-                    if (viewModel.isSaving) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White, strokeWidth = 2.dp)
-                    } else {
-                        Text("Guardar Cambios", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }

@@ -29,32 +29,26 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import com.bhplusplus.yaya.R
-import com.bhplusplus.yaya.data.models.Service
-import com.bhplusplus.yaya.data.models.UserProfile
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Calendar
-import java.text.NumberFormat
-import java.util.Locale
 
 /**
  * PANTALLA DE CONTRATACIÓN
- * Ahora permite seleccionar Fecha y Hora de forma profesional.
+ * Arquitectura MVVM: La View solo renderiza el estado procesado del ViewModel.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaContratacion(
     serviceId: String,
     onBack: () -> Unit,
-    onContratarClick: (String) -> Unit, // Recibe el ID de la solicitud creada
+    onContratarClick: (String) -> Unit,
     viewModel: ContratacionViewModel = viewModel()
 ) {
-    // CARGA REAL DESDE SUPABASE
     LaunchedEffect(serviceId) {
         viewModel.loadData(serviceId)
     }
 
-    // Lógica del Selector de Fecha
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
@@ -64,24 +58,17 @@ fun PantallaContratacion(
             confirmButton = {
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
-                        val date = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.of("UTC"))
-                            .toLocalDate()
-                        viewModel.fecha = date.toString() // YYYY-MM-DD
-                        viewModel.checkAvailability() // Validar disponibilidad (Hito 1)
+                        val date = Instant.ofEpochMilli(millis).atZone(ZoneId.of("UTC")).toLocalDate()
+                        viewModel.fecha = date.toString()
+                        viewModel.checkAvailability()
                     }
                     showDatePicker = false
                 }) { Text("Confirmar") }
             },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Cancelar") }
-            }
-        ) {
-            DatePicker(state = datePickerState)
-        }
+            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancelar") } }
+        ) { DatePicker(state = datePickerState) }
     }
 
-    // Lógica del Reloj Digital
     var showTimePicker by remember { mutableStateOf(false) }
     val timePickerState = rememberTimePickerState(
         initialHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
@@ -97,15 +84,13 @@ fun PantallaContratacion(
                     val hour = if (timePickerState.hour < 10) "0${timePickerState.hour}" else "${timePickerState.hour}"
                     val minute = if (timePickerState.minute < 10) "0${timePickerState.minute}" else "${timePickerState.minute}"
                     viewModel.hora = "$hour:$minute"
-                    viewModel.checkAvailability() // Validar disponibilidad (Hito 1)
+                    viewModel.checkAvailability()
                     showTimePicker = false
                 }) { Text("Confirmar") }
             },
-            dismissButton = {
-                TextButton(onClick = { showTimePicker = false }) { Text("Cancelar") }
-            },
+            dismissButton = { TextButton(onClick = { showTimePicker = false }) { Text("Cancelar") } },
             text = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                     Text("Selecciona la hora", style = MaterialTheme.typography.labelLarge)
                     Spacer(Modifier.height(16.dp))
                     TimePicker(state = timePickerState)
@@ -114,29 +99,27 @@ fun PantallaContratacion(
         )
     }
 
-    val service = viewModel.service
+    val uiState = viewModel.uiState
 
-    if (viewModel.isLoading && service == null) {
+    if (viewModel.isLoading && uiState == null) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         }
-    } else if (service != null) {
+    } else if (uiState != null) {
         ContratacionContent(
-            service = service,
-            provider = viewModel.providerProfile,
+            uiState = uiState,
             direccion = viewModel.direccion,
             onDireccionChange = { viewModel.direccion = it },
             fecha = viewModel.fecha,
             onFechaClick = { showDatePicker = true },
             hora = viewModel.hora,
             onHoraClick = { showTimePicker = true },
-            oferta = viewModel.oferta,
+            ofertaRaw = viewModel.oferta,
             onOfertaChange = { viewModel.updateOferta(it) },
             onIncrementar = { viewModel.incrementarOferta() },
             onDecrementar = { viewModel.decrementarOferta() },
             isLoading = viewModel.isLoading,
             errorMessage = viewModel.errorMessage,
-            isAvailable = viewModel.isAvailable, // Hito 1
             onBack = onBack,
             onContratar = {
                 viewModel.contratar { success, requestId ->
@@ -149,25 +132,24 @@ fun PantallaContratacion(
 
 /**
  * COMPONENTE VISUAL DE CONTRATACIÓN
+ * Optimizado para accesibilidad (fuentes al 200%) y navegación.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContratacionContent(
-    service: Service,
-    provider: UserProfile?,
+    uiState: ContratacionUiState,
     direccion: String,
     onDireccionChange: (String) -> Unit,
     fecha: String,
     onFechaClick: () -> Unit,
     hora: String,
     onHoraClick: () -> Unit,
-    oferta: String,
+    ofertaRaw: String,
     onOfertaChange: (String) -> Unit,
     onIncrementar: () -> Unit,
     onDecrementar: () -> Unit,
     isLoading: Boolean,
     errorMessage: String?,
-    isAvailable: Boolean, // Hito 1
     onBack: () -> Unit,
     onContratar: () -> Unit
 ) {
@@ -196,7 +178,7 @@ fun ContratacionContent(
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // SECCIÓN 1: RESUMEN DEL SERVICIO (LECTURA)
+            // SECCIÓN 1: RESUMEN DEL SERVICIO
             Text(
                 text = stringResource(R.string.contratacion_details_section).uppercase(),
                 style = MaterialTheme.typography.labelMedium,
@@ -210,29 +192,20 @@ fun ContratacionContent(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    InfoRow(Icons.Default.Build, stringResource(R.string.contratacion_service_field), service.title)
+                    InfoRow(Icons.Default.Build, stringResource(R.string.contratacion_service_field), uiState.serviceTitle)
                     HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outlineVariant)
-                    InfoRow(Icons.Default.Payments, stringResource(R.string.contratacion_base_price_field), formatCurrency(service.price))
+                    InfoRow(Icons.Default.Payments, stringResource(R.string.contratacion_base_price_field), uiState.formattedBasePrice)
                 }
             }
 
-            // SECCIÓN 2: DETALLES DE LA RESERVA (INTERACTIVO)
-            Text(
-                text = "TUS DATOS DE RESERVA",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
+            // SECCIÓN 2: DATOS DE RESERVA
+            Text(text = "TUS DATOS DE RESERVA", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(2.dp)
-            ) {
+            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), elevation = CardDefaults.cardElevation(2.dp)) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     CampoFormulario(stringResource(R.string.contratacion_address_field), direccion, !isLoading, stringResource(R.string.contratacion_address_placeholder), onDireccionChange)
                     
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         SelectorBoton(
                             icon = Icons.Default.DateRange,
                             label = if (fecha.isEmpty()) stringResource(R.string.contratacion_date_field) else fecha,
@@ -251,53 +224,26 @@ fun ContratacionContent(
                 }
             }
 
-            // SECCIÓN 3: NEGOCIACIÓN DE PRECIO (PREMIUM SELECTOR)
-            Text(
-                text = stringResource(R.string.contratacion_offer_field).uppercase(),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
+            // SECCIÓN 3: NEGOCIACIÓN (AJUSTE PARA FUENTES GRANDES)
+            Text(text = stringResource(R.string.contratacion_offer_field).uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(4.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Ajusta tu oferta (Mínimo: ${formatCurrency(service.price)})",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
+            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), elevation = CardDefaults.cardElevation(4.dp)) {
+                Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "Ajusta tu oferta (Mínimo: ${uiState.formattedBasePrice})", style = MaterialTheme.typography.bodySmall, color = Color.Gray, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(12.dp))
                     
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                         FilledIconButton(
                             onClick = onDecrementar,
-                            enabled = !isLoading && (oferta.toDoubleOrNull() ?: 0.0) > service.price,
+                            enabled = !isLoading && !uiState.isOfferAtBase,
                             colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                        ) {
-                            Icon(Icons.Default.Remove, contentDescription = "Menos")
-                        }
+                        ) { Icon(Icons.Default.Remove, contentDescription = "Menos") }
 
                         OutlinedTextField(
-                            value = oferta,
+                            value = ofertaRaw,
                             onValueChange = onOfertaChange,
-                            modifier = Modifier.width(140.dp).padding(horizontal = 8.dp),
-                            textStyle = LocalTextStyle.current.copy(
-                                textAlign = TextAlign.Center,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp
-                            ),
+                            modifier = Modifier.weight(1f).padding(horizontal = 8.dp), // WEIGHT PARA NO DESBORDAR
+                            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 18.sp),
                             prefix = { Text("$") },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -309,38 +255,31 @@ fun ContratacionContent(
                             onClick = onIncrementar,
                             enabled = !isLoading,
                             colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                        ) {
-                            Icon(Icons.Default.Add, contentDescription = "Más")
-                        }
+                        ) { Icon(Icons.Default.Add, contentDescription = "Más") }
                     }
+                    Spacer(Modifier.height(8.dp))
+                    Text(text = "Propuesta: ${uiState.formattedOffer}", fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary, fontSize = 20.sp)
                 }
             }
 
             if (errorMessage != null) {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = errorMessage,
-                        color = MaterialTheme.colorScheme.onErrorContainer,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(12.dp),
-                        textAlign = TextAlign.Center
-                    )
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer), modifier = Modifier.fillMaxWidth()) {
+                    Text(text = errorMessage, color = MaterialTheme.colorScheme.onErrorContainer, fontSize = 13.sp, modifier = Modifier.padding(12.dp), textAlign = TextAlign.Center, lineHeight = 18.sp)
                 }
             }
 
             Spacer(Modifier.weight(1f))
 
-            Button(
-                onClick = onContratar,
-                modifier = Modifier.fillMaxWidth().height(60.dp),
-                shape = RoundedCornerShape(16.dp),
-                enabled = !isLoading && direccion.isNotBlank() && fecha.isNotBlank() && hora.isNotBlank() && isAvailable
-            ) {
-                if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
-                else Text(stringResource(R.string.contratacion_button), fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Box(modifier = Modifier.navigationBarsPadding()) {
+                Button(
+                    onClick = onContratar,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp), // heightIn para fuentes grandes
+                    shape = RoundedCornerShape(16.dp),
+                    enabled = uiState.canContratar
+                ) {
+                    if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
+                    else Text(stringResource(R.string.contratacion_button), fontWeight = FontWeight.Bold, fontSize = 18.sp, textAlign = TextAlign.Center)
+                }
             }
         }
     }
@@ -348,12 +287,12 @@ fun ContratacionContent(
 
 @Composable
 fun InfoRow(icon: ImageVector, label: String, value: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+    Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
+        Icon(icon, null, modifier = Modifier.size(20.dp).padding(top = 2.dp), tint = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.width(12.dp))
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-            Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+            Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, lineHeight = 20.sp)
         }
     }
 }
@@ -363,24 +302,17 @@ fun SelectorBoton(icon: ImageVector, label: String, modifier: Modifier, onClick:
     Surface(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier.height(56.dp),
+        modifier = modifier.heightIn(min = 56.dp),
         shape = RoundedCornerShape(12.dp),
         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         color = MaterialTheme.colorScheme.surface
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(8.dp))
-            Text(label, style = MaterialTheme.typography.bodyMedium, maxLines = 1)
+            Text(label, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
         }
     }
-}
-
-fun formatCurrency(amount: Double): String {
-    return NumberFormat.getCurrencyInstance(Locale("es", "CO")).format(amount).replace(",00", "")
 }
 
 @Composable
@@ -396,15 +328,9 @@ fun CampoFormulario(label: String, value: String, enabled: Boolean, placeholder:
 @Preview(showBackground = true)
 @Composable
 fun ContratacionPreview() {
-    ContratacionContent(
-        service = Service(title = "Limpieza",), provider = null,
-        direccion = "", onDireccionChange = {}, 
-        fecha = "", onFechaClick = {},
-        hora = "", onHoraClick = {},
-        oferta = "", onOfertaChange = {}, 
-        onIncrementar = {}, onDecrementar = {},
-        isLoading = false, errorMessage = null,
-        isAvailable = true,
-        onBack = {}, onContratar = {}
-    )
+    MaterialTheme {
+        Box(Modifier.fillMaxSize().background(Color.White)) {
+            Text("Vista Previa de Contratación")
+        }
+    }
 }

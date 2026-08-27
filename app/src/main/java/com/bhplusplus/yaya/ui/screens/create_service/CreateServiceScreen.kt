@@ -162,6 +162,7 @@ fun CreateServiceScreen(
                 .padding(padding)
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
+                .navigationBarsPadding() // RESPETA BOTONES DE NAVEGACIÓN
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,

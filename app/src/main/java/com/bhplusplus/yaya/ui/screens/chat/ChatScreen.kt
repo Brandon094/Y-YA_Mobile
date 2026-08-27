@@ -120,6 +120,7 @@ fun ChatScreen(
             ) {
                 Row(
                     modifier = Modifier
+                        .navigationBarsPadding() // RESPETA BOTONES DE NAVEGACIÓN
                         .padding(horizontal = 12.dp, vertical = 8.dp)
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically

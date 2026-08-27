@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -151,6 +152,7 @@ fun HomeScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .navigationBarsPadding() // RESPETA BOTONES DE NAVEGACIÓN
                         .padding(12.dp),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
@@ -339,8 +341,9 @@ fun ServiceItem(state: ServiceUiState, onClick: () -> Unit) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top // Cambiado a Top para manejar desbordes de texto
             ) {
+                // Icono de la categoría
                 Box(
                     modifier = Modifier
                         .size(44.dp)
@@ -362,16 +365,21 @@ fun ServiceItem(state: ServiceUiState, onClick: () -> Unit) {
                         text = state.title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 2, // Aumentado para accesibilidad
-                        overflow = TextOverflow.Ellipsis
+                        maxLines = 3, // Aumentado para accesibilidad
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 20.sp
                     )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    ) {
                         if (state.totalRatings > 0) {
                             Icon(
                                 Icons.Default.Star,
                                 contentDescription = null,
                                 tint = Color(0xFFFFB800),
-                                modifier = Modifier.size(14.dp)
+                                modifier = Modifier.size(16.dp)
                             )
                             Text(
                                 text = " $ratingText (${state.totalRatings})",
@@ -380,21 +388,27 @@ fun ServiceItem(state: ServiceUiState, onClick: () -> Unit) {
                             )
                             Spacer(Modifier.width(8.dp))
                         }
-                        Text(
-                            text = state.description,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 2, // Aumentado para accesibilidad
-                            overflow = TextOverflow.Ellipsis
-                        )
                     }
+                    
+                    Text(
+                        text = state.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 3, // Aumentado para accesibilidad
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 16.sp
+                    )
                 }
 
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // Precio destacado (con peso controlado)
                 Text(
                     text = state.formattedPrice,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.End
                 )
             }
 
@@ -402,27 +416,31 @@ fun ServiceItem(state: ServiceUiState, onClick: () -> Unit) {
             HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
+            // SECCIÓN INFERIOR: DÍAS Y HORARIO (Flexible para 200% font)
+            @OptIn(ExperimentalLayoutApi::class)
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // Días de atención
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     dayNames.forEachIndexed { index, name ->
                         val dayNumber = index + 1
                         val isSelected = state.workingDays.contains(dayNumber)
                         Box(
                             modifier = Modifier
-                                .size(20.dp)
+                                .sizeIn(minWidth = 24.dp, minHeight = 24.dp) // Dinámico
                                 .background(
                                     color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                                     shape = CircleShape
-                                ),
+                                )
+                                .padding(4.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = name,
-                                fontSize = 10.sp,
+                                fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -430,19 +448,21 @@ fun ServiceItem(state: ServiceUiState, onClick: () -> Unit) {
                     }
                 }
 
+                // Horario de atención
                 if (state.formattedTimeRange.isNotEmpty()) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.AccessTime,
                             contentDescription = null,
-                            modifier = Modifier.size(14.dp),
+                            modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.primary
                         )
-                        Spacer(Modifier.width(4.dp))
+                        Spacer(Modifier.width(6.dp))
                         Text(
                             text = state.formattedTimeRange,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
