@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.ContratacionShimmer
 
 /**
  * PANTALLA DE CONFIRMACIÓN DE RESERVA (Rediseño Premium)
@@ -131,9 +132,7 @@ fun PantallaReservaConfirmada(
             }
 
             if (viewModel.isLoading && uiState == null) {
-                Box(Modifier.fillMaxSize().padding(40.dp), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
+                ContratacionShimmer() // Reutilizamos el de contratación que tiene estructura similar
             } else if (uiState != null) {
                 // CUERPO: TICKET DE DETALLES
                 Column(modifier = Modifier.padding(24.dp)) {

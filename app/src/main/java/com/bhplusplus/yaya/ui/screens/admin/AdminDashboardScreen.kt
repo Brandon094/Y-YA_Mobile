@@ -29,6 +29,9 @@ import androidx.compose.ui.layout.ContentScale
 import com.bhplusplus.yaya.data.models.Report
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
+import com.bhplusplus.yaya.ui.components.AdminPendingItemShimmer
+import com.bhplusplus.yaya.ui.components.ReportItemShimmer
+import com.bhplusplus.yaya.ui.components.UserItemShimmer
 import com.bhplusplus.yaya.utils.FormatterUtils
 
 /**
@@ -100,8 +103,16 @@ fun AdminDashboardContent(
             }
 
             if (isLoading) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                when (selectedTab) {
+                    0 -> LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(3) { AdminPendingItemShimmer() }
+                    }
+                    1 -> LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(5) { UserItemShimmer() }
+                    }
+                    2 -> LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(3) { ReportItemShimmer() }
+                    }
                 }
             } else {
                 when (selectedTab) {

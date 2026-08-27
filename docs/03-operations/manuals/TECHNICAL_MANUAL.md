@@ -19,6 +19,7 @@ El proyecto sigue el patrón de arquitectura **MVVM (Model-View-ViewModel)** rec
 - **Networking:** Ktor Client 3.0.3 para peticiones REST.
 - **Image Loading:** Coil 3.1.0 para renderizado y caché de multimedia.
 - **Formatter Engine:** Punto único de verdad (`FormatterUtils.kt`) para la transformación de datos (Moneda compacta $k/M, Formato de tiempo), garantizando consistencia DRY en toda la aplicación.
+- **UX Components:** Implementación masiva de `Shimmer.kt` (Skeleton Screens) con opacidad optimizada (alpha 0.25) para un feedback visual inmersivo en todas las pantallas transaccionales y administrativas.
 - **Serialización:** Kotlinx Serialization 1.7.3.
 - **Persistencia de Sesión:** Multiplatform Settings 1.2.0.
 

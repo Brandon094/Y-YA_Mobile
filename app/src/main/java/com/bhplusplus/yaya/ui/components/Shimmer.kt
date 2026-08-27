@@ -39,7 +39,7 @@ fun Modifier.shimmerEffect(
     )
 
     val baseColor = MaterialTheme.colorScheme.surfaceVariant
-    val highlightColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
+    val highlightColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.25f)
 
     val modifier = if (shape != null) this.clip(shape) else this
 
@@ -176,48 +176,25 @@ fun AvailabilityItemShimmer() {
 @Composable
 fun ServiceDetailShimmer() {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).verticalScroll(rememberScrollState())
     ) {
-        // Galería Immersiva Shimmer
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp)
-                .shimmerEffect()
-        )
-
+        Box(modifier = Modifier.fillMaxWidth().height(300.dp).shimmerEffect())
         Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset(y = (-24).dp),
+            modifier = Modifier.fillMaxWidth().offset(y = (-24).dp),
             shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
-                // Título y Precio Shimmer
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
                     Box(Modifier.fillMaxWidth(0.6f).height(32.dp).shimmerEffect(RoundedCornerShape(8.dp)))
                     Box(Modifier.size(90.dp, 44.dp).shimmerEffect(RoundedCornerShape(16.dp)))
                 }
-
                 Spacer(Modifier.height(16.dp))
-
-                // Badges Shimmer
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Box(Modifier.size(100.dp, 28.dp).shimmerEffect(RoundedCornerShape(8.dp)))
                     Box(Modifier.size(130.dp, 28.dp).shimmerEffect(RoundedCornerShape(8.dp)))
                 }
-
                 Spacer(Modifier.height(32.dp))
-
-                // Card Prestador Shimmer
                 Box(Modifier.size(160.dp, 14.dp).shimmerEffect(RoundedCornerShape(4.dp)))
                 Spacer(Modifier.height(12.dp))
                 Card(
@@ -236,31 +213,19 @@ fun ServiceDetailShimmer() {
                         Box(Modifier.size(48.dp).shimmerEffect(CircleShape))
                     }
                 }
-
                 Spacer(Modifier.height(32.dp))
-
-                // Descripción Shimmer
                 Box(Modifier.size(140.dp, 14.dp).shimmerEffect(RoundedCornerShape(4.dp)))
                 Spacer(Modifier.height(12.dp))
                 repeat(4) {
                     Box(Modifier.fillMaxWidth().height(14.dp).padding(vertical = 4.dp).shimmerEffect(RoundedCornerShape(4.dp)))
                 }
-                Box(Modifier.fillMaxWidth(0.7f).height(14.dp).padding(vertical = 4.dp).shimmerEffect(RoundedCornerShape(4.dp)))
-
                 Spacer(Modifier.height(32.dp))
-
-                // Disponibilidad Shimmer
                 Box(Modifier.size(150.dp, 14.dp).shimmerEffect(RoundedCornerShape(4.dp)))
                 Spacer(Modifier.height(12.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     repeat(7) { Box(Modifier.size(36.dp).shimmerEffect(CircleShape)) }
                 }
-                Spacer(Modifier.height(16.dp))
-                Box(Modifier.size(180.dp, 14.dp).shimmerEffect(RoundedCornerShape(4.dp)))
-
                 Spacer(Modifier.height(32.dp))
-
-                // Reseñas Shimmer
                 Box(Modifier.size(140.dp, 14.dp).shimmerEffect(RoundedCornerShape(4.dp)))
                 Spacer(Modifier.height(12.dp))
                 repeat(2) {
@@ -287,21 +252,14 @@ fun ServiceDetailShimmer() {
 @Composable
 fun ContratacionShimmer() {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).verticalScroll(rememberScrollState())
     ) {
-        // Header Hero Shimmer
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
             shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
         ) {
-            Row(
-                modifier = Modifier.padding(24.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(modifier = Modifier.padding(24.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(56.dp).shimmerEffect(CircleShape))
                 Spacer(Modifier.width(16.dp))
                 Column {
@@ -311,17 +269,11 @@ fun ContratacionShimmer() {
                 }
             }
         }
-
         Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
-            // Sección: Cita
             Column {
                 Box(Modifier.size(150.dp, 14.dp).shimmerEffect(RoundedCornerShape(4.dp)))
                 Spacer(Modifier.height(12.dp))
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-                ) {
+                Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                     Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         Box(Modifier.fillMaxWidth().height(56.dp).shimmerEffect(RoundedCornerShape(12.dp)))
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -331,16 +283,10 @@ fun ContratacionShimmer() {
                     }
                 }
             }
-
-            // Sección: Negociación
             Column {
                 Box(Modifier.size(150.dp, 14.dp).shimmerEffect(RoundedCornerShape(4.dp)))
                 Spacer(Modifier.height(12.dp))
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-                ) {
+                Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                     Column(modifier = Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Box(Modifier.size(100.dp, 14.dp).shimmerEffect(RoundedCornerShape(4.dp)))
                         Spacer(Modifier.height(20.dp))
@@ -355,6 +301,89 @@ fun ContratacionShimmer() {
                         Box(Modifier.fillMaxWidth(0.8f).height(12.dp).shimmerEffect(RoundedCornerShape(4.dp)))
                     }
                 }
+            }
+        }
+    }
+}
+
+/**
+ * SKELETON PARA DASHBOARD ADMIN (Aprobaciones)
+ */
+@Composable
+fun AdminPendingItemShimmer() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.Top) {
+                Box(Modifier.size(40.dp).shimmerEffect(CircleShape))
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Box(Modifier.size(140.dp, 18.dp).shimmerEffect(RoundedCornerShape(4.dp)))
+                    Spacer(Modifier.height(6.dp))
+                    Box(Modifier.size(100.dp, 12.dp).shimmerEffect(RoundedCornerShape(4.dp)))
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            Box(Modifier.fillMaxWidth().height(14.dp).shimmerEffect(RoundedCornerShape(4.dp)))
+            Spacer(Modifier.height(4.dp))
+            Box(Modifier.fillMaxWidth(0.7f).height(14.dp).shimmerEffect(RoundedCornerShape(4.dp)))
+            Spacer(Modifier.height(16.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(100.dp, 20.dp).shimmerEffect(RoundedCornerShape(4.dp)))
+                Spacer(Modifier.weight(1f))
+                Box(Modifier.size(40.dp).shimmerEffect(CircleShape))
+                Spacer(Modifier.width(8.dp))
+                Box(Modifier.size(40.dp).shimmerEffect(CircleShape))
+            }
+        }
+    }
+}
+
+/**
+ * SKELETON PARA LISTA DE USUARIOS (Admin)
+ */
+@Composable
+fun UserItemShimmer() {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(Modifier.size(40.dp).shimmerEffect(CircleShape))
+        Spacer(Modifier.width(16.dp))
+        Column(Modifier.weight(1f)) {
+            Box(Modifier.size(150.dp, 16.dp).shimmerEffect(RoundedCornerShape(4.dp)))
+            Spacer(Modifier.height(8.dp))
+            Box(Modifier.size(100.dp, 12.dp).shimmerEffect(RoundedCornerShape(4.dp)))
+        }
+    }
+}
+
+/**
+ * SKELETON PARA REPORTES (Admin)
+ */
+@Composable
+fun ReportItemShimmer() {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(32.dp).shimmerEffect(CircleShape))
+                Spacer(Modifier.width(12.dp))
+                Box(Modifier.size(140.dp, 16.dp).shimmerEffect(RoundedCornerShape(4.dp)))
+            }
+            Spacer(Modifier.height(12.dp))
+            Box(Modifier.fillMaxWidth().height(14.dp).shimmerEffect(RoundedCornerShape(4.dp)))
+            Spacer(Modifier.height(12.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(20.dp).shimmerEffect(CircleShape))
+                Spacer(Modifier.width(8.dp))
+                Box(Modifier.size(80.dp, 12.dp).shimmerEffect(RoundedCornerShape(4.dp)))
             }
         }
     }

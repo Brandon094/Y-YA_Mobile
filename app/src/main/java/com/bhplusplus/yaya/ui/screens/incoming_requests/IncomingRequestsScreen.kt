@@ -150,7 +150,7 @@ fun IncomingRequestsScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(4) {
+                        items(5) { // Aumentado a 5 para mayor densidad visual
                             RequestItemShimmer()
                         }
                     }

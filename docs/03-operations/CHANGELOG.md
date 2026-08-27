@@ -16,8 +16,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Barra de búsqueda integrada y selector de categorías con diseño moderno.
     - **Tarjetas de Servicio 2.0:** Avatares con badges de categoría superpuestos, precio en formato Pill y visualización de disponibilidad elástica.
 - **Infraestructura de Shimmers Pro:**
-    - Implementación de **Skeleton Screens** en todas las vistas críticas: Home, Pedidos, Solicitudes, Mensajes, Disponibilidad y **Detalle del Servicio**.
-    - El Shimmer de detalles replica exactamente la estructura de la galería, card de prestador y secciones de valor.
+    - Implementación de **Skeleton Screens** en todas las vistas críticas: Home, Pedidos, Solicitudes, Mensajes, Disponibilidad, Contratación y **Detalle del Servicio**.
+    - Optimización de intensidad visual (alpha 0.25) para un feedback de carga más claro y elegante.
+    - El Shimmer de detalles replica exactamente la estructura de la galería, card de prestador y secciones de valor, eliminando saltos visuales.
+    - Soporte completo de Shimmers para el Dashboard Administrativo (Aprobaciones, Usuarios y Reportes).
 - **Onboarding Interactivo:** Carrusel de bienvenida de 3 pasos con animaciones y dots dinámicos.
 - **Utilidades Globales (Formatter Engine):**
     - Implementación de `FormatterUtils.kt` con soporte para moneda colombiana compacta (ej: **$ 50k**, **$ 1.2M**).
