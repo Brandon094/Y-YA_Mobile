@@ -166,10 +166,10 @@ fun IncomingRequestsScreen(
                             IncomingRequestItem(
                                 state = uiState,
                                 onAccept = { 
-                                    if (uiState.status == "accepted") {
-                                        viewModel.updateRequestStatus(uiState.domain.id!!, "completed")
-                                    } else {
-                                        viewModel.updateRequestStatus(uiState.domain.id!!, "accepted")
+                                    when (uiState.status) {
+                                        "in_progress" -> viewModel.updateRequestStatus(uiState.domain.id!!, "completed")
+                                        "pending" -> viewModel.updateRequestStatus(uiState.domain.id!!, "accepted")
+                                        else -> { /* Nada */ }
                                     }
                                 },
                                 onReject = { viewModel.updateRequestStatus(uiState.domain.id!!, "cancelled") },
@@ -287,10 +287,10 @@ fun IncomingRequestItem(
                         modifier = Modifier.size(52.dp).background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
                     ) { Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "Chatear", tint = MaterialTheme.colorScheme.onSecondaryContainer) }
 
-                    if (state.status == "accepted") {
-                        // BOTÓN FINALIZAR (Solo cuando ya se aceptó y negoció)
+                    if (state.status == "in_progress") {
+                        // BOTÓN FINALIZAR (Solo en progreso)
                         Button(
-                            onClick = onAccept, // Reutilizamos onAccept para cambiar a 'completed'
+                            onClick = onAccept, // Llama a 'completed'
                             modifier = Modifier.weight(1f).height(52.dp),
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
@@ -298,6 +298,17 @@ fun IncomingRequestItem(
                             Icon(Icons.Default.DoneAll, null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(8.dp))
                             Text("Finalizar Trabajo", fontWeight = FontWeight.ExtraBold)
+                        }
+                    } else if (state.status == "accepted") {
+                        // ESPERA DE CONFIRMACIÓN DEL CLIENTE
+                        Surface(
+                            modifier = Modifier.weight(1f).height(52.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text("Esperando al Cliente...", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+                            }
                         }
                     } else {
                         // BOTÓN NEGOCIAR
@@ -315,7 +326,7 @@ fun IncomingRequestItem(
                         // BOTÓN ACEPTAR OFERTA
                         if (state.isClientOfferPending) {
                             Button(
-                                onClick = onAccept,
+                                onClick = onAccept, // Llama a 'accepted'
                                 modifier = Modifier.weight(1.1f).height(52.dp),
                                 shape = RoundedCornerShape(16.dp),
                                 elevation = ButtonDefaults.buttonElevation(4.dp)

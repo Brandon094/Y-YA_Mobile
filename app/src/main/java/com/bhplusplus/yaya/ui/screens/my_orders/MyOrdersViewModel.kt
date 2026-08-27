@@ -100,6 +100,11 @@ class MyOrdersViewModel : ViewModel() {
 
     private fun mapToUiState(order: ServiceRequest): MyOrderUiState {
         val existingRating = clientRatings.find { it.request_id == order.id }
+        val desc = order.request_description ?: ""
+        
+        // Turno del cliente si el prestador hizo la última contraoferta
+        val canAccept = order.status == "pending" && desc.contains("Contraoferta Prestador")
+
         return MyOrderUiState(
             domain = order,
             serviceTitle = order.services?.title ?: "Servicio",
@@ -108,9 +113,8 @@ class MyOrdersViewModel : ViewModel() {
             address = order.service_address,
             formattedPrice = FormatterUtils.formatCurrency(order.final_price),
             formattedDate = FormatterUtils.formatDate(order.scheduled_date),
-            description = order.request_description ?: "Sin historial de negociación",
-            isCounterOfferActive = order.status == "pending" && 
-                                   order.request_description?.contains("Contraoferta Prestador") == true,
+            description = desc,
+            isCounterOfferActive = canAccept,
             providerAvatarUrl = order.services?.provider?.avatar_url,
             isRated = existingRating != null,
             ratingScore = existingRating?.score,
@@ -198,6 +202,24 @@ class MyOrdersViewModel : ViewModel() {
                 fetchMyOrders()
             } catch (e: Exception) {
                 Log.e("MyOrdersVM", "Error al aceptar: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * El cliente confirma el trato final (Mueve de 'accepted' a 'in_progress').
+     */
+    fun confirmWorkStart(requestId: String) {
+        viewModelScope.launch {
+            try {
+                SupabaseManager.client.postgrest["requests"].update({
+                    set("status", "in_progress")
+                }) {
+                    filter { eq("id", requestId) }
+                }
+                fetchMyOrders()
+            } catch (e: Exception) {
+                Log.e("MyOrdersVM", "Error al confirmar inicio: ${e.message}")
             }
         }
     }

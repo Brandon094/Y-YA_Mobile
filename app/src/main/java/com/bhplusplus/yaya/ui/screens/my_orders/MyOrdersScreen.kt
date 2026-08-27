@@ -182,7 +182,13 @@ fun MyOrdersScreen(
                         items(viewModel.orders) { uiState ->
                             OrderItem(
                                 state = uiState,
-                                onAccept = { viewModel.acceptProposal(uiState.domain.id!!) },
+                                onAccept = { 
+                                    if (uiState.status == "accepted") {
+                                        viewModel.confirmWorkStart(uiState.domain.id!!)
+                                    } else {
+                                        viewModel.acceptProposal(uiState.domain.id!!)
+                                    }
+                                },
                                 onReject = { viewModel.cancelRequest(uiState.domain.id!!) },
                                 onNegotiate = { showNegotiationDialog = uiState },
                                 onRate = { showRatingDialog = uiState },
@@ -277,7 +283,7 @@ fun OrderItem(
                 }
             }
 
-            if (state.status == "pending") {
+            if (state.status == "pending" || state.status == "accepted") {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (state.isCounterOfferActive) {
@@ -300,24 +306,38 @@ fun OrderItem(
                         modifier = Modifier.size(52.dp).background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
                     ) { Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "Chat", tint = MaterialTheme.colorScheme.onSecondaryContainer) }
 
-                    OutlinedButton(onClick = onNegotiate, modifier = Modifier.weight(1f).height(52.dp), shape = RoundedCornerShape(16.dp), border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)) {
-                        Text("Negociar", fontWeight = FontWeight.Bold)
-                    }
-
-                    if (state.isCounterOfferActive) {
+                    if (state.status == "accepted") {
+                        // BOTÓN PARA INICIAR TRABAJO (Doble Confirmación)
                         Button(
-                            onClick = onAccept,
-                            modifier = Modifier.weight(1.2f).height(52.dp),
+                            onClick = onAccept, // Reutilizamos el callback para confirmWorkStart
+                            modifier = Modifier.weight(1f).height(52.dp),
                             shape = RoundedCornerShape(16.dp),
-                            elevation = ButtonDefaults.buttonElevation(4.dp)
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                         ) {
-                            Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(6.dp))
-                            Text("Aceptar", fontWeight = FontWeight.ExtraBold)
+                            Icon(Icons.Default.PlayArrow, null, modifier = Modifier.size(20.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text("CONFIRMAR Y EMPEZAR", fontWeight = FontWeight.ExtraBold, fontSize = 13.sp)
                         }
                     } else {
-                        TextButton(onClick = onReject, modifier = Modifier.height(52.dp)) {
-                            Text("Cancelar", color = MaterialTheme.colorScheme.error)
+                        OutlinedButton(onClick = onNegotiate, modifier = Modifier.weight(1f).height(52.dp), shape = RoundedCornerShape(16.dp), border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)) {
+                            Text("Negociar", fontWeight = FontWeight.Bold)
+                        }
+
+                        if (state.isCounterOfferActive) {
+                            Button(
+                                onClick = onAccept,
+                                modifier = Modifier.weight(1.2f).height(52.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = ButtonDefaults.buttonElevation(4.dp)
+                            ) {
+                                Icon(Icons.Default.Check, null, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(6.dp))
+                                Text("Aceptar", fontWeight = FontWeight.ExtraBold)
+                            }
+                        } else {
+                            TextButton(onClick = onReject, modifier = Modifier.height(52.dp)) {
+                                Text("Cancelar", color = MaterialTheme.colorScheme.error)
+                            }
                         }
                     }
                 }

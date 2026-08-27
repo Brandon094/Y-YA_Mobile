@@ -94,6 +94,17 @@ class IncomingRequestsViewModel : ViewModel() {
     }
 
     private fun mapToUiState(request: ServiceRequest): IncomingRequestUiState {
+        val desc = request.request_description ?: ""
+        
+        // Turno del prestador si el cliente hizo la última oferta (inicial o contraoferta)
+        val lastIsClient = desc.contains("Oferta inicial") || desc.contains("Nueva oferta Cliente")
+        val lastIsProvider = desc.contains("Contraoferta Prestador")
+        
+        // canAccept: Es pending y el último mensaje fue del cliente (y no hay contraoferta posterior del prestador)
+        val canAccept = request.status == "pending" && 
+                        (desc.lastIndexOf("Cliente") > desc.lastIndexOf("Prestador") || 
+                        (lastIsClient && !lastIsProvider))
+
         return IncomingRequestUiState(
             domain = request,
             clientName = request.client?.full_name ?: "Cliente",
@@ -102,9 +113,8 @@ class IncomingRequestsViewModel : ViewModel() {
             address = request.service_address,
             formattedPrice = FormatterUtils.formatCurrency(request.final_price),
             formattedDate = FormatterUtils.formatDate(request.scheduled_date),
-            description = request.request_description ?: "Sin detalles adicionales",
-            isClientOfferPending = request.status == "pending" && 
-                                   request.request_description?.contains("Nueva oferta Cliente") == true,
+            description = desc,
+            isClientOfferPending = canAccept,
             clientAvatarUrl = request.client?.avatar_url
         )
     }
