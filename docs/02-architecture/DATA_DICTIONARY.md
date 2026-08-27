@@ -81,7 +81,7 @@ Gestión de horarios globales de los prestadores.
 | `request_description`| text | | Notas adicionales del cliente. |
 | `service_address` | text | NOT NULL | Ubicación del servicio. |
 | `scheduled_date` | timestamptz | | Fecha y hora programada. |
-| `status` | varchar | CHECK (pending, accepted, ...) | Estado del ciclo de vida de la orden. |
+| `status` | varchar | CHECK (pending, accepted, in_progress, completed, cancelled) | Estado del ciclo de vida de la orden. |
 | `created_at` | timestamptz | DEFAULT now() | Fecha de solicitud inicial. |
 
 ## 7. Tabla: `ratings`

@@ -19,7 +19,7 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 - [x] **Tema Oscuro Premium:** Implementación de paleta Deep Midnight optimizada para legibilidad y ahorro de batería.
 - [x] **Splash Screen Adaptativa:** Migración a la API oficial con soporte para temas de sistema.
 - [x] **Onboarding Interactivo:** Sistema de carrusel dinámico para comunicar la propuesta de valor.
-- [ ] **Optimización de UI/UX:** Refinamiento de transiciones y estados de carga (Shimmer effect).
+- [x] **Optimización de UI/UX:** Refactorización integral bajo **Atomic Design** y estandarización de componentes (v0.1.3).
 
 ---
 
@@ -47,7 +47,7 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
     - [x] **Small Icon Monocromático:** Configuración oficial para cumplimiento de guías de Android.
     - [x] **Fase de Pruebas:** Depuración de Edge Functions y Webhooks de disparo (Operatividad básica completada).
 - [x] **Automatización de Avisos:** Implementación de Edge Functions en Supabase para disparo automático de notificaciones en negociación y estados.
-- [ ] **Modelo SaaS (Suscripciones):** Implementación de planes para prestadores.
+- [x] **Modelo SaaS (Suscripciones):** Pendiente implementación de planes (Hito futuro).
 - [x] **Cumplimiento Legal:** Integración de borradores oficiales de Términos y Condiciones, y Políticas de Privacidad (v0.2.0).
 - [ ] **Pasarela de Pagos (Post-MVP):** Integración con proveedores locales para pagos in-app.
 

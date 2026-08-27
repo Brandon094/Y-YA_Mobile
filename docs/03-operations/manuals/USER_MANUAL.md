@@ -13,10 +13,16 @@ Este manual proporciona instrucciones detalladas sobre cómo utilizar la platafo
 - Filtre por categorías (Limpieza, Mascotas, etc.) usando los chips superiores.
 - Haga clic en una tarjeta de servicio para ver el detalle, precio y reputación del prestador.
 
-### 1.3. Proceso de Contratación
+### 1.3. Proceso de Contratación y Negociación
 - Dentro del detalle del servicio, presione "Solicitar este servicio".
 - Defina la fecha, hora y dirección.
-- Envíe una oferta inicial. Podrá ver el estado de su solicitud en "Mis Pedidos".
+- Envíe una oferta inicial.
+- **Negociación:** Si el prestador envía una contraoferta, podrá aceptarla o proponer un nuevo valor desde "Mis Pedidos".
+- **Handshake Digital:** Una vez lleguen a un acuerdo de precio (estado: Aceptada), usted como cliente debe pulsar **"Confirmar y Empezar"** para blindar el trato e iniciar oficialmente el trabajo.
+
+### 1.4. Chat y Reputación
+- Use el chat integrado para coordinar detalles finales con el prestador.
+- Tras finalizar el servicio, califique con estrellas y deje un comentario para ayudar a la comunidad.
 
 ## 2. Para Prestadores (Talentos Independientes)
 ### 2.1. Creación de Perfil Profesional

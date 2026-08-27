@@ -1,68 +1,56 @@
-# YÁYA - Conecta. Confía. Contrata.
+# 🚀 YÁYA - Conecta. Confía. Contrata.
 
-**YÁYA** es una plataforma móvil moderna diseñada para revolucionar la forma en que se encuentran y contratan servicios locales. Nuestra misión es conectar talentos independientes con usuarios que buscan soluciones rápidas, seguras y de calidad.
-
----
-
-## 📚 Centro de Documentación (Enciclopedia del Proyecto)
-
-Toda la información técnica, de negocio y operativa está centralizada en la carpeta [`docs/`](./docs/).
-
-### 🔹 [01. Negocio & Producto](./docs/01-business/)
-- **[Identidad de Marca (Branding)](./docs/01-business/BRANDING.md):** Colores, logos y tono de voz.
-- **[Glosario de Términos](./docs/01-business/GLOSSARY.md):** Definiciones clave del ecosistema.
-- **[Requisitos](./docs/01-business/REQUIREMENTS.md):** RF y RNF del sistema.
-- **[Roadmap](./docs/01-business/ROADMAP.md):** Hitos y futuro del proyecto.
-- **[Ficha Técnica](./docs/01-business/TECHNICAL_SHEET.md):** Especificaciones generales.
-
-### 🔹 [02. Arquitectura & Datos](./docs/02-architecture/)
-- **[Arquitectura de Software](./docs/02-architecture/SOFTWARE_ARCHITECTURE.md):** Patrones (MVVM), flujo de datos y navegación.
-- **[Modelo de Seguridad](./docs/02-architecture/SECURITY_MODEL.md):** Autenticación, RLS y protección de datos.
-- **[Diccionario de Datos](./docs/02-architecture/DATA_DICTIONARY.md):** Detalle técnico de tablas y campos.
-- **[Diagrama ER](./docs/02-architecture/ER_DIAGRAM.md):** Relaciones de la base de datos.
-
-### 🔹 [03. Operaciones & Proceso](./docs/03-operations/)
-- **[Informe Técnico Integrador](./docs/03-operations/PROJECT_REPORT_INTEGRATOR.md):** Documento oficial para el Taller de Codificación.
-- **[Manual del Usuario](./docs/03-operations/manuals/USER_MANUAL.md):** Guía para Clientes y Prestadores.
-- **[Manual del Administrador](./docs/03-operations/manuals/ADMIN_MANUAL.md):** Guía de moderación y gestión.
-- **[Ecosistema de Agentes](./docs/agents/README.md):** Definición de roles especializados (Senior, UI, Data, Logic).
-- **[Manual Técnico](./docs/03-operations/manuals/TECHNICAL_MANUAL.md):** Estándares de desarrollo y stack.
-- **[Guía del Desarrollador (Guidelines)](./docs/03-operations/DEVELOPER_GUIDELINES.md):** Reglas de oro del código.
-- **[Guía de Configuración (Setup)](./docs/03-operations/SETUP_GUIDE.md):** Pasos para iniciar el desarrollo.
-- **[Changelog](./docs/03-operations/CHANGELOG.md):** Historial de cambios y versiones.
+**YÁYA** es una plataforma móvil de vanguardia diseñada bajo estándares de ingeniería **Senior Enterprise**. Nuestra misión es conectar talentos independientes con usuarios mediante una experiencia **Premium, Inclusiva y Segura**, apalancada en una arquitectura de software impecable.
 
 ---
 
-## 🚀 Características Principales
+## 🏛️ Pilares de Ingeniería (La "Biblia" de YÁYA)
 
-- **Negociación Avanzada:** Sistema de subasta interactivo para acordar precios justos.
-- **Notificaciones Push:** Alertas automáticas para nuevas solicitudes y cambios de precio.
-- **Catálogo Dinámico:** Exploración intuitiva de diversas categorías de servicios.
-- **Perfiles Detallados:** Información clara y portafolios visuales de los prestadores.
-- **Flujo de Contratación:** Proceso Premium simplificado y transparente.
-- **Gestión de Perfil:** Control total sobre datos, roles y seguridad.
+El proyecto se rige por cuatro principios fundamentales que garantizan su escalabilidad y calidad:
 
----
-
-## 🛠️ Stack Tecnológico
-
-- **Lenguaje:** Kotlin (Coroutines & Flow)
-- **UI:** Jetpack Compose (Material 3)
-- **Backend:** Supabase (Auth, DB & Realtime)
-- **Navegación:** Jetpack Navigation (Type-Safe)
-- **Arquitectura:** MVVM
+1.  **Atomic Design System**: La interfaz no es un conjunto de pantallas, sino un ecosistema de componentes jerárquicos (**Atoms**, **Molecules**, **Organisms**). Esto garantiza consistencia visual absoluta y un mantenimiento centralizado.
+2.  **Clean MVVM**: Separación estricta de responsabilidades. Las vistas son **100% pasivas (Stateless)** y toda la lógica de negocio, transformación de datos y toma de decisiones reside en los ViewModels.
+3.  **Filosofía DRY (Don't Repeat Yourself)**: Uso intensivo de utilidades centralizadas (`FormatterUtils`, `ImageUtils`) y componentes reutilizables para eliminar la redundancia de código.
+4.  **Premium UX & Accesibilidad**: Implementación de **Skeleton Screens (Shimmers)** para cargas fluidas, soporte nativo para **fuentes al 200%** mediante layouts elásticos y un flujo de negociación con **Handshake Digital** para máxima seguridad transaccional.
 
 ---
 
-## 🤝 Contribuciones
+## 📚 Centro de Documentación Estratégica
 
-Este proyecto es desarrollado por **BH++**. Si deseas contribuir, consulta nuestros [estándares de commits](./docs/03-operations/DEVELOPER_GUIDELINES.md#5-gestión-del-proyecto-git) y abre un Pull Request.
+Toda la inteligencia del proyecto está organizada para una auditoría técnica inmediata:
+
+### 🔹 [01. Visión de Negocio & Producto](./docs/01-business/)
+- **[Identidad de Marca (Branding Pro)](./docs/01-business/BRANDING.md):** Manual de estilo y tokens de diseño.
+- **[Requisitos de Ingeniería](./docs/01-business/REQUIREMENTS.md):** RF y RNF detallados bajo norma ISO.
+- **[Roadmap de Evolución](./docs/01-business/ROADMAP.md):** Hitos alcanzados y visión de escalabilidad.
+
+### 🔹 [02. Arquitectura & Modelado de Datos](./docs/02-architecture/)
+- **[Arquitectura de Software (Master Doc)](./docs/02-architecture/SOFTWARE_ARCHITECTURE.md):** Detalle de patrones, Atomic Design y flujo reactivo.
+- **[Modelo de Seguridad & RLS](./docs/02-architecture/SECURITY_MODEL.md):** Protección de datos a nivel de fila y políticas Supabase.
+- **[Diccionario de Datos](./docs/02-architecture/DATA_DICTIONARY.md):** La verdad técnica de nuestras tablas y relaciones.
+
+### 🔹 [03. Excelencia Operativa & Desarrollo](./docs/03-operations/)
+- **[Manual Técnico Senior](./docs/03-operations/manuals/TECHNICAL_MANUAL.md):** Biblia del stack tecnológico y estándares de codificación.
+- **[Guía del Desarrollador (Instrucciones de Agente)](./docs/03-operations/DEVELOPER_GUIDELINES.md):** Reglas de oro inmutables del código.
+- **[Changelog Histórico (v0.1.3-alpha)](./docs/03-operations/CHANGELOG.md):** Trazabilidad total de cada mejora implementada.
+- **[Ecosistema de Agentes](./docs/agents/README.md):** Gobernanza mediante IA especializada.
 
 ---
 
-## 📝 Licencia
+## 🛠️ Stack Tecnológico de Alto Nivel
 
-Este proyecto es de **Propiedad Exclusiva de BH++**. Consulta el archivo [`LICENSE`](./LICENSE) para más detalles.
+- **Core:** Kotlin 2.2.10 (Coroutines & Flow)
+- **UI Framework:** Jetpack Compose (Material 3)
+- **Design System:** Atomic Design Methodology
+- **Backend-as-a-Service:** Supabase (Auth, PostgreSQL, Realtime, Storage, Edge Functions)
+- **Image Engine:** Coil 3.1.0
+- **Navigation:** Type-Safe Jetpack Navigation
 
 ---
-*Desarrollado con ❤️ por **BH++***
+
+## 🤝 Colaboración BH++
+
+Este proyecto es una obra de **BH++ - Senior Software Engineering**. Para contribuciones, respete estrictamente los estándares de **Atomic Design** y **Conventional Commits** definidos en nuestra guía técnica.
+
+---
+*Desarrollado con excelencia por **BH++***

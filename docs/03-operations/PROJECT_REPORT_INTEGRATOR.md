@@ -1,8 +1,8 @@
 # Informe Técnico: Taller Integrador de Codificación
-**Proyecto:** YÁYA (v0.1.0-alpha)  
+**Proyecto:** YÁYA (v0.1.3-alpha)  
 **Desarrollador:** Brandon Daza  
 **Organización:** BH++ Team  
-**Fecha:** 17 de Junio de 2026
+**Fecha:** 27 de Agosto de 2026
 
 ---
 
@@ -90,6 +90,9 @@ Este módulo implementa el ciclo de vida completo de los datos (Create, Read, Up
 | 10 | Visualización Multimedia | Implementación de visor de imágenes a pantalla completa en detalles de servicio para mejorar la confianza del cliente. |
 | 11 | Navegación Inmersiva | Integración de HorizontalPager en el visor multimedia para navegación por gestos (Swipe) entre imágenes de portafolio. |
 | 12 | Identidad Visual Admin | Integración de avatares en el Panel Administrativo y Home para humanizar la plataforma y facilitar la moderación. |
+| 13 | Redundancia UI/UX | Refactorización masiva bajo **Atomic Design** (Atoms, Molecules, Organisms) para garantizar consistencia DRY absoluta. |
+| 14 | Desorden en Formateo | Implementación de `FormatterUtils.kt` como motor único de verdad para moneda compacta y fechas. |
+| 15 | Inseguridad en Trato | Protocolo de **Handshake Digital** (`in_progress`) para blindar el precio acordado antes de finalizar servicios. |
 
 **Evidencia de Corrección (Persistencia de Sesión):**
 ![Persistencia Supabase](../assets/SupaBase.png)
@@ -101,7 +104,15 @@ Este módulo implementa el ciclo de vida completo de los datos (Create, Read, Up
 
 ## Actividad 5. Optimización del Código
 
-### 1. Navegación Type-Safe
+### 1. Arquitectura de Componentes (Atomic Design)
+Migración total de la interfaz a un sistema de diseño jerárquico. Se eliminó la lógica visual de las pantallas (Screens) y se delegó en Átomos, Moléculas y Organismos reutilizables.
+
+**Evidencia de Estándares:**
+- **Atoms:** `YayaButton`, `YayaTextField`.
+- **Molecules:** `RatingIndicator`, `ChatBubble`.
+- **Organisms:** `ServiceCard`, `HomeTopBar`.
+
+### 2. Navegación Type-Safe
 Migración completa de rutas basadas en Strings (inseguras) a objetos serializables, garantizando errores en tiempo de compilación en lugar de ejecución.
 
 **Evidencia de Rutas Seguras:**

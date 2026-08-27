@@ -38,7 +38,8 @@
 ### Moderación y Administración (Hito 5)
 - **RF-17:** El sistema contará con un Dashboard Administrativo para métricas y control de usuarios.
 - **RF-18:** **Flujo de Aprobación:** Los nuevos servicios entran en estado `pending_approval` y requieren validación humana para ser públicos.
-- **RF-19:** Los usuarios podrán reportar comportamientos inadecuados (botón de bandera) para revisión administrativa.
+- **RF-19:** **Sistema de Sanciones Progresivas:** El sistema agrupará reportes por infractor y recomendará sanciones (Llamado de atención, Suspensión, Eliminación) basadas en el volumen de denuncias (Semáforo de Severidad).
+- **RF-21:** Los administradores podrán suspender servicios o eliminar cuentas de infractores directamente desde el panel de reportes.
 
 ## 2. Requisitos No Funcionales (RNF)
 
