@@ -20,6 +20,7 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 - [x] **Splash Screen Adaptativa:** Migración a la API oficial con soporte para temas de sistema.
 - [x] **Onboarding Interactivo:** Sistema de carrusel dinámico para comunicar la propuesta de valor.
 - [x] **Optimización de UI/UX:** Refactorización integral bajo **Atomic Design** y estandarización de componentes (v0.1.3).
+- [x] **Gestión de Conectividad:** Implementación de observador de red global con feedback visual preventivo (No-Internet Banner).
 
 ---
 
@@ -66,4 +67,4 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 
 ---
 *Roadmap mantenido por el equipo de ingeniería de BH++*
-*Última revisión: Junio 2026*
+*Última revisión: Agosto 2026*

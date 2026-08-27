@@ -25,6 +25,7 @@ Los ViewModels actúan como controladores de estado puro:
     - **PostgreSQL:** Almacenamiento relacional robusto.
     - **Realtime Engine:** Sincronización bidireccional mediante WebSockets.
     - **Edge Functions:** Lógica server-side en TypeScript para automatización de notificaciones FCM V1.
+- **Connectivity Flow:** Sistema de monitoreo global de red basado en Kotlin Flow (`ConnectivityObserver`). Informa al usuario de desconexiones en tiempo real mediante el `YayaOfflineBanner`.
 - **Coil 3.1.0:** Motor de renderizado de imágenes asíncrono con caché inteligente.
 
 ## 4. Estándares de Codificación BH++

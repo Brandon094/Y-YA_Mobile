@@ -46,6 +46,7 @@
 ### Rendimiento y Reactividad
 - **RNF-01:** La aplicación debe cargar la pantalla principal en menos de 2 segundos.
 - **RNF-02:** **UI Reactiva:** Las listas de servicios y estados de pedidos deben actualizarse automáticamente ante cambios en la base de datos sin recargar la pantalla.
+- **RNF-07:** **Gestión de Desconexión:** El sistema debe detectar en tiempo real la pérdida de conectividad a internet y notificar visualmente al usuario para evitar errores de red en transacciones críticas.
 
 ### Seguridad
 - **RNF-03:** Toda la comunicación con el backend debe realizarse vía HTTPS.

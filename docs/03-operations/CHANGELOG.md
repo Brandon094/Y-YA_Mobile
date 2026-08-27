@@ -38,9 +38,12 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Estandarización Atómica (Atomic Design):**
     - Refactorización masiva de la interfaz de usuario bajo la metodología **Atomic Design**, creando librerías de componentes reutilizables en `ui/components/atoms`, `ui/components/molecules` y `ui/components/organisms`.
     - **Átomos:** `YayaButton`, `YayaTextField`, `YayaAvatar`, `YayaStatusBadge`, `YayaSectionHeader`, `YayaBranding` y `YayaLogo`.
-    - **Moléculas:** `RatingIndicator`, `DayIndicator`, `CategorySelector`, `DetailRow`, `ChatContactItem`, `ProfileOptionItem`, `UserListItem`, `EmptyStateView`, `TimeSelectorPill`, `YayaTimePickerDialog`, `NegotiationHistoryBox`, `NegotiationActionPill`, `AvatarSelector`, `ChatBubble`, `ChatInputBar`, `StatusBadgeDetail`, `PriceNegotiator`, `YayaReportDialog`, `YayaRatingDialog`, `YayaRatingItem`, `YayaSelectorButton` y `YayaNegotiationDialog`.
+    - **Moléculas:** `RatingIndicator`, `DayIndicator`, `CategorySelector`, `DetailRow`, `ChatContactItem`, `ProfileOptionItem`, `UserListItem`, `EmptyStateView`, `TimeSelectorPill`, `YayaTimePickerDialog`, `NegotiationHistoryBox`, `NegotiationActionPill`, `AvatarSelector`, `ChatBubble`, `ChatInputBar`, `StatusBadgeDetail`, `PriceNegotiator`, `YayaReportDialog`, `YayaRatingDialog`, `YayaRatingItem`, `YayaSelectorButton`, `YayaNegotiationDialog` y `YayaOfflineBanner`.
     - **Organismos:** `ServiceCard`, `HomeTopBar`, `AdminTopBar`, `AdminServiceCard`, `ReportSummaryCard`, `MyServiceCard`, `IncomingRequestCard`, `MyOrderCard`, `SearchBarIntegrated`, `OnboardingCarousel`, `ProfileHeroHeader`, `ProfileSectionCard`, `AvailabilityDayCard`, `WelcomeActions`, `ChatHeader`, `ServiceDetailGallery`, `ProviderCard`, `ServiceRequestHero`, `ConfirmationTicketCard` y `SuccessHeroBanner`.
     - Esta reestructuración garantiza consistencia visual absoluta y facilita el mantenimiento global de la marca BH++.
+- **Sistema de Conectividad Proactivo:**
+    - Implementación de `NetworkConnectivityObserver` para monitorear el estado de internet en tiempo real mediante Coroutines Flow.
+    - Integración de banner de alerta global (`YayaOfflineBanner`) que notifica al usuario cuando se pierde la conexión, mejorando la fiabilidad de la App.
 - **Cumplimiento y Seguridad:** Opción de borrado de cuenta integrado en el perfil para cumplimiento con Google Play.
 
 ### Cambiado

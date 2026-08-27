@@ -43,6 +43,7 @@ Para eliminar la percepción de latencia, se implementa una infraestructura de *
 ## 4. Navegación Type-Safe y Start-up Engine
 - **Direct Route:** Uso de Splash Screen API nativa sincronizada con `MainViewModel` para un arranque sin parpadeos.
 - **Seguridad de Tipos:** Todas las rutas son objetos `@Serializable`, eliminando errores de tipado en strings de navegación.
+- **Detección de Conectividad:** Monitoreo global mediante `ConnectivityObserver` (Flow-based). La aplicación muestra una `YayaOfflineBanner` atómica en tiempo real ante fallos de red, garantizando feedback continuo.
 
 ## 5. Roles y Acceso Universal
 Unificación de perfil bajo un ID único que soporta transacciones cruzadas (un prestador puede ser cliente y viceversa sin fricción). El rol `admin` posee una capa de acceso híbrido que le permite interactuar con el ecosistema y moderar desde su perfil.
