@@ -9,15 +9,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -49,9 +47,11 @@ fun AdminDashboardScreen(
         isLoading = viewModel.isLoading,
         pendingServices = viewModel.pendingServices,
         allProfiles = viewModel.allProfiles,
-        reports = viewModel.reports,
+        reportsSummary = viewModel.reportedUsersSummaries,
         onApproveService = { viewModel.approveService(it) },
         onRejectService = { viewModel.rejectService(it) },
+        onSuspendUser = { viewModel.suspendUser(it) },
+        onDeleteUser = { viewModel.deleteUserAccount(it) },
         onBack = onBack,
         onLogout = onLogout
     )
@@ -63,9 +63,11 @@ fun AdminDashboardContent(
     isLoading: Boolean,
     pendingServices: List<Service>,
     allProfiles: List<UserProfile>,
-    reports: List<Report>,
+    reportsSummary: List<ReportedUserSummary>,
     onApproveService: (String) -> Unit,
     onRejectService: (String) -> Unit,
+    onSuspendUser: (String) -> Unit,
+    onDeleteUser: (String) -> Unit,
     onBack: () -> Unit,
     onLogout: () -> Unit
 ) {
@@ -136,7 +138,11 @@ fun AdminDashboardContent(
                         onReject = onRejectService
                     )
                     1 -> UsersList(profiles = allProfiles)
-                    2 -> ReportsList(reports = reports)
+                    2 -> ReportsList(
+                        summaries = reportsSummary,
+                        onSuspend = onSuspendUser,
+                        onDelete = onDeleteUser
+                    )
                 }
             }
         }
@@ -261,55 +267,128 @@ fun UsersList(profiles: List<UserProfile>) {
 }
 
 @Composable
-fun ReportsList(reports: List<Report>) {
-    if (reports.isEmpty()) {
+fun ReportsList(
+    summaries: List<ReportedUserSummary>,
+    onSuspend: (String) -> Unit,
+    onDelete: (String) -> Unit
+) {
+    if (summaries.isEmpty()) {
         EmptyState("No hay reportes de mal comportamiento.")
     } else {
-        LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(reports) { report ->
-                ReportCard(report)
+        LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            items(summaries) { summary ->
+                ReportSummaryCard(summary, onSuspend, onDelete)
             }
         }
     }
 }
 
 @Composable
-fun ReportCard(report: Report) {
+fun ReportSummaryCard(
+    summary: ReportedUserSummary,
+    onSuspend: (String) -> Unit,
+    onDelete: (String) -> Unit
+) {
+    val (severityColor, actionLabel) = when {
+        summary.count >= 5 -> Color.Red to "ELIMINACIÓN RECOMENDADA"
+        summary.count >= 3 -> Color(0xFFFF9800) to "SUSPENSIÓN RECOMENDADA"
+        else -> Color(0xFFFFC107) to "LLAMADO DE ATENCIÓN"
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)),
-        elevation = CardDefaults.cardElevation(1.dp)
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (report.reported?.avatar_url != null) {
-                    AsyncImage(
-                        model = report.reported.avatar_url,
-                        contentDescription = null,
-                        modifier = Modifier.size(32.dp).clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Red, modifier = Modifier.size(16.dp))
+                Box(
+                    modifier = Modifier.size(48.dp).clip(CircleShape).background(severityColor.copy(alpha = 0.1f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (summary.profile?.avatar_url != null) {
+                        AsyncImage(
+                            model = summary.profile.avatar_url,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(Icons.Default.Person, null, tint = severityColor)
+                    }
                 }
-                Spacer(Modifier.width(8.dp))
-                Text("Denunciado: ${report.reported?.full_name ?: "ID: " + report.reported_user_id}", fontWeight = FontWeight.Bold)
+                Spacer(Modifier.width(16.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(summary.profile?.full_name ?: "Usuario Desconocido", fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
+                    Text("ID: ${summary.profile?.id?.take(8)}...", fontSize = 12.sp, color = Color.Gray)
+                }
+                
+                Surface(
+                    color = severityColor,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "${summary.count} REPORTES",
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color.White
+                    )
+                }
             }
-            Spacer(Modifier.height(4.dp))
-            Text("Motivo: ${report.reason}", fontSize = 14.sp)
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (report.reporter?.avatar_url != null) {
-                    AsyncImage(
-                        model = report.reporter.avatar_url,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp).clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(Modifier.width(4.dp))
+
+            Spacer(Modifier.height(16.dp))
+            
+            Text(
+                text = actionLabel,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = severityColor,
+                letterSpacing = 1.sp
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            // Lista de motivos (Previsualización)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                    .padding(12.dp)
+            ) {
+                summary.reports.take(3).forEach { report ->
+                    Row(modifier = Modifier.padding(vertical = 4.dp)) {
+                        Icon(Icons.Default.Error, null, modifier = Modifier.size(14.dp), tint = Color.Gray)
+                        Spacer(Modifier.width(8.dp))
+                        Text(report.reason, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
-                Text("Reportado por: ${report.reporter?.full_name ?: "Usuario"}", fontSize = 12.sp, color = Color.Gray)
+                if (summary.count > 3) {
+                    Text("... y ${summary.count - 3} más", fontSize = 10.sp, color = Color.Gray, modifier = Modifier.padding(start = 22.dp))
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedButton(
+                    onClick = { onSuspend(summary.profile?.id!!) },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, severityColor)
+                ) {
+                    Text("Suspender", color = severityColor)
+                }
+
+                Button(
+                    onClick = { onDelete(summary.profile?.id!!) },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = if (summary.count >= 5) Color.Red else Color.Gray)
+                ) {
+                    Text("Eliminar", color = Color.White)
+                }
             }
         }
     }
@@ -351,9 +430,11 @@ fun AdminDashboardPreview() {
         isLoading = false,
         pendingServices = sampleServices,
         allProfiles = sampleProfiles,
-        reports = emptyList(),
+        reportsSummary = emptyList(),
         onApproveService = {},
         onRejectService = {},
+        onSuspendUser = {},
+        onDeleteUser = {},
         onBack = {},
         onLogout = {}
     )

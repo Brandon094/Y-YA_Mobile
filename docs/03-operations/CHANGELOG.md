@@ -10,6 +10,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Evolución del Ciclo de Vida Admin:**
     - Los administradores ahora aterrizan en la pantalla de Inicio (`Home`) igual que cualquier usuario, permitiéndoles interactuar con la app (contratar, chatear, etc.).
     - Se implementó un acceso exclusivo al **Panel Administrativo** desde el perfil del usuario, visible únicamente para el rol `admin`.
+    - **Sistema de Sanciones Progresivas:** El Dashboard de reportes ahora agrupa denuncias por usuario, permitiendo detectar infractores frecuentes.
+    - Indicadores de severidad visuales: Amarillo (Llamado de atención), Naranja (Suspensión) y Rojo (Eliminación) basados en el volumen de reportes.
+    - Nuevas acciones administrativas: Suspensión (desactivación de servicios) y Eliminación de cuenta directa para infractores.
     - Eliminación de la redirección forzada al login, mejorando la fluidez y permitiendo al admin ser un actor activo en el ecosistema.
 - **Flujo de Negociación "Handshake" (Doble Confirmación):**
     - Implementación de un ciclo de seguridad tripartito: Negociación -> Acuerdo (`accepted`) -> Confirmación de Inicio (`in_progress`) -> Finalización (`completed`).

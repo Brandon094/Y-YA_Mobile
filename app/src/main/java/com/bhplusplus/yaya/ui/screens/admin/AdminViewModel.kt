@@ -15,6 +15,15 @@ import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.launch
 
 /**
+ * Modelo para resumir reportes por usuario denunciado.
+ */
+data class ReportedUserSummary(
+    val profile: UserProfile?,
+    val reports: List<Report>,
+    val count: Int = reports.size
+)
+
+/**
  * VIEWMODEL PARA EL DASHBOARD ADMINISTRATIVO
  * Gestiona la moderación de servicios y la supervisión de usuarios.
  */
@@ -27,6 +36,10 @@ class AdminViewModel : ViewModel() {
         private set
 
     var reports by mutableStateOf<List<Report>>(emptyList())
+        private set
+    
+    // Lista agrupada para detectar infractores
+    var reportedUsersSummaries by mutableStateOf<List<ReportedUserSummary>>(emptyList())
         private set
 
     var isLoading by mutableStateOf(false)
@@ -62,9 +75,22 @@ class AdminViewModel : ViewModel() {
                     .decodeList<UserProfile>()
 
                 // 3. Cargar reportes con Joins para ver quién denuncia a quién
-                reports = SupabaseManager.client.postgrest["reports"]
+                val reportsResult = SupabaseManager.client.postgrest["reports"]
                     .select(Columns.raw("*, reporter_profile:reporter_id(*), reported_profile:reported_user_id(*)"))
                     .decodeList<Report>()
+                
+                reports = reportsResult
+
+                // 4. Agrupar reportes por usuario denunciado (Detección de infractores)
+                reportedUsersSummaries = reportsResult
+                    .groupBy { it.reported_user_id }
+                    .map { (_, userReports) ->
+                        ReportedUserSummary(
+                            profile = userReports.firstOrNull()?.reported,
+                            reports = userReports
+                        )
+                    }
+                    .sortedByDescending { it.count }
 
             } catch (e: Exception) {
                 Log.e("AdminViewModel", "Error al cargar datos de administración: ${e.message}")
@@ -107,6 +133,39 @@ class AdminViewModel : ViewModel() {
                 loadAdminData() // Refrescar lista
             } catch (e: Exception) {
                 Log.e("AdminViewModel", "Error al rechazar servicio: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Acciones de sanción para infractores.
+     */
+    fun suspendUser(userId: String) {
+        viewModelScope.launch {
+            try {
+                // Desactivar sus servicios como medida de suspensión inmediata
+                SupabaseManager.client.postgrest["services"].update({
+                    set("status", "inactive")
+                }) {
+                    filter { eq("provider_id", userId) }
+                }
+                Log.i("AdminVM", "Usuario $userId suspendido: Servicios desactivados.")
+                loadAdminData()
+            } catch (e: Exception) {
+                Log.e("AdminVM", "Error al suspender: ${e.message}")
+            }
+        }
+    }
+
+    fun deleteUserAccount(userId: String) {
+        viewModelScope.launch {
+            try {
+                SupabaseManager.client.postgrest["profiles"].delete {
+                    filter { eq("id", userId) }
+                }
+                loadAdminData()
+            } catch (e: Exception) {
+                Log.e("AdminVM", "Error al eliminar cuenta: ${e.message}")
             }
         }
     }
