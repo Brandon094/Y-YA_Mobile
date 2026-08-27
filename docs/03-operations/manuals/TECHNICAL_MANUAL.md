@@ -19,7 +19,9 @@ El proyecto sigue el patrón de arquitectura **MVVM (Model-View-ViewModel)** rec
 - **Networking:** Ktor Client 3.0.3 para peticiones REST.
 - **Image Loading:** Coil 3.1.0 para renderizado y caché de multimedia.
 - **UX Components:** Reutilización de `Shimmer.kt` para la implementación de Skeleton Screens, reduciendo el "layout shift" percibido por el usuario durante la carga asíncrona de datos.
-- **Formatter Engine:** Utilización de `FormatterUtils.kt` como punto único de verdad para la transformación de datos crudos de Supabase a representaciones de UI (Moneda compacta, Formato de tiempo), garantizando consistencia visual en toda la aplicación.
+- **Formatter Engine:** Punto único de verdad (`FormatterUtils.kt`) para la transformación de datos (Moneda compacta $k/M, Formato de tiempo), eliminando duplicidad en los ViewModels.
+- **Handshake Logic:** El ciclo transaccional requiere confirmación explícita del cliente (`in_progress`) antes de permitir la finalización por el prestador, mitigando fraudes en el precio final.
+- **Account Purge:** Mecanismo de borrado de perfil en cumplimiento con normativas de tiendas de aplicaciones.
 - **Image Viewer:** Implementación de diálogos personalizados con HorizontalPager para visualización de portafolios a pantalla completa y navegación gestual.
 - **Serialización:** Kotlinx Serialization 1.7.3.
 - **Persistencia de Sesión:** Multiplatform Settings 1.2.0.

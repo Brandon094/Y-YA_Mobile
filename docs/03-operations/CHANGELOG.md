@@ -5,6 +5,28 @@ Todas las modificaciones notables en este proyecto serán documentadas en este a
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3-alpha] - 2026-08-27
+### Añadido
+- **Flujo de Negociación "Handshake" (Doble Confirmación):**
+    - Implementación de un ciclo de seguridad tripartito para cerrar tratos.
+    - Nuevo estado **"Confirmar y Empezar"**: El cliente debe dar el visto bueno final al precio aceptado antes de que el trabajo inicie.
+    - El estado **`in_progress`** ahora es obligatorio para que el prestador pueda marcar un servicio como completado.
+- **Rediseño Maestro de Home Screen:**
+    - Nueva barra superior con identidad de marca destacada y saludo personalizado.
+    - Barra de búsqueda integrada y selector de categorías refinado.
+    - **Tarjetas de Servicio Premium:** Avatares con iconos de categoría superpuestos y precio en formato Pill.
+- **Onboarding Interactivo:** Carrusel narrativo mediante `HorizontalPager` para educar al usuario.
+- **Infraestructura de Formateo DRY:** Centralización de lógica de moneda (**$ 50k**), fechas y horas en `FormatterUtils`.
+- **Experiencia de Usuario Premium (Issue #UX):**
+    - Implementación de **Shimmer Effects** en todas las listas principales.
+    - Optimización total de **Accesibilidad**: Layouts elásticos con `FlowRow` y `weights` dinámicos para soportar fuentes al **200%**.
+- **Cumplimiento Legal (Google Play):** Opción de borrado de cuenta con doble confirmación.
+
+### Cambiado
+- **Refactor Arquitectónico Clean MVVM:** Transformación de Screens a "Dumb Components" con modelos de `UiState` dedicados.
+- **Sistema de Reputación Blindado:** Calificaciones inmutables con visualización de histórico persistente.
+- **Edge-to-Edge Support:** Blindaje de UI contra botones de navegación del sistema mediante `navigationBarsPadding`.
+
 ## [0.1.2-alpha] - 2026-08-27
 ### Añadido
 - **Onboarding Interactivo:**

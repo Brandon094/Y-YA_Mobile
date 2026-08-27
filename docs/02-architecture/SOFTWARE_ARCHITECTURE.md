@@ -7,15 +7,17 @@ YÁYA implementa **MVVM** para separar la lógica de negocio de la interfaz de u
 
 ### 1.1. Capa de Vista (UI)
 - Construida íntegramente con **Jetpack Compose**.
-- Las funciones Composable son "**stateless**" y "**tontas**" (Dumb Components), limitándose a renderizar datos procesados y banderas booleanas entregadas por el ViewModel mediante modelos de **UiState** dedicados (ej. `MyOrderUiState`, `MessageUiState`).
-- **Inyección de Estados:** El ViewModel mapea los modelos de dominio (Supabase) a estados de UI simplificados, encargándose del formateo de monedas (estilo compacto $ 50k), fechas y lógica de visibilidad condicional mediante el principio **DRY** (utilizando `FormatterUtils`).
+- Las funciones Composable son "**stateless**" y "**tontas**" (Dumb Components), limitándose a renderizar datos procesados y banderas booleanas entregadas por el ViewModel mediante modelos de **UiState** dedicados (ej. `MyOrderUiState`, `MessageUiState`, `ContratacionUiState`).
+- **Inyección de Estados:** El ViewModel mapea los modelos de dominio (Supabase) a estados de UI simplificados, encargándose del formateo de monedas (estilo compacto **$ 50k**), fechas y lógica de visibilidad condicional mediante el principio **DRY** (utilizando `FormatterUtils`).
 - Uso de Material 3 para el sistema de diseño, con soporte estricto para temas Claro y Oscuro.
-- **Pull-to-Refresh:** Implementación del patrón de refresco manual mediante `PullToRefreshBox` en todas las listas principales para garantizar la sincronización a demanda.
-- **Feedback de Carga (Shimmers):** Sustitución progresiva de indicadores circulares por **Skeleton Screens** (Shimmer Effects) personalizados para mejorar la percepción de rendimiento y fluidez (Premium UX).
+- **Flujo de Onboarding:** Implementación de un carrusel interactivo mediante `HorizontalPager` para comunicar la propuesta de valor.
+- **Pull-to-Refresh:** Implementación del patrón de refresco manual mediante `PullToRefreshBox` en todas las listas principales.
+- **Feedback de Carga (Shimmers):** Uso de **Skeleton Screens** (Shimmer Effects) personalizados para mejorar la percepción de fluidez durante la carga asíncrona.
 - **Accesibilidad y Adaptabilidad:** 
     - Uso estricto de unidades `sp` para tipografía y `dp` para layouts.
-    - Implementación de contenedores con scroll vertical y `maxLines` dinámicos para soportar tamaños de fuente de hasta el 200% sin pérdida de información.
-- **Gestión de Teclado (IME):** Implementación de `Modifier.imePadding()` en pantallas de entrada de datos y chat para asegurar que los componentes de entrada permanezcan visibles sobre el teclado virtual.
+    - Implementación de contenedores flexibles con `FlowRow`, `weights` dinámicos y `sizeIn` para soportar fuentes de hasta el **200%** sin desbordes.
+- **Gestión de Teclado (IME):** Uso de `Modifier.imePadding()` y `contentWindowInsets` en Scaffolds para evitar solapamientos.
+- **Edge-to-Edge:** Aplicación de `navigationBarsPadding()` en todos los elementos anclados al borde inferior para compatibilidad con botones de navegación del sistema.
 
 ### 1.2. Capa de ViewModel
 - Actúa como el **Cerebro de Negocio** de cada pantalla.
@@ -59,14 +61,15 @@ YÁYA rompe la fricción tradicional de las plataformas de servicios al permitir
 
 ## 6. Lógica de Negocio y Reactividad
 El sistema implementa validaciones críticas y procesos reactivos:
-- **Reactividad en Tiempo Real (Realtime):** Uso extensivo de `Supabase Realtime` para sincronizar estados de pedidos, contraofertas y mensajes sin necesidad de recargar la pantalla. Los ViewModels implementan "Silent Fetching" tras eventos de base de datos para mantener la integridad de los Joins relacionales.
-- **Triple Validación de Disponibilidad:** El flujo de contratación bloquea solicitudes mediante un cruce triple en tiempo real:
-    1. **Horario Maestro:** Validación contra la tabla `public.availability` (días y horas generales del prestador).
-    2. **Disponibilidad del Servicio:** Validación contra `working_days` (array) en la tabla `services`.
-    3. **Rango Horario del Servicio:** Validación contra `start_time` y `end_time` de la publicación específica.
-- **Ciclo de Vida Transaccional:** El flujo de servicios sigue una progresión lógica: `Solicitud` -> `Negociación` -> `Aceptación` -> `Finalización` (por el prestador) -> `Calificación` (por el cliente).
-- **Sistema de Reputación Blindado:** Las calificaciones son inmutables. El sistema valida registros previos en la tabla `ratings` para transformar la interfaz de "Formulario" a "Histórico" automáticamente.
-- **Chat Avanzado:** Sistema de mensajería con feedback visual de mensajes no leídos, previsualización del último mensaje y ordenamiento cronológico dinámico.
+- **Reactividad en Tiempo Real (Realtime):** Uso de `Supabase Realtime` para sincronizar estados de pedidos, contraofertas y mensajes de chat de forma instantánea.
+- **Triple Validación de Disponibilidad:** El flujo de contratación bloquea solicitudes mediante un cruce triple:
+    1. **Horario Maestro:** Validación contra `public.availability` (agenda del prestador).
+    2. **Días del Servicio:** Validación contra `working_days` en `services`.
+    3. **Rango Horario:** Validación contra las horas de inicio/fin del servicio específico.
+- **Flujo de Negociación "Handshake":** Implementación de un ciclo tripartito de seguridad:
+    - `Solicitud/Contraoferta` -> `Acuerdo de Precio` (Aceptar) -> `Confirmar Inicio` (Handshake del cliente) -> `Trabajo en Curso` -> `Finalización`.
+- **Sistema de Reputación Blindado:** Las calificaciones son inmutables y persistentes. El sistema valida registros previos para mostrar el histórico de estrellas y comentarios directamente en el historial de pedidos.
+- **Chat Avanzado:** Mensajería con `reverseLayout`, previsualización de último mensaje y gestión de no leídos procesada 100% en el ViewModel.
 
 ## 7. Sistema de Notificaciones (Push Architecture)
 YÁYA utiliza una arquitectura híbrida para alertas en tiempo real mediante un **Motor Unificado de Notificaciones**:
