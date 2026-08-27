@@ -10,10 +10,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Evolución del Ciclo de Vida Admin:**
     - Los administradores ahora aterrizan en la pantalla de Inicio (`Home`) igual que cualquier usuario, permitiéndoles interactuar con la app (contratar, chatear, etc.).
     - Se implementó un acceso exclusivo al **Panel Administrativo** desde el perfil del usuario, visible únicamente para el rol `admin`.
-    - **Sistema de Sanciones Progresivas:** El Dashboard de reportes ahora agrupa denuncias por usuario, permitiendo detectar infractores frecuentes.
-    - Indicadores de severidad visuales: Amarillo (Llamado de atención), Naranja (Suspensión) y Rojo (Eliminación) basados en el volumen de reportes.
-    - Nuevas acciones administrativas: Suspensión (desactivación de servicios) y Eliminación de cuenta directa para infractores.
-    - Eliminación de la redirección forzada al login, mejorando la fluidez y permitiendo al admin ser un actor activo en el ecosistema.
+    - Habilitación de la **Navegación de Retorno (Back)** en el Dashboard Admin para una integración fluida con el resto de la aplicación.
+- **Sistema de Sanciones Progresivas:**
+    - Rediseño de la gestión de reportes mediante agrupamiento por infractor (`ReportedUserSummary`).
+    - Implementación de **Semáforo de Severidad**: Amarillo (1-2), Naranja (3-4) y Rojo (5+ reportes) con etiquetas dinámicas de recomendación de sanción.
+    - Nuevas acciones masivas: Suspender (desactivación inmediata de servicios del prestador) y Eliminación de cuenta directa desde el resumen de reportes.
 - **Flujo de Negociación "Handshake" (Doble Confirmación):**
     - Implementación de un ciclo de seguridad tripartito: Negociación -> Acuerdo (`accepted`) -> Confirmación de Inicio (`in_progress`) -> Finalización (`completed`).
     - El cliente ahora tiene el poder de dar el visto bueno final al precio antes de iniciar el servicio.

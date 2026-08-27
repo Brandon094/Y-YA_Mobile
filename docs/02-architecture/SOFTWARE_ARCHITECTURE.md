@@ -55,9 +55,9 @@ Se utiliza un enfoque de **Inyección de Dependencias** (DI) para desacoplar los
 
 ## 5. Lógica de Roles y Cuenta Universal
 YÁYA rompe la fricción tradicional de las plataformas de servicios al permitir que un mismo `id` de perfil contenga las capacidades de ambos roles. 
+- **Acceso Híbrido Admin:** El administrador aterriza en el `HomeRoute` como un usuario estándar, permitiéndole interactuar con el ecosistema (contratar, chatear). El acceso al `AdminDashboardRoute` se realiza mediante una sección protegida en el perfil del usuario.
 - La UI se adapta dinámicamente consultando el campo `role` en `public.profiles`.
 - Un usuario con rol `provider` puede contratar servicios de otros prestadores sin necesidad de un perfil secundario.
-- Esta arquitectura simplifica la gestión de sesiones y la integridad de los datos en Supabase.
 
 ## 6. Lógica de Negocio y Reactividad
 El sistema implementa validaciones críticas y procesos reactivos:
@@ -69,7 +69,7 @@ El sistema implementa validaciones críticas y procesos reactivos:
 - **Flujo de Negociación "Handshake" (Doble Confirmación):** Implementación de un ciclo transaccional seguro y explícito:
     - `Solicitud/Contraoferta` -> `Acuerdo de Precio` (Estado: `accepted`) -> `Confirmar Inicio` (Handshake del cliente - Estado: `in_progress`) -> `Trabajo en Curso` -> `Finalización` (por el prestador - Estado: `completed`).
     - Este mecanismo garantiza que el trabajo solo pueda finalizarse si ambas partes confirmaron el inicio bajo el precio acordado, mitigando disputas comerciales.
-- **Sistema de Reputación Blindado:** Las calificaciones son inmutables y persistentes. El sistema valida registros previos para mostrar el histórico de estrellas y comentarios directamente en el historial de pedidos.
+- **Moderación y Sanciones Progresivas:** El sistema de reportes implementa una lógica de agrupamiento por infractor (`ReportedUserSummary`). El Dashboard administrativo calcula en tiempo real el nivel de severidad (Llamado de atención, Suspensión, Eliminación) basado en umbrales de reincidencia (3 y 5 reportes), permitiendo acciones correctivas masivas.
 - **Chat Avanzado:** Mensajería con `reverseLayout`, previsualización de último mensaje y gestión de no leídos procesada 100% en el ViewModel.
 
 ## 7. Sistema de Notificaciones (Push Architecture)

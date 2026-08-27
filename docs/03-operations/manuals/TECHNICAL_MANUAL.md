@@ -37,6 +37,7 @@ Se utiliza `StateFlow` y estados mutables de Compose dentro de los ViewModels pa
 - **Rating:** Modelo para la gestión de reputación. El `MyOrdersViewModel` recupera registros existentes para bloquear re-calificaciones y mostrar el historial inmutable al usuario.
 - **Report (Hito 5):** Estructura relacional para la gestión de denuncias por mal comportamiento.
 - **ServiceImage (Hito 3):** Tabla dedicada para el almacenamiento de múltiples URLs de portafolio vinculadas a un `service_id`, permitiendo galerías dinámicas.
+- **ReportedUserSummary:** Lógica de negocio en el ViewModel administrativo que utiliza `groupBy` sobre el modelo `Report` para consolidar expedientes de comportamiento por usuario.
 
 ## 7. Módulo Administrativo
 El sistema cuenta con un Dashboard centralizado que permite la moderación proactiva mediante auditoría de servicios y supervisión de usuarios.
