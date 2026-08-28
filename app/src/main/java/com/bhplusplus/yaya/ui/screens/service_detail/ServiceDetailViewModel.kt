@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.data.models.Report
+import com.bhplusplus.yaya.data.models.ServiceImage
+import com.bhplusplus.yaya.data.models.Rating
 import com.bhplusplus.yaya.data.SupabaseManager
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.auth.auth
@@ -19,6 +21,15 @@ class ServiceDetailViewModel : ViewModel() {
         private set
     
     var provider by mutableStateOf<UserProfile?>(null)
+        private set
+
+    var serviceImages by mutableStateOf<List<ServiceImage>>(emptyList())
+        private set
+
+    var ratings by mutableStateOf<List<Rating>>(emptyList())
+        private set
+
+    var averageRating by mutableStateOf(0.0)
         private set
 
     var isLoading by mutableStateOf(false)
@@ -48,6 +59,25 @@ class ServiceDetailViewModel : ViewModel() {
                         .select { filter { eq("id", providerId) } }
                         .decodeSingle<UserProfile>()
                     provider = providerResult
+                }
+
+                // 3. Obtener las imágenes del portafolio
+                serviceImages = SupabaseManager.client.postgrest["service_images"]
+                    .select { filter { eq("service_id", serviceId) } }
+                    .decodeList<ServiceImage>()
+
+                // 4. Obtener las calificaciones del prestador
+                serviceResult.provider_id?.let { providerId ->
+                    val ratingsResult = SupabaseManager.client.postgrest["ratings"]
+                        .select { filter { eq("provider_id", providerId) } }
+                        .decodeList<Rating>()
+                    
+                    ratings = ratingsResult.sortedByDescending { it.created_at }
+                    averageRating = if (ratingsResult.isNotEmpty()) {
+                        ratingsResult.map { it.score }.average()
+                    } else {
+                        0.0
+                    }
                 }
                 
             } catch (e: Exception) {

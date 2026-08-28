@@ -1,16 +1,26 @@
 package com.bhplusplus.yaya.ui.screens.profile
 
+import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.UserProfile
+import com.bhplusplus.yaya.data.models.ServiceRequest
+import com.bhplusplus.yaya.data.models.Message
+import com.bhplusplus.yaya.data.models.Service
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.channel
+import io.github.jan.supabase.realtime.postgresChangeFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import android.util.Log
 import kotlinx.serialization.json.jsonPrimitive
 
 /**
@@ -29,12 +39,20 @@ class ProfileViewModel : ViewModel() {
     var isLoading by mutableStateOf(false)
         private set
 
+    var isDeletingAccount by mutableStateOf(false)
+        private set
+
+    // Estados de Notificación (Feedback visual)
+    var pendingRequestsCount by mutableIntStateOf(0)
+    var unreadMessagesCount by mutableIntStateOf(0)
+    var pendingAdminServicesCount by mutableIntStateOf(0)
+
     init {
         fetchProfile()
     }
 
     /**
-     * Obtiene los datos del servidor.
+     * Obtiene los datos del servidor e inicia la escucha de notificaciones.
      */
     fun fetchProfile() {
         isLoading = true
@@ -44,42 +62,108 @@ class ProfileViewModel : ViewModel() {
                 if (user != null) {
                     email = user.email ?: ""
                     
-                    // 1. Intentar traer el registro de la tabla profiles
-                    try {
-                        val profile = SupabaseManager.client.postgrest["profiles"]
-                            .select {
-                                filter { eq("id", user.id) }
-                            }
-                            .decodeSingle<UserProfile>()
-                        
-                        userProfile = profile
-                        Log.d("ProfileVM", "Perfil cargado exitosamente: ${profile.full_name}")
-                    } catch (e: Exception) {
-                        Log.e("ProfileVM", "Error al leer tabla profiles: ${e.message}")
-                        
-                        // 2. Si no existe en la tabla, intentamos recuperar de Metadata
-                        // Esto evita que la pantalla salga totalmente vacía.
-                        val metadata = user.userMetadata
-                        if (metadata != null) {
-                            val name = metadata["full_name"]?.jsonPrimitive?.content ?: "Usuario"
-                            val role = metadata["role"]?.jsonPrimitive?.content ?: "client"
-                            
-                            userProfile = UserProfile(
-                                id = user.id,
-                                full_name = name,
-                                role = role,
-                                phone = "",
-                                address = "",
-                                document_id = "",
-                                birth_date = ""
-                            )
-                        }
-                    }
+                    // 1. Cargar Perfil
+                    val profile = loadProfileData(user.id, user.userMetadata)
+                    userProfile = profile
+
+                    // 2. Cargar conteos iniciales
+                    fetchNotificationCounts(user.id, profile.role)
+
+                    // 3. Activar suscripciones Realtime
+                    subscribeToNotifications(user.id, profile.role)
                 }
             } catch (e: Exception) {
                 Log.e("ProfileVM", "Error crítico al obtener perfil: ${e.message}")
             } finally {
                 isLoading = false
+            }
+        }
+    }
+
+    private suspend fun loadProfileData(userId: String, metadata: kotlinx.serialization.json.JsonObject?): UserProfile {
+        return try {
+            SupabaseManager.client.postgrest["profiles"]
+                .select { filter { eq("id", userId) } }
+                .decodeSingle<UserProfile>()
+        } catch (e: Exception) {
+            val name = metadata?.get("full_name")?.jsonPrimitive?.content ?: "Usuario"
+            val role = metadata?.get("role")?.jsonPrimitive?.content ?: "client"
+            UserProfile(id = userId, full_name = name, role = role)
+        }
+    }
+
+    private fun fetchNotificationCounts(userId: String, role: String) {
+        viewModelScope.launch {
+            // Conteo de Mensajes (Para todos)
+            unreadMessagesCount = SupabaseManager.client.postgrest["messages"]
+                .select { filter { eq("receiver_id", userId); eq("is_read", false) } }
+                .decodeList<Message>().size
+
+            // Conteo de Solicitudes (Prestadores/Admin)
+            if (role == "provider" || role == "admin") {
+                pendingRequestsCount = SupabaseManager.client.postgrest["requests"]
+                    .select(Columns.raw("id, services!inner(provider_id)")) {
+                        filter { eq("status", "pending"); eq("services.provider_id", userId) }
+                    }
+                    .decodeList<ServiceRequest>().size
+            }
+
+            // Conteo de Aprobaciones Pendientes (Solo Admin)
+            if (role == "admin") {
+                pendingAdminServicesCount = SupabaseManager.client.postgrest["services"]
+                    .select { filter { eq("status", "pending_approval") } }
+                    .decodeList<Service>().size
+            }
+        }
+    }
+
+    private fun subscribeToNotifications(userId: String, role: String) {
+        val channel = SupabaseManager.client.channel("profile_notifications")
+
+        // Escuchar Mensajes
+        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = "messages"
+        }.onEach { fetchNotificationCounts(userId, role) }.launchIn(viewModelScope)
+
+        // Escuchar Solicitudes
+        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = "requests"
+        }.onEach { fetchNotificationCounts(userId, role) }.launchIn(viewModelScope)
+
+        // Escuchar Servicios (Para Admin)
+        if (role == "admin") {
+            channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "services"
+            }.onEach { fetchNotificationCounts(userId, role) }.launchIn(viewModelScope)
+        }
+
+        viewModelScope.launch { channel.subscribe() }
+    }
+
+    /**
+     * Inicia el proceso de borrado de cuenta.
+     * Nota: En Supabase, el borrado de usuario desde el cliente suele requerir una Edge Function.
+     * Por ahora, eliminamos el registro del perfil y cerramos sesión para cumplir el flujo de Google.
+     */
+    fun deleteAccount(onComplete: () -> Unit) {
+        val userId = userProfile?.id ?: return
+        
+        viewModelScope.launch {
+            isDeletingAccount = true
+            try {
+                // 1. Eliminar datos del perfil en public.profiles
+                SupabaseManager.client.postgrest["profiles"].delete {
+                    filter { eq("id", userId) }
+                }
+                
+                // 2. Cerrar sesión (La eliminación real de auth.users se maneja por consola o Edge Function Admin)
+                SupabaseManager.client.auth.signOut()
+                
+                onComplete()
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel", "Error al procesar borrado: ${e.message}")
+            } finally {
+                isDeletingAccount = false
             }
         }
     }

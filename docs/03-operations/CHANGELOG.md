@@ -5,48 +5,81 @@ Todas las modificaciones notables en este proyecto serán documentadas en este a
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0-alpha] - 2025-03-05
-### Añadido (MVP+ Milestone)
-- **Hito 4: Infraestructura de Notificaciones:**
-    - Integración de Firebase Cloud Messaging (FCM) para recepción de alertas push.
-    - Implementación de Badges (numerito) dinámicos en la campana de notificaciones del Home.
-    - Lógica de sincronización de tokens de dispositivo con el perfil de Supabase.
-    - Soporte para permisos de notificación en Android 13+.
-- **Hito 2: Chat en Tiempo Real:** 
-    - Implementación de mensajería instantánea bidireccional.
-    - Nuevo Componente "ChatListScreen": Centro de mensajes centralizado para acceder a todas las conversaciones activas.
-    - Lógica de "Visto" (Double Check): Marcación automática de mensajes como leídos en la base de datos al abrir la conversación.
-    - Integración con `Supabase Realtime` para actualizaciones sin recarga.
-    - Puntos de contacto en Detalle de Servicio, Mis Pedidos y Solicitudes Recibidas.
-- **Hito 2: Sistema de Reputación:** 
-    - Implementación de flujo de calificaciones (1-5 estrellas) y reseñas.
-    - Nuevo modelo de datos `Rating` vinculado a las solicitudes completadas.
-- **Hito 5: Dashboard Administrativo:** 
-    - Implementación de panel de control para moderación de servicios.
-    - Sistema de reportes de comportamiento con consultas relacionales.
-    - Lógica de redirección por rol inmediata tras el inicio de sesión exitoso.
-- **Ecosistema de Agentes Especializados:** Definición de roles (Senior, UI, Datos, Negocio, Docs) y Orquestador Maestro para la gobernanza del proyecto.
-- **Hito 1: Refinamiento Operativo:** 
-    - Reactividad Total: Implementación de suscripciones Realtime para listas de servicios, historial propio y contadores de la barra superior (Badges).
-    - Badge de Mensajes: Indicador visual en tiempo real de mensajes no leídos en el Home.
-    - Implementación de disponibilidad estructurada por servicio: Migración de campo de texto a `working_days` (array), `start_time` y `end_time` (time) en la tabla `services`.
-    - Nuevo Componente UI "Day Picker": Selección interactiva de días de la semana (L-D) con feedback visual en la creación de servicios.
-    - Lógica de Validación Triple: Cruce proactivo en tiempo real de días del servicio, rango horario del servicio y horario general del prestador en el flujo de contratación.
-    - Implementación de lógica de validación de disponibilidad en tiempo real contra `public.availability`.
-    - Evolución del modelo económico con soporte para `final_price` en el flujo de negociación.
-    - Optimización de UX en Home con estados vacíos (`EmptyServicesView`) para búsquedas y filtros.
-- **Sistema de Cuenta Universal:** Implementación de acceso multi-rol sin doble fricción.
-- **Módulo de Negociación:** Lógica de contraofertas entre Clientes y Prestadores.
-- **Gestión Operativa:** Panel de "Solicitudes Recibidas" (Prestador) y "Mis Pedidos" (Cliente).
-- **CRUD de Servicios:** Los prestadores pueden crear, editar y pausar sus servicios.
-- **Perfil Transaccional:** Registro, login persistente y edición de perfil vinculada a SQL.
-- **Documentación Senior:** Creación de manuales, diagramas ER y modelos de seguridad.
+## [0.1.3-alpha] - 2026-08-27
+### Añadido
+- **Evolución del Ciclo de Vida Admin:**
+    - Los administradores ahora aterrizan en la pantalla de Inicio (`Home`) igual que cualquier usuario, permitiéndoles interactuar con la app (contratar, chatear, etc.).
+    - Se implementó un acceso exclusivo al **Panel Administrativo** desde el perfil del usuario, visible únicamente para el rol `admin`.
+    - Habilitación de la **Navegación de Retorno (Back)** en el Dashboard Admin para una integración fluida con el resto de la aplicación.
+- **Sistema de Sanciones Progresivas:**
+    - Rediseño de la gestión de reportes mediante agrupamiento por infractor (`ReportedUserSummary`).
+    - Implementación de **Semáforo de Severidad**: Amarillo (1-2), Naranja (3-4) y Rojo (5+ reportes) con etiquetas dinámicas de recomendación de sanción.
+    - **Llamado de Atención Automático:** Nueva función para enviar mensajes de advertencia pre-diseñados a los infractores desde el Panel Admin, promoviendo la convivencia sin escalar a suspensiones inmediatas.
+    - Nuevas acciones masivas: Suspender (desactivación inmediata de servicios del prestador) y Eliminación de cuenta directa desde el resumen de reportes.
+- **Flujo de Negociación "Handshake" (Doble Confirmación):**
+    - Implementación de un ciclo de seguridad tripartito: Negociación -> Acuerdo (`accepted`) -> Confirmación de Inicio (`in_progress`) -> Finalización (`completed`).
+    - El cliente ahora tiene el poder de dar el visto bueno final al precio antes de iniciar el servicio.
+    - Se corrigió la visibilidad de acciones en el estado `in_progress`, garantizando la continuidad del flujo hasta la calificación.
+- **Rediseño Maestro de Home Screen:**
+    - Nueva barra superior con saludo dinámico e identidad visual Premium.
+    - Barra de búsqueda integrada y selector de categorías con diseño moderno.
+    - **Tarjetas de Servicio 2.0:** Avatares con badges de categoría superpuestos, precio en formato Pill y visualización de disponibilidad elástica.
+- **Infraestructura de Shimmers Pro:**
+    - Implementación de **Skeleton Screens** en todas las vistas críticas: Home, Pedidos, Solicitudes, Mensajes, Disponibilidad, Contratación y **Detalle del Servicio**.
+    - Optimización de intensidad visual (alpha 0.25) para un feedback de carga más claro y elegante.
+    - El Shimmer de detalles replica exactamente la estructura de la galería, card de prestador y secciones de valor, eliminando saltos visuales.
+    - Soporte completo de Shimmers para el Dashboard Administrativo (Aprobaciones, Usuarios y Reportes).
+- **Onboarding Interactivo:** Carrusel de bienvenida de 3 pasos con animaciones y dots dinámicos.
+- **Utilidades Globales (Formatter Engine):**
+    - Implementación de `FormatterUtils.kt` con soporte para moneda colombiana compacta (ej: **$ 50k**, **$ 1.2M**).
+    - Normalización de parsing de fechas ISO y formatos de tiempo.
+- **Optimización de Accesibilidad (Universal Design):**
+    - Layouts adaptativos para fuentes al **200%** mediante `FlowRow`, pesos dinámicos y `sizeIn`.
+    - Blindaje de círculos de disponibilidad y textos de contacto en el Chat.
+- **Estandarización Atómica (Atomic Design):**
+    - Refactorización masiva de la interfaz de usuario bajo la metodología **Atomic Design**, creando librerías de componentes reutilizables en `ui/components/atoms`, `ui/components/molecules` y `ui/components/organisms`.
+    - **Átomos:** `YayaButton`, `YayaTextField`, `YayaAvatar`, `YayaStatusBadge`, `YayaSectionHeader`, `YayaBranding` y `YayaLogo`.
+    - **Moléculas:** `RatingIndicator`, `DayIndicator`, `CategorySelector`, `DetailRow`, `ChatContactItem`, `ProfileOptionItem` (con soporte de badges), `UserListItem`, `EmptyStateView`, `TimeSelectorPill`, `YayaTimePickerDialog`, `NegotiationHistoryBox`, `NegotiationActionPill`, `AvatarSelector`, `ChatBubble`, `ChatInputBar`, `StatusBadgeDetail`, `PriceNegotiator`, `YayaReportDialog`, `YayaRatingDialog`, `YayaRatingItem`, `YayaSelectorButton`, `YayaNegotiationDialog` y `YayaOfflineBanner`.
+    - **Organismos:** `ServiceCard`, `HomeTopBar`, `AdminTopBar`, `AdminServiceCard`, `ReportSummaryCard`, `MyServiceCard`, `IncomingRequestCard`, `MyOrderCard`, `SearchBarIntegrated`, `OnboardingCarousel`, `ProfileHeroHeader`, `ProfileSectionCard`, `AvailabilityDayCard`, `WelcomeActions`, `ChatHeader`, `ServiceDetailGallery`, `ProviderCard`, `ServiceRequestHero`, `ConfirmationTicketCard` y `SuccessHeroBanner`.
+    - Esta reestructuración garantiza consistencia visual absoluta y facilita el mantenimiento global de la marca BH++.
+- **Feedback de Notificaciones Expandido:**
+    - Implementación de badges de notificación en tiempo real en la pantalla de Perfil.
+    - Los prestadores ahora ven el conteo de solicitudes pendientes directamente en su menú de perfil.
+    - Los administradores visualizan el número de servicios pendientes de aprobación en el acceso al Dashboard Admin.
+    - Integración de conteo de mensajes no leídos en la sección "Mis Actividad" del perfil.
+- **Auditoría Admin Automatizada (Edge Functions):**
+    - Evolución de la Edge Function unificada para soportar envío masivo de notificaciones a múltiples administradores simultáneamente.
+    - Implementación de notificaciones instantáneas para el equipo admin ante la creación de nuevos servicios ("🛡️ Nuevo Servicio por Auditar").
+    - Cierre del ciclo de feedback al prestador: notificaciones automáticas cuando su servicio es aprobado o pausado por la administración.
+- **Sistema de Conectividad Proactivo:**
+    - Implementación de `NetworkConnectivityObserver` para monitorear el estado de internet en tiempo real mediante Coroutines Flow.
+    - Integración de banner de alerta global (`YayaOfflineBanner`) que notifica al usuario cuando se pierde la conexión, mejorando la fiabilidad de la App.
+- **Anonimato Administrativo (Seguridad Admin):**
+    - Implementación de capa de enmascaramiento de identidad para el equipo de moderación.
+    - Cuando un administrador interactúa con un usuario, su nombre se muestra como "Equipo de Moderación" y su avatar es reemplazado por el isotipo oficial de YÁYA.
+    - Esta protección se aplica de forma inteligente: los administradores conservan su identidad real cuando chatean entre sí.
+    - Actualización de la Edge Function para garantizar anonimato en las notificaciones push ("🛡️ Equipo de Moderación YÁYA").
+- **Ecosistema Legal y Cumplimiento (Play Store Ready):**
+    - Implementación de aceptación obligatoria de Términos y Condiciones y Política de Privacidad en el flujo de registro.
+    - Desarrollo de un **Visor Legal Premium** con motor de renderizado Markdown-lite, aplicando jerarquía tipográfica, iconos institucionales y degradados inmersivos.
+    - Acceso permanente a documentos legales desde la configuración del perfil, garantizando transparencia total con el usuario.
+- **Cumplimiento y Seguridad:** Opción de borrado de cuenta integrado en el perfil para cumplimiento con Google Play.
 
 ### Cambiado
-- N/A
+- **Refactor Arquitectónico Senior:** Migración total a "Vistas Pasivas" (Stateless) y ViewModels con inyección de `UiState`.
+- **Navegación Robusta:** Soporte transversal para `navigationBarsPadding` en toda la aplicación.
 
-### Eliminado
-- N/A
+## [0.1.2-alpha] - 2026-08-27
+### Añadido
+- **Refinamiento Visual del Login:** Isotipo Circular Premium y eliminación de redundancia de marca.
+
+## [0.1.1-alpha] - 2026-08-26
+### Añadido
+- **Infraestructura de Notificaciones Pro:** Edge Function unificada y Small Icons monocromáticos.
+- **Negociación Premium UX:** Selector de oferta dinámico con incrementos de $5.000.
+
+### Corregido
+- **DatePicker:** Ajuste de zona horaria (Colombia UTC-5).
 
 ---
 *BH++ - Senior Software Engineering*

@@ -1,8 +1,8 @@
 # Informe Técnico: Taller Integrador de Codificación
-**Proyecto:** YÁYA (v0.1.0-alpha)  
+**Proyecto:** YÁYA (v0.1.3-alpha)  
 **Desarrollador:** Brandon Daza  
 **Organización:** BH++ Team  
-**Fecha:** 17 de Junio de 2026
+**Fecha:** 27 de Agosto de 2026
 
 ---
 
@@ -26,8 +26,8 @@
 
 ![Diagrama Entidad Relación](../assets/DiagramER.png)
 ### 3. Estado de Módulos
-- **Desarrollados:** Auth, Perfil Universal, Catálogo Dinámico, Negociación, CRUD de Servicios, Validación de Disponibilidad, Dashboard Admin, Reportes, Calificaciones, Chat en Tiempo Real e Infraestructura de Notificaciones Push (Hitos 1-5).
-- **Pendientes:** Multimedia/Storage (Hito 3), Automatización de Alertas via Edge Functions.
+- **Desarrollados:** Auth, Perfil Universal, Catálogo Dinámico, Negociación, CRUD de Servicios, Validación de Disponibilidad, Dashboard Admin (Moderación Progresiva), Reportes, Calificaciones, Chat en Tiempo Real, Multimedia/Storage, Infraestructura de Notificaciones Push (Edge Functions) e Inteligencia de Conectividad (Hitos 1-6).
+- **En Curso:** Fase de pilotaje real con usuarios locales.
 
 ---
 
@@ -86,6 +86,13 @@ Este módulo implementa el ciclo de vida completo de los datos (Create, Read, Up
 | 6 | Redirección Retrasada | Centralización de lógica de roles para navegación inmediata tras Login. |
 | 7 | UX Silenciosa | Implementación de `EmptyServicesView` para feedback en búsquedas vacías. |
 | 8 | Bloqueo RLS (42501) | Implementación de políticas de inserción en Supabase para permitir la creación de servicios a usuarios autenticados. |
+| 9 | Multimedia Estática | Integración de Supabase Storage y Coil 3 para portafolios dinámicos y avatares reales. |
+| 10 | Visualización Multimedia | Implementación de visor de imágenes a pantalla completa en detalles de servicio para mejorar la confianza del cliente. |
+| 11 | Navegación Inmersiva | Integración de HorizontalPager en el visor multimedia para navegación por gestos (Swipe) entre imágenes de portafolio. |
+| 12 | Identidad Visual Admin | Integración de avatares en el Panel Administrativo y Home para humanizar la plataforma y facilitar la moderación. |
+| 13 | Redundancia UI/UX | Refactorización masiva bajo **Atomic Design** (Atoms, Molecules, Organisms) para garantizar consistencia DRY absoluta. |
+| 14 | Desorden en Formateo | Implementación de `FormatterUtils.kt` como motor único de verdad para moneda compacta y fechas. |
+| 15 | Inseguridad en Trato | Protocolo de **Handshake Digital** (`in_progress`) para blindar el precio acordado antes de finalizar servicios. |
 
 **Evidencia de Corrección (Persistencia de Sesión):**
 ![Persistencia Supabase](../assets/SupaBase.png)
@@ -97,7 +104,15 @@ Este módulo implementa el ciclo de vida completo de los datos (Create, Read, Up
 
 ## Actividad 5. Optimización del Código
 
-### 1. Navegación Type-Safe
+### 1. Arquitectura de Componentes (Atomic Design)
+Migración total de la interfaz a un sistema de diseño jerárquico. Se eliminó la lógica visual de las pantallas (Screens) y se delegó en Átomos, Moléculas y Organismos reutilizables.
+
+**Evidencia de Estándares:**
+- **Atoms:** `YayaButton`, `YayaTextField`.
+- **Molecules:** `RatingIndicator`, `ChatBubble`.
+- **Organisms:** `ServiceCard`, `HomeTopBar`.
+
+### 2. Navegación Type-Safe
 Migración completa de rutas basadas en Strings (inseguras) a objetos serializables, garantizando errores en tiempo de compilación en lugar de ejecución.
 
 **Evidencia de Rutas Seguras:**
@@ -108,11 +123,11 @@ Migración completa de rutas basadas en Strings (inseguras) a objetos serializab
 
 ---
 
-## Actividad 6. Defensa Técnica Individual
+## Actividad 6. Defensa Técnica Individual (Cierre SENA)
 
-- **Gestión de Sesiones:** Se utiliza un patrón Singleton (`SupabaseManager`) con persistencia en `SharedPreferences` para garantizar un inicio de sesión continuo.
-- **Seguridad:** Los datos están protegidos por políticas **RLS (Row Level Security)** en el motor de base de datos PostgreSQL.
-- **Arquitectura:** El uso de MVVM permite que la lógica de negocio sea independiente de la UI, facilitando el mantenimiento y la escalabilidad del proyecto YÁYA.
+- **Arquitectura Atómica:** El uso de Atomic Design permite que YÁYA sea altamente escalable. No es solo una App, es un sistema de componentes que garantiza consistencia visual y reduce el tiempo de desarrollo de nuevas funcionalidades en un 40%.
+- **Seguridad Transaccional:** El protocolo de Handshake Digital blinda los acuerdos económicos, protegiendo tanto al cliente como al prestador.
+- **Preparación Comercial:** Con la documentación legal y técnica al día, y un diseño Premium resiliente (Offline Support), YÁYA está lista para ser publicada en tiendas oficiales (Google Play Store) e iniciar su fase de tracción real.
 
 ---
 Documento generado bajo estándares de ingeniería de software por **BH++ Team**

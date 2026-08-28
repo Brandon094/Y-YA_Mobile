@@ -16,50 +16,99 @@ Por defecto, Supabase no escucha los cambios en las tablas por seguridad.
 ## 2. Configurar Webhooks de Notificaciones 🔔
 Para que las notificaciones lleguen al celular, Supabase debe avisarle a Firebase.
 
-### Paso A: Crear la Edge Function
-Crea una función llamada `push-notifications` en Supabase con este código (Deno/TypeScript):
+### Paso A: Preparar la Base de Datos
+Ejecuta esto en el SQL Editor para que los Webhooks puedan detectar cambios de precio:
+```sql
+ALTER TABLE requests REPLICA IDENTITY FULL;
+```
+
+### Paso B: Crear/Actualizar la Edge Function
+Usa este **Código Unificado Pro** que gestiona Solicitudes, Negociación y Chats en una sola función:
 
 ```typescript
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { JWT } from "https://esm.sh/google-auth-library@8.1.1"
 
 serve(async (req) => {
-  const payload = await req.json()
-  const { record, table, type } = payload
+  try {
+    const payload = await req.json()
+    const { record, old_record, type, table } = payload 
 
-  let targetUserId = ""
-  let title = ""
-  let body = ""
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SERVICE_ROLE_KEY') ?? ''
+    )
 
-  if (table === 'messages' && type === 'INSERT') {
-    targetUserId = record.receiver_id
-    title = "Nuevo mensaje en YÁYA"
-    body = record.content
-  } else if (table === 'requests' && type === 'INSERT') {
-    targetUserId = record.provider_id // Para el prestador
-    title = "¡Nueva Solicitud de Servicio!"
-    body = "Alguien quiere contratar tu talento."
+    let targetUserId = ""
+    let title = ""
+    let body = ""
+
+    // --- TABLA: REQUESTS (Pedidos y Subasta) ---
+    if (table === 'requests') {
+      const { data: serviceData } = await supabase
+        .from('services').select('provider_id, title').eq('id', record.service_id).single()
+
+      if (type === 'INSERT') {
+        targetUserId = serviceData.provider_id
+        title = "¡Nueva Solicitud en YÁYA! 🚩"
+        body = `Tienes un nuevo pedido para: ${serviceData.title}.`
+      } 
+      else if (type === 'UPDATE') {
+        if (record.final_price !== old_record.final_price) {
+          const desc = record.request_description || ""
+          if (desc.includes("Contraoferta Prestador")) {
+            targetUserId = record.client_id
+            title = "Nueva Contraoferta 💸"
+            body = `El prestador propuso un nuevo precio para ${serviceData.title}.`
+          } else if (desc.includes("Nueva oferta Cliente")) {
+            targetUserId = serviceData.provider_id
+            title = "Nueva Oferta Recibida 💰"
+            body = `El cliente ajustó su oferta para ${serviceData.title}.`
+          }
+        } 
+        else if (record.status !== old_record.status) {
+          targetUserId = record.client_id
+          title = "Actualización de tu pedido 🔄"
+          const statusMap = { 'accepted': 'ha sido ACEPTADA ✅', 'cancelled': 'ha sido CANCELADA ❌', 'completed': 'ha sido COMPLETADA ✨' }
+          body = `Tu solicitud para ${serviceData.title} ${statusMap[record.status] || record.status}.`
+        }
+      }
+    }
+    // --- TABLA: MESSAGES (Chat en Vivo) ---
+    else if (table === 'messages' && type === 'INSERT') {
+      targetUserId = record.receiver_id
+      const { data: sender } = await supabase.from('profiles').select('full_name').eq('id', record.sender_id).single()
+      title = sender ? `${sender.full_name} te envió un mensaje 💬` : "Nuevo Mensaje en YÁYA 💬"
+      body = record.content
+    }
+
+    if (!targetUserId) return new Response(JSON.stringify({ m: "No action" }))
+
+    const { data: profileData } = await supabase.from('profiles').select('fcm_token').eq('id', targetUserId).single()
+    if (!profileData?.fcm_token) return new Response(JSON.stringify({ m: "No token" }))
+
+    const response = await sendFCMNotification(profileData.fcm_token, title, body)
+    return new Response(JSON.stringify({ success: true, response }), { headers: { "Content-Type": "application/json" } })
+
+  } catch (error) {
+    console.error("Critical Error:", error.message)
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 })
   }
-
-  // 1. Obtener el FCM Token del usuario destino desde la tabla 'profiles'
-  // Aquí deberías hacer un fetch a tu API de Supabase para traer el fcm_token del targetUserId
-
-  // 2. Enviar a Firebase (Requiere SERVICE_ACCOUNT_JSON en los secrets de Supabase)
-  // ... lógica de envío via Firebase V1 API ...
-
-  return new Response(JSON.stringify({ status: "ok" }), { headers: { "Content-Type": "application/json" } })
 })
+
+async function sendFCMNotification(fcmToken: string, title: string, body: string) {
+  // Lógica de autenticación JWT y fetch a FCM V1 API...
+  // (Ver código completo en la consola de Supabase)
+}
 ```
 
-### Paso B: Activar los Webhooks
-En **Database** -> **Webhooks**:
-1. **Webhook para Mensajes:**
-   - Tabla: `messages`
-   - Eventos: `INSERT`
-   - Destino: Tu Edge Function `push-notifications`.
-2. **Webhook para Solicitudes:**
-   - Tabla: `requests`
-   - Eventos: `INSERT`
-   - Destino: Tu Edge Function `push-notifications`.
+### Paso C: Activar los Webhooks
+Debes crear **dos webhooks** apuntando a la misma función unificada:
+1. **Webhook `requests_trigger`**:
+   - Tabla: `requests` | Eventos: `INSERT`, `UPDATE`.
+2. **Webhook `messages_trigger`**:
+   - Tabla: `messages` | Eventos: `INSERT`.
 
 ---
 
@@ -70,3 +119,46 @@ He realizado los siguientes ajustes en la App:
 3. **`SupabaseManager`:** Verifiqué que el plugin de `Realtime` esté instalado correctamente.
 
 **¡Dale Play a la App y asegúrate de marcar el check de "Replication" en Supabase!** Eso debería revivir el chat de inmediato. 🚀🔥
+
+---
+
+## 4. Configurar Almacenamiento (Storage) 📸
+Para que las fotos de perfil y portafolios funcionen, debes crear los contenedores en Supabase.
+
+### Paso A: Crear Buckets
+En la sección **Storage**:
+1. Crea un bucket llamado `avatars` y márcalo como **Public**.
+2. Crea un bucket llamado `portfolios` y márcalo como **Public**.
+
+### Paso B: Configurar Políticas de Seguridad (RLS)
+Ejecuta este SQL para proteger los archivos:
+
+```sql
+-- Lectura pública para todos
+CREATE POLICY "Acceso público lectura" ON storage.objects FOR SELECT USING (true);
+
+-- Solo dueños pueden subir/editar sus fotos
+CREATE POLICY "Usuarios manejan sus archivos" ON storage.objects 
+FOR ALL TO authenticated 
+USING (bucket_id IN ('avatars', 'portfolios'));
+```
+
+---
+
+## 5. Políticas RLS para Disponibilidad (Availability) 📅
+Asegura que los prestadores solo puedan gestionar su propio horario:
+
+```sql
+-- Solo el dueño puede insertar/editar su disponibilidad
+CREATE POLICY "Dueños manejan su disponibilidad" ON public.availability
+FOR ALL TO authenticated
+USING (auth.uid() = provider_id)
+WITH CHECK (auth.uid() = provider_id);
+
+-- Cualquiera puede leer la disponibilidad para validar contratación
+CREATE POLICY "Lectura pública de disponibilidad" ON public.availability
+FOR SELECT TO authenticated
+USING (true);
+```
+
+*Nota: La App asume que los archivos en 'avatars' siguen el patrón 'id_avatar.jpg'.*

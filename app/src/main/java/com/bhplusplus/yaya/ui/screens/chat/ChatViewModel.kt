@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.Message
+import com.bhplusplus.yaya.data.models.UserProfile
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.PostgresAction
@@ -19,6 +20,18 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
+ * Modelo de UI para representar un mensaje en la burbuja de chat.
+ * Evita que la View tenga que procesar IDs o fechas.
+ */
+data class MessageUiState(
+    val id: String,
+    val content: String,
+    val isMe: Boolean,
+    val formattedTime: String,
+    val isRead: Boolean
+)
+
+/**
  * VIEWMODEL PARA EL CHAT EN TIEMPO REAL (Hito 2)
  * Gestiona el historial de mensajes y la suscripción Realtime.
  */
@@ -27,8 +40,32 @@ class ChatViewModel : ViewModel() {
     var messages by mutableStateOf<List<Message>>(emptyList())
         private set
 
+    /**
+     * Entrega los mensajes procesados para la UI, ordenados de más reciente a más antiguo
+     * para el reverseLayout.
+     */
+    val uiMessages: List<MessageUiState> get() = messages
+        .sortedByDescending { it.sent_at ?: "" }
+        .map { msg ->
+            MessageUiState(
+                id = msg.id ?: "",
+                content = msg.content,
+                isMe = msg.sender_id.equals(currentUser?.id, ignoreCase = true),
+                formattedTime = msg.sent_at?.substringAfter("T")?.take(5) ?: "",
+                isRead = msg.is_read
+            )
+        }
+
+    var receiverProfile by mutableStateOf<UserProfile?>(null)
+        private set
+    
+    var isModerationChat by mutableStateOf(false)
+        private set
+
     var isLoading by mutableStateOf(false)
         private set
+
+    val currentUserId: String? get() = SupabaseManager.client.auth.currentUserOrNull()?.id
 
     private val currentUser = SupabaseManager.client.auth.currentUserOrNull()
 
@@ -38,9 +75,41 @@ class ChatViewModel : ViewModel() {
     fun initializeChat(receiverId: String) {
         if (currentUser == null) return
         
+        fetchReceiverProfile(receiverId)
         fetchMessages(receiverId)
         subscribeToMessages(receiverId)
         markMessagesAsRead(receiverId)
+    }
+
+    /**
+     * Carga el perfil del destinatario para mostrar su avatar.
+     */
+    private fun fetchReceiverProfile(receiverId: String) {
+        viewModelScope.launch {
+            try {
+                val profile = SupabaseManager.client.postgrest["profiles"]
+                    .select { filter { eq("id", receiverId) } }
+                    .decodeSingle<UserProfile>()
+                
+                val currentUser = SupabaseManager.client.auth.currentUserOrNull()
+                val myProfile = if (currentUser != null) {
+                    SupabaseManager.client.postgrest["profiles"]
+                        .select { filter { eq("id", currentUser.id) } }
+                        .decodeSingle<UserProfile>()
+                } else null
+
+                // Anonimato Admin: Solo se enmascara si el receptor es Admin y el emisor NO es Admin
+                isModerationChat = profile.role == "admin" && myProfile?.role != "admin"
+                
+                receiverProfile = if (isModerationChat) {
+                    profile.copy(full_name = "Equipo de Moderación")
+                } else {
+                    profile
+                }
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error al cargar perfil receptor: ${e.message}")
+            }
+        }
     }
 
     /**

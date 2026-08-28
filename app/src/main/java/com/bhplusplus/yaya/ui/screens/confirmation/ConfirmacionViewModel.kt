@@ -10,21 +10,34 @@ import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.ServiceRequest
 import com.bhplusplus.yaya.data.models.UserProfile
+import com.bhplusplus.yaya.utils.FormatterUtils
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+/**
+ * Estado de UI para la pantalla de confirmación.
+ */
+data class ConfirmationUiState(
+    val serviceTitle: String,
+    val providerName: String,
+    val formattedDate: String,
+    val formattedTime: String,
+    val address: String,
+    val formattedBasePrice: String,
+    val formattedOfferPrice: String,
+    val estimatedTime: String
+)
+
 class ConfirmacionViewModel : ViewModel() {
-    var servicio by mutableStateOf("Cargando...")
-    var prestador by mutableStateOf("Cargando...")
-    var fecha by mutableStateOf("")
-    var ubicacion by mutableStateOf("")
-    var precio by mutableStateOf("")
-    var tiempo by mutableStateOf("")
+    
+    var uiState by mutableStateOf<ConfirmationUiState?>(null)
+        private set
 
     var isLoading by mutableStateOf(false)
+        private set
 
     /**
      * Carga los datos reales de la solicitud y el servicio desde Supabase.
@@ -33,43 +46,42 @@ class ConfirmacionViewModel : ViewModel() {
         viewModelScope.launch {
             isLoading = true
             try {
-                // 1. Cargar la Solicitud (Request) para ver dirección y fecha programada
+                // 1. Cargar la Solicitud
                 val request = SupabaseManager.client.postgrest["requests"]
                     .select { filter { eq("id", requestId) } }
                     .decodeSingle<ServiceRequest>()
                 
-                ubicacion = request.service_address
-                
-                // Formatear fecha
-                request.scheduled_date?.let { 
-                    try {
-                        val zdt = ZonedDateTime.parse(it)
-                        val formatter = DateTimeFormatter.ofPattern("EEEE dd 'de' MMMM", Locale("es", "CO"))
-                        fecha = zdt.format(formatter).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-                    } catch (e: Exception) {
-                        fecha = it.take(10)
-                    }
-                }
-
-                // 2. Cargar el Servicio para ver el título y precio base
+                // 2. Cargar el Servicio
                 val serviceResult = SupabaseManager.client.postgrest["services"]
                     .select { filter { eq("id", serviceId) } }
                     .decodeSingle<Service>()
                 
-                servicio = serviceResult.title
-                precio = "$ ${serviceResult.price}"
-                tiempo = serviceResult.estimated_time ?: "N/A"
-
-                // 3. Cargar el Prestador para ver su nombre
-                serviceResult.provider_id?.let { pId ->
-                    val providerResult = SupabaseManager.client.postgrest["profiles"]
+                // 3. Cargar el Prestador
+                val providerName = serviceResult.provider_id?.let { pId ->
+                    SupabaseManager.client.postgrest["profiles"]
                         .select { filter { eq("id", pId) } }
-                        .decodeSingle<UserProfile>()
-                    prestador = providerResult.full_name
-                }
+                        .decodeSingle<UserProfile>().full_name
+                } ?: "Prestador Independiente"
+
+                // Formatear Fecha y Hora
+                val zdt = request.scheduled_date?.let { ZonedDateTime.parse(it) }
+                val dateLabel = zdt?.format(DateTimeFormatter.ofPattern("EEEE dd 'de' MMMM", Locale("es", "CO")))
+                    ?.replaceFirstChar { it.uppercase() } ?: "Fecha no definida"
+                val timeLabel = zdt?.format(DateTimeFormatter.ofPattern("hh:mm a")) ?: "Hora no definida"
+
+                uiState = ConfirmationUiState(
+                    serviceTitle = serviceResult.title,
+                    providerName = providerName,
+                    formattedDate = dateLabel,
+                    formattedTime = timeLabel,
+                    address = request.service_address,
+                    formattedBasePrice = FormatterUtils.formatCurrency(serviceResult.price),
+                    formattedOfferPrice = FormatterUtils.formatCurrency(request.final_price),
+                    estimatedTime = serviceResult.estimated_time ?: "N/A"
+                )
 
             } catch (e: Exception) {
-                Log.e("ConfirmacionVM", "Error al cargar datos reales: ${e.message}")
+                Log.e("ConfirmacionVM", "Error al cargar datos: ${e.message}")
             } finally {
                 isLoading = false
             }

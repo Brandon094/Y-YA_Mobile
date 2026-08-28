@@ -1,5 +1,6 @@
 package com.bhplusplus.yaya.ui.screens.contratacion
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,15 +10,29 @@ import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.ServiceRequest
 import com.bhplusplus.yaya.data.models.UserProfile
+import com.bhplusplus.yaya.utils.FormatterUtils
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import android.util.Log
+import java.time.LocalTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
+/**
+ * Estado de UI para la pantalla de contratación.
+ * Centraliza el formateo para mantener la View "tonta".
+ */
+data class ContratacionUiState(
+    val serviceTitle: String,
+    val formattedBasePrice: String,
+    val providerName: String,
+    val providerAvatarUrl: String?,
+    val formattedOffer: String,
+    val isOfferAtBase: Boolean,
+    val canContratar: Boolean
+)
 
 /**
  * VIEWMODEL PARA LA PANTALLA DE CONTRATACIÓN
@@ -35,6 +50,48 @@ class ContratacionViewModel : ViewModel() {
     var fecha by mutableStateOf("") // Formato YYYY-MM-DD
     var hora by mutableStateOf("")  // Formato HH:mm
     var oferta by mutableStateOf("")
+
+    val uiState: ContratacionUiState? get() {
+        val s = service ?: return null
+        val currentOffer = oferta.toDoubleOrNull() ?: s.price
+        
+        return ContratacionUiState(
+            serviceTitle = s.title,
+            formattedBasePrice = FormatterUtils.formatCurrency(s.price),
+            providerName = providerProfile?.full_name ?: "Cargando prestador...",
+            providerAvatarUrl = providerProfile?.avatar_url,
+            formattedOffer = FormatterUtils.formatCurrency(currentOffer),
+            isOfferAtBase = currentOffer <= s.price,
+            canContratar = direccion.isNotBlank() && fecha.isNotBlank() && hora.isNotBlank() && isAvailable && !isLoading
+        )
+    }
+
+    /**
+     * Ajusta la oferta asegurando que no sea inferior al precio base.
+     */
+    fun updateOferta(newValue: String) {
+        val numericValue = newValue.filter { it.isDigit() }.toDoubleOrNull() ?: 0.0
+        val basePrice = service?.price ?: 0.0
+        
+        oferta = if (numericValue < basePrice) {
+            basePrice.toInt().toString()
+        } else {
+            numericValue.toInt().toString()
+        }
+    }
+
+    fun incrementarOferta() {
+        val current = oferta.toDoubleOrNull() ?: (service?.price ?: 0.0)
+        oferta = (current + 5000.0).toInt().toString()
+    }
+
+    fun decrementarOferta() {
+        val current = oferta.toDoubleOrNull() ?: (service?.price ?: 0.0)
+        val basePrice = service?.price ?: 0.0
+        if (current > basePrice) {
+            oferta = (current - 5000.0).coerceAtLeast(basePrice).toInt().toString()
+        }
+    }
 
     // Estados de control
     var isLoading by mutableStateOf(false)

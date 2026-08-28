@@ -25,19 +25,24 @@ Este documento sirve como guía oficial para el proceso de verificación de requ
 - **CUANDO** el Cliente envía un mensaje nuevo.
 - **ENTONCES** el mensaje debe aparecer instantáneamente en la pantalla del Prestador y marcarse como "leído" (`is_read: true`) en la base de datos de forma automática.
 
+### Escenario 3: Gestión de Portafolio Multimedia
+- **DADO** que un Prestador está creando un nuevo servicio.
+- **CUANDO** selecciona múltiples imágenes de su galería y guarda el servicio.
+- **ENTONCES** el sistema debe subir los archivos al bucket de Storage, generar URLs públicas y persistirlas en la tabla `service_images` para su visualización en el catálogo.
+
 ---
 
 ## 3. Matriz de Calidad ISO/IEC 25010 (Checklist)
 
 | Categoría | Ítem de Verificación | Cumple | Evidencia / Comentario |
 | :--- | :--- | :--- | :--- |
-| **Adecuación Funcional** | ¿Funciones cubren el 100% de requisitos? | Sí | Implementados hitos 1 al 5 (Auth, Negociación, Chat, Admin). |
-| | ¿Cálculos de negocio son precisos? | Sí | El flujo de `final_price` en `requests` garantiza integridad económica. |
+| **Adecuación Funcional** | ¿Funciones cubren el 100% de requisitos? | Sí | Implementados hitos 1 al 5 (Auth, Negociación, Chat, Admin, Handshake). |
+| | ¿Cálculos de negocio son precisos? | Sí | El flujo de `final_price` y el protocolo de **Handshake Digital** garantizan integridad transaccional. |
 | **Eficiencia** | ¿Responde en < 2 segundos? | Sí | Uso de Kotlin Coroutines y carga asíncrona optimizada. |
 | | ¿Consumo de recursos estable? | Sí | Perfilado de memoria realizado con Android Profiler. |
 | **Compatibilidad** | ¿Funciona en SO objetivo? | Sí | Soporte nativo para Android 8.0 hasta Android 15. |
 | | ¿Integración con APIs correcta? | Sí | Sincronización perfecta con Supabase Postgrest y Realtime. |
-| **Usabilidad** | ¿Interfaz intuitiva y coherente? | Sí | Basado 100% en Material Design 3 con sistema de temas. |
+| **Usabilidad** | ¿Interfaz intuitiva y coherente? | Sí | Refactorización masiva bajo **Atomic Design** que garantiza consistencia visual DRY. |
 | | ¿Mensajes de error claros? | Sí | Captura de excepciones con mensajes amigables al usuario. |
 | **Fiabilidad** | ¿Maneja fallos sin cerrarse (crashes)? | Sí | Implementación de `try-catch` en ViewModels y Scaffold de seguridad. |
 | | ¿Evita pérdida de datos? | Sí | Persistencia inmediata en PostgreSQL tras cada acción del usuario. |

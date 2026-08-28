@@ -1,6 +1,15 @@
 package com.bhplusplus.yaya.services
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import com.bhplusplus.yaya.MainActivity
+import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -19,6 +28,11 @@ class YayaMessagingService : FirebaseMessagingService() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+    companion object {
+        private const val CHANNEL_ID = "yaya_notifications_channel"
+        private const val CHANNEL_NAME = "Notificaciones de YÁYA"
+    }
+
     /**
      * Se llama cuando se genera un nuevo token (instalación nueva, limpieza de datos, etc).
      */
@@ -35,10 +49,43 @@ class YayaMessagingService : FirebaseMessagingService() {
         super.onMessageReceived(message)
         Log.d("FCM", "Mensaje recibido de: ${message.from}")
         
-        // Aquí podríamos mostrar una notificación personalizada si la app está abierta
         message.notification?.let {
             Log.d("FCM", "Cuerpo de notificación: ${it.body}")
+            showNotification(it.title ?: "YÁYA", it.body ?: "")
         }
+    }
+
+    /**
+     * Muestra una notificación local.
+     */
+    private fun showNotification(title: String, message: String) {
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        
+        // Crear canal de notificación (Requerido para Android 8.0+)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        notificationManager.createNotificationChannel(channel)
+
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0, intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_noti)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setAutoCancel(true)
+            .setColor(ContextCompat.getColor(this, R.color.notification_color))
+            .setContentIntent(pendingIntent)
+
+        notificationManager.notify(System.currentTimeMillis().toInt(), notificationBuilder.build())
     }
 
     /**

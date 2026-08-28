@@ -48,19 +48,18 @@ Ofertas específicas publicadas por los prestadores.
 | `status` | varchar | CHECK (active, inactive, pending_approval) | Estado de visibilidad (Aprobación en Hito 5). |
 | `created_at` | timestamptz | DEFAULT now() | Fecha de publicación del servicio. |
 
-## 8. Tabla: `reports` (Hito 5)
-Registro de denuncias por mal comportamiento para moderación administrativa.
+## 4. Tabla: `service_images` (Hito 3)
+Galería de fotos de los servicios ofrecidos para el portafolio.
 
 | Campo | Tipo | Restricciones | Descripción |
 | :--- | :--- | :--- | :--- |
-| `id` | uuid | PK | ID del reporte. |
-| `reporter_id` | uuid | FK (profiles.id) | Usuario que realiza la denuncia. |
-| `reported_user_id` | uuid | FK (profiles.id) | Usuario denunciado. |
-| `reason` | text | NOT NULL | Motivo detallado del reporte. |
-| `created_at` | timestamptz | DEFAULT now() | Fecha del reporte. |
+| `id` | uuid | PK, DEFAULT gen_v4() | ID de la imagen. |
+| `service_id` | uuid | FK (services.id) | Referencia al servicio. |
+| `image_url` | text | NOT NULL | URL pública en Supabase Storage. |
+| `created_at` | timestamptz | DEFAULT now() | Fecha de carga. |
 
-## 4. Tabla: `availability`
-Gestión de horarios de los prestadores.
+## 5. Tabla: `availability`
+Gestión de horarios globales de los prestadores.
 
 | Campo | Tipo | Restricciones | Descripción |
 | :--- | :--- | :--- | :--- |
@@ -70,7 +69,7 @@ Gestión de horarios de los prestadores.
 | `start_time` | time | NOT NULL | Hora de inicio. |
 | `end_time` | time | NOT NULL | Hora de finalización. |
 
-## 5. Tabla: `requests`
+## 6. Tabla: `requests`
 Órdenes de servicio o contratos entre clientes y prestadores.
 
 | Campo | Tipo | Restricciones | Descripción |
@@ -78,15 +77,15 @@ Gestión de horarios de los prestadores.
 | `id` | uuid | PK, DEFAULT gen_v4() | ID de la solicitud. |
 | `client_id` | uuid | FK (profiles.id) | Usuario que contrata. |
 | `service_id` | uuid | FK (services.id) | Servicio contratado. |
-| `final_price` | numeric | DEFAULT 0.00 | Precio final pactado. |
+| `final_price` | numeric | DEFAULT 0.00 | Precio final pactado (Post-negociación). |
 | `request_description`| text | | Notas adicionales del cliente. |
 | `service_address` | text | NOT NULL | Ubicación del servicio. |
-| `scheduled_date` | timestamptz | | Fecha programada. |
-| `status` | varchar | CHECK (pending, accepted, ...) | Estado de la orden. |
+| `scheduled_date` | timestamptz | | Fecha y hora programada. |
+| `status` | varchar | CHECK (pending, accepted, in_progress, completed, cancelled) | Estado del ciclo de vida de la orden. |
 | `created_at` | timestamptz | DEFAULT now() | Fecha de solicitud inicial. |
 
-## 6. Tabla: `ratings`
-Feedback y calificaciones post-servicio.
+## 7. Tabla: `ratings`
+Feedback y calificaciones post-servicio para reputación.
 
 | Campo | Tipo | Restricciones | Descripción |
 | :--- | :--- | :--- | :--- |
@@ -94,21 +93,32 @@ Feedback y calificaciones post-servicio.
 | `request_id` | uuid | FK (requests.id) | Referencia a la solicitud. |
 | `client_id` | uuid | FK (profiles.id) | Usuario que califica. |
 | `provider_id` | uuid | FK (profiles.id) | Usuario calificado. |
-| `score` | integer | CHECK (1-5) | Puntaje. |
-| `comment` | text | | Comentario detallado. |
+| `score` | integer | CHECK (1-5) | Puntaje en estrellas. |
+| `comment` | text | | Comentario detallado de la experiencia. |
 | `created_at` | timestamptz | DEFAULT now() | Fecha de la calificación. |
 
-## 7. Tabla: `messages`
-Historial de chat interno.
+## 8. Tabla: `messages`
+Historial de chat interno en tiempo real.
 
 | Campo | Tipo | Restricciones | Descripción |
 | :--- | :--- | :--- | :--- |
 | `id` | uuid | PK, DEFAULT gen_v4() | ID del mensaje. |
-| `sender_id` | uuid | FK (profiles.id) | Quien envía. |
-| `receiver_id` | uuid | FK (profiles.id) | Quien recibe. |
-| `content` | text | NOT NULL | Texto del mensaje. |
-| `is_read` | boolean | DEFAULT false | Estado de lectura. |
-| `sent_at` | timestamptz | DEFAULT now() | Fecha y hora de envío. |
+| `sender_id` | uuid | FK (profiles.id) | Remitente del mensaje. |
+| `receiver_id` | uuid | FK (profiles.id) | Destinatario del mensaje. |
+| `content` | text | NOT NULL | Contenido del mensaje de texto. |
+| `is_read` | boolean | DEFAULT false | Estado de lectura (Visto). |
+| `sent_at` | timestamptz | DEFAULT now() | Marca temporal de envío. |
+
+## 9. Tabla: `reports` (Hito 5)
+Registro de denuncias para moderación y calidad del ecosistema.
+
+| Campo | Tipo | Restricciones | Descripción |
+| :--- | :--- | :--- | :--- |
+| `id` | uuid | PK | ID único del reporte. |
+| `reporter_id` | uuid | FK (profiles.id) | Usuario denunciante. |
+| `reported_user_id` | uuid | FK (profiles.id) | Usuario bajo revisión. |
+| `reason` | text | NOT NULL | Motivo de la denuncia. |
+| `created_at` | timestamptz | DEFAULT now() | Fecha de creación. |
 
 ---
-*Documentación de Datos por BH++*
+*Documentación de Datos por BH++ Team - Ingeniería de Software*

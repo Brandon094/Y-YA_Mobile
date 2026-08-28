@@ -28,7 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.utils.ImageUtils
 
 /**
  * PANTALLA DE CREACIÓN Y EDICIÓN DE SERVICIO
@@ -43,6 +51,15 @@ fun CreateServiceScreen(
     viewModel: CreateServiceViewModel = viewModel()
 ) {
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = { uris ->
+            val byteArrayList = uris.mapNotNull { ImageUtils.uriToByteArray(context, it) }
+            viewModel.selectedImages = viewModel.selectedImages + byteArrayList
+        }
+    )
 
     // ESTADOS
     var title by remember { mutableStateOf("") }
@@ -145,86 +162,137 @@ fun CreateServiceScreen(
                 .padding(padding)
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
+                .navigationBarsPadding() // RESPETA BOTONES DE NAVEGACIÓN
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // CATEGORÍA
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { if (!isLoading) expanded = !expanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = selectedCategoryName,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Categoría") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth(),
-                    enabled = !isLoading,
-                    shape = RoundedCornerShape(12.dp)
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "CATEGORÍA DEL TALENTO",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
-                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    viewModel.categories.forEach { category ->
-                        DropdownMenuItem(
-                            text = { Text(category.name) },
-                            onClick = {
-                                selectedCategoryId = category.id
-                                selectedCategoryName = category.name
-                                expanded = false
-                            }
+                Spacer(Modifier.height(8.dp))
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { if (!isLoading) expanded = !expanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = selectedCategoryName,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        enabled = !isLoading,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
                         )
+                    )
+                    ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        viewModel.categories.forEach { category ->
+                            DropdownMenuItem(
+                                text = { Text(category.name) },
+                                onClick = {
+                                    selectedCategoryId = category.id
+                                    selectedCategoryName = category.name
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
 
             // TÍTULO
-            OutlinedTextField(
-                value = title, onValueChange = { title = it },
-                label = { Text(stringResource(R.string.create_service_field_title)) },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading, shape = RoundedCornerShape(12.dp)
-            )
-
-            // DESCRIPCIÓN
-            OutlinedTextField(
-                value = description, onValueChange = { description = it },
-                label = { Text(stringResource(R.string.create_service_field_description)) },
-                modifier = Modifier.fillMaxWidth().height(120.dp),
-                enabled = !isLoading, shape = RoundedCornerShape(12.dp)
-            )
-
-            // PRECIO BASE
-            OutlinedTextField(
-                value = price, onValueChange = { price = it },
-                label = { Text(stringResource(R.string.create_service_field_price)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                enabled = !isLoading, shape = RoundedCornerShape(12.dp)
-            )
-
-            // TIEMPO ESTIMADO
-            OutlinedTextField(
-                value = estimatedTime, onValueChange = { estimatedTime = it },
-                label = { Text("Tiempo estimado (ej: 2 horas)") },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading, shape = RoundedCornerShape(12.dp)
-            )
-
-            // DISPONIBILIDAD (Day Picker UX)
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Días de prestación del servicio:",
-                    fontSize = 14.sp,
+                    text = "TÍTULO DEL SERVICIO",
+                    style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(Modifier.height(8.dp))
-                Row(
+                OutlinedTextField(
+                    value = title, onValueChange = { title = it },
+                    placeholder = { Text("Ej: Limpieza de muebles") },
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    enabled = !isLoading, shape = RoundedCornerShape(12.dp)
+                )
+            }
+
+            // DESCRIPCIÓN
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "DESCRIPCIÓN DETALLADA",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = description, onValueChange = { description = it },
+                    placeholder = { Text("Describe qué incluye tu servicio...") },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp),
+                    enabled = !isLoading, shape = RoundedCornerShape(12.dp)
+                )
+            }
+
+            // PRECIO Y TIEMPO
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "PRECIO BASE",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = price, onValueChange = { price = it },
+                        prefix = { Text("$") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        enabled = !isLoading, shape = RoundedCornerShape(12.dp)
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "DURACIÓN",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = estimatedTime, onValueChange = { estimatedTime = it },
+                        placeholder = { Text("Ej: 2 horas") },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isLoading, shape = RoundedCornerShape(12.dp)
+                    )
+                }
+            }
+
+            // DISPONIBILIDAD (Day Picker UX con FlowRow)
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "DÍAS DE PRESTACIÓN",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.height(12.dp))
+                @OptIn(ExperimentalLayoutApi::class)
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     val days = listOf("L", "M", "M", "J", "V", "S", "D")
                     days.forEachIndexed { index, name ->
@@ -233,11 +301,12 @@ fun CreateServiceScreen(
                         
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
+                                .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
                                 .background(
-                                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray.copy(alpha = 0.3f),
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray.copy(alpha = 0.2f),
                                     shape = CircleShape
                                 )
+                                .clip(CircleShape)
                                 .clickable(enabled = !isLoading) {
                                     selectedDays = if (isSelected) selectedDays - dayNumber else selectedDays + dayNumber
                                 },
@@ -247,7 +316,7 @@ fun CreateServiceScreen(
                                 text = name,
                                 color = if (isSelected) Color.White else Color.Gray,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp
+                                fontSize = 14.sp
                             )
                         }
                     }
@@ -255,45 +324,130 @@ fun CreateServiceScreen(
             }
 
             // SELECTORES DE HORA
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                OutlinedTextField(
-                    value = startTime,
-                    onValueChange = { startTime = it },
-                    label = { Text("Hora Inicio") },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("08:00") },
-                    enabled = !isLoading,
-                    shape = RoundedCornerShape(12.dp)
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "RANGO HORARIO",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
-                OutlinedTextField(
-                    value = endTime,
-                    onValueChange = { endTime = it },
-                    label = { Text("Hora Fin") },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("18:00") },
-                    enabled = !isLoading,
-                    shape = RoundedCornerShape(12.dp)
-                )
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    OutlinedTextField(
+                        value = startTime,
+                        onValueChange = { startTime = it },
+                        label = { Text("Inicio") },
+                        modifier = Modifier.weight(1f),
+                        placeholder = { Text("08:00") },
+                        enabled = !isLoading,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    OutlinedTextField(
+                        value = endTime,
+                        onValueChange = { endTime = it },
+                        label = { Text("Fin") },
+                        modifier = Modifier.weight(1f),
+                        placeholder = { Text("18:00") },
+                        enabled = !isLoading,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                }
             }
 
             // MATERIALES
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(checked = materialsIncluded, onCheckedChange = { materialsIncluded = it }, enabled = !isLoading)
-                Text("¿Incluye materiales e insumos?")
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(checked = materialsIncluded, onCheckedChange = { materialsIncluded = it }, enabled = !isLoading)
+                        Text("¿Incluye materiales e insumos?", fontWeight = FontWeight.Medium)
+                    }
+
+                    if (!materialsIncluded) {
+                        Spacer(Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = extraCost, onValueChange = { extraCost = it },
+                            label = { Text("Costo extra de materiales") },
+                            prefix = { Text("$") },
+                            modifier = Modifier.fillMaxWidth(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            enabled = !isLoading, shape = RoundedCornerShape(12.dp)
+                        )
+                    }
+                }
             }
 
-            // COSTO EXTRA (Si no incluye materiales)
-            if (!materialsIncluded) {
-                OutlinedTextField(
-                    value = extraCost, onValueChange = { extraCost = it },
-                    label = { Text("Costo extra de materiales") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    enabled = !isLoading, shape = RoundedCornerShape(12.dp)
+            // PORTAFOLIO DE IMÁGENES
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "PORTAFOLIO (TRABAJOS REALIZADOS)",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
+                Spacer(Modifier.height(12.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Botón para añadir imágenes
+                    Surface(
+                        onClick = {
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                        enabled = !isLoading,
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        modifier = Modifier.size(90.dp)
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            Icon(Icons.Default.AddPhotoAlternate, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                            Text("Añadir", fontSize = 10.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                        }
+                    }
+
+                    // Lista de imágenes seleccionadas (Vista previa)
+                    viewModel.selectedImages.take(2).forEach { bytes ->
+                        Box(
+                            modifier = Modifier
+                                .size(90.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                        ) {
+                            AsyncImage(
+                                model = bytes,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                    
+                    if (viewModel.selectedImages.size > 2) {
+                        Box(
+                            modifier = Modifier.size(60.dp).align(Alignment.CenterVertically),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("+${viewModel.selectedImages.size - 2}", fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
+                
+                if (viewModel.selectedImages.isNotEmpty()) {
+                    TextButton(onClick = { viewModel.selectedImages = emptyList() }, modifier = Modifier.align(Alignment.End)) {
+                        Icon(Icons.Default.DeleteSweep, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text("Limpiar galería", color = MaterialTheme.colorScheme.error, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
             }
 
             if (!errorMessage.isNullOrEmpty()) {

@@ -10,9 +10,20 @@ import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.data.models.Report
+import com.bhplusplus.yaya.data.models.Message
+import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.launch
+
+/**
+ * Modelo para resumir reportes por usuario denunciado.
+ */
+data class ReportedUserSummary(
+    val profile: UserProfile?,
+    val reports: List<Report>,
+    val count: Int = reports.size
+)
 
 /**
  * VIEWMODEL PARA EL DASHBOARD ADMINISTRATIVO
@@ -27,6 +38,10 @@ class AdminViewModel : ViewModel() {
         private set
 
     var reports by mutableStateOf<List<Report>>(emptyList())
+        private set
+    
+    // Lista agrupada para detectar infractores
+    var reportedUsersSummaries by mutableStateOf<List<ReportedUserSummary>>(emptyList())
         private set
 
     var isLoading by mutableStateOf(false)
@@ -47,9 +62,9 @@ class AdminViewModel : ViewModel() {
             isLoading = true
             errorMessage = null
             try {
-                // 1. Cargar servicios que requieren aprobación
+                // 1. Cargar servicios que requieren aprobación con Join del prestador
                 pendingServices = SupabaseManager.client.postgrest["services"]
-                    .select {
+                    .select(Columns.raw("*, provider_profile:provider_id(*)")) {
                         filter {
                             eq("status", "pending_approval")
                         }
@@ -62,9 +77,22 @@ class AdminViewModel : ViewModel() {
                     .decodeList<UserProfile>()
 
                 // 3. Cargar reportes con Joins para ver quién denuncia a quién
-                reports = SupabaseManager.client.postgrest["reports"]
+                val reportsResult = SupabaseManager.client.postgrest["reports"]
                     .select(Columns.raw("*, reporter_profile:reporter_id(*), reported_profile:reported_user_id(*)"))
                     .decodeList<Report>()
+                
+                reports = reportsResult
+
+                // 4. Agrupar reportes por usuario denunciado (Detección de infractores)
+                reportedUsersSummaries = reportsResult
+                    .groupBy { it.reported_user_id }
+                    .map { (_, userReports) ->
+                        ReportedUserSummary(
+                            profile = userReports.firstOrNull()?.reported,
+                            reports = userReports
+                        )
+                    }
+                    .sortedByDescending { it.count }
 
             } catch (e: Exception) {
                 Log.e("AdminViewModel", "Error al cargar datos de administración: ${e.message}")
@@ -107,6 +135,73 @@ class AdminViewModel : ViewModel() {
                 loadAdminData() // Refrescar lista
             } catch (e: Exception) {
                 Log.e("AdminViewModel", "Error al rechazar servicio: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Acciones de sanción para infractores.
+     */
+    fun suspendUser(userId: String) {
+        viewModelScope.launch {
+            try {
+                // Desactivar sus servicios como medida de suspensión inmediata
+                SupabaseManager.client.postgrest["services"].update({
+                    set("status", "inactive")
+                }) {
+                    filter { eq("provider_id", userId) }
+                }
+                Log.i("AdminVM", "Usuario $userId suspendido: Servicios desactivados.")
+                loadAdminData()
+            } catch (e: Exception) {
+                Log.e("AdminVM", "Error al suspender: ${e.message}")
+            }
+        }
+    }
+
+    fun deleteUserAccount(userId: String) {
+        viewModelScope.launch {
+            try {
+                SupabaseManager.client.postgrest["profiles"].delete {
+                    filter { eq("id", userId) }
+                }
+                loadAdminData()
+            } catch (e: Exception) {
+                Log.e("AdminVM", "Error al eliminar cuenta: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Envía un mensaje automático de advertencia al usuario.
+     */
+    fun warnUser(userId: String, reportsCount: Int) {
+        viewModelScope.launch {
+            try {
+                val adminId = SupabaseManager.client.auth.currentUserOrNull()?.id ?: return@launch
+                val message = Message(
+                    sender_id = adminId,
+                    receiver_id = userId,
+                    content = """
+                        🚩 NOTIFICACIÓN OFICIAL DE MODERACIÓN
+                        
+                        Hola. Hemos detectado que tu perfil ha acumulado $reportsCount reportes por parte de la comunidad. 
+                        
+                        Este es un llamado de atención preventivo. Te invitamos a revisar nuestras normas de convivencia y asegurar que tus servicios cumplan con la calidad y respeto que YÁYA exige.
+                        
+                        ⚠️ IMPORTANTE: La reincidencia en comportamientos reportables resultará en la SUSPENSIÓN de tus servicios o la ELIMINACIÓN PERMANENTE de tu cuenta.
+                        
+                        Atentamente,
+                        Equipo de Moderación YÁYA.
+                    """.trimIndent()
+                )
+                
+                SupabaseManager.client.postgrest["messages"].insert(message)
+                Log.i("AdminVM", "Llamado de atención enviado a $userId")
+                
+                // Opcional: Podrías marcar el reporte como 'atendido' si tuvieras esa columna
+            } catch (e: Exception) {
+                Log.e("AdminVM", "Error al enviar advertencia: ${e.message}")
             }
         }
     }

@@ -1,50 +1,47 @@
-# Documentación Técnica - YÁYA
+# Documentación Técnica Senior - YÁYA
 
 ## 1. Introducción
-YÁYA es una aplicación móvil desarrollada para conectar prestadores de servicios locales con clientes. Esta documentación detalla la arquitectura, decisiones técnicas y estándares utilizados en el proyecto.
+YÁYA es una infraestructura móvil de alta gama diseñada para la intermediación de servicios locales. Este manual técnico detalla el ecosistema de componentes, patrones y estándares de ingeniería aplicados.
 
-## 2. Arquitectura de Software
-El proyecto sigue el patrón de arquitectura **MVVM (Model-View-ViewModel)** recomendado por Google, garantizando una separación clara de responsabilidades y facilitando las pruebas unitarias.
+## 2. Arquitectura de Software: Clean MVVM + Atomic Design
+El proyecto implementa una arquitectura híbrida que combina la robustez de **MVVM** con la flexibilidad de **Atomic Design**.
 
-### 2.1. Capas del Proyecto
-- **UI (Capa de Presentación):** Implementada con Jetpack Compose. Contiene los `Screens` y sus respectivos `ViewModels`.
-- **Data (Capa de Datos):** Gestiona la lógica de obtención de datos desde Supabase o almacenamiento local. Incluye Repositorios y Modelos.
-- **Navigation:** Centraliza la lógica de navegación utilizando Type-Safety para evitar errores en tiempo de ejecución.
+### 2.1. Descomposición de la Interfaz (UI Stack)
+La capa de presentación reside en `ui/` y se rige por la jerarquía atómica:
+- **Átomos:** Componentes elementales de Material 3 personalizados (Buttons, TextFields, Branding).
+- **Moléculas:** Componentes reactivos como el `PriceNegotiator` y `NegotiationHistoryBox`.
+- **Organismos:** Módulos maestros como `ServiceCard`, `AdminServiceCard` y `ReportSummaryCard`.
+- **Skeletons:** Infraestructura de `Shimmer.kt` que garantiza transiciones de estado suaves (alpha 0.25).
 
-## 3. Stack Tecnológico
-- **Lenguaje:** Kotlin 2.2.10 con Coroutines y Flow para programación reactiva.
-- **UI Framework:** Jetpack Compose (Material 3) con Compose Compiler 2.2.10.
-- **Inyección de Dependencias:** Gestión manual mediante ViewModels y `SupabaseManager` (Singleton).
-- **Backend:** Supabase 3.6.0 (PostgreSQL, Auth, Realtime).
-- **Networking:** Ktor Client 3.0.3 para peticiones REST.
-- **Serialización:** Kotlinx Serialization 1.7.3.
-- **Persistencia de Sesión:** Multiplatform Settings 1.2.0.
+### 2.2. Capa de Negocio (ViewModel Layer)
+Los ViewModels actúan como controladores de estado puro:
+- **State Injections:** Inyección de modelos `UiState` que encapsulan la verdad de la pantalla.
+- **Formatter Engine:** Consumo centralizado de `FormatterUtils.kt` para garantizar el cumplimiento del principio DRY en la transformación de datos crudos de Supabase.
 
-## 4. Estándares de Código
-- **Naming Conventions:** CamelCase para clases, camelCase para funciones y variables.
-- **Modularización:** Actualmente monolítico con paquetes bien definidos, con potencial de escalar a módulos Gradle por funcionalidad.
-- **Clean Code:** Funciones pequeñas, principios SOLID y DRY.
+## 3. Stack Tecnológico de Vanguardia
+- **Kotlin 2.2.10:** Aprovechando las últimas optimizaciones del compilador.
+- **Jetpack Compose:** Sistema declarativo para una UI elástica y accesible.
+- **Supabase Enterprise Stack:**
+    - **PostgreSQL:** Almacenamiento relacional robusto.
+    - **Realtime Engine:** Sincronización bidireccional mediante WebSockets.
+    - **Edge Functions:** Lógica server-side en TypeScript para automatización de notificaciones FCM V1.
+- **Connectivity Flow:** Sistema de monitoreo global de red basado en Kotlin Flow (`ConnectivityObserver`). Informa al usuario de desconexiones en tiempo real mediante el `YayaOfflineBanner`.
+- **Coil 3.1.0:** Motor de renderizado de imágenes asíncrono con caché inteligente.
 
-## 5. Gestión de Estado
-Se utiliza `StateFlow` y `SharedFlow` dentro de los ViewModels para exponer el estado a la UI de forma segura frente al ciclo de vida.
+## 4. Estándares de Codificación BH++
+- **Arquitectura Stateless:** Minimización de efectos secundarios en la UI.
+- **Accessibility First:** Blindaje nativo para escalas de fuente al 200%.
+- **Handshake Logic:** Ciclo transaccional de seguridad tripartito para blindar acuerdos comerciales.
 
-## 6. Modelos de Datos Críticos
-- **Service Availability:** Sistema híbrido que utiliza `working_days` (array de enteros) y rangos horarios (`start_time`, `end_time`) directamente en la tabla `services` para una disponibilidad granular por talento. Se mantiene la tabla `availability` para horarios globales del prestador.
-- **ServiceRequest:** Evolucionado para incluir `final_price`, permitiendo la persistencia del acuerdo económico tras la negociación.
-- **Report (Hito 5):** Estructura relacional para la gestión de denuncias por mal comportamiento.
+## 5. Gobernanza y Seguridad
+- **Account Purge:** Proceso de borrado de cuenta integrado en el cliente para cumplimiento con normativas de privacidad (Google/Apple).
+- **RLS (Row Level Security):** Políticas de base de datos que garantizan que un usuario solo pueda editar su propia información.
+- **Admin Warning Logic:** Implementación de la función `warnUser` en `AdminViewModel` para inyectar advertencias automatizadas en la tabla `messages`, reduciendo la carga operativa del equipo de moderación.
 
-## 7. Módulo Administrativo
-El sistema cuenta con un Dashboard centralizado que permite la moderación proactiva mediante auditoría de servicios y supervisión de usuarios.
-
-## 8. Sistema de Mensajería y Notificaciones
-- **Realtime:** Los mensajes de chat se sincronizan mediante suscripciones a canales de Supabase Realtime, filtrando por el ID de los participantes para seguridad.
-- **Push Engine:** Utiliza **Supabase Edge Functions** escritas en TypeScript/Deno.
-    - El disparador es un **Webhook** sobre la tabla `requests`.
-    - La función genera un token OAuth2 para la API V1 de Firebase.
-    - Se integra con **Firebase Cloud Messaging (FCM)** para la entrega final al dispositivo.
-
-## 9. Cumplimiento y Legal
-El proyecto incluye una sección dedicada (`docs/04-legal`) con los lineamientos de privacidad y uso de la plataforma, alineados con el tratamiento de datos personales y la intermediación de servicios.
+## 6. Sistema de Notificaciones y Conectividad
+- **Push Multi-Admin:** La Edge Function `notify-yaya-updates` permite el envío masivo de notificaciones a todos los administradores ante nuevos servicios por auditar.
+- **Connectivity Observer:** Implementación de `NetworkConnectivityObserver.kt` que emite estados de red mediante Flows. Integrado con `YayaOfflineBanner` para feedback preventivo.
+- **Legal Rendering Engine:** Implementación en `LegalViewerScreen.kt` de un parseador dinámico de líneas para estilizar documentos legales con jerarquía visual (Headers, Bullets, Body), mejorando la UX en secciones normativas.
 
 ---
-*Última actualización: Junio 2026*
+*Manual de Ingeniería de BH++ - 2026*

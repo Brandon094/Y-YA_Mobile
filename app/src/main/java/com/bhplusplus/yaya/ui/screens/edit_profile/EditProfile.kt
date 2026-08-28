@@ -23,7 +23,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
+import com.bhplusplus.yaya.ui.components.atoms.YayaTextField
+import com.bhplusplus.yaya.ui.components.molecules.AvatarSelector
+import com.bhplusplus.yaya.utils.ImageUtils
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -40,6 +51,19 @@ fun EditProfileScreen(
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
+    val context = LocalContext.current
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            uri?.let {
+                val bytes = ImageUtils.uriToByteArray(context, it)
+                if (bytes != null) {
+                    viewModel.uploadAvatar(bytes)
+                }
+            }
+        }
+    )
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -48,7 +72,7 @@ fun EditProfileScreen(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
                         val date = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault())
+                            .atZone(ZoneId.of("UTC"))
                             .toLocalDate()
                         viewModel.birthDate = date.toString()
                     }
@@ -89,59 +113,65 @@ fun EditProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // NOMBRE
-            OutlinedTextField(
+            // Molécula: Selector de Avatar
+            AvatarSelector(
+                imageUrl = viewModel.avatarUrl,
+                onClick = {
+                    photoPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                },
+                isLoading = viewModel.isLoading
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            // Átomo: Nombre
+            YayaTextField(
                 value = viewModel.name,
                 onValueChange = { viewModel.name = it },
-                label = { Text(stringResource(R.string.edit_profile_full_name_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+                label = stringResource(R.string.edit_profile_full_name_label),
                 enabled = !viewModel.isLoading,
                 leadingIcon = { Icon(Icons.Default.Person, null) }
             )
 
-            // DOCUMENTO ID
-            OutlinedTextField(
+            // Átomo: Documento ID
+            YayaTextField(
                 value = viewModel.documentId,
                 onValueChange = { viewModel.documentId = it },
-                label = { Text(stringResource(R.string.register_id_number)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+                label = stringResource(R.string.register_id_number),
                 enabled = !viewModel.isLoading,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 leadingIcon = { Icon(Icons.Default.Badge, null) }
             )
 
-            // TELÉFONO
-            OutlinedTextField(
+            // Átomo: Teléfono
+            YayaTextField(
                 value = viewModel.phone,
                 onValueChange = { viewModel.phone = it },
-                label = { Text(stringResource(R.string.edit_profile_phone_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+                label = stringResource(R.string.edit_profile_phone_label),
                 enabled = !viewModel.isLoading,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 leadingIcon = { Icon(Icons.Default.Phone, null) }
             )
 
-            // DIRECCIÓN
-            OutlinedTextField(
+            // Átomo: Dirección
+            YayaTextField(
                 value = viewModel.address,
                 onValueChange = { viewModel.address = it },
-                label = { Text(stringResource(R.string.register_address)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+                label = stringResource(R.string.register_address),
                 enabled = !viewModel.isLoading,
                 leadingIcon = { Icon(Icons.Default.Home, null) }
             )
 
-            // FECHA NACIMIENTO
-            OutlinedTextField(
+            // Átomo: Fecha Nacimiento (Input no editable)
+            YayaTextField(
                 value = viewModel.birthDate,
                 onValueChange = {},
-                label = { Text(stringResource(R.string.register_birth_date)) },
-                modifier = Modifier.fillMaxWidth().clickable { if(!viewModel.isLoading) showDatePicker = true },
+                label = stringResource(R.string.register_birth_date),
+                modifier = Modifier.clickable { if(!viewModel.isLoading) showDatePicker = true },
                 enabled = false,
+                readOnly = true,
                 leadingIcon = { Icon(Icons.Default.DateRange, null) },
                 colors = OutlinedTextFieldDefaults.colors(
                     disabledTextColor = MaterialTheme.colorScheme.onSurface,
@@ -156,15 +186,12 @@ fun EditProfileScreen(
                 Text(text = viewModel.errorMessage!!, color = MaterialTheme.colorScheme.error)
             }
 
-            Button(
+            // Átomo: Botón Primario
+            YayaPrimaryButton(
+                text = stringResource(R.string.edit_profile_save_button),
                 onClick = { viewModel.updateProfile { onBack() } },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                enabled = !viewModel.isLoading
-            ) {
-                if (viewModel.isLoading) CircularProgressIndicator(color = Color.White)
-                else Text(stringResource(R.string.edit_profile_save_button), fontWeight = FontWeight.Bold)
-            }
+                isLoading = viewModel.isLoading
+            )
 
             TextButton(onClick = onBack, enabled = !viewModel.isLoading) {
                 Text(stringResource(R.string.edit_profile_cancel_button))

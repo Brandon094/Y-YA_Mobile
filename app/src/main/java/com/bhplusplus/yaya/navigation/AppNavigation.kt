@@ -1,6 +1,7 @@
 package com.bhplusplus.yaya.navigation
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.bhplusplus.yaya.ui.screens.welcome.WelcomeScreen
 import com.bhplusplus.yaya.ui.screens.home.HomeScreen
@@ -8,22 +9,13 @@ import com.bhplusplus.yaya.ui.screens.login.LoginScreen
 import com.bhplusplus.yaya.ui.screens.register.RegisterScreen
 import com.bhplusplus.yaya.ui.screens.reset.ResetPasswordScreen
 import com.bhplusplus.yaya.ui.screens.service_detail.ServiceDetailScreen
-
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import com.bhplusplus.yaya.R
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.SupabaseManager
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
@@ -34,6 +26,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 import com.bhplusplus.yaya.ui.screens.profile.ProfileScreen
 import com.bhplusplus.yaya.ui.screens.edit_profile.EditProfileScreen
+import com.bhplusplus.yaya.ui.screens.profile.AvailabilityScreen
 import com.bhplusplus.yaya.ui.screens.contratacion.PantallaContratacion
 import com.bhplusplus.yaya.ui.screens.confirmation.PantallaReservaConfirmada
 import com.bhplusplus.yaya.ui.screens.create_service.CreateServiceScreen
@@ -43,116 +36,53 @@ import com.bhplusplus.yaya.ui.screens.my_services.MyServicesScreen
 import com.bhplusplus.yaya.ui.screens.admin.AdminDashboardScreen
 import com.bhplusplus.yaya.ui.screens.chat.ChatScreen
 import com.bhplusplus.yaya.ui.screens.chat.ChatListScreen
+import com.bhplusplus.yaya.ui.screens.legal.LegalViewerScreen
+import com.bhplusplus.yaya.utils.LegalConstants
 
 import android.util.Log
 
 /**
- * DEFINICIÓN DE RUTAS (PANTALLAS) CON SEGURIDAD DE TIPOS
+ * DEFINICIÓN DE RUTAS (PANTALLA) CON SEGURIDAD DE TIPOS
  */
-@Serializable object LoadingRoute
 @Serializable object WelcomeRoute
 @Serializable object LoginRoute
 @Serializable object ResetRoute
 @Serializable object RegisterRoute
 @Serializable object HomeRoute
-@Serializable object AdminDashboardRoute // Hito 5: Ruta de Administración
+@Serializable object AdminDashboardRoute 
 @Serializable object ProfileRoute
 @Serializable object EditProfileRoute
+@Serializable object AvailabilityRoute
 @Serializable data class CreateServiceRoute(val serviceId: String? = null)
 @Serializable object MyOrdersRoute
 @Serializable object IncomingRequestsRoute
 @Serializable object MyServicesRoute
-@Serializable object ChatListRoute // Nueva ruta para el listado de chats
+@Serializable object ChatListRoute 
 @Serializable data class ServiceDetailRoute(val serviceId: String)
-@Serializable data class ChatRoute(val receiverId: String, val receiverName: String) // Hito 2: Chat
+@Serializable data class ChatRoute(val receiverId: String, val receiverName: String) 
 @Serializable data class ContratacionRoute(val serviceId: String)
 @Serializable data class ConfirmacionRoute(val serviceId: String, val requestId: String)
+@Serializable object TermsRoute
+@Serializable object PrivacyRoute
 
 /**
  * NAVEGACIÓN PRINCIPAL
  * Utiliza Jetpack Compose Navigation con Type-Safety.
  */
 @Composable
-fun AppNavigation() {
+fun AppNavigation(startRoute: Any) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
 
-    // Función centralizada para decidir a dónde ir según el rol
-    val checkRoleAndNavigate: () -> Unit = {
-        scope.launch {
-            try {
-                val session = SupabaseManager.client.auth.currentSessionOrNull()
-                if (session != null) {
-                    val userId = session.user?.id ?: throw Exception("User not found")
-                    
-                    // Consultamos el perfil con un pequeño reintento interno o directo a la tabla
-                    val profile = SupabaseManager.client.postgrest["profiles"]
-                        .select { filter { eq("id", userId) } }
-                        .decodeSingle<UserProfile>()
-
-                    Log.d("Navigation", "Rol detectado en DB: ${profile.role}")
-
-                    if (profile.role.equals("admin", ignoreCase = true)) {
-                        navController.navigate(AdminDashboardRoute) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    } else {
-                        navController.navigate(HomeRoute) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    }
-                } else {
-                    navController.navigate(WelcomeRoute) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("Navigation", "Error al validar rol: ${e.message}")
-                // Fallback a metadata si la tabla profiles falla
-                val session = SupabaseManager.client.auth.currentSessionOrNull()
-                val role = session?.user?.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
-                
-                Log.d("Navigation", "Rol detectado en Metadata (Fallback): $role")
-                
-                if (role.equals("admin", ignoreCase = true)) {
-                    navController.navigate(AdminDashboardRoute) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                } else {
-                    navController.navigate(HomeRoute) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
-        }
-    }
-    
-    LaunchedEffect(Unit) {
-        kotlinx.coroutines.delay(2000) // 2 segundos de Splash
-        checkRoleAndNavigate()
+    // Función para manejar redirecciones tras login/registro
+    val navigateByRole: () -> Unit = {
+        navController.navigate(HomeRoute) { popUpTo(0) { inclusive = true } }
     }
 
     NavHost(
         navController = navController,
-        startDestination = LoadingRoute
+        startDestination = startRoute
     ) {
-        // ... (resto del NavHost)
-        // Pantalla de Carga Inicial
-        composable<LoadingRoute> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFFFFDF9)),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo_splash),
-                    contentDescription = "YÁYA Splash",
-                    modifier = Modifier.size(250.dp)
-                )
-            }
-        }
-
         // Bienvenida
         composable<WelcomeRoute> {
             WelcomeScreen(
@@ -164,9 +94,7 @@ fun AppNavigation() {
         // Login
         composable<LoginRoute> {
             LoginScreen(
-                onLoginSuccess = { 
-                    checkRoleAndNavigate()
-                },
+                onLoginSuccess = { navigateByRole() },
                 onNavigateToReset = { navController.navigate(ResetRoute) },
                 onNavigateToRegister = { navController.navigate(RegisterRoute) }
             )
@@ -184,7 +112,9 @@ fun AppNavigation() {
         composable<RegisterRoute> {
             RegisterScreen(
                 onRegister = { navController.navigate(LoginRoute) },
-                onGoToLogin = { navController.navigate(LoginRoute) }
+                onGoToLogin = { navController.navigate(LoginRoute) },
+                onViewTerms = { navController.navigate(TermsRoute) },
+                onViewPrivacy = { navController.navigate(PrivacyRoute) }
             )
         }
 
@@ -203,7 +133,7 @@ fun AppNavigation() {
                 onLogout = {
                     scope.launch {
                         SupabaseManager.client.auth.signOut()
-                        navController.navigate(LoginRoute) {
+                        navController.navigate(WelcomeRoute) {
                             popUpTo(HomeRoute) { inclusive = true }
                         }
                     }
@@ -211,9 +141,10 @@ fun AppNavigation() {
             )
         }
 
-        // Dashboard de Administración (Hito 5)
+        // Dashboard de Administración
         composable<AdminDashboardRoute> {
             AdminDashboardScreen(
+                onBack = { navController.popBackStack() },
                 onLogout = {
                     scope.launch {
                         SupabaseManager.client.auth.signOut()
@@ -225,7 +156,7 @@ fun AppNavigation() {
             )
         }
 
-        // Chat en Tiempo Real (Hito 2)
+        // Chat en Tiempo Real
         composable<ChatRoute> { backStackEntry ->
             val route: ChatRoute = backStackEntry.toRoute()
             ChatScreen(
@@ -249,9 +180,14 @@ fun AppNavigation() {
         composable<ProfileRoute> {
             ProfileScreen(
                 onEditProfile = { navController.navigate(EditProfileRoute) },
+                onAvailability = { navController.navigate(AvailabilityRoute) },
                 onMyOrders = { navController.navigate(MyOrdersRoute) },
                 onIncomingRequests = { navController.navigate(IncomingRequestsRoute) },
                 onMyServices = { navController.navigate(MyServicesRoute) },
+                onAdminDashboard = { navController.navigate(AdminDashboardRoute) },
+                onChatList = { navController.navigate(ChatListRoute) },
+                onTerms = { navController.navigate(TermsRoute) },
+                onPrivacy = { navController.navigate(PrivacyRoute) },
                 onChangePassword = { navController.navigate(ResetRoute) },
                 onLogout = {
                     scope.launch {
@@ -265,9 +201,34 @@ fun AppNavigation() {
             )
         }
 
+        // Términos y Condiciones
+        composable<TermsRoute> {
+            LegalViewerScreen(
+                title = stringResource(R.string.legal_terms_title),
+                content = LegalConstants.TERMS_AND_CONDITIONS,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Política de Privacidad
+        composable<PrivacyRoute> {
+            LegalViewerScreen(
+                title = stringResource(R.string.legal_privacy_title),
+                content = LegalConstants.PRIVACY_POLICY,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
         // Editar Perfil
         composable<EditProfileRoute> {
             EditProfileScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Disponibilidad
+        composable<AvailabilityRoute> {
+            AvailabilityScreen(
                 onBack = { navController.popBackStack() }
             )
         }
@@ -292,7 +253,7 @@ fun AppNavigation() {
             )
         }
 
-        // Solicitudes Recibidas (Prestador)
+        // Solicitudes Recibidas
         composable<IncomingRequestsRoute> {
             IncomingRequestsScreen(
                 onBack = { navController.popBackStack() },
@@ -302,7 +263,7 @@ fun AppNavigation() {
             )
         }
 
-        // Mis Servicios Publicados (Prestador)
+        // Mis Servicios Publicados
         composable<MyServicesRoute> {
             MyServicesScreen(
                 onBack = { navController.popBackStack() },
@@ -356,5 +317,5 @@ fun AppNavigation() {
 @Preview(showBackground = true)
 @Composable
 fun AppNavigationPreview() {
-    AppNavigation()
+    AppNavigation(WelcomeRoute)
 }

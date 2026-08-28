@@ -58,5 +58,5 @@ Contamos con tres iconos y logotipos oficiales que deben utilizarse según el co
 - **Jetpack Compose Default:** Utilizamos el sistema de tipografía estándar de Material 3, optimizado para legibilidad en dispositivos móviles, con variaciones de peso (Bold para títulos, Medium para botones).
 
 ---
-*Manual de Identidad Visual - Año 2025*  
+*Manual de Identidad Visual - Año 2026*  
 *Diseño por BH++ Team*

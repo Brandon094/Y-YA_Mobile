@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#0F172A</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
+        <item name="windowSplashScreenIconBackgroundColor">#FFFFFF</item>
+
+        <!-- Eliminamos el branding image para consistencia -->
+        <item name="postSplashScreenTheme">@style/Theme.Yáya2</item>
+    </style>
+</resources>

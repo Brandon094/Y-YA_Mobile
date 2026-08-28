@@ -23,7 +23,9 @@
     <string name="welcome_register_button">Regístrate</string>
 
     <!-- Home Screen -->
-    <string name="home_top_bar_title">Buscar servicio</string>
+    <string name="home_top_bar_title">Explorar</string>
+    <string name="home_welcome_back">Hola, %s</string>
+    <string name="home_search_placeholder">¿Qué servicio necesitas hoy?</string>
     <string name="home_profile_desc">Mi Perfil</string>
     <string name="home_logout_desc">Cerrar sesión</string>
     <string name="home_select_service_label">Selecciona el servicio a contratar:</string>
@@ -113,20 +115,23 @@
     <string name="contratacion_date_placeholder">Selecciona la fecha</string>
     <string name="contratacion_time_field">Hora</string>
     <string name="contratacion_time_placeholder">Ej: Hoy 3:00 PM</string>
-    <string name="contratacion_offer_field">¿Cuánto ofrece?</string>
+    <string name="contratacion_base_price_field">Precio base del servicio</string>
+    <string name="contratacion_offer_field">Tu oferta de contratación</string>
     <string name="contratacion_button">Contratar</string>
     <string name="contratacion_unknown_provider">Prestador Independiente</string>
     <string name="contratacion_unknown_age">Información no disponible</string>
     <string name="contratacion_unknown_phone">Contactar por chat</string>
 
     <!-- Confirmation Screen -->
-    <string name="confirmation_success_title">¡Reserva confirmada!</string>
-    <string name="confirmation_success_message">Tu servicio ha sido reservado exitosamente.</string>
-    <string name="confirmation_details_title">Detalles de tu reserva</string>
+    <string name="confirmation_success_title">¡Solicitud enviada!</string>
+    <string name="confirmation_success_message">Tu propuesta ha sido enviada al prestador. Te notificaremos cuando sea aceptada o recibas una contraoferta.</string>
+    <string name="confirmation_details_title">Detalles de tu solicitud</string>
     <string name="confirmation_service_label">Servicio</string>
     <string name="confirmation_provider_label">Prestador</string>
     <string name="confirmation_date_label">Fecha</string>
     <string name="confirmation_location_label">Ubicación</string>
+    <string name="confirmation_base_price_label">Precio base del servicio</string>
+    <string name="confirmation_final_offer_label">Tu oferta final</string>
     <string name="confirmation_price_label">Precio</string>
     <string name="confirmation_time_label">Tiempo</string>
     <string name="confirmation_toast_finished">Reserva finalizada</string>
@@ -150,4 +155,11 @@
     <string name="incoming_requests_accept">Aceptar</string>
     <string name="incoming_requests_reject">Rechazar</string>
     <string name="incoming_requests_client_label">Cliente</string>
+
+    <!-- Legal -->
+    <string name="legal_terms_title">Términos y Condiciones</string>
+    <string name="legal_privacy_title">Política de Privacidad</string>
+    <string name="legal_accept_terms">Acepto los términos y condiciones</string>
+    <string name="legal_accept_privacy">Acepto la política de privacidad</string>
+    <string name="legal_read_more">Leer más</string>
 </resources>

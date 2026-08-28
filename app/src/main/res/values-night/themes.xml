@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Yáya2" parent="android:Theme.Material.NoActionBar" />
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Fondo Deep Midnight para modo oscuro -->
+        <item name="windowSplashScreenBackground">#0F172A</item>
+
+        <!-- Mismo icono adaptativo -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
+
+        <item name="postSplashScreenTheme">@style/Theme.Yáya2</item>
+    </style>
+</resources>

@@ -4,33 +4,32 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.tooling.preview.Preview
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
-import com.bhplusplus.yaya.data.models.Report
+import com.bhplusplus.yaya.ui.components.AdminPendingItemShimmer
+import com.bhplusplus.yaya.ui.components.ReportItemShimmer
+import com.bhplusplus.yaya.ui.components.UserItemShimmer
+import com.bhplusplus.yaya.ui.components.molecules.EmptyStateView
+import com.bhplusplus.yaya.ui.components.molecules.UserListItem
+import com.bhplusplus.yaya.ui.components.organisms.AdminServiceCard
+import com.bhplusplus.yaya.ui.components.organisms.AdminTopBar
+import com.bhplusplus.yaya.ui.components.organisms.ReportSummaryCard
 
 /**
- * PANTALLA DE DASHBOARD ADMINISTRATIVO (Hito 5)
+ * PANTALLA DE DASHBOARD ADMINISTRATIVO (Atomic Design Refactor)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminDashboardScreen(
+    onBack: () -> Unit,
     onLogout: () -> Unit,
     viewModel: AdminViewModel = viewModel()
 ) {
@@ -38,9 +37,13 @@ fun AdminDashboardScreen(
         isLoading = viewModel.isLoading,
         pendingServices = viewModel.pendingServices,
         allProfiles = viewModel.allProfiles,
-        reports = viewModel.reports,
+        reportsSummary = viewModel.reportedUsersSummaries,
         onApproveService = { viewModel.approveService(it) },
         onRejectService = { viewModel.rejectService(it) },
+        onSuspendUser = { viewModel.suspendUser(it) },
+        onDeleteUser = { viewModel.deleteUserAccount(it) },
+        onWarnUser = { id, count -> viewModel.warnUser(id, count) },
+        onBack = onBack,
         onLogout = onLogout
     )
 }
@@ -51,9 +54,13 @@ fun AdminDashboardContent(
     isLoading: Boolean,
     pendingServices: List<Service>,
     allProfiles: List<UserProfile>,
-    reports: List<Report>,
+    reportsSummary: List<ReportedUserSummary>,
     onApproveService: (String) -> Unit,
     onRejectService: (String) -> Unit,
+    onSuspendUser: (String) -> Unit,
+    onDeleteUser: (String) -> Unit,
+    onWarnUser: (String, Int) -> Unit,
+    onBack: () -> Unit,
     onLogout: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -61,19 +68,8 @@ fun AdminDashboardContent(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Panel Administrativo YÁYA", fontWeight = FontWeight.Bold) },
-                actions = {
-                    IconButton(onClick = onLogout) {
-                        Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Cerrar Sesión")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    titleContentColor = MaterialTheme.colorScheme.onSecondary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onSecondary
-                )
-            )
+            // Organismo: Barra superior admin
+            AdminTopBar(onBack = onBack, onLogout = onLogout)
         }
     ) { padding ->
         Column(
@@ -94,8 +90,16 @@ fun AdminDashboardContent(
             }
 
             if (isLoading) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                when (selectedTab) {
+                    0 -> LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(3) { AdminPendingItemShimmer() }
+                    }
+                    1 -> LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(5) { UserItemShimmer() }
+                    }
+                    2 -> LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(3) { ReportItemShimmer() }
+                    }
                 }
             } else {
                 when (selectedTab) {
@@ -105,7 +109,12 @@ fun AdminDashboardContent(
                         onReject = onRejectService
                     )
                     1 -> UsersList(profiles = allProfiles)
-                    2 -> ReportsList(reports = reports)
+                    2 -> ReportsList(
+                        summaries = reportsSummary,
+                        onSuspend = onSuspendUser,
+                        onDelete = onDeleteUser,
+                        onWarn = onWarnUser
+                    )
                 }
             }
         }
@@ -119,36 +128,15 @@ fun PendingServicesList(
     onReject: (String) -> Unit
 ) {
     if (services.isEmpty()) {
-        EmptyState("No hay servicios pendientes de aprobación.")
+        EmptyStateView(
+            title = "Sin servicios pendientes",
+            description = "No hay solicitudes de aprobación por ahora."
+        )
     } else {
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             items(services) { service ->
+                // Organismo: Tarjeta de servicio admin
                 AdminServiceCard(service, onApprove, onReject)
-            }
-        }
-    }
-}
-
-@Composable
-fun AdminServiceCard(service: Service, onApprove: (String) -> Unit, onReject: (String) -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Column(Modifier.padding(16.dp)) {
-            Text(service.title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text(service.description, fontSize = 14.sp, color = Color.Gray, maxLines = 2)
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Precio: $${service.price}", fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.primary)
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = { onReject(service.id!!) }) {
-                    Icon(Icons.Default.Close, contentDescription = "Rechazar", tint = Color.Red)
-                }
-                IconButton(onClick = { onApprove(service.id!!) }) {
-                    Icon(Icons.Default.Check, contentDescription = "Aprobar", tint = Color(0xFF4CAF50))
-                }
             }
         }
     }
@@ -158,62 +146,31 @@ fun AdminServiceCard(service: Service, onApprove: (String) -> Unit, onReject: (S
 fun UsersList(profiles: List<UserProfile>) {
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(profiles) { profile ->
-            ListItem(
-                headlineContent = { Text(profile.full_name) },
-                supportingContent = { Text("Rol: ${profile.role} | ID: ${profile.document_id ?: "N/A"}") },
-                leadingContent = { Icon(Icons.Default.Person, null) },
-                trailingContent = {
-                    if (profile.role == "admin") {
-                        Badge(containerColor = MaterialTheme.colorScheme.primary) { Text("Admin") }
-                    }
-                }
-            )
+            // Molécula: Item de lista de usuario
+            UserListItem(profile = profile)
             HorizontalDivider(thickness = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f))
         }
     }
 }
 
 @Composable
-fun ReportsList(reports: List<Report>) {
-    if (reports.isEmpty()) {
-        EmptyState("No hay reportes de mal comportamiento.")
+fun ReportsList(
+    summaries: List<ReportedUserSummary>,
+    onSuspend: (String) -> Unit,
+    onDelete: (String) -> Unit,
+    onWarn: (String, Int) -> Unit
+) {
+    if (summaries.isEmpty()) {
+        EmptyStateView(
+            title = "Limpieza total",
+            description = "No hay reportes de mal comportamiento."
+        )
     } else {
-        LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(reports) { report ->
-                ReportCard(report)
+        LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            items(summaries) { summary ->
+                // Organismo: Tarjeta de resumen de reportes
+                ReportSummaryCard(summary, onSuspend, onDelete, onWarn)
             }
-        }
-    }
-}
-
-@Composable
-fun ReportCard(report: Report) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)),
-        elevation = CardDefaults.cardElevation(1.dp)
-    ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Red, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Denunciado: ${report.reported?.full_name ?: "ID: " + report.reported_user_id}", fontWeight = FontWeight.Bold)
-            }
-            Spacer(Modifier.height(4.dp))
-            Text("Motivo: ${report.reason}", fontSize = 14.sp)
-            Spacer(Modifier.height(8.dp))
-            Text("Reportado por: ${report.reporter?.full_name ?: "Usuario"}", fontSize = 12.sp, color = Color.Gray)
-        }
-    }
-}
-
-@Composable
-fun EmptyState(message: String) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(Icons.Default.Warning, null, modifier = Modifier.size(48.dp), tint = Color.Gray)
-            Text(message, color = Color.Gray)
         }
     }
 }
@@ -222,31 +179,25 @@ fun EmptyState(message: String) {
 @Composable
 fun AdminDashboardPreview() {
     val sampleServices = listOf(
-        Service(
-            id = "1",
-            title = "Reparación de PC",
-            description = "Servicio técnico a domicilio",
-            price = 50000.0,
-        ),
-        Service(
-            id = "2",
-            title = "Limpieza de Sofá",
-            description = "Limpieza profunda con vapor",
-            price = 80000.0,
-        )
+        Service(id = "1", title = "Reparación de PC", description = "Técnico a domicilio", price = 50000.0)
     )
     val sampleProfiles = listOf(
-        UserProfile(id = "1", full_name = "Brandon Daza", role = "admin"),
-        UserProfile(id = "2", full_name = "Juan Perez", role = "provider")
+        UserProfile(id = "1", full_name = "Brandon Daza", role = "admin")
     )
 
-    AdminDashboardContent(
-        isLoading = false,
-        pendingServices = sampleServices,
-        allProfiles = sampleProfiles,
-        reports = emptyList(),
-        onApproveService = {},
-        onRejectService = {},
-        onLogout = {}
-    )
+    MaterialTheme {
+        AdminDashboardContent(
+            isLoading = false,
+            pendingServices = sampleServices,
+            allProfiles = sampleProfiles,
+            reportsSummary = emptyList(),
+            onApproveService = {},
+            onRejectService = {},
+            onSuspendUser = {},
+            onDeleteUser = {},
+            onWarnUser = { _, _ -> },
+            onBack = {},
+            onLogout = {}
+        )
+    }
 }

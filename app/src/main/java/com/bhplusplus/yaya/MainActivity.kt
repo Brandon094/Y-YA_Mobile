@@ -8,42 +8,55 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.navigation.AppNavigation
+import com.bhplusplus.yaya.ui.components.molecules.YayaOfflineBanner
 import com.bhplusplus.yaya.ui.theme.YYATheme
 
 /**
  * ACTIVIDAD PRINCIPAL (PUNTO DE ENTRADA)
- * Configura el entorno de Jetpack Compose y lanza el sistema de navegación global.
  */
 class MainActivity : ComponentActivity() {
 
+    private val viewModel: MainViewModel by viewModels()
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            // Permiso concedido
-        }
-    }
+    ) { _ -> }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
+
         super.onCreate(savedInstanceState)
         
-        // Inicializamos Supabase con persistencia de sesión
+        // Mantenemos el Splash visible hasta que el ViewModel determine la ruta final
+        splashScreen.setKeepOnScreenCondition {
+            viewModel.isCheckingSession
+        }
+
         SupabaseManager.initialize(applicationContext)
-
-        // Habilita el diseño de borde a borde (edge-to-edge) para una experiencia moderna
         enableEdgeToEdge()
-
-        // Solicitar permiso de notificaciones en Android 13+
         askNotificationPermission()
 
         setContent {
-            // Aplicamos el Tema Global de la aplicación definido en UI/Theme
             YYATheme {
-                // Lanzamos el componente de Navegación que controla todas las pantallas
-                AppNavigation()
+                Column(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
+                    YayaOfflineBanner(isOffline = viewModel.isOffline)
+                    
+                    // Solo renderizamos la navegación cuando el chequeo de sesión ha terminado
+                    // y tenemos una ruta válida. Esto evita el parpadeo de la WelcomeScreen.
+                    viewModel.initialRoute?.let { route ->
+                        Box(modifier = androidx.compose.ui.Modifier.weight(1f)) {
+                            AppNavigation(startRoute = route)
+                        }
+                    }
+                }
             }
         }
     }

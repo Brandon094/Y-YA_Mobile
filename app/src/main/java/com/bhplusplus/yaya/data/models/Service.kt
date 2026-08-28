@@ -1,5 +1,6 @@
 package com.bhplusplus.yaya.data.models
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -21,5 +22,8 @@ data class Service(
     val materials_included: Boolean = false,
     val extra_cost: Double = 0.0,
     val status: String = "pending_approval", // active, inactive, pending_approval (Hito 5)
-    val created_at: String? = null
+    val created_at: String? = null,
+
+    @SerialName("provider_profile")
+    val provider: UserProfile? = null
 )

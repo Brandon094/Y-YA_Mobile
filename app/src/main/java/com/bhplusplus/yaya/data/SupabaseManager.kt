@@ -10,6 +10,8 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.Realtime
+import io.github.jan.supabase.storage.Storage
+import io.github.jan.supabase.storage.storage
 import io.ktor.client.engine.okhttp.OkHttp
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -56,6 +58,7 @@ object SupabaseManager {
             }
             install(Postgrest)
             install(Realtime)
+            install(Storage)
         }
     }
 
@@ -88,5 +91,16 @@ object SupabaseManager {
         } catch (e: Exception) {
             // Firebase no inicializado o error de SDK
         }
+    }
+
+    /**
+     * Sube una imagen al bucket especificado y devuelve su URL pública.
+     */
+    suspend fun uploadImage(bucketName: String, fileName: String, byteArray: ByteArray): String {
+        val bucket = client.storage.from(bucketName)
+        bucket.upload(fileName, byteArray) {
+            upsert = true
+        }
+        return bucket.publicUrl(fileName)
     }
 }

@@ -4,9 +4,10 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,17 +17,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
-import com.bhplusplus.yaya.data.models.Service
+import com.bhplusplus.yaya.ui.components.ContratacionShimmer
+import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
+import com.bhplusplus.yaya.ui.components.organisms.ConfirmationTicketCard
+import com.bhplusplus.yaya.ui.components.organisms.SuccessHeroBanner
 
 /**
- * PANTALLA DE CONFIRMACIÓN DE RESERVA
- * Muestra el resumen del servicio solicitado exitosamente con datos REALES de Supabase.
+ * PANTALLA DE CONFIRMACIÓN DE RESERVA (Atomic Design Refactor)
+ * Orquestada mediante componentes atómicos reutilizables.
  */
 @Composable
 fun PantallaReservaConfirmada(
@@ -36,167 +39,84 @@ fun PantallaReservaConfirmada(
     viewModel: ConfirmacionViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val uiState = viewModel.uiState
 
-    // Carga de datos reales al iniciar
     LaunchedEffect(requestId) {
         viewModel.loadRequestData(requestId, serviceId)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary) // Fondo rojo corporativo
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Header YÁYA
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 48.dp, bottom = 8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(R.string.app_brand_yaya),
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary,
-                letterSpacing = 4.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Ícono de confirmación
-        Box(
-            modifier = Modifier
-                .size(100.dp)
-                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f), shape = CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "✓", fontSize = 56.sp, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(
-            text = stringResource(R.string.confirmation_success_title),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Banner informativo
-        Surface(
-            modifier = Modifier.padding(horizontal = 24.dp),
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.15f),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.confirmation_success_message),
-                modifier = Modifier.padding(16.dp),
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onPrimary,
-                textAlign = TextAlign.Center,
-                lineHeight = 20.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Tarjeta de detalles (Ticket)
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            shape = RoundedCornerShape(24.dp),
-            elevation = CardDefaults.cardElevation(8.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-        ) {
-            Column(modifier = Modifier.padding(24.dp)) {
-                Text(
-                    text = stringResource(R.string.confirmation_details_title),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                Spacer(modifier = Modifier.height(16.dp))
-
-                DetalleReservaFila("🧹", stringResource(R.string.confirmation_service_label), viewModel.servicio)
-                DetalleReservaFila("👤", stringResource(R.string.confirmation_provider_label), viewModel.prestador)
-                DetalleReservaFila("📅", stringResource(R.string.confirmation_date_label), viewModel.fecha)
-                DetalleReservaFila("📍", stringResource(R.string.confirmation_location_label), viewModel.ubicacion)
-                DetalleReservaFila("💰", stringResource(R.string.confirmation_price_label), viewModel.precio)
-                DetalleReservaFila("⏱", stringResource(R.string.confirmation_time_label), viewModel.tiempo)
+    Scaffold(
+        bottomBar = {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                tonalElevation = 8.dp,
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Box(modifier = Modifier.navigationBarsPadding()) {
+                    YayaPrimaryButton(
+                        text = stringResource(R.string.confirmation_continue_button).uppercase(),
+                        onClick = {
+                            Toast.makeText(context, "¡Regresando al inicio!", Toast.LENGTH_SHORT).show()
+                            onContinuarClick()
+                        },
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
             }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Botón de acción principal
-        val finishedMsg = stringResource(R.string.confirmation_toast_finished)
-        Button(
-            onClick = { 
-                Toast.makeText(context, finishedMsg, Toast.LENGTH_SHORT).show()
-                onContinuarClick() 
-            },
+    ) { padding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, bottom = 40.dp)
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.onPrimary,
-                contentColor = MaterialTheme.colorScheme.primary
-            ),
-            elevation = ButtonDefaults.buttonElevation(4.dp)
+                .padding(padding)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = stringResource(R.string.confirmation_continue_button),
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+            // Organismo: Hero Banner de Éxito
+            SuccessHeroBanner(
+                title = stringResource(R.string.confirmation_success_title),
+                subtitle = stringResource(R.string.confirmation_success_message)
             )
-        }
-    }
-}
 
-@Composable
-fun DetalleReservaFila(icono: String, etiqueta: String, valor: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = icono, fontSize = 18.sp, modifier = Modifier.width(32.dp))
-        Text(
-            text = etiqueta,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            fontSize = 14.sp,
-            modifier = Modifier.width(100.dp)
-        )
-        Text(
-            text = valor,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+            if (viewModel.isLoading && uiState == null) {
+                ContratacionShimmer()
+            } else if (uiState != null) {
+                // CUERPO: TICKET DE DETALLES (Organismo)
+                Column(modifier = Modifier.padding(24.dp)) {
+                    ConfirmationTicketCard(state = uiState)
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // NOTA DE SEGURIDAD (Sección persistente)
+                    Surface(
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(20.dp))
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                text = "Recuerda que el prestador puede enviarte una contraoferta. Mantente atento al chat.",
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                lineHeight = 18.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ConfirmacionPreview() {
-    // Para el preview, PantallaReservaConfirmada requiere serviceId y requestId
-    // Pero como tiene ViewModel interno, es mejor crear un content separado si quisiéramos preview limpio.
-    // Por ahora, simulamos los datos mínimos.
-    Surface {
-        Text("Previsualización no disponible directamente para pantallas con lógica de red intensa.")
+    MaterialTheme {
+        Box(Modifier.fillMaxSize().background(Color.White)) {
+            Text("Vista Previa de Confirmación Atómica")
+        }
     }
 }

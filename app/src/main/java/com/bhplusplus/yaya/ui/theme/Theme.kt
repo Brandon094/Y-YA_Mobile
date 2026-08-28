@@ -8,38 +8,65 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
 /**
- * CONFIGURACIÓN DEL TEMA OSCURO
- * Define cómo se comportan los colores cuando el sistema está en modo noche.
+ * CONFIGURACIÓN DEL TEMA OSCURO (PREMIUM DARK)
+ * Implementa una paleta equilibrada de alto contraste basada en tonos Slate.
  */
 private val DarkColorScheme = darkColorScheme(
-    primary = RedPrimary,           // Color principal para botones
-    secondary = NavyBlue,           // Color para barras superiores
-    background = BackgroundDark,    // Fondo general de la app
-    surface = SurfaceDark,          // Fondo de tarjetas y listas
-    onPrimary = White,              // Texto sobre color primario
-    onBackground = TextPrimaryDark, // Texto sobre fondo general
-    onSurface = TextPrimaryDark,    // Texto sobre tarjetas
-    onSecondary = White,            // Texto/Iconos sobre la barra azul
-    error = Color(0xFFFF453A)       // Rojo estándar para errores en modo oscuro
+    primary = RedPrimary,
+    onPrimary = White,
+    primaryContainer = Color(0xFF991B1B), // Rojo oscuro para contenedores
+    onPrimaryContainer = Color(0xFFFEE2E2),
+    
+    secondary = NavyBlue,
+    onSecondary = White,
+    secondaryContainer = Color(0xFF334155),
+    onSecondaryContainer = Color(0xFFF1F5F9),
+
+    tertiary = TertiaryGold,
+    onTertiary = Color(0xFF451A03),
+    
+    background = BackgroundDark,
+    onBackground = TextPrimaryDark,
+    
+    surface = SurfaceDark,
+    onSurface = TextPrimaryDark,
+    surfaceVariant = SurfaceVariantDark,
+    onSurfaceVariant = TextSecondaryDark,
+    
+    outline = Color(0xFF475569),
+    error = Color(0xFFEF4444),
+    onError = White
 )
 
 /**
  * CONFIGURACIÓN DEL TEMA CLARO
- * Colores estándar para uso diurno.
  */
 private val LightColorScheme = lightColorScheme(
     primary = RedPrimary,
-    secondary = NavyBlue,
-    background = BackgroundLight,
-    surface = White,
     onPrimary = White,
+    primaryContainer = Color(0xFFFEE2E2),
+    
+    secondary = NavyBlue,
+    onSecondary = White,
+    secondaryContainer = Color(0xFFE2E8F0),
+    
+    background = BackgroundLight,
     onBackground = TextPrimary,
+    
+    surface = White,
     onSurface = TextPrimary,
-    onSecondary = White
+    surfaceVariant = Color(0xFFF1F5F9),
+    onSurfaceVariant = Color(0xFF475569),
+    
+    outline = Color(0xFFCBD5E1)
 )
 
 /**
@@ -61,6 +88,16 @@ fun YYATheme(
         }
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
+    }
+
+    // Manejo de las barras del sistema (Status Bar y Navigation Bar) para una experiencia pro
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as android.app.Activity).window
+            window.statusBarColor = colorScheme.surface.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
     }
 
     // Aplicamos el tema a toda la jerarquía de la aplicación
