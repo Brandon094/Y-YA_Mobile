@@ -29,65 +29,58 @@
         .code-block { font-family: monospace; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 font-sans transition-colors duration-300">
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 font-sans transition-colors duration-300 overflow-x-hidden">
 
     <!-- Organismo: Navbar -->
     <div id="yaya-navbar" data-page="tecnica"></div>
 
-    <div class="max-w-6xl mx-auto px-6 py-32">
-        <div class="mb-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-24 md:py-32">
+        <div class="mb-12 md:mb-20 text-center lg:text-left">
             <script>document.write(YayaComponents.atoms.badge("Engineering Deep Dive"));</script>
-            <h1 class="text-6xl font-black text-yayaNavy dark:text-white mt-6 tracking-tighter uppercase leading-none">Manual Técnico</h1>
-            <p class="text-xl text-gray-500 mt-4 max-w-3xl">Arquitectura de software, modelado de datos y stack tecnológico de nivel Senior Enterprise.</p>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-yayaNavy dark:text-white mt-6 tracking-tighter uppercase leading-none">Manual Técnico</h1>
+            <p class="text-lg md:text-xl text-gray-500 mt-4 max-w-3xl mx-auto lg:mx-0">Arquitectura de software, modelado de datos y stack tecnológico de nivel Senior Enterprise.</p>
         </div>
 
-        <div class="grid lg:grid-cols-4 gap-16">
+        <div class="grid lg:grid-cols-4 gap-12 lg:gap-16">
             <!-- Sidebar Navigation -->
             <aside class="lg:col-span-1">
-                <nav class="sticky top-28 space-y-8">
+                <nav class="sticky top-24 md:top-28 space-y-6 md:space-y-8 bg-white dark:bg-darkSurface lg:bg-transparent p-6 lg:p-0 rounded-3xl border lg:border-0 border-gray-100 dark:border-white/5">
                     <div>
-                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Infraestructura</p>
-                        <ul class="space-y-4 text-sm font-bold">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 md:mb-6">Infraestructura</p>
+                        <ul class="space-y-3 md:space-y-4 text-sm font-bold">
                             <li><a href="#stack" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Stack Tecnológico</a></li>
                             <li><a href="#architecture" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Clean MVVM</a></li>
                         </ul>
                     </div>
                     <div>
-                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Datos & Seguridad</p>
-                        <ul class="space-y-4 text-sm font-bold">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 md:mb-6">Datos & Seguridad</p>
+                        <ul class="space-y-3 md:space-y-4 text-sm font-bold">
                             <li><a href="#database" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Modelo Relacional</a></li>
                             <li><a href="#security" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Políticas RLS</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Despliegue</p>
-                        <ul class="space-y-4 text-sm font-bold">
-                            <li><a href="#notifications" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Edge Functions</a></li>
-                            <li><a href="#deployment" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Play Store</a></li>
                         </ul>
                     </div>
                 </nav>
             </aside>
 
             <!-- Main Content -->
-            <main class="lg:col-span-3 space-y-32">
+            <main class="lg:col-span-3 space-y-20 md:space-y-32">
 
                 <!-- Tech Stack -->
                 <section id="stack" class="scroll-mt-32">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">01. Stack Tecnológico</h2>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="bg-white dark:bg-darkSurface p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm">
-                            <h4 class="font-bold text-yayaRed mb-4 uppercase text-xs tracking-widest">Mobile Core</h4>
-                            <ul class="space-y-3 text-sm font-semibold">
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">01. Stack Tecnológico</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="bg-white dark:bg-darkSurface p-6 md:p-8 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm">
+                            <h4 class="font-bold text-yayaRed mb-4 uppercase text-[10px] md:text-xs tracking-widest">Mobile Core</h4>
+                            <ul class="space-y-2 md:space-y-3 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">
                                 <li>● Kotlin 2.2.10 (K2 Compiler)</li>
                                 <li>● Jetpack Compose (Material 3)</li>
                                 <li>● Navigation Type-Safety</li>
                                 <li>● Coroutines & Flows</li>
                             </ul>
                         </div>
-                        <div class="bg-white dark:bg-darkSurface p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm">
-                            <h4 class="font-bold text-yayaRed mb-4 uppercase text-xs tracking-widest">Cloud Backend</h4>
-                            <ul class="space-y-3 text-sm font-semibold">
+                        <div class="bg-white dark:bg-darkSurface p-6 md:p-8 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm">
+                            <h4 class="font-bold text-yayaRed mb-4 uppercase text-[10px] md:text-xs tracking-widest">Cloud Backend</h4>
+                            <ul class="space-y-2 md:space-y-3 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">
                                 <li>● Supabase (PostgreSQL)</li>
                                 <li>● Supabase Realtime Engine</li>
                                 <li>● Edge Functions (TypeScript)</li>
@@ -99,85 +92,48 @@
 
                 <!-- Architecture -->
                 <section id="architecture" class="scroll-mt-32">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">02. Arquitectura de Software</h2>
-                    <div class="bg-white dark:bg-darkSurface p-10 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-8">
-                        <p class="text-lg leading-relaxed text-gray-600 dark:text-gray-400">
-                            YÁYA implementa un patrón <strong>Clean MVVM</strong> acoplado a un sistema de <strong>Diseño Atómico</strong>, garantizando que cada línea de código sea escalable y mantenible.
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">02. Arquitectura de Software</h2>
+                    <div class="bg-white dark:bg-darkSurface p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-6 md:space-y-8">
+                        <p class="text-base md:text-lg leading-relaxed text-gray-600 dark:text-gray-400">
+                            YÁYA implementa un patrón <strong>Clean MVVM</strong> acoplado a un sistema de <strong>Diseño Atómico</strong>, garantizando escalabilidad y mantenibilidad total.
                         </p>
                         <div class="p-6 bg-yayaNavy text-white rounded-3xl">
-                            <h5 class="font-black text-yayaRed mb-4 uppercase text-xs tracking-widest">Componente Atómico</h5>
-                            <p class="text-sm opacity-80 leading-relaxed italic">"Las vistas son 100% pasivas. Toda lógica de negocio y transformación de datos reside exclusivamente en los ViewModels mediante UiState."</p>
+                            <h5 class="font-black text-yayaRed mb-4 uppercase text-[10px] md:text-xs tracking-widest">Componente Atómico</h5>
+                            <p class="text-xs md:text-sm opacity-80 leading-relaxed italic">"Las vistas son 100% pasivas. Toda lógica de negocio reside exclusivamente en los ViewModels mediante UiState."</p>
                         </div>
                     </div>
                 </section>
 
                 <!-- Database -->
                 <section id="database" class="scroll-mt-32">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">03. Modelo Relacional</h2>
-                    <div class="bg-white dark:bg-darkSurface p-10 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden">
-                        <p class="text-gray-500 mb-8">Esquema PostgreSQL optimizado para el ecosistema multi-rol:</p>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-white/5 rounded-2xl">
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">03. Modelo Relacional</h2>
+                    <div class="bg-white dark:bg-darkSurface p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden">
+                        <p class="text-sm md:text-base text-gray-500 mb-6 md:mb-8 text-center sm:text-left">Esquema PostgreSQL optimizado para el ecosistema multi-rol:</p>
+                        <div class="space-y-3 md:space-y-4">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 dark:bg-white/5 rounded-2xl gap-2 text-center sm:text-left">
                                 <span class="font-bold text-yayaRed">profiles</span>
-                                <span class="text-xs font-mono opacity-50">Auth Identity & Metadata</span>
+                                <span class="text-[10px] md:text-xs font-mono opacity-50 uppercase">Identity & Metadata</span>
                             </div>
-                            <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-white/5 rounded-2xl">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 dark:bg-white/5 rounded-2xl gap-2 text-center sm:text-left">
                                 <span class="font-bold text-yayaRed">services</span>
-                                <span class="text-xs font-mono opacity-50">Talent Catalog & Availability</span>
+                                <span class="text-[10px] md:text-xs font-mono opacity-50 uppercase">Catalog & Availability</span>
                             </div>
-                            <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-white/5 rounded-2xl">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 dark:bg-white/5 rounded-2xl gap-2 text-center sm:text-left">
                                 <span class="font-bold text-yayaRed">requests</span>
-                                <span class="text-xs font-mono opacity-50">Handshake Transaction Flow</span>
-                            </div>
-                            <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-white/5 rounded-2xl">
-                                <span class="font-bold text-yayaRed">messages</span>
-                                <span class="text-xs font-mono opacity-50">Realtime P2P Chat</span>
+                                <span class="text-[10px] md:text-xs font-mono opacity-50 uppercase">Handshake Flow</span>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <!-- Security -->
-                <section id="security" class="scroll-mt-32">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">04. Seguridad y RLS</h2>
-                    <div class="bg-yayaNavy text-white p-10 rounded-[2.5rem] shadow-xl space-y-6">
-                        <p class="text-xl font-bold">Blindaje a Nivel de Fila (Row Level Security)</p>
-                        <p class="text-gray-400 leading-relaxed">
-                            Ninguna consulta al servidor es anónima. PostgreSQL valida el <strong>JWT</strong> de Supabase para asegurar que un usuario solo pueda leer o editar datos que le pertenecen o sobre los que tiene permisos de negociación.
+                <section id="security" class="scroll-mt-32 pb-20 md:pb-24">
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">04. Seguridad y RLS</h2>
+                    <div class="bg-yayaNavy text-white p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-xl space-y-6 text-center sm:text-left">
+                        <p class="text-lg md:text-xl font-bold">Blindaje a Nivel de Fila</p>
+                        <p class="text-sm md:text-base text-gray-400 leading-relaxed">
+                            Ninguna consulta al servidor es anónima. PostgreSQL valida el <strong>JWT</strong> de Supabase para asegurar integridad total de los datos privados.
                         </p>
-                        <div class="inline-flex items-center px-4 py-2 bg-yayaRed rounded-full text-xs font-black uppercase tracking-widest">Bank-Level Security</div>
-                    </div>
-                </section>
-
-                <!-- Notifications -->
-                <section id="notifications" class="scroll-mt-32">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">05. Edge Functions & FCM</h2>
-                    <div class="bg-white dark:bg-darkSurface p-10 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-6">
-                        <p class="text-gray-500 leading-relaxed">
-                            YÁYA utiliza lógica server-side en TypeScript (Deno) para orquestar notificaciones push masivas sin sobrecargar el cliente Android.
-                        </p>
-                    </div>
-                </section>
-
-                <!-- Deployment -->
-                <section id="deployment" class="scroll-mt-32 pb-20">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">05. Pipeline de Despliegue</h2>
-                    <div class="bg-white dark:bg-darkSurface p-10 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-6">
-                        <p class="text-gray-500">Proceso automatizado para la Google Play Store:</p>
-                        <div class="space-y-4">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-10 h-10 rounded-full bg-yayaRed flex items-center justify-center font-bold">1</div>
-                                <p class="text-sm font-bold">Generación de App Bundle (.aab) con firma SHA-256.</p>
-                            </div>
-                            <div class="flex items-center space-x-4">
-                                <div class="w-10 h-10 rounded-full bg-yayaRed flex items-center justify-center font-bold">2</div>
-                                <p class="text-sm font-bold">Ofuscación de código mediante R8/ProGuard.</p>
-                            </div>
-                            <div class="flex items-center space-x-4">
-                                <div class="w-10 h-10 rounded-full bg-yayaRed flex items-center justify-center font-bold">3</div>
-                                <p class="text-sm font-bold">Publicación en Pistas de Pruebas de Play Console.</p>
-                            </div>
-                        </div>
                     </div>
                 </section>
 
