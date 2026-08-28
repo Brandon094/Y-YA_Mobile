@@ -20,6 +20,7 @@ El proyecto se rige por cuatro principios fundamentales que garantizan su escala
 Toda la inteligencia del proyecto está organizada para una auditoría técnica inmediata:
 
 ### 🔹 [01. Visión de Negocio & Producto](./docs/01-business/)
+- **[Landing Page (Marketing)](./docs/01-business/LANDING_PAGE.md):** Nuestra propuesta de valor para el mundo.
 - **[Identidad de Marca (Branding Pro)](./docs/01-business/BRANDING.md):** Manual de estilo y tokens de diseño.
 - **[Requisitos de Ingeniería](./docs/01-business/REQUIREMENTS.md):** RF y RNF detallados bajo norma ISO.
 - **[Roadmap de Evolución](./docs/01-business/ROADMAP.md):** Hitos alcanzados y visión de escalabilidad.
@@ -30,6 +31,7 @@ Toda la inteligencia del proyecto está organizada para una auditoría técnica 
 - **[Diccionario de Datos](./docs/02-architecture/DATA_DICTIONARY.md):** La verdad técnica de nuestras tablas y relaciones.
 
 ### 🔹 [03. Excelencia Operativa & Desarrollo](./docs/03-operations/)
+- **[Guía de Lanzamiento Play Store](./docs/03-operations/PLAY_STORE_CHECKLIST.md):** Pasos para la publicación oficial.
 - **[Manual Técnico Senior](./docs/03-operations/manuals/TECHNICAL_MANUAL.md):** Biblia del stack tecnológico y estándares de codificación.
 - **[Guía del Desarrollador (Instrucciones de Agente)](./docs/03-operations/DEVELOPER_GUIDELINES.md):** Reglas de oro inmutables del código.
 - **[Changelog Histórico (v0.1.3-alpha)](./docs/03-operations/CHANGELOG.md):** Trazabilidad total de cada mejora implementada.
