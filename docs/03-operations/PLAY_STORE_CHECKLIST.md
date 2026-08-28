@@ -36,7 +36,7 @@ Este documento detalla los pasos críticos para pasar de un entorno de desarroll
 ## 3. ⚖️ Cumplimiento Legal y Privacidad
 
 ### 🔹 Requisitos Críticos
-*   [ ] **URL de Política de Privacidad:** Google exige un link público. Se puede usar un GitHub Page con el contenido de [`PRIVACY_POLICY.md`](../04-legal/PRIVACY_POLICY.md).
+*   [ ] **URL de Política de Privacidad:** Google exige un link público. Usar el link oficial: [https://y-ya-d5929.web.app/privacidad.html](https://y-ya-d5929.web.app/privacidad.html).
 *   [ ] **Clasificación de contenido:** Completar el cuestionario de IARC en el console.
 *   [ ] **Seguridad de los datos:** Declarar qué datos recopila YÁYA (ID, Correo, Ubicación aproximada, etc.).
 
