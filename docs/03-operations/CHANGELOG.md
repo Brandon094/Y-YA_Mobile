@@ -5,8 +5,10 @@ Todas las modificaciones notables en este proyecto serán documentadas en este a
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.3-alpha] - 2026-08-27
+## [1.0.0] - 2026-08-28
 ### Añadido
+- **Versión de Lanzamiento Oficial (SENA Gold Edition):**
+    - Consolidación de todo el ecosistema digital: App Android + Portal Web + Infraestructura Cloud.
 - **Evolución del Ciclo de Vida Admin:**
     - Los administradores ahora aterrizan en la pantalla de Inicio (`Home`) igual que cualquier usuario, permitiéndoles interactuar con la app (contratar, chatear, etc.).
     - Se implementó un acceso exclusivo al **Panel Administrativo** desde el perfil del usuario, visible únicamente para el rol `admin`.
