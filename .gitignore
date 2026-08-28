@@ -12,4 +12,5 @@ app/build/
 *.jks
 *.keystore
 yaya-production.jks
+app/google-services.json
 .navigation/
