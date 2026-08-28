@@ -23,7 +23,7 @@ Este documento detalla los pasos críticos para pasar de un entorno de desarroll
 ### 🔹 Información Básica
 *   [ ] **Título:** YÁYA - Conecta. Confía. Contrata.
 *   [ ] **Descripción Corta:** (Máx 80 caracteres) Encuentra y contrata talentos independientes de forma segura y rápida.
-*   [ ] **Descripción Larga:** Utilizar el contenido de nuestra [Landing Page](../01-business/LANDING_PAGE.md).
+*   [ ] **Descripción Larga:** Utilizar el contenido de nuestro [Portal Web](../../portal_web/index.html).
 
 ### 🔹 Contenido Visual
 *   [ ] **Icono de la App:** 512x512 px, PNG o WEBP de 32 bits.
