@@ -103,7 +103,7 @@ Implementación de `ConnectivityObserver` basado en Flows que monitorea el hardw
 ## 6. Guía de Despliegue (Google Play Store)
 
 1.  **Firmado:** Generar KeyStore oficial encriptado.
-2.  **Bundle:** Generar archivo `.aab` (Android App Bundle) optimizado.
+2.  **Bundle:** Generar archivo `.aab` (Android App Bundle) optimizado mediante **R8 y minificación de recursos**, lo que reduce drásticamente el peso del binario y protege la propiedad intelectual de BH++.
 3.  **Play Console:**
     *   Subir App Bundle a la pista de Pruebas Internas.
     *   Configurar ficha de tienda con los activos de la [Landing Page](../../portal_web/index.html).

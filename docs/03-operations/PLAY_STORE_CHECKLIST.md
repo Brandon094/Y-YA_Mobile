@@ -12,7 +12,7 @@ Este documento detalla los pasos críticos para pasar de un entorno de desarroll
 *   [ ] **Generar App Bundle (AAB):** Google Play ahora exige el formato `.aab` en lugar de `.apk`.
 
 ### 🔹 Optimización y Limpieza
-*   [ ] **Minificación (R8/ProGuard):** Habilitar `isMinifyEnabled = true` para reducir el tamaño y proteger el código.
+*   [x] **Minificación (R8/ProGuard):** Habilitado `isMinifyEnabled = true` e `isShrinkResources = true` en el build de release.
 *   [ ] **Versionado:** Incrementar `versionCode` (entero) y actualizar `versionName` (ej. "1.0.0").
 *   [ ] **Iconos Adaptativos:** Verificar que el logo de YÁYA se vea bien en todas las máscaras de iconos de Android.
 
