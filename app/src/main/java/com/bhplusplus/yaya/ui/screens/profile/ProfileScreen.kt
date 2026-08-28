@@ -225,14 +225,6 @@ fun ProfileScreen(
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
 
                             ProfileOptionItem(
-                                title = "Simular Error (Crashlytics)",
-                                icon = Icons.Default.BugReport,
-                                onClick = { throw RuntimeException("Test Crash YÁYA - BH++ Team") },
-                                isDestructive = true
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-                            
-                            ProfileOptionItem(
                                 title = "Eliminar mi cuenta",
                                 icon = Icons.Default.DeleteForever,
                                 onClick = { showDeleteDialog = true },
