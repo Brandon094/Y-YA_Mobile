@@ -41,6 +41,7 @@ Los ViewModels actúan como controladores de estado puro:
 ## 6. Sistema de Notificaciones y Conectividad
 - **Push Multi-Admin:** La Edge Function `notify-yaya-updates` permite el envío masivo de notificaciones a todos los administradores ante nuevos servicios por auditar.
 - **Connectivity Observer:** Implementación de `NetworkConnectivityObserver.kt` que emite estados de red mediante Flows. Integrado con `YayaOfflineBanner` para feedback preventivo.
+- **Legal Rendering Engine:** Implementación en `LegalViewerScreen.kt` de un parseador dinámico de líneas para estilizar documentos legales con jerarquía visual (Headers, Bullets, Body), mejorando la UX en secciones normativas.
 
 ---
 *Manual de Ingeniería de BH++ - 2026*

@@ -63,5 +63,11 @@ El sistema administrativo implementa una lógica de protección comunitaria basa
 - **Semáforo de Severidad:** Cálculo en tiempo real del nivel de riesgo (Llamado de atención, Suspensión, Eliminación) basado en umbrales de reincidencia (3 y 5 reportes).
 - **Advertencias Automatizadas:** Los administradores pueden enviar "Llamados de Atención" pre-diseñados mediante el sistema de chat, automatizando la comunicación preventiva sin necesidad de redacción manual.
 
+## 8. Gestión de Cumplimiento Legal
+YÁYA integra un motor de visualización de documentos normativos:
+- **Centralización de Contenido:** Uso de `LegalConstants.kt` como punto único de verdad para textos legales.
+- **Dynamic Legal Rendering:** La `LegalViewerScreen` implementa un procesador de texto que transforma sintaxis Markdown (encabezados, listas) en componentes estilizados de Material 3 con identidad visual Premium.
+- **Acceptance Flow:** El registro requiere la confirmación binaria (Checkboxes) vinculada al estado de habilitación del proceso de creación de cuenta.
+
 ---
 *Documento Maestro de Arquitectura - BH++ Senior Engineering*

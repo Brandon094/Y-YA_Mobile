@@ -59,6 +59,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Cuando un administrador interactúa con un usuario, su nombre se muestra como "Equipo de Moderación" y su avatar es reemplazado por el isotipo oficial de YÁYA.
     - Esta protección se aplica de forma inteligente: los administradores conservan su identidad real cuando chatean entre sí.
     - Actualización de la Edge Function para garantizar anonimato en las notificaciones push ("🛡️ Equipo de Moderación YÁYA").
+- **Ecosistema Legal y Cumplimiento (Play Store Ready):**
+    - Implementación de aceptación obligatoria de Términos y Condiciones y Política de Privacidad en el flujo de registro.
+    - Desarrollo de un **Visor Legal Premium** con motor de renderizado Markdown-lite, aplicando jerarquía tipográfica, iconos institucionales y degradados inmersivos.
+    - Acceso permanente a documentos legales desde la configuración del perfil, garantizando transparencia total con el usuario.
 - **Cumplimiento y Seguridad:** Opción de borrado de cuenta integrado en el perfil para cumplimiento con Google Play.
 
 ### Cambiado
