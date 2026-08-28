@@ -45,6 +45,7 @@
 
     <title>YÁYA - Conecta. Confía. Contrata.</title>
     <link rel="icon" type="image/png" href="assets/images/ic_logo.png">
+    <link rel="preload" as="image" href="assets/images/logo_splash.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="js/components.js"></script>
@@ -66,6 +67,8 @@
     </script>
     <style>
         html { scroll-behavior: smooth; }
+        #yaya-navbar { min-height: 64px; }
+        @media (min-width: 768px) { #yaya-navbar { min-height: 80px; } }
         .gradient-bg { background: linear-gradient(135deg, #1E2A38 0%, #2c3e50 100%); }
         .dark .gradient-bg { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
         .hero-pattern { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e85c5c' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6zM36 4V0h-2v4h-4v2h4v4h2v-4h4v-2h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
@@ -78,14 +81,15 @@
     <!-- Organismo: Navbar -->
     <div id="yaya-navbar" data-page="home"></div>
 
-    <!-- Hero Section -->
-    <header class="pt-32 md:pt-40 pb-16 md:pb-24 px-4 overflow-hidden">
+    <main>
+        <!-- Hero Section -->
+        <header class="pt-32 md:pt-40 pb-16 md:pb-24 px-4 overflow-hidden">
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 md:gap-16">
             <div class="lg:w-1/2 text-center lg:text-left order-2 lg:order-1">
                 <h1 class="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 tracking-tighter leading-[1.1] lg:leading-[0.9]">
                     Confianza que <br class="hidden sm:block"> <span class="text-yayaRed italic">conecta.</span>
                 </h1>
-                <p class="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-xl lg:mx-0 mx-auto mb-10 md:mb-12 leading-relaxed">
+                <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 max-w-xl lg:mx-0 mx-auto mb-10 md:mb-12 leading-relaxed font-medium">
                     YÁYA es la infraestructura definitiva para el talento independiente. Una experiencia Premium diseñada para revolucionar los servicios locales.
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-6 px-4 sm:px-0">
@@ -101,7 +105,7 @@
                 <div class="relative w-56 sm:w-80 md:w-96 mx-auto group">
                     <div class="absolute -inset-1 bg-gradient-to-r from-yayaRed to-yayaSalmon rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                     <div class="relative bg-white dark:bg-black rounded-[2.5rem] border-4 md:border-8 border-yayaNavy dark:border-white/10 shadow-2xl overflow-hidden animate-float">
-                        <img src="assets/images/logo_splash.png" alt="YÁYA App" class="w-full h-auto">
+                        <img src="assets/images/logo_splash.png" alt="YÁYA App" width="400" height="800" class="w-full h-auto" fetchpriority="high">
                     </div>
                 </div>
                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] bg-yayaRed/10 rounded-full blur-[60px] sm:blur-[100px] -z-10"></div>
@@ -112,8 +116,8 @@
     <!-- Categories Preview Section -->
     <section class="py-16 md:py-24 bg-gray-50 dark:bg-darkBg transition-colors">
         <div class="max-w-7xl mx-auto px-4 text-center">
-             <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Talento Local Disponible</p>
-            <div class="flex flex-wrap justify-center gap-3 md:gap-4">
+             <h2 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-[0.25em] mb-8">Talento Local Disponible</h2>
+            <div class="flex flex-wrap justify-center gap-3 md:gap-4" aria-label="Categorías de servicios">
                 <script>
                     const cats = ["Mascotas", "Hogar", "Tecnología", "Salud", "Transporte", "Belleza", "Asesoría"];
                     cats.forEach(c => document.write(YayaComponents.atoms.badge(c, "bg-gray-200 dark:bg-white/10 text-yayaNavy dark:text-gray-300 py-2 px-4 md:px-6 text-xs md:text-sm")));
@@ -156,7 +160,7 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-16 md:mb-20">
                 <h2 class="text-3xl md:text-4xl font-black mb-4 uppercase tracking-tighter">Ciclo de Vida YÁYA</h2>
-                <p class="text-gray-500 text-sm md:text-base">Transformando la contratación en cuatro pasos.</p>
+                <p class="text-gray-300 text-sm md:text-base font-medium">Transformando la contratación en cuatro pasos.</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
                 <script>
@@ -173,20 +177,20 @@
     <section id="community" class="py-24 md:py-32 bg-white dark:bg-darkBg transition-colors overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center gap-12 md:gap-16">
             <div class="md:w-1/2 text-center md:text-left">
-                <script>document.write(YayaComponents.atoms.badge("Impacto Regional", "bg-blue-500/10 text-blue-500"));</script>
+                <script>document.write(YayaComponents.atoms.badge("Impacto Regional", "bg-blue-600/10 text-blue-600 dark:text-blue-400"));</script>
                 <h2 class="text-3xl md:text-5xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 tracking-tighter uppercase mt-4">Potenciando el <span class="text-yayaRed italic">Huila</span></h2>
-                <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 md:mb-10 leading-relaxed">
+                <p class="text-lg text-gray-700 dark:text-gray-300 mb-8 md:mb-10 leading-relaxed font-medium">
                     YÁYA nace con la misión de digitalizar el talento local. Actualmente brindamos cobertura estratégica en zonas clave, conectando comunidades con servicios de calidad.
                 </p>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
                     <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl text-center border border-gray-100 dark:border-white/5 shadow-sm">
-                        <div class="font-bold text-yayaNavy dark:text-white">Nátaga</div>
+                        <h3 class="font-bold text-yayaNavy dark:text-white">Nátaga</h3>
                     </div>
                     <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl text-center border border-gray-100 dark:border-white/5 shadow-sm">
-                        <div class="font-bold text-yayaNavy dark:text-white">La Plata</div>
+                        <h3 class="font-bold text-yayaNavy dark:text-white">La Plata</h3>
                     </div>
                     <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl text-center border border-gray-100 dark:border-white/5 shadow-sm">
-                        <div class="font-bold text-yayaNavy dark:text-white">Gallego</div>
+                        <h3 class="font-bold text-yayaNavy dark:text-white">Gallego</h3>
                     </div>
                 </div>
             </div>
@@ -205,12 +209,13 @@
     <section class="py-20 md:py-24 gradient-bg text-white overflow-hidden relative transition-all duration-500">
         <div class="max-w-7xl mx-auto px-4 relative z-10">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-12 text-center text-sm font-black uppercase tracking-[0.2em]">
-                <div><div class="text-5xl md:text-7xl font-black mb-2 leading-none">+50</div><div class="text-red-400 dark:text-yayaRed">Categorías</div></div>
-                <div><div class="text-5xl md:text-7xl font-black mb-2 leading-none">REAL</div><div class="text-red-400 dark:text-yayaRed">Time Stack</div></div>
-                <div><div class="text-5xl md:text-7xl font-black mb-2 leading-none">ADMIN</div><div class="text-red-400 dark:text-yayaRed">Moderación</div></div>
+                <div><div class="text-5xl md:text-7xl font-black mb-2 leading-none">+50</div><div class="text-red-200 dark:text-yayaRed">Categorías</div></div>
+                <div><div class="text-5xl md:text-7xl font-black mb-2 leading-none">REAL</div><div class="text-red-200 dark:text-yayaRed">Time Stack</div></div>
+                <div><div class="text-5xl md:text-7xl font-black mb-2 leading-none">ADMIN</div><div class="text-red-200 dark:text-yayaRed">Moderación</div></div>
             </div>
         </div>
     </section>
+    </main>
 
     <!-- Organismo: Footer -->
     <div id="yaya-footer"></div>
