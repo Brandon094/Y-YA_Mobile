@@ -97,6 +97,18 @@
         </div>
     </section>
 
+    <!-- Categories Preview Section -->
+    <section class="py-24 bg-gray-50 dark:bg-darkBg transition-colors">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-wrap justify-center gap-4">
+                <script>
+                    const cats = ["Mascotas", "Hogar", "Tecnología", "Salud", "Transporte", "Belleza", "Asesoría"];
+                    cats.forEach(c => document.write(YayaComponents.atoms.badge(c, "bg-gray-200 dark:bg-white/10 text-yayaNavy dark:text-gray-300 py-2 px-6 text-sm")));
+                </script>
+            </div>
+        </div>
+    </section>
+
     <!-- How it works -->
     <section id="how-it-works" class="py-32 bg-gray-950 text-white transition-colors">
         <div class="max-w-7xl mx-auto px-4">
@@ -111,6 +123,38 @@
                     document.write(YayaComponents.molecules.stepItem("03", "Confirma", "Realiza el Handshake para iniciar formalmente el servicio."));
                     document.write(YayaComponents.molecules.stepItem("04", "Califica", "Evalúa la experiencia y fortalece la confianza de la red."));
                 </script>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section id="community" class="py-32 bg-white dark:bg-darkBg transition-colors overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center gap-16">
+            <div class="md:w-1/2">
+                <script>document.write(YayaComponents.atoms.badge("Impacto Regional", "bg-blue-500/10 text-blue-500"));</script>
+                <h2 class="text-4xl md:text-5xl font-black text-yayaNavy dark:text-white mb-8 tracking-tighter uppercase mt-4">Potenciando el <span class="text-yayaRed italic">Huila</span></h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+                    YÁYA nace con la misión de digitalizar el talento local. Actualmente brindamos cobertura estratégica en zonas clave, conectando comunidades con servicios de calidad.
+                </p>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl text-center border border-gray-100 dark:border-white/5">
+                        <div class="font-bold text-yayaNavy dark:text-white">Nátaga</div>
+                    </div>
+                    <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl text-center border border-gray-100 dark:border-white/5">
+                        <div class="font-bold text-yayaNavy dark:text-white">La Plata</div>
+                    </div>
+                    <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl text-center border border-gray-100 dark:border-white/5">
+                        <div class="font-bold text-yayaNavy dark:text-white">Gallego</div>
+                    </div>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="w-40 h-40 bg-gray-100 dark:bg-white/5 rounded-3xl"></div>
+                    <div class="w-40 h-40 bg-yayaRed rounded-3xl mt-8"></div>
+                    <div class="w-40 h-40 bg-yayaNavy rounded-3xl -mt-8"></div>
+                    <div class="w-40 h-40 bg-gray-100 dark:bg-white/5 rounded-3xl"></div>
+                </div>
             </div>
         </div>
     </section>
