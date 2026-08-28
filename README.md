@@ -20,7 +20,7 @@ El proyecto se rige por cuatro principios fundamentales que garantizan su escala
 Toda la inteligencia del proyecto está organizada para una auditoría técnica inmediata:
 
 ### 🔹 [01. Visión de Negocio & Producto](./docs/01-business/)
-- **[Landing Page (Web)](./portal_web/index.html):** Nuestra cara al mundo (HTML/Tailwind).
+- **[Portal Web (Landing Page)](./portal_web/index.html):** Nuestra cara al mundo (Incluye Términos, Privacidad y Manuales).
 - **[Identidad de Marca (Branding Pro)](./docs/01-business/BRANDING.md):** Manual de estilo y tokens de diseño.
 - **[Requisitos de Ingeniería](./docs/01-business/REQUIREMENTS.md):** RF y RNF detallados bajo norma ISO.
 - **[Roadmap de Evolución](./docs/01-business/ROADMAP.md):** Hitos alcanzados y visión de escalabilidad.

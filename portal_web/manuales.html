@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación y Manuales - YÁYA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        yayaRed: '#E85C5C',
+                        yayaNavy: '#1E2A38',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-[#121212] dark:text-gray-100 font-sans transition-colors duration-300">
+    <div class="max-w-5xl mx-auto px-6 py-12">
+        <a href="index.html" class="inline-flex items-center text-yayaRed font-bold mb-8 hover:underline">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Volver al inicio
+        </a>
+
+        <h1 class="text-4xl font-black text-yayaNavy dark:text-white mb-12">Centro de Ayuda y Manuales</h1>
+
+        <div class="grid lg:grid-cols-4 gap-12">
+            <!-- Sidebar Navigation -->
+            <aside class="lg:col-span-1">
+                <nav class="sticky top-24 space-y-4">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Navegación</p>
+                    <a href="#user-manual" class="block text-yayaNavy dark:text-gray-300 font-semibold hover:text-yayaRed transition">Manual del Usuario</a>
+                    <ul class="pl-4 space-y-2 text-sm text-gray-500">
+                        <li><a href="#clients" class="hover:text-yayaRed">Para Clientes</a></li>
+                        <li><a href="#providers" class="hover:text-yayaRed">Para Prestadores</a></li>
+                    </ul>
+                    <a href="#admin-manual" class="block text-yayaNavy dark:text-gray-300 font-semibold hover:text-yayaRed transition">Manual del Administrador</a>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="lg:col-span-3 space-y-24">
+
+                <!-- User Manual Section -->
+                <section id="user-manual">
+                    <h2 class="text-3xl font-extrabold text-yayaNavy dark:text-white mb-8 pb-4 border-b border-gray-200 dark:border-white/10">Manual del Usuario</h2>
+
+                    <div id="clients" class="space-y-6 mb-16">
+                        <h3 class="text-xl font-bold text-yayaRed">1. Para Clientes (Solicitantes)</h3>
+                        <div class="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+                            <p><strong>1.1. Registro:</strong> Descargue la aplicación, seleccione "Regístrate" y elija el rol "Quiero servicios".</p>
+                            <p><strong>1.2. Búsqueda:</strong> Use la barra de búsqueda o filtros por categoría (Hogar, Mascotas, etc.) para encontrar al experto ideal.</p>
+                            <p><strong>1.3. Contratación y Handshake:</strong> Defina fecha y dirección. Al llegar a un acuerdo de precio, pulse "Confirmar y Empezar" para blindar el trato.</p>
+                        </div>
+                    </div>
+
+                    <div id="providers" class="space-y-6">
+                        <h3 class="text-xl font-bold text-yayaRed">2. Para Prestadores (Talentos)</h3>
+                        <div class="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+                            <p><strong>2.1. Perfil Profesional:</strong> Registre su documento de identidad y dirección para habilitar la publicación de servicios.</p>
+                            <p><strong>2.2. Publicación:</strong> Defina títulos claros, fotos reales de su portafolio y precios base competitivos.</p>
+                            <p><strong>2.3. Negociación:</strong> Gestione solicitudes entrantes, acepte o envíe contraofertas en tiempo real.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Admin Manual Section -->
+                <section id="admin-manual" class="bg-white dark:bg-darkSurface p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-white/5">
+                    <h2 class="text-3xl font-extrabold text-yayaNavy dark:text-white mb-8 pb-4 border-b border-gray-200 dark:border-white/10">Manual del Administrador</h2>
+
+                    <div class="space-y-8 text-gray-600 dark:text-gray-400 leading-relaxed">
+                        <div>
+                            <h4 class="font-bold text-yayaNavy dark:text-white mb-2 uppercase text-sm tracking-wider">Moderación Progresiva</h4>
+                            <p>Use el semáforo de severidad para gestionar reportes. Envíe "Llamados de Atención" preventivos antes de suspender o eliminar cuentas.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-yayaNavy dark:text-white mb-2 uppercase text-sm tracking-wider">Anonimato de Moderación</h4>
+                            <p>El sistema enmascara su identidad real como "Equipo de Moderación" para proteger su privacidad ante los usuarios.</p>
+                        </div>
+                        <div class="p-4 bg-red-50 dark:bg-yayaRed/5 rounded-xl border border-red-100 dark:border-yayaRed/10">
+                            <p class="text-xs text-red-600 dark:text-red-400 font-bold italic">Acceso restringido - Solo Personal BH++</p>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+
+        <div class="mt-20 pt-8 border-t border-gray-200 dark:border-white/10 text-center">
+            <p class="text-gray-400 text-sm italic">Desarrollado con estándares de ingeniería Senior para el SENA.</p>
+        </div>
+    </div>
+
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        }
+    </script>
+</body>
+</html>

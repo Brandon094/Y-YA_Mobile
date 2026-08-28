@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos y Condiciones - YÁYA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        yayaRed: '#E85C5C',
+                        yayaNavy: '#1E2A38',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-[#121212] dark:text-gray-100 font-sans transition-colors duration-300">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <a href="index.html" class="inline-flex items-center text-yayaRed font-bold mb-8 hover:underline">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Volver al inicio
+        </a>
+
+        <h1 class="text-4xl font-black text-yayaNavy dark:text-white mb-4">Términos y Condiciones de Uso</h1>
+        <p class="text-gray-500 mb-12">Última actualización: Agosto 2026</p>
+
+        <div class="prose prose-lg dark:prose-invert max-w-none space-y-8">
+            <section>
+                <h2 class="text-2xl font-bold text-yayaRed mb-4">1. Descripción del Servicio</h2>
+                <p>YÁYA es un ecosistema digital que actúa exclusivamente como intermediario para conectar a prestadores de servicios independientes ("Prestadores") con usuarios que buscan contratar dichos servicios ("Clientes"). YÁYA no presta los servicios listados ni es empleador de los Prestadores.</p>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold text-yayaRed mb-4">2. Registro y Cuenta Universal</h2>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>Elegibilidad:</strong> Debe tener al menos 18 años para registrarse.</li>
+                    <li><strong>Cuenta Única:</strong> YÁYA utiliza un modelo de "Cuenta Universal" donde un mismo usuario puede actuar como Cliente o Prestador.</li>
+                    <li><strong>Veracidad:</strong> Usted se compromete a proporcionar información real, incluyendo su documento de identidad y datos de contacto.</li>
+                    <li><strong>Seguridad:</strong> Usted es responsable de mantener la confidencialidad de su contraseña y de todas las actividades realizadas en su cuenta.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold text-yayaRed mb-4">3. Uso de la Plataforma</h2>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>Publicación de Servicios:</strong> Los Prestadores deben describir sus habilidades de manera honesta. El sistema cuenta con un proceso de moderación administrativa previo a la publicación.</li>
+                    <li><strong>Negociación:</strong> Los precios y términos específicos del servicio se acuerdan mediante el flujo de negociación y chat interno de la app.</li>
+                    <li><strong>Comportamiento:</strong> Queda prohibido el uso de lenguaje ofensivo, acoso, spam o la publicación de servicios ilegales.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold text-yayaRed mb-4">4. Pagos y Comisiones</h2>
+                <p>Actualmente, YÁYA facilita la negociación del precio, pero el pago se realiza directamente entre el Cliente y el Prestador bajo las condiciones acordadas. YÁYA se reserva el derecho de implementar pasarelas de pago y esquemas de suscripción (SaaS) en versiones futuras, previa notificación a los usuarios.</p>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold text-yayaRed mb-4">5. Sistema de Reputación y Reportes</h2>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li><strong>Calificaciones:</strong> Al finalizar un servicio, el Cliente puede calificar al Prestador. Estas valoraciones son públicas y forman parte de la reputación del usuario.</li>
+                    <li><strong>Reportes:</strong> Los usuarios pueden reportar incidentes de mal comportamiento. YÁYA se reserva el derecho de suspender o eliminar cuentas que violen estas normas o acumulen reportes negativos.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold text-yayaRed mb-4">6. Limitación de Responsabilidad</h2>
+                <p>YÁYA no se hace responsable por la calidad, puntualidad o seguridad de los servicios prestados, conflictos surgidos entre usuarios ni daños y perjuicios derivados del uso de la plataforma.</p>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold text-yayaRed mb-4">7. Propiedad Intelectual</h2>
+                <p>Todos los derechos sobre el diseño, código, logos y marca YÁYA pertenecen a <strong>BH++ Team</strong>. Queda prohibida su reproducción total o parcial sin autorización.</p>
+            </section>
+        </div>
+
+        <div class="mt-20 pt-8 border-t border-gray-200 dark:border-white/10 text-center">
+            <p class="text-gray-400 text-sm italic">BH++ Team - Ingeniería de Software con Propósito</p>
+        </div>
+    </div>
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        }
+    </script>
+</body>
+</html>
