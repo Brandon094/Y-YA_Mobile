@@ -16,7 +16,7 @@
  **Objetivo General** | Desarrollar un ecosistema móvil multi-rol para la gestión y negociación de servicios. |
 
 ### 2. Especificaciones Técnicas
-- **Lenguaje:** Kotlin 2.2.10 (K2 Compiler)
+- **Lenguaje:** Kotlin 2.4.10 (K2 Compiler)
 - **UI Framework:** Jetpack Compose (Material 3)
 - **Backend:** Supabase (PostgreSQL, Auth, Realtime)
 - **Arquitectura:** MVVM con Flujo de Datos Unidireccional (UDF)

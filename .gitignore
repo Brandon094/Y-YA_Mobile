@@ -11,4 +11,5 @@ app/build/
 *.log
 *.jks
 *.keystore
+yaya-production.jks
 .navigation/

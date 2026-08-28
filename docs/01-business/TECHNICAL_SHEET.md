@@ -10,7 +10,7 @@
 ## Especificaciones de Software
 - **Min SDK:** 26 (Android 8.0 Oreo)
 - **Target SDK:** 36 (Android 15+)
-- **Lenguaje:** Kotlin 2.2.10 (K2)
+- **Lenguaje:** Kotlin 2.4.10 (K2)
 - **Base de Datos:** PostgreSQL (vía Supabase)
 - **Autenticación:** Supabase Auth
 - **Notificaciones:** Firebase Cloud Messaging (FCM)
