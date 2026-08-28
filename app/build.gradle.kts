@@ -40,6 +40,13 @@ android {
 }
 
 dependencies {
+    // Force safe version of Netty to mitigate CVE-2024-29025
+    constraints {
+        implementation(libs.netty.codec.http2) {
+            because("Fixes Netty HTTP/2 CONTINUATION Frame Flood DoS vulnerability")
+        }
+    }
+
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
