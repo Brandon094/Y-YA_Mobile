@@ -66,7 +66,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Infraestructura de Observabilidad (Firebase Pro):**
     - Integración de **Firebase Crashlytics** para el monitoreo automático de errores y crashes en tiempo real.
     - Implementación de **Firebase Analytics** para la medición de eventos de usuario y métricas de retención.
-    - Se añadió una opción de "Simular Error" en el perfil para validación de telemetría por parte del equipo de ingeniería.
+    - Implementación de `CrashReporter.kt` como motor centralizado de logging y excepciones para la App.
 - **Ecosistema de Manuales Finalizado (Presentación SENA):**
     - Redacción exahustiva del Manual de Usuario Final, cubriendo procesos de registro, flujos de negociación y el innovador protocolo Handshake Digital.
     - Consolidación del Manual Técnico Maestro con diagramas de arquitectura, seguridad RLS y guías de despliegue.
