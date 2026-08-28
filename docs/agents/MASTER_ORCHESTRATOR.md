@@ -33,5 +33,6 @@ En la última intervención, el Orquestador Maestro coordinó una actualización
 4. **Estandarización Atómica:** Refactorización integral de la interfaz de usuario bajo la metodología **Atomic Design**, centralizando componentes reutilizables en librerías de Átomos, Moléculas y Organismos para garantizar consistencia DRY absoluta.
 5. **Inteligencia de Conectividad:** Implementación de monitoreo global de red con feedback visual automático (`YayaOfflineBanner`), blindando la App ante fallos de internet.
 6. **Automatización de Auditoría:** Cierre del ciclo de vida admin con notificaciones masivas para el equipo de moderación y feedback instantáneo a los prestadores sobre sus aprobaciones.
+7. **Omnicanalidad y Marketing:** Despliegue del Portal Web profesional en Firebase Hosting, optimizado para móviles y conectado a la Play Store, cerrando el ecosistema digital de la marca.
 
 *BH++ Team - Gestión de Inteligencia Colectiva*
