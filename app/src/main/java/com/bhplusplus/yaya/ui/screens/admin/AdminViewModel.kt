@@ -183,15 +183,16 @@ class AdminViewModel : ViewModel() {
                     sender_id = adminId,
                     receiver_id = userId,
                     content = """
-                        🚩 LLAMADO DE ATENCIÓN OFICIAL - YÁYA
+                        🚩 NOTIFICACIÓN OFICIAL DE MODERACIÓN
                         
-                        Has recibido $reportsCount denuncias por parte de la comunidad. 
-                        Este mensaje es una advertencia preventiva. Te invitamos a revisar tu comportamiento y cumplir con nuestras normas de convivencia.
+                        Hola. Hemos detectado que tu perfil ha acumulado $reportsCount reportes por parte de la comunidad. 
                         
-                        ⚠️ Ten en cuenta que si el número de reportes sigue aumentando, tu cuenta podrá ser SUSPENDIDA o ELIMINADA de forma permanente.
+                        Este es un llamado de atención preventivo. Te invitamos a revisar nuestras normas de convivencia y asegurar que tus servicios cumplan con la calidad y respeto que YÁYA exige.
+                        
+                        ⚠️ IMPORTANTE: La reincidencia en comportamientos reportables resultará en la SUSPENSIÓN de tus servicios o la ELIMINACIÓN PERMANENTE de tu cuenta.
                         
                         Atentamente,
-                        Equipo de Moderación de YÁYA.
+                        Equipo de Moderación YÁYA.
                     """.trimIndent()
                 )
                 

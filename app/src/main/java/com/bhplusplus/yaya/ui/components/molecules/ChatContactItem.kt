@@ -38,8 +38,9 @@ fun ChatContactItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             YayaAvatar(
-                imageUrl = contact.avatar_url,
-                size = 54.dp
+                imageUrl = if (summary.isModeration) null else contact.avatar_url,
+                size = 54.dp,
+                isModeration = summary.isModeration
             )
 
             Spacer(modifier = Modifier.width(16.dp))

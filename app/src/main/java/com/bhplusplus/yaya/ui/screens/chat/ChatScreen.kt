@@ -48,9 +48,10 @@ fun ChatScreen(
         topBar = {
             // Organismo: Cabecera del chat
             ChatHeader(
-                receiverName = receiverName,
+                receiverName = viewModel.receiverProfile?.full_name ?: receiverName,
                 avatarUrl = viewModel.receiverProfile?.avatar_url,
-                onBack = onBack
+                onBack = onBack,
+                isModeration = viewModel.isModerationChat
             )
         },
         bottomBar = {

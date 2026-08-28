@@ -20,15 +20,17 @@ fun ChatHeader(
     receiverName: String,
     avatarUrl: String?,
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isModeration: Boolean = false
 ) {
     TopAppBar(
         modifier = modifier,
         title = { 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 YayaAvatar(
-                    imageUrl = avatarUrl,
-                    size = 40.dp
+                    imageUrl = if (isModeration) null else avatarUrl,
+                    size = 40.dp,
+                    isModeration = isModeration
                 )
                 Spacer(Modifier.width(12.dp))
                 Column {

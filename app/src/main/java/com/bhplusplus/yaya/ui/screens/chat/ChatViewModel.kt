@@ -58,6 +58,9 @@ class ChatViewModel : ViewModel() {
 
     var receiverProfile by mutableStateOf<UserProfile?>(null)
         private set
+    
+    var isModerationChat by mutableStateOf(false)
+        private set
 
     var isLoading by mutableStateOf(false)
         private set
@@ -84,9 +87,25 @@ class ChatViewModel : ViewModel() {
     private fun fetchReceiverProfile(receiverId: String) {
         viewModelScope.launch {
             try {
-                receiverProfile = SupabaseManager.client.postgrest["profiles"]
+                val profile = SupabaseManager.client.postgrest["profiles"]
                     .select { filter { eq("id", receiverId) } }
                     .decodeSingle<UserProfile>()
+                
+                val currentUser = SupabaseManager.client.auth.currentUserOrNull()
+                val myProfile = if (currentUser != null) {
+                    SupabaseManager.client.postgrest["profiles"]
+                        .select { filter { eq("id", currentUser.id) } }
+                        .decodeSingle<UserProfile>()
+                } else null
+
+                // Anonimato Admin: Solo se enmascara si el receptor es Admin y el emisor NO es Admin
+                isModerationChat = profile.role == "admin" && myProfile?.role != "admin"
+                
+                receiverProfile = if (isModerationChat) {
+                    profile.copy(full_name = "Equipo de Moderación")
+                } else {
+                    profile
+                }
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error al cargar perfil receptor: ${e.message}")
             }

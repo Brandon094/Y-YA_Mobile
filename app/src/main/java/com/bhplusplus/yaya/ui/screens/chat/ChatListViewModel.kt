@@ -26,7 +26,8 @@ data class ChatSummary(
     val lastMessage: String? = null,
     val unreadCount: Int = 0,
     val lastMessageTime: String? = null,
-    val displaySubtitle: String = ""
+    val displaySubtitle: String = "",
+    val isModeration: Boolean = false
 )
 
 /**
@@ -77,6 +78,13 @@ class ChatListViewModel : ViewModel() {
     }
 
     private suspend fun processMessagesToSummaries(messages: List<Message>, currentUserId: String) {
+        // Obtenemos nuestro propio rol para decidir si enmascaramos
+        val myProfile = try {
+            SupabaseManager.client.postgrest["profiles"]
+                .select { filter { eq("id", currentUserId) } }
+                .decodeSingle<UserProfile>()
+        } catch (e: Exception) { null }
+
         // Extraemos los IDs de los contactos únicos
         val contactIds = messages.flatMap { listOf(it.sender_id, it.receiver_id) }
             .filter { it != currentUserId }
@@ -114,12 +122,17 @@ class ChatListViewModel : ViewModel() {
                 if (profile.role == "provider") "Prestador" else "Cliente"
             }
 
+            // Anonimato: Se enmascara si el contacto es Admin y nosotros NO
+            val isModeration = profile.role == "admin" && myProfile?.role != "admin"
+            val displayName = if (isModeration) "Equipo de Moderación" else profile.full_name
+
             ChatSummary(
-                contact = profile,
+                contact = profile.copy(full_name = displayName),
                 lastMessage = lastMsg?.content,
                 unreadCount = unread,
                 lastMessageTime = lastMsg?.sent_at?.take(16)?.replace("T", " "),
-                displaySubtitle = subtitle
+                displaySubtitle = subtitle,
+                isModeration = isModeration
             )
         }.sortedByDescending { it.lastMessageTime ?: "" }
     }

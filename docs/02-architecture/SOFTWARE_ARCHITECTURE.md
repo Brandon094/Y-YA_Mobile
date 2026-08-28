@@ -46,7 +46,9 @@ Para eliminar la percepción de latencia, se implementa una infraestructura de *
 - **Detección de Conectividad:** Monitoreo global mediante `ConnectivityObserver` (Flow-based). La aplicación muestra una `YayaOfflineBanner` atómica en tiempo real ante fallos de red, garantizando feedback continuo.
 
 ## 5. Roles y Acceso Universal
-Unificación de perfil bajo un ID único que soporta transacciones cruzadas (un prestador puede ser cliente y viceversa sin fricción). El rol `admin` posee una capa de acceso híbrido que le permite interactuar con el ecosistema y moderar desde su perfil.
+Unificación de perfil bajo un ID único que soporta transacciones cruzadas (un prestador puede ser cliente y viceversa sin fricción).
+- **Anonimato Administrativo:** Para proteger la integridad de los administradores (Mauro, Harold, Brandon), el sistema implementa una capa de enmascaramiento en el Chat. Cuando un usuario no-admin interactúa con un administrador, el nombre se reemplaza por "Equipo de Moderación" y el avatar por el isotipo oficial de YÁYA.
+- El rol `admin` posee una capa de acceso híbrido que le permite interactuar con el ecosistema y moderar desde su perfil.
 
 ## 6. Motor de Notificaciones (Push Architecture)
 YÁYA utiliza una infraestructura híbrida para alertas globales impulsada por **Supabase Edge Functions**:

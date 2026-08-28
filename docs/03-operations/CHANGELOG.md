@@ -54,6 +54,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Sistema de Conectividad Proactivo:**
     - Implementación de `NetworkConnectivityObserver` para monitorear el estado de internet en tiempo real mediante Coroutines Flow.
     - Integración de banner de alerta global (`YayaOfflineBanner`) que notifica al usuario cuando se pierde la conexión, mejorando la fiabilidad de la App.
+- **Anonimato Administrativo (Seguridad Admin):**
+    - Implementación de capa de enmascaramiento de identidad para el equipo de moderación.
+    - Cuando un administrador interactúa con un usuario, su nombre se muestra como "Equipo de Moderación" y su avatar es reemplazado por el isotipo oficial de YÁYA.
+    - Esta protección se aplica de forma inteligente: los administradores conservan su identidad real cuando chatean entre sí.
+    - Actualización de la Edge Function para garantizar anonimato en las notificaciones push ("🛡️ Equipo de Moderación YÁYA").
 - **Cumplimiento y Seguridad:** Opción de borrado de cuenta integrado en el perfil para cumplimiento con Google Play.
 
 ### Cambiado
