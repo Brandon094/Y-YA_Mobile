@@ -46,6 +46,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Los prestadores ahora ven el conteo de solicitudes pendientes directamente en su menú de perfil.
     - Los administradores visualizan el número de servicios pendientes de aprobación en el acceso al Dashboard Admin.
     - Integración de conteo de mensajes no leídos en la sección "Mis Actividad" del perfil.
+- **Auditoría Admin Automatizada (Edge Functions):**
+    - Evolución de la Edge Function unificada para soportar envío masivo de notificaciones a múltiples administradores simultáneamente.
+    - Implementación de notificaciones instantáneas para el equipo admin ante la creación de nuevos servicios ("🛡️ Nuevo Servicio por Auditar").
+    - Cierre del ciclo de feedback al prestador: notificaciones automáticas cuando su servicio es aprobado o pausado por la administración.
 - **Sistema de Conectividad Proactivo:**
     - Implementación de `NetworkConnectivityObserver` para monitorear el estado de internet en tiempo real mediante Coroutines Flow.
     - Integración de banner de alerta global (`YayaOfflineBanner`) que notifica al usuario cuando se pierde la conexión, mejorando la fiabilidad de la App.

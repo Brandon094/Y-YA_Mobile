@@ -48,5 +48,12 @@ Para eliminar la percepción de latencia, se implementa una infraestructura de *
 ## 5. Roles y Acceso Universal
 Unificación de perfil bajo un ID único que soporta transacciones cruzadas (un prestador puede ser cliente y viceversa sin fricción). El rol `admin` posee una capa de acceso híbrido que le permite interactuar con el ecosistema y moderar desde su perfil.
 
+## 6. Motor de Notificaciones (Push Architecture)
+YÁYA utiliza una infraestructura híbrida para alertas globales impulsada por **Supabase Edge Functions**:
+1.  **Registro:** El cliente Android sincroniza el token FCM con `public.profiles`.
+2.  **Disparadores (Webhooks):** Eventos en las tablas `requests`, `messages` y `services` activan la Edge Function.
+3.  **Lógica Multi-Destino:** La función unificada soporta el envío a múltiples administradores simultáneamente y feedback directo a usuarios sobre cambios de estado.
+4.  **FCM V1:** La entrega se realiza mediante la API HTTP v1 de Firebase, garantizando alta prioridad y entrega confiable.
+
 ---
 *Documento Maestro de Arquitectura - BH++ Senior Engineering*
