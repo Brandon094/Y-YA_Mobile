@@ -77,6 +77,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Integración de **Modo Oscuro** nativo con persistencia en el portal web.
     - Conexión de botones de acción (CTA) con la ficha oficial de **Google Play Store**.
     - Integración de identidad visual oficial (Logos, Isotipos y Mockups) en toda la web.
+    - **Performance & SEO Booster:** Implementación de dimensiones explícitas, pre-carga de imágenes críticas (Preload/FetchPriority) y estrategia SEO completa (Meta tags, JSON-LD, Sitemap/Robots).
+    - **Accesibilidad Senior:** Cumplimiento de estándares con etiquetas ARIA, jerarquía de encabezados corregida y optimización de contrastes para legibilidad universal.
 - **Cumplimiento y Seguridad:** Opción de borrado de cuenta integrado en el perfil para cumplimiento con Google Play.
 
 ### Cambiado

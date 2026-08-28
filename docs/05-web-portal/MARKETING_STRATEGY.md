@@ -13,6 +13,7 @@ El portal está blindado para aparecer en los primeros resultados de búsqueda:
 *   **Meta Tags:** Configuración exhaustiva de `description` y `keywords` enfocadas en servicios locales y geografía del Huila.
 *   **JSON-LD:** Datos estructurados para que Google muestre "Estrellas" y categoría de "Software de Negocios".
 *   **Sitemap & Robots:** Guía para que los rastreadores de Google indexen todas las páginas de manuales y arquitectura.
+*   **Search Console:** Integración y verificación de propiedad mediante archivo de control estático.
 
 ## 3. Social Media Ready (Open Graph)
 *   **Preview Images:** Uso de `logo_splash.png` como imagen predeterminada al compartir links en WhatsApp, Facebook y Twitter.

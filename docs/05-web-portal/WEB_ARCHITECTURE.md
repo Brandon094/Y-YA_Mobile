@@ -19,7 +19,11 @@ Para mantener la consistencia con la App, se aplica una jerarquía de componente
 *   **Responsive UI:** Menú de hamburguesa y layouts elásticos que se adaptan a cualquier resolución móvil.
 *   **Legal Rendering:** Motor de visualización jerárquico para documentos normativos (Markdown-lite).
 
-## 4. Pipeline de Despliegue
+## 4. Optimización y Accesibilidad
+*   **Web Performance:** Reducción de CLS (Cumulative Layout Shift) mediante dimensiones explícitas y reserva de espacio (min-height). Optimización de LCP mediante pre-carga de recursos críticos.
+*   **Inclusión:** Cumplimiento de estándares de accesibilidad con semántica HTML5, etiquetas ARIA para navegación móvil y contraste de color optimizado para legibilidad.
+
+## 5. Pipeline de Despliegue
 El despliegue está automatizado mediante la Firebase CLI:
 1.  **Directorio Raíz:** `portal_web/`
 2.  **Comando:** `firebase deploy --only hosting`
