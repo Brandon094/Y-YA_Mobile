@@ -63,8 +63,8 @@ const YayaComponents = {
                             </div>
                             <div class="hidden md:flex space-x-8">
                                 <a href="${prefix}#features" class="text-sm font-bold text-yayaNavy dark:text-gray-300 hover:text-yayaRed transition">Beneficios</a>
-                                <a href="${prefix}#how-it-works" class="text-sm font-bold text-yayaNavy dark:text-gray-300 hover:text-yayaRed transition">Cómo funciona</a>
-                                <a href="manuales.html" class="text-sm font-bold text-yayaNavy dark:text-gray-300 hover:text-yayaRed transition">Manuales</a>
+                                <a href="manuales.html" class="text-sm font-bold text-yayaNavy dark:text-gray-300 hover:text-yayaRed transition">Manual de Uso</a>
+                                <a href="tecnica.html" class="text-sm font-bold text-yayaNavy dark:text-gray-300 hover:text-yayaRed transition">Arquitectura</a>
                             </div>
                             <div class="flex items-center space-x-4">
                                 <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-gray-100 dark:bg-darkSurface hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
@@ -89,7 +89,8 @@ const YayaComponents = {
                         <div class="flex space-x-8 text-sm font-bold text-gray-500">
                             <a href="terminos.html" class="hover:text-yayaRed transition">Términos</a>
                             <a href="privacidad.html" class="hover:text-yayaRed transition">Privacidad</a>
-                            <a href="manuales.html" class="hover:text-yayaRed transition">Manuales</a>
+                            <a href="manuales.html" class="hover:text-yayaRed transition">Manual de Uso</a>
+                            <a href="tecnica.html" class="hover:text-yayaRed transition">Técnico</a>
                         </div>
                     </div>
                     <div class="pt-8 border-t border-gray-100 dark:border-white/5 text-center">
