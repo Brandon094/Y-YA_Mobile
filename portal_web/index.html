@@ -48,10 +48,11 @@
                 <p class="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-xl lg:mx-0 mx-auto mb-10 md:mb-12 leading-relaxed">
                     YÁYA es la infraestructura definitiva para el talento independiente. Una experiencia Premium diseñada para revolucionar los servicios locales.
                 </p>
-                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 md:gap-6 px-4 sm:px-0">
+                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-6 px-4 sm:px-0">
                     <script>
-                        document.write(YayaComponents.atoms.buttonPrimary("Únete como Prestador", "#"));
-                        document.write(YayaComponents.atoms.buttonSecondary("Busca un Servicio", "#"));
+                        const playStoreUrl = "https://play.google.com/store/apps/details?id=com.bhplusplus.yaya";
+                        document.write(YayaComponents.atoms.buttonPrimary("Únete como Prestador", playStoreUrl));
+                        document.write(YayaComponents.atoms.buttonSecondary("Busca un Servicio", playStoreUrl));
                     </script>
                 </div>
             </div>

@@ -72,7 +72,7 @@ const YayaComponents = {
                                     <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                                     <svg class="w-5 h-5 hidden dark:block text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 18v1m9-11h1M3 12h1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                                 </button>
-                                <a href="#" class="hidden sm:block bg-yayaNavy dark:bg-yayaRed text-white px-4 md:px-6 py-2 md:2.5 rounded-full text-xs md:text-sm font-extrabold hover:opacity-90 transition shadow-lg">Lanzamiento 2026</a>
+                                <a href="https://play.google.com/store/apps/details?id=com.bhplusplus.yaya" class="hidden sm:block bg-yayaNavy dark:bg-yayaRed text-white px-4 md:px-6 py-2 md:2.5 rounded-full text-xs md:text-sm font-extrabold hover:opacity-90 transition shadow-lg">Descargar App</a>
 
                                 <!-- Mobile Menu Toggle -->
                                 <button onclick="toggleMobileMenu()" class="lg:hidden p-2 text-yayaNavy dark:text-white">
