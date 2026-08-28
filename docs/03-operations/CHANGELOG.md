@@ -71,6 +71,12 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Redacción exahustiva del Manual de Usuario Final, cubriendo procesos de registro, flujos de negociación y el innovador protocolo Handshake Digital.
     - Consolidación del Manual Técnico Maestro con diagramas de arquitectura, seguridad RLS y guías de despliegue.
     - Estructura alineada con los requisitos de entrega del programa ADSO - SENA.
+- **Portal Web y Marketing (Producción):**
+    - Despliegue oficial de la Landing Page interactiva en **Firebase Hosting** ([y-ya-d5929.web.app](https://y-ya-d5929.web.app)).
+    - Optimización **Responsive** total con menú de hamburguesa y layouts elásticos para dispositivos móviles.
+    - Integración de **Modo Oscuro** nativo con persistencia en el portal web.
+    - Conexión de botones de acción (CTA) con la ficha oficial de **Google Play Store**.
+    - Integración de identidad visual oficial (Logos, Isotipos y Mockups) en toda la web.
 - **Cumplimiento y Seguridad:** Opción de borrado de cuenta integrado en el perfil para cumplimiento con Google Play.
 
 ### Cambiado

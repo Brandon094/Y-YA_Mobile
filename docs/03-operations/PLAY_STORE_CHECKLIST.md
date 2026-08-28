@@ -24,7 +24,8 @@ Este documento detalla los pasos críticos para pasar de un entorno de desarroll
 *   [x] **Título:** YÁYA Conecta & Contrata.
 *   [x] **Descripción Corta:** Encuentra expertos, negocia precios justos y contrata servicios de forma segura.
 *   [x] **Descripción Larga:** Finalizada y cargada en la consola (resaltando Handshake y Subasta).
-*   [ ] **URL de Política de Privacidad:** Google exige un link público. Usar el link oficial: [https://y-ya-d5929.web.app/privacidad.html](https://y-ya-d5929.web.app/privacidad.html).
+*   [x] **URL de Política de Privacidad:** Link oficial configurado: [https://y-ya-d5929.web.app/privacidad.html](https://y-ya-d5929.web.app/privacidad.html).
+*   [x] **URL de Eliminación de Datos:** Link oficial configurado: [https://y-ya-d5929.web.app/eliminar-cuenta.html](https://y-ya-d5929.web.app/eliminar-cuenta.html).
 
 ### 🔹 Contenido Visual
 *   [ ] **Icono de la App:** 512x512 px, PNG o WEBP de 32 bits.
