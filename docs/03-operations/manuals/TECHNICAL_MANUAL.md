@@ -55,7 +55,8 @@ Todas las tablas en Supabase tienen políticas **RLS** activas:
 
 ## 3. Stack Tecnológico y Dependencias Clave
 
-*   **Lenguaje:** Kotlin 2.2.10 (K2 Compiler).
+*   **Lenguaje:** Kotlin 2.4.10 (K2 Compiler).
+*   **Target SDK:** Android API 37.
 *   **UI:** Jetpack Compose (Material 3).
 *   **Backend:** Supabase (PostgreSQL + Realtime + Storage).
 *   **Observabilidad:** Firebase Crashlytics & Analytics (Telemetría de errores y métricas). Se utiliza el wrapper `CrashReporter.kt` para centralizar los reportes.

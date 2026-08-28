@@ -45,7 +45,7 @@ Toda la inteligencia del proyecto está organizada para una auditoría técnica 
 
 ## 🛠️ Stack Tecnológico de Alto Nivel
 
-- **Core:** Kotlin 2.2.10 (Coroutines & Flow)
+- **Core:** Kotlin 2.4.10 (Coroutines & Flow)
 - **UI Framework:** Jetpack Compose (Material 3)
 - **Design System:** Atomic Design Methodology
 - **Backend-as-a-Service:** Supabase (Auth, PostgreSQL, Realtime, Storage, Edge Functions)

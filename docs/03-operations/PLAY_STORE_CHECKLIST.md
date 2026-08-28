@@ -7,7 +7,8 @@ Este documento detalla los pasos críticos para pasar de un entorno de desarroll
 ## 1. 🛡️ Preparación Técnica (Build for Production)
 
 ### 🔹 Firmado de Aplicación (Signing)
-*   [ ] **Generar KeyStore:** Crear un archivo `.jks` seguro (nunca subir al Git).
+*   [x] **Generar KeyStore:** Archivo `yaya-production.jks` generado exitosamente (Alias: `yaya-key`).
+*   [x] **Registrar SHA en Firebase:** Huellas SHA-1 (BD:B9) y SHA-256 (E4:DE) obtenidas para vinculación con servicios de Google.
 *   [ ] **Configurar Build Variants:** Asegurar que `build.gradle` use la firma en el modo `release`.
 *   [ ] **Generar App Bundle (AAB):** Google Play ahora exige el formato `.aab` en lugar de `.apk`.
 
