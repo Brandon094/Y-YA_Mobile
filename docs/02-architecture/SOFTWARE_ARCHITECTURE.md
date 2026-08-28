@@ -69,5 +69,13 @@ YÁYA integra un motor de visualización de documentos normativos:
 - **Dynamic Legal Rendering:** La `LegalViewerScreen` implementa un procesador de texto que transforma sintaxis Markdown (encabezados, listas) en componentes estilizados de Material 3 con identidad visual Premium.
 - **Acceptance Flow:** El registro requiere la confirmación binaria (Checkboxes) vinculada al estado de habilitación del proceso de creación de cuenta.
 
+## 9. Estrategia de Observabilidad (Telemetría)
+YÁYA implementa un sistema de monitoreo proactivo mediante **Firebase Pro**:
+- **Centralización de Errores:** Uso de `CrashReporter.kt` como punto único de verdad. Desacopla la lógica de negocio de la SDK de Firebase.
+- **Dual Layer Capture:** 
+    - **Fatal:** Captura automática de crashes globales mediante la SDK de Crashlytics.
+    - **Non-Fatal:** Registro manual de excepciones controladas en bloques `try-catch` para auditoría técnica.
+- **Analytics:** Medición de KPIs de negocio y comportamiento de usuario en tiempo real.
+
 ---
 *Documento Maestro de Arquitectura - BH++ Senior Engineering*
