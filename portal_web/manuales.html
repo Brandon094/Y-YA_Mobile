@@ -29,60 +29,53 @@
         .prose strong { color: #E85C5C; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 font-sans transition-colors duration-300">
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 font-sans transition-colors duration-300 overflow-x-hidden">
 
     <!-- Organismo: Navbar -->
     <div id="yaya-navbar" data-page="manuals"></div>
 
-    <div class="max-w-6xl mx-auto px-6 py-32">
-        <div class="mb-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-24 md:py-32">
+        <div class="mb-12 md:mb-20 text-center lg:text-left">
             <script>document.write(YayaComponents.atoms.badge("BH++ Senior Standards"));</script>
-            <h1 class="text-6xl font-black text-yayaNavy dark:text-white mt-6 tracking-tighter uppercase leading-none">Biblia de Operaciones</h1>
-            <p class="text-xl text-gray-500 mt-4 max-w-2xl">Guía exahustiva sobre el ciclo de vida, arquitectura y manual de usuario final de la plataforma YÁYA.</p>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-yayaNavy dark:text-white mt-6 tracking-tighter uppercase leading-none">Biblia de Operaciones</h1>
+            <p class="text-lg md:text-xl text-gray-500 mt-4 max-w-2xl mx-auto lg:mx-0">Guía exahustiva sobre el ciclo de vida, arquitectura y manual de usuario final de la plataforma YÁYA.</p>
         </div>
 
-        <div class="grid lg:grid-cols-4 gap-16">
+        <div class="grid lg:grid-cols-4 gap-12 lg:gap-16">
             <!-- Sidebar Navigation -->
             <aside class="lg:col-span-1">
-                <nav class="sticky top-28 space-y-8">
+                <nav class="sticky top-24 md:top-28 space-y-6 md:space-y-8 bg-white dark:bg-darkSurface lg:bg-transparent p-6 lg:p-0 rounded-3xl border lg:border-0 border-gray-100 dark:border-white/5">
                     <div>
-                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">01. Acceso y Perfil</p>
-                        <ul class="space-y-4 text-sm font-bold">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 md:mb-6">01. Acceso y Perfil</p>
+                        <ul class="space-y-3 md:space-y-4 text-sm font-bold">
                             <li><a href="#onboarding" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Bienvenida & Onboarding</a></li>
                             <li><a href="#registration" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition border-l-2 border-yayaRed pl-4">Registro Universal</a></li>
                         </ul>
                     </div>
                     <div>
-                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">02. Manual del Usuario</p>
-                        <ul class="space-y-4 text-sm font-bold">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 md:mb-6">02. Manual del Usuario</p>
+                        <ul class="space-y-3 md:space-y-4 text-sm font-bold">
                             <li><a href="#clients" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Guía para Clientes</a></li>
                             <li><a href="#providers" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition border-l-2 border-yayaRed pl-4">Guía para Prestadores</a></li>
                             <li><a href="#handshake" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Handshake Digital</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">03. Gestión Pro</p>
-                        <ul class="space-y-4 text-sm font-bold">
-                            <li><a href="#admin" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Panel Administrativo</a></li>
-                            <li><a href="#faq" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Preguntas Frecuentes</a></li>
                         </ul>
                     </div>
                 </nav>
             </aside>
 
             <!-- Main Content -->
-            <main class="lg:col-span-3 space-y-32">
+            <main class="lg:col-span-3 space-y-20 md:space-y-32">
 
                 <!-- Onboarding -->
                 <section id="onboarding" class="scroll-mt-32">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">01. Bienvenida y Onboarding</h2>
-                    <div class="bg-white dark:bg-darkSurface p-10 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-6">
-                        <p class="text-lg leading-relaxed text-gray-600 dark:text-gray-400">
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">01. Bienvenida y Onboarding</h2>
+                    <div class="bg-white dark:bg-darkSurface p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-6">
+                        <p class="text-base md:text-lg leading-relaxed text-gray-600 dark:text-gray-400">
                             La experiencia inicia con un <strong>Carrusel Interactivo</strong> que comunica la propuesta de valor. Este módulo utiliza un motor de navegación inteligente que valida la sesión en tiempo real.
                         </p>
                         <div class="p-6 bg-red-50 dark:bg-yayaRed/5 rounded-3xl border border-red-100 dark:border-yayaRed/10">
                             <h5 class="font-bold text-yayaRed mb-2 uppercase text-xs tracking-widest">Requisitos del Sistema</h5>
-                            <ul class="text-sm space-y-2 text-gray-500 dark:text-gray-400 font-medium">
+                            <ul class="text-xs md:text-sm space-y-2 text-gray-500 dark:text-gray-400 font-medium">
                                 <li>● Android 8.0 (Oreo) o superior.</li>
                                 <li>● Conexión a internet activa (Detección Realtime).</li>
                                 <li>● Almacenamiento libre de 50MB.</li>
@@ -93,26 +86,26 @@
 
                 <!-- Registration -->
                 <section id="registration" class="scroll-mt-32">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">02. Registro Universal (Multi-Rol)</h2>
-                    <div class="bg-white dark:bg-darkSurface p-10 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-10">
-                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">YÁYA utiliza un modelo de <strong>Cuenta Universal</strong>. No necesitas crear dos cuentas para ser cliente y prestador al mismo tiempo.</p>
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">02. Registro Universal (Multi-Rol)</h2>
+                    <div class="bg-white dark:bg-darkSurface p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-10">
+                        <p class="text-base md:text-gray-600 dark:text-gray-400 leading-relaxed md:text-lg">YÁYA utiliza un modelo de <strong>Cuenta Universal</strong>. No necesitas crear dos cuentas para ser cliente y prestador al mismo tiempo.</p>
 
                         <div class="space-y-6">
-                            <h4 class="font-black text-yayaRed uppercase text-xs tracking-[0.2em]">Paso a Paso del Registro</h4>
-                            <div class="grid md:grid-cols-2 gap-8">
-                                <div class="space-y-4">
+                            <h4 class="font-black text-yayaRed uppercase text-[10px] md:text-xs tracking-[0.2em]">Paso a Paso del Registro</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+                                <div class="space-y-2">
                                     <p class="text-sm font-bold text-yayaNavy dark:text-white">1. Datos Personales</p>
                                     <p class="text-xs text-gray-500">Carga de nombre, cédula, fecha de nacimiento, teléfono y dirección.</p>
                                 </div>
-                                <div class="space-y-4">
+                                <div class="space-y-2">
                                     <p class="text-sm font-bold text-yayaNavy dark:text-white">2. Selección de Rol</p>
                                     <p class="text-xs text-gray-500">Eliges "Quiero Servicios" o "Ofrecer Talentos" para definir tu vista inicial.</p>
                                 </div>
-                                <div class="space-y-4">
+                                <div class="space-y-2">
                                     <p class="text-sm font-bold text-yayaNavy dark:text-white">3. Cumplimiento Legal</p>
-                                    <p class="text-xs text-gray-500">Aceptación obligatoria de términos y políticas para habilitar el botón de registro.</p>
+                                    <p class="text-xs text-gray-500">Aceptación obligatoria de términos y políticas para habilitar el registro.</p>
                                 </div>
-                                <div class="space-y-4">
+                                <div class="space-y-2">
                                     <p class="text-sm font-bold text-yayaNavy dark:text-white">4. Validación</p>
                                     <p class="text-xs text-gray-500">El sistema verifica la unicidad del documento y el formato del correo.</p>
                                 </div>
@@ -123,91 +116,39 @@
 
                 <!-- Clients -->
                 <section id="clients" class="scroll-mt-32">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">03. Guía para Clientes</h2>
-                    <div class="bg-white dark:bg-darkSurface p-10 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-8">
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">03. Guía para Clientes</h2>
+                    <div class="bg-white dark:bg-darkSurface p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-8">
                         <div class="space-y-4">
                             <h4 class="text-xl font-bold text-yayaNavy dark:text-white">Búsqueda y Contratación</h4>
-                            <p class="text-gray-500 text-sm leading-relaxed">
-                                Encuentra al experto ideal usando la barra de búsqueda o el selector de categorías. Dentro del detalle del servicio, pulsa <strong>"Solicitar"</strong> para definir los parámetros de tu cita (Lugar, Fecha, Hora).
+                            <p class="text-gray-500 text-sm md:text-base leading-relaxed">
+                                Encuentra al experto ideal usando la barra de búsqueda o el selector de categorías. Dentro del detalle del servicio, pulsa <strong>"Solicitar"</strong> para definir los parámetros de tu cita.
                             </p>
-                        </div>
-                        <div class="p-6 bg-blue-50 dark:bg-blue-600/5 rounded-3xl border border-blue-100 dark:border-blue-600/10">
-                            <h5 class="font-bold text-blue-600 mb-2 uppercase text-xs tracking-widest">Chat en Vivo</h5>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Coordina detalles finales con el prestador mediante el chat en tiempo real con sistema de visto y notificaciones push.</p>
                         </div>
                     </div>
                 </section>
 
                 <!-- Providers -->
                 <section id="providers" class="scroll-mt-32">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">04. Guía para Prestadores</h2>
-                    <div class="bg-white dark:bg-darkSurface p-10 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-10">
-                        <div class="grid md:grid-cols-2 gap-12">
-                            <div class="space-y-4">
-                                <h4 class="font-black text-yayaRed uppercase text-xs tracking-[0.2em]">Publicar Talento</h4>
-                                <p class="text-sm text-gray-500 leading-relaxed">Usa el botón <strong>"+"</strong> para subir tu oferta. Define un título atractivo, sube fotos reales de tu portafolio y establece un precio base competitivo.</p>
-                            </div>
-                            <div class="space-y-4">
-                                <h4 class="font-black text-yayaRed uppercase text-xs tracking-[0.2em]">Gestionar Ofertas</h4>
-                                <p class="text-sm text-gray-500 leading-relaxed">Recibe solicitudes y decide: <strong>Acepta</strong> si el trato es bueno, o envía una <strong>Contraoferta</strong> para ajustar el valor del servicio.</p>
-                            </div>
-                        </div>
-                        <div class="p-6 bg-yayaNavy text-white rounded-[2rem] shadow-xl">
-                            <p class="text-sm font-bold italic">RECUERDA: Tu servicio pasará por una auditoría de moderación antes de ser visible en el catálogo público.</p>
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">04. Guía para Prestadores</h2>
+                    <div class="bg-white dark:bg-darkSurface p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-8">
+                        <div class="space-y-4">
+                             <h4 class="text-xl font-bold text-yayaNavy dark:text-white">Publicar Talento</h4>
+                             <p class="text-gray-500 text-sm md:text-base leading-relaxed">Usa el botón <strong>"+"</strong> para subir tu oferta. Define un título atractivo, sube fotos de tu portafolio y establece un precio competitivo.</p>
                         </div>
                     </div>
                 </section>
 
-                <!-- Handshake -->
-                <section id="handshake" class="scroll-mt-32">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">05. Handshake Digital</h2>
-                    <div class="bg-yayaRed text-white p-10 rounded-[2.5rem] shadow-xl relative overflow-hidden">
-                        <div class="relative z-10 space-y-4">
-                            <h4 class="text-2xl font-black italic uppercase">Cierre de Trato Blindado</h4>
-                            <p class="text-lg opacity-90 leading-relaxed">
-                                Tras acordar el precio, el cliente debe pulsar <strong>"Confirmar y Empezar"</strong>. Solo este acto digital activa el estado <strong>In Progress</strong>, asegurando que ambas partes están bajo la protección del sistema de YÁYA.
+                <!-- Handshake Section -->
+                 <section id="handshake" class="scroll-mt-32">
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">05. Handshake Digital</h2>
+                    <div class="bg-yayaRed text-white p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                        <div class="relative z-10 space-y-4 text-center sm:text-left">
+                            <h4 class="text-xl md:text-2xl font-black italic uppercase">Cierre de Trato Blindado</h4>
+                            <p class="text-base md:text-lg opacity-90 leading-relaxed">
+                                Tras acordar el precio, el cliente debe pulsar <strong>"Confirmar y Empezar"</strong>. Solo este acto digital activa el estado <strong>In Progress</strong>, asegurando protección total.
                             </p>
                         </div>
-                        <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
-                    </div>
-                </section>
-
-                <!-- Admin -->
-                <section id="admin" class="scroll-mt-32">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">06. Panel Administrativo</h2>
-                    <div class="bg-white dark:bg-darkSurface p-10 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-8">
-                        <p class="text-gray-500 leading-relaxed">Módulo exclusivo para el equipo de <strong>BH++</strong> destinado a velar por la integridad de la red.</p>
-                        <div class="grid md:grid-cols-2 gap-8">
-                            <div class="p-6 bg-gray-50 dark:bg-white/5 rounded-3xl">
-                                <h5 class="font-bold mb-2">Auditoría</h5>
-                                <p class="text-xs text-gray-400">Aprobación o rechazo de nuevos servicios publicados.</p>
-                            </div>
-                            <div class="p-6 bg-gray-50 dark:bg-white/5 rounded-3xl">
-                                <h5 class="font-bold mb-2">Moderación</h5>
-                                <p class="text-xs text-gray-400">Gestión de reportes con el sistema de semáforo de sanciones.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- FAQ -->
-                <section id="faq" class="scroll-mt-32 pb-20">
-                    <h2 class="text-4xl font-black text-yayaNavy dark:text-white mb-8 uppercase tracking-tight">07. Preguntas Frecuentes</h2>
-                    <div class="space-y-4">
-                        <details class="group bg-white dark:bg-darkSurface p-6 rounded-3xl border border-gray-100 dark:border-white/5">
-                            <summary class="list-none flex justify-between items-center cursor-pointer font-bold text-yayaNavy dark:text-white">
-                                ¿Es seguro realizar el pago?
-                                <span class="text-yayaRed transition group-open:rotate-180">▼</span>
-                            </summary>
-                            <p class="mt-4 text-sm text-gray-500 leading-relaxed">YÁYA facilita la negociación, pero el pago se coordina directamente. Recomendamos usar el Handshake Digital para garantizar que los términos se cumplan.</p>
-                        </details>
-                        <details class="group bg-white dark:bg-darkSurface p-6 rounded-3xl border border-gray-100 dark:border-white/5">
-                            <summary class="list-none flex justify-between items-center cursor-pointer font-bold text-yayaNavy dark:text-white">
-                                ¿Cómo cambio mi rol?
-                                <span class="text-yayaRed transition group-open:rotate-180">▼</span>
-                            </summary>
-                            <p class="mt-4 text-sm text-gray-500 leading-relaxed">No es necesario cambiar. Tu cuenta es única. Si quieres ofrecer un talento, solo ve a "Mis Servicios" y publica tu primer anuncio.</p>
-                        </details>
+                        <div class="absolute -right-20 -bottom-20 w-48 md:w-64 h-48 md:h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
                     </div>
                 </section>
 
