@@ -57,7 +57,9 @@ const YayaComponents = {
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div class="flex justify-between h-20 items-center">
                             <div class="flex items-center space-x-2">
-                                <a href="index.html" class="text-2xl font-black text-yayaRed tracking-tighter italic">YÁYA</a>
+                                <a href="index.html" class="flex items-center space-x-3 group">
+                                    <img src="assets/images/logo_yaya_typographic.png" alt="YÁYA" class="h-10 w-auto group-hover:scale-105 transition-transform duration-300">
+                                </a>
                             </div>
                             <div class="hidden md:flex space-x-8">
                                 <a href="${prefix}#features" class="text-sm font-bold text-yayaNavy dark:text-gray-300 hover:text-yayaRed transition">Beneficios</a>
@@ -80,7 +82,10 @@ const YayaComponents = {
             <footer class="py-16 bg-white dark:bg-darkBg border-t border-gray-100 dark:border-white/5 transition-colors">
                 <div class="max-w-7xl mx-auto px-4">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-12">
-                        <div class="text-3xl font-black text-yayaNavy dark:text-white italic mb-6 md:mb-0">YÁYA</div>
+                        <div class="flex items-center space-x-3 mb-6 md:mb-0">
+                            <img src="assets/images/ic_logo.png" alt="YÁYA Isotipo" class="h-8 w-auto">
+                            <span class="text-2xl font-black text-yayaNavy dark:text-white italic">YÁYA</span>
+                        </div>
                         <div class="flex space-x-8 text-sm font-bold text-gray-500">
                             <a href="terminos.html" class="hover:text-yayaRed transition">Términos</a>
                             <a href="privacidad.html" class="hover:text-yayaRed transition">Privacidad</a>
