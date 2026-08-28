@@ -58,6 +58,7 @@ Todas las tablas en Supabase tienen políticas **RLS** activas:
 *   **Lenguaje:** Kotlin 2.2.10 (K2 Compiler).
 *   **UI:** Jetpack Compose (Material 3).
 *   **Backend:** Supabase (PostgreSQL + Realtime + Storage).
+*   **Observabilidad:** Firebase Crashlytics & Analytics (Telemetría de errores y métricas).
 *   **Notificaciones:** Firebase Cloud Messaging (FCM V1) via Edge Functions.
 *   **Multimedia:** Coil 3.1.0 (Async Image Loading).
 *   **Reactividad:** Kotlin Flows & Coroutines para flujos asíncronos no bloqueantes.
