@@ -63,6 +63,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Implementación de aceptación obligatoria de Términos y Condiciones y Política de Privacidad en el flujo de registro.
     - Desarrollo de un **Visor Legal Premium** con motor de renderizado Markdown-lite, aplicando jerarquía tipográfica, iconos institucionales y degradados inmersivos.
     - Acceso permanente a documentos legales desde la configuración del perfil, garantizando transparencia total con el usuario.
+- **Ecosistema de Manuales Finalizado (Presentación SENA):**
+    - Redacción exahustiva del Manual de Usuario Final, cubriendo procesos de registro, flujos de negociación y el innovador protocolo Handshake Digital.
+    - Consolidación del Manual Técnico Maestro con diagramas de arquitectura, seguridad RLS y guías de despliegue.
+    - Estructura alineada con los requisitos de entrega del programa ADSO - SENA.
 - **Cumplimiento y Seguridad:** Opción de borrado de cuenta integrado en el perfil para cumplimiento con Google Play.
 
 ### Cambiado

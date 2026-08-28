@@ -38,5 +38,9 @@ El sistema utiliza **Row Level Security (RLS)** de PostgreSQL para asegurar que 
 - **Frontend:** Implementamos validaciones en tiempo real para correos, contraseñas y campos obligatorios antes de enviar cualquier petición al servidor.
 - **Backend:** PostgreSQL aplica restricciones de integridad (Checks, Not Null, Unique) para evitar datos corruptos.
 
+## 6. Privacidad y Anonimato Admin
+- **Enmascaramiento de Moderadores:** Para prevenir represalias o contacto no deseado fuera de la plataforma, el sistema enmascara la identidad de los administradores. En el chat con usuarios, el nombre se muestra como "Equipo de Moderación" y el avatar es reemplazado por el isotipo institucional.
+- **Auditoría Multi-Admin:** Las notificaciones de auditoría se distribuyen a todos los administradores simultáneamente sin revelar qué administrador específico tomó una acción correctiva.
+
 ---
 *Seguridad diseñada por el equipo BH++*

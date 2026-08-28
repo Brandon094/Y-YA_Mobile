@@ -1,47 +1,107 @@
-# Documentación Técnica Senior - YÁYA
+# 📖 Biblia Técnica de Ingeniería y Despliegue - YÁYA
 
-## 1. Introducción
-YÁYA es una infraestructura móvil de alta gama diseñada para la intermediación de servicios locales. Este manual técnico detalla el ecosistema de componentes, patrones y estándares de ingeniería aplicados.
-
-## 2. Arquitectura de Software: Clean MVVM + Atomic Design
-El proyecto implementa una arquitectura híbrida que combina la robustez de **MVVM** con la flexibilidad de **Atomic Design**.
-
-### 2.1. Descomposición de la Interfaz (UI Stack)
-La capa de presentación reside en `ui/` y se rige por la jerarquía atómica:
-- **Átomos:** Componentes elementales de Material 3 personalizados (Buttons, TextFields, Branding).
-- **Moléculas:** Componentes reactivos como el `PriceNegotiator` y `NegotiationHistoryBox`.
-- **Organismos:** Módulos maestros como `ServiceCard`, `AdminServiceCard` y `ReportSummaryCard`.
-- **Skeletons:** Infraestructura de `Shimmer.kt` que garantiza transiciones de estado suaves (alpha 0.25).
-
-### 2.2. Capa de Negocio (ViewModel Layer)
-Los ViewModels actúan como controladores de estado puro:
-- **State Injections:** Inyección de modelos `UiState` que encapsulan la verdad de la pantalla.
-- **Formatter Engine:** Consumo centralizado de `FormatterUtils.kt` para garantizar el cumplimiento del principio DRY en la transformación de datos crudos de Supabase.
-
-## 3. Stack Tecnológico de Vanguardia
-- **Kotlin 2.2.10:** Aprovechando las últimas optimizaciones del compilador.
-- **Jetpack Compose:** Sistema declarativo para una UI elástica y accesible.
-- **Supabase Enterprise Stack:**
-    - **PostgreSQL:** Almacenamiento relacional robusto.
-    - **Realtime Engine:** Sincronización bidireccional mediante WebSockets.
-    - **Edge Functions:** Lógica server-side en TypeScript para automatización de notificaciones FCM V1.
-- **Connectivity Flow:** Sistema de monitoreo global de red basado en Kotlin Flow (`ConnectivityObserver`). Informa al usuario de desconexiones en tiempo real mediante el `YayaOfflineBanner`.
-- **Coil 3.1.0:** Motor de renderizado de imágenes asíncrono con caché inteligente.
-
-## 4. Estándares de Codificación BH++
-- **Arquitectura Stateless:** Minimización de efectos secundarios en la UI.
-- **Accessibility First:** Blindaje nativo para escalas de fuente al 200%.
-- **Handshake Logic:** Ciclo transaccional de seguridad tripartito para blindar acuerdos comerciales.
-
-## 5. Gobernanza y Seguridad
-- **Account Purge:** Proceso de borrado de cuenta integrado en el cliente para cumplimiento con normativas de privacidad (Google/Apple).
-- **RLS (Row Level Security):** Políticas de base de datos que garantizan que un usuario solo pueda editar su propia información.
-- **Admin Warning Logic:** Implementación de la función `warnUser` en `AdminViewModel` para inyectar advertencias automatizadas en la tabla `messages`, reduciendo la carga operativa del equipo de moderación.
-
-## 6. Sistema de Notificaciones y Conectividad
-- **Push Multi-Admin:** La Edge Function `notify-yaya-updates` permite el envío masivo de notificaciones a todos los administradores ante nuevos servicios por auditar.
-- **Connectivity Observer:** Implementación de `NetworkConnectivityObserver.kt` que emite estados de red mediante Flows. Integrado con `YayaOfflineBanner` para feedback preventivo.
-- **Legal Rendering Engine:** Implementación en `LegalViewerScreen.kt` de un parseador dinámico de líneas para estilizar documentos legales con jerarquía visual (Headers, Bullets, Body), mejorando la UX en secciones normativas.
+Este documento constituye la fuente de verdad técnica para la plataforma **YÁYA**. Detalla la arquitectura, el modelado de datos, los estándares de codificación y los procedimientos de despliegue para garantizar la escalabilidad y mantenibilidad del sistema por parte de **BH++ Team**.
 
 ---
-*Manual de Ingeniería de BH++ - 2026*
+
+## 1. Arquitectura de Software: Clean MVVM + Atomic Design
+
+YÁYA implementa una arquitectura robusta basada en la separación estricta de responsabilidades, permitiendo que la interfaz sea elástica y la lógica de negocio totalmente independiente.
+
+### 1.1. Capas del Sistema (Package Structure)
+```mermaid
+graph TD
+    UI[ui.screens] --> VM[ui.viewmodels]
+    VM --> Domain[data.models]
+    VM --> Supabase[data.SupabaseManager]
+    UI --> Components[ui.components.atoms/molecules/organisms]
+```
+
+*   **UI Layer (Stateless):** Funciones Composable puras que renderizan un `UiState`.
+*   **ViewModel Layer:** Controladores de estado que gestionan corrutinas y transforman datos crudos en información lista para la vista (Principio DRY).
+*   **Data Layer:** Integración directa con Supabase mediante el cliente global, gestionando Auth, Postgrest y Realtime.
+
+### 1.3. Arquitectura de Clases (MVVM Pattern)
+Para cada pantalla, se implementa el siguiente flujo de componentes:
+
+*   **UiState (Data Class):** Inmutable, representa el estado total de la pantalla.
+*   **ViewModel (ViewModel):** Única fuente de verdad. Se comunica con el `SupabaseManager` y actualiza el `UiState`.
+*   **Screen (Composable):** Recibe el `UiState` y emite eventos de usuario al ViewModel.
+*   **Components (Composables):** Átomos y moléculas desacoplados que renderizan partes específicas del `UiState`.
+
+---
+
+## 2. Modelado de Datos y Seguridad (Supabase PostgreSQL)
+
+### 2.1. Diagrama Entidad-Relación (ERD)
+YÁYA utiliza un esquema relacional optimizado para la intermediación de servicios:
+
+```mermaid
+erDiagram
+    PROFILES ||--o{ SERVICES : "publica"
+    PROFILES ||--o{ REQUESTS : "contrata"
+    SERVICES ||--o{ REQUESTS : "es solicitado"
+    REQUESTS ||--o| RATINGS : "genera"
+    PROFILES ||--o{ MESSAGES : "envía/recibe"
+```
+
+### 2.2. Seguridad a Nivel de Fila (RLS)
+Todas las tablas en Supabase tienen políticas **RLS** activas:
+*   **Lectura:** Pública para perfiles y servicios activos.
+*   **Escritura:** Restringida al `auth.uid()` del propietario (proteger identidad y finanzas).
+*   **Negociación:** Solo el cliente y el prestador vinculados a una `request_id` pueden actualizar su estado.
+
+---
+
+## 3. Stack Tecnológico y Dependencias Clave
+
+*   **Lenguaje:** Kotlin 2.2.10 (K2 Compiler).
+*   **UI:** Jetpack Compose (Material 3).
+*   **Backend:** Supabase (PostgreSQL + Realtime + Storage).
+*   **Notificaciones:** Firebase Cloud Messaging (FCM V1) via Edge Functions.
+*   **Multimedia:** Coil 3.1.0 (Async Image Loading).
+*   **Reactividad:** Kotlin Flows & Coroutines para flujos asíncronos no bloqueantes.
+
+---
+
+## 4. Guía de Entorno de Desarrollo Local
+
+### 4.1. Configuración del Repositorio
+1.  **Clonar:** `git clone https://github.com/Brandon094/Y-YA_Mobile.git`
+2.  **Android Studio:** Abrir proyecto con versión Ladybug o superior.
+3.  **Variables de Entorno:** Configurar `secrets.properties` en la raíz:
+    ```properties
+    SUPABASE_URL="https://tu-proyecto.supabase.co"
+    SUPABASE_ANON_KEY="tu-anon-key"
+    ```
+
+### 4.2. Compilación
+*   **Debug:** Ejecutar tarea `app:assembleDebug`.
+*   **Release:** Configurar el archivo `.jks` y ejecutar `app:bundleRelease`.
+
+---
+
+## 5. Motor de Notificaciones y Tiempo Real
+
+### 5.1. Flujo de Notificación Push (Edge Functions)
+YÁYA utiliza lógica Server-Side para automatizar alertas sin saturar el cliente:
+1.  Un evento (INSERT/UPDATE) en la DB dispara un **Webhook**.
+2.  La Edge Function `notify-yaya-updates` (TypeScript) procesa el evento.
+3.  Se identifica al destinatario y se envía la alerta via **FCM API V1**.
+
+### 5.2. Conectividad Resiliente
+Implementación de `ConnectivityObserver` basado en Flows que monitorea el hardware de red y notifica mediante el `YayaOfflineBanner` atómico.
+
+---
+
+## 6. Guía de Despliegue (Google Play Store)
+
+1.  **Firmado:** Generar KeyStore oficial encriptado.
+2.  **Bundle:** Generar archivo `.aab` (Android App Bundle) optimizado.
+3.  **Play Console:**
+    *   Subir App Bundle a la pista de Pruebas Internas.
+    *   Configurar ficha de tienda con los activos de la [Landing Page](../../portal_web/index.html).
+    *   Declarar políticas de privacidad vinculadas a `docs/04-legal/PRIVACY_POLICY.md`.
+
+---
+*Documento certificado por la Dirección Técnica de BH++ Team - 2026*
