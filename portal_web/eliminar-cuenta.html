@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliminar Cuenta - YÁYA</title>
+    <link rel="icon" type="image/png" href="assets/images/ic_logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="js/components.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        yayaRed: '#E85C5C',
+                        yayaNavy: '#1E2A38',
+                        darkBg: '#121212',
+                        darkSurface: '#1E1E1E',
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 font-sans transition-colors duration-300">
+
+    <div id="yaya-navbar" data-page="legal"></div>
+
+    <div class="max-w-4xl mx-auto px-6 py-32">
+        <h1 class="text-5xl font-black text-yayaNavy dark:text-white mb-6 tracking-tighter">Eliminación de Cuenta y Datos</h1>
+        <p class="text-xl text-gray-500 mb-12 leading-relaxed">En YÁYA, respetamos tu derecho a la privacidad y el control sobre tus datos personales.</p>
+
+        <div class="space-y-12">
+            <section class="bg-white dark:bg-white/5 p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm">
+                <h2 class="text-2xl font-bold text-yayaRed mb-4 uppercase tracking-widest">¿Cómo eliminar mi cuenta?</h2>
+                <p class="mb-4 leading-relaxed">Puedes solicitar la eliminación de tu cuenta de dos formas:</p>
+                <ol class="list-decimal pl-6 space-y-4 font-medium text-gray-600 dark:text-gray-400">
+                    <li><strong>Desde la Aplicación:</strong> Inicia sesión, ve a <strong>Mi Perfil</strong> > <strong>Configuración</strong> y pulsa el botón <strong>"Eliminar mi cuenta"</strong>. El proceso es instantáneo.</li>
+                    <li><strong>Vía Web:</strong> Envía un correo a <span class="text-yayaRed">soporte@yaya.app</span> con el asunto "Solicitud de Eliminación de Datos" desde el correo registrado en tu cuenta.</li>
+                </ol>
+            </section>
+
+            <section class="prose prose-lg dark:prose-invert max-w-none">
+                <h2 class="text-2xl font-bold text-yayaRed mb-4 uppercase tracking-widest">Datos que se eliminarán</h2>
+                <p>Al confirmar la eliminación, borraremos permanentemente:</p>
+                <ul class="list-disc pl-6 space-y-2 text-gray-500">
+                    <li>Tu perfil personal (Nombre, Cédula, Dirección, Foto).</li>
+                    <li>Tus servicios publicados en el catálogo.</li>
+                    <li>Tu historial de mensajes y chats.</li>
+                    <li>Tus solicitudes de servicio realizadas o recibidas.</li>
+                </ul>
+                <p class="mt-6 text-sm italic">Nota: Algunos registros transaccionales podrían conservarse por un periodo limitado solo por requisitos legales de auditoría financiera o resolución de disputas activas.</p>
+            </section>
+        </div>
+    </div>
+
+    <div id="yaya-footer"></div>
+</body>
+</html>
