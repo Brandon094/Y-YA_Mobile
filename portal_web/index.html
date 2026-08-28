@@ -6,6 +6,7 @@
     <title>YÁYA - Conecta. Confía. Contrata.</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="js/components.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -14,250 +15,125 @@
                     colors: {
                         yayaRed: '#E85C5C',
                         yayaNavy: '#1E2A38',
-                        yayaSalmon: '#F26B6B',
                         darkBg: '#121212',
                         darkSurface: '#1E1E1E',
                     },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
     </script>
     <style>
         html { scroll-behavior: smooth; }
-        .gradient-bg {
-            background: linear-gradient(135deg, #1E2A38 0%, #2c3e50 100%);
-        }
-        .dark .gradient-bg {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-        }
-        .hero-pattern {
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e85c5c' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6zM36 4V0h-2v4h-4v2h4v4h2v-4h4v-2h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
-        }
+        .gradient-bg { background: linear-gradient(135deg, #1E2A38 0%, #2c3e50 100%); }
+        .dark .gradient-bg { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
+        .hero-pattern { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e85c5c' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6zM36 4V0h-2v4h-4v2h4v4h2v-4h4v-2h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-20px); } 100% { transform: translateY(0px); } }
     </style>
-    <script>
-        // Check local storage or system preference
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
-
-        function toggleTheme() {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.theme = 'light';
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.theme = 'dark';
-            }
-        }
-    </script>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 font-sans hero-pattern transition-colors duration-300">
 
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-white/80 dark:bg-darkBg/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center space-x-2">
-                    <span class="text-2xl font-extrabold text-yayaRed tracking-tighter">YÁYA</span>
-                </div>
-                <div class="hidden md:flex space-x-8 text-sm font-semibold text-yayaNavy dark:text-gray-300">
-                    <a href="#features" class="hover:text-yayaRed transition">Beneficios</a>
-                    <a href="#how-it-works" class="hover:text-yayaRed transition">Cómo funciona</a>
-                    <a href="#community" class="hover:text-yayaRed transition">Comunidad</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <!-- Theme Toggle -->
-                    <button onclick="toggleTheme()" class="p-2 rounded-xl bg-gray-100 dark:bg-darkSurface hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
-                        <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                        <svg class="w-5 h-5 hidden dark:block text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 18v1m9-11h1M3 12h1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    </button>
-                    <a href="#" class="bg-yayaNavy dark:bg-yayaRed text-white px-5 py-2 rounded-full text-sm font-bold hover:opacity-90 transition shadow-lg shadow-yayaNavy/20">
-                        Lanzamiento 2026
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Organismo: Navbar -->
+    <div id="yaya-navbar" data-page="home"></div>
 
     <!-- Hero Section -->
-    <section class="pt-32 pb-20 px-4">
-        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
+    <header class="pt-40 pb-24 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
             <div class="lg:w-1/2 text-center lg:text-left">
-                <h1 class="text-5xl md:text-7xl font-extrabold text-yayaNavy dark:text-white mb-6 tracking-tight">
-                    La revolución de los <br> <span class="text-yayaRed italic underline decoration-yayaRed/30">servicios locales</span>
+                <h1 class="text-6xl md:text-8xl font-black text-yayaNavy dark:text-white mb-8 tracking-tighter leading-[0.9]">
+                    Confianza que <br> <span class="text-yayaRed italic">conecta.</span>
                 </h1>
-                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl lg:mx-0 mx-auto mb-10 leading-relaxed">
-                    YÁYA conecta talentos independientes con quienes necesitan soluciones rápidas, seguras y de calidad. El puente definitivo de confianza.
+                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-xl lg:mx-0 mx-auto mb-12 leading-relaxed">
+                    YÁYA es la infraestructura definitiva para el talento independiente. Una experiencia Premium diseñada para revolucionar los servicios locales.
                 </p>
-                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-                    <button class="bg-yayaRed text-white px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition shadow-xl shadow-yayaRed/30">
-                        Únete como Prestador
-                    </button>
-                    <button class="bg-white dark:bg-darkSurface border-2 border-yayaNavy dark:border-white/10 text-yayaNavy dark:text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-yayaNavy hover:text-white dark:hover:bg-white dark:hover:text-black transition">
-                        Busca un Servicio
-                    </button>
+                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-6">
+                    <script>
+                        document.write(YayaComponents.atoms.buttonPrimary("Únete como Prestador", "#"));
+                        document.write(YayaComponents.atoms.buttonSecondary("Busca un Servicio", "#"));
+                    </script>
                 </div>
             </div>
             <div class="lg:w-1/2 relative">
-                <!-- Mockup de App -->
-                <div class="w-64 h-[500px] bg-yayaNavy dark:bg-black rounded-[40px] border-[8px] border-gray-800 dark:border-white/10 mx-auto shadow-2xl relative overflow-hidden animate-float">
-                    <div class="absolute top-0 w-full h-6 bg-gray-800 dark:bg-white/5"></div>
-                    <div class="p-4 pt-10">
-                        <div class="w-full h-8 bg-yayaRed/20 rounded-lg mb-4"></div>
-                        <div class="space-y-3">
-                            <div class="w-full h-32 bg-gray-100 dark:bg-white/5 rounded-2xl"></div>
-                            <div class="w-3/4 h-4 bg-gray-100 dark:bg-white/5 rounded"></div>
+                <!-- Mockup App Pro -->
+                <div class="w-72 h-[580px] bg-yayaNavy dark:bg-black rounded-[50px] border-[12px] border-gray-900 dark:border-white/10 mx-auto shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] relative overflow-hidden animate-float">
+                    <div class="absolute top-0 w-full h-8 bg-gray-900 flex justify-center items-end pb-1">
+                        <div class="w-16 h-1 bg-white/20 rounded-full"></div>
+                    </div>
+                    <div class="p-6 pt-12">
+                        <div class="w-full h-10 bg-yayaRed/20 rounded-xl mb-6"></div>
+                        <div class="space-y-4">
+                            <div class="w-full h-40 bg-gray-100 dark:bg-white/5 rounded-3xl"></div>
+                            <div class="w-4/5 h-4 bg-gray-100 dark:bg-white/5 rounded"></div>
                             <div class="w-full h-4 bg-gray-100 dark:bg-white/5 rounded"></div>
                         </div>
                     </div>
                 </div>
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-yayaRed/5 rounded-full blur-3xl -z-10"></div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-yayaRed/10 rounded-full blur-[100px] -z-10"></div>
             </div>
         </div>
-    </section>
+    </header>
 
     <!-- Features Section -->
-    <section id="features" class="py-24 bg-white dark:bg-darkSurface transition-colors">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-16 uppercase tracking-tighter">¿Por qué elegir YÁYA?</h2>
-            <div class="grid md:grid-cols-3 gap-12 text-center">
-                <div class="p-8 rounded-3xl hover:bg-gray-50 dark:hover:bg-white/5 transition border border-transparent hover:border-gray-100 dark:hover:border-white/10 group">
-                    <div class="w-16 h-16 bg-red-50 dark:bg-yayaRed/10 text-yayaRed rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-yayaRed group-hover:text-white transition-colors duration-500">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-yayaNavy dark:text-white mb-4">Confianza Blindada</h3>
-                    <p class="text-gray-500 dark:text-gray-400">Nuestro Handshake Digital asegura que el trabajo inicie solo cuando ambas partes están de acuerdo con el precio.</p>
-                </div>
-                <div class="p-8 rounded-3xl hover:bg-gray-50 dark:hover:bg-white/5 transition border border-transparent hover:border-gray-100 dark:hover:border-white/10 group">
-                    <div class="w-16 h-16 bg-blue-50 dark:bg-blue-600/10 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-yayaNavy dark:text-white mb-4">Negociación Justa</h3>
-                    <p class="text-gray-500 dark:text-gray-400">Interfaz de subasta interactiva para acordar el precio perfecto sin fricciones innecesarias.</p>
-                </div>
-                <div class="p-8 rounded-3xl hover:bg-gray-50 dark:hover:bg-white/5 transition border border-transparent hover:border-gray-100 dark:hover:border-white/10 group">
-                    <div class="w-16 h-16 bg-indigo-50 dark:bg-indigo-600/10 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-500">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-yayaNavy dark:text-white mb-4">Atomic UI</h3>
-                    <p class="text-gray-500 dark:text-gray-400">Diseño escalable basado en Jetpack Compose que se adapta a cualquier tamaño de pantalla y fuente.</p>
-                </div>
+    <section id="features" class="py-32 bg-white dark:bg-darkSurface transition-colors">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-20">
+                <script>document.write(YayaComponents.atoms.badge("Ventajas Exclusivas"));</script>
+                <h2 class="text-4xl md:text-5xl font-black text-yayaNavy dark:text-white mt-4 uppercase tracking-tighter">Ingeniería de Confianza</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <script>
+                    document.write(YayaComponents.molecules.featureCard(
+                        `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>`,
+                        "Handshake Digital",
+                        "Nuestro protocolo único asegura que el trabajo inicie solo con un acuerdo de precio mutuo, blindando tu seguridad."
+                    ));
+                    document.write(YayaComponents.molecules.featureCard(
+                        `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`,
+                        "Subasta Interactiva",
+                        "Negocia en tiempo real con una interfaz de puja dinámica que permite encontrar el valor justo para ambas partes."
+                    ));
+                    document.write(YayaComponents.molecules.featureCard(
+                        `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>`,
+                        "Ecosistema Atómico",
+                        "Interfaz de vanguardia construida con Atomic Design para una rapidez y adaptabilidad sin precedentes en Android."
+                    ));
+                </script>
             </div>
         </div>
     </section>
 
     <!-- How it works -->
-    <section id="how-it-works" class="py-24 bg-gray-900 dark:bg-black text-white transition-colors">
+    <section id="how-it-works" class="py-32 bg-gray-950 text-white transition-colors">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-black mb-4 uppercase tracking-tighter">Cómo funciona YÁYA</h2>
-                <p class="text-gray-400">Cuatro pasos para transformar tu día.</p>
+            <div class="text-center mb-20">
+                <h2 class="text-4xl font-black mb-4 uppercase tracking-tighter">Ciclo de Vida YÁYA</h2>
+                <p class="text-gray-500">Transformando la contratación en cuatro pasos.</p>
             </div>
-            <div class="grid md:grid-cols-4 gap-8">
-                <div class="text-center">
-                    <div class="text-4xl font-black text-yayaRed mb-4">01</div>
-                    <h4 class="font-bold mb-2">Explora</h4>
-                    <p class="text-sm text-gray-500">Encuentra el talento que necesitas en nuestro catálogo inteligente.</p>
-                </div>
-                <div class="text-center">
-                    <div class="text-4xl font-black text-yayaRed mb-4">02</div>
-                    <h4 class="font-bold mb-2">Negocia</h4>
-                    <p class="text-sm text-gray-500">Habla con el prestador y llega a un acuerdo de precio justo.</p>
-                </div>
-                <div class="text-center">
-                    <div class="text-4xl font-black text-yayaRed mb-4">03</div>
-                    <h4 class="font-bold mb-2">Handshake</h4>
-                    <p class="text-sm text-gray-500">Confirma el inicio del servicio para blindar la transacción.</p>
-                </div>
-                <div class="text-center">
-                    <div class="text-4xl font-black text-yayaRed mb-4">04</div>
-                    <h4 class="font-bold mb-2">Califica</h4>
-                    <p class="text-sm text-gray-500">Evalúa la experiencia y ayuda a crecer a la comunidad.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Community Section -->
-    <section id="community" class="py-24 bg-white dark:bg-darkBg transition-colors overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center gap-16">
-            <div class="md:w-1/2">
-                <h2 class="text-4xl md:text-5xl font-black text-yayaNavy dark:text-white mb-8 tracking-tighter uppercase">Construyendo el futuro del <span class="text-yayaRed italic">trabajo independiente</span></h2>
-                <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-                    YÁYA es una iniciativa de <strong>BH++ Team</strong> para empoderar a miles de trabajadores en Colombia, brindándoles herramientas digitales de primer nivel para gestionar sus servicios con profesionalismo.
-                </p>
-                <ul class="space-y-4">
-                    <li class="flex items-center space-x-3 text-yayaNavy dark:text-white font-semibold">
-                        <svg class="w-5 h-5 text-yayaRed" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
-                        <span>Soporte para múltiples roles</span>
-                    </li>
-                    <li class="flex items-center space-x-3 text-yayaNavy dark:text-white font-semibold">
-                        <svg class="w-5 h-5 text-yayaRed" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
-                        <span>Moderación activa 24/7</span>
-                    </li>
-                    <li class="flex items-center space-x-3 text-yayaNavy dark:text-white font-semibold">
-                        <svg class="w-5 h-5 text-yayaRed" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
-                        <span>Infraestructura Supabase & Realtime</span>
-                    </li>
-                </ul>
-            </div>
-            <div class="md:w-1/2 flex justify-center">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="w-40 h-40 bg-gray-100 dark:bg-white/5 rounded-3xl"></div>
-                    <div class="w-40 h-40 bg-yayaRed rounded-3xl mt-8"></div>
-                    <div class="w-40 h-40 bg-yayaNavy rounded-3xl -mt-8"></div>
-                    <div class="w-40 h-40 bg-gray-100 dark:bg-white/5 rounded-3xl"></div>
-                </div>
+            <div class="grid md:grid-cols-4 gap-12">
+                <script>
+                    document.write(YayaComponents.molecules.stepItem("01", "Explora", "Encuentra talentos locales en nuestro catálogo inteligente."));
+                    document.write(YayaComponents.molecules.stepItem("02", "Negocia", "Ajusta el precio mediante el sistema de subasta integrada."));
+                    document.write(YayaComponents.molecules.stepItem("03", "Confirma", "Realiza el Handshake para iniciar formalmente el servicio."));
+                    document.write(YayaComponents.molecules.stepItem("04", "Califica", "Evalúa la experiencia y fortalece la confianza de la red."));
+                </script>
             </div>
         </div>
     </section>
 
     <!-- Stats Section -->
-    <section class="py-20 gradient-bg text-white overflow-hidden relative transition-all duration-500">
+    <section class="py-24 gradient-bg text-white overflow-hidden relative">
         <div class="max-w-7xl mx-auto px-4 relative z-10">
-            <div class="flex flex-col md:flex-row items-center justify-around gap-12 text-center">
-                <div>
-                    <div class="text-6xl font-black mb-2">+50</div>
-                    <div class="text-red-300 dark:text-yayaRed font-bold uppercase tracking-widest text-sm">Categorías</div>
-                </div>
-                <div>
-                    <div class="text-6xl font-black mb-2">100%</div>
-                    <div class="text-red-300 dark:text-yayaRed font-bold uppercase tracking-widest text-sm">Realtime</div>
-                </div>
-                <div>
-                    <div class="text-6xl font-black mb-2">PRO</div>
-                    <div class="text-red-300 dark:text-yayaRed font-bold uppercase tracking-widest text-sm">Moderación</div>
-                </div>
+            <div class="flex flex-col md:flex-row items-center justify-around gap-12 text-center text-sm font-black uppercase tracking-[0.2em]">
+                <div><div class="text-7xl font-black mb-2 leading-none">+50</div><div class="text-red-400 dark:text-yayaRed">Categorías</div></div>
+                <div><div class="text-7xl font-black mb-2 leading-none">REAL</div><div class="text-red-400 dark:text-yayaRed">Time Stack</div></div>
+                <div><div class="text-7xl font-black mb-2 leading-none">ADMIN</div><div class="text-red-400 dark:text-yayaRed">Moderación</div></div>
             </div>
         </div>
-        <div class="absolute top-0 right-0 w-64 h-64 bg-yayaRed/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
     </section>
 
-    <!-- Footer -->
-    <footer class="py-12 bg-white dark:bg-darkBg border-t border-gray-100 dark:border-white/5 transition-colors">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <div class="text-2xl font-black text-yayaNavy dark:text-white mb-6 italic">YÁYA</div>
-            <p class="text-gray-400 dark:text-gray-500 text-sm mb-8">© 2026 BH++ Team. Desarrollado con estándares de ingeniería Senior para el SENA.</p>
-            <div class="flex justify-center space-x-6">
-                <a href="terminos.html" class="text-gray-400 hover:text-yayaRed transition">Términos</a>
-                <a href="privacidad.html" class="text-gray-400 hover:text-yayaRed transition">Privacidad</a>
-                <a href="manuales.html" class="text-gray-400 hover:text-yayaRed transition">Documentación</a>
-            </div>
-        </div>
-    </footer>
+    <!-- Organismo: Footer -->
+    <div id="yaya-footer"></div>
 
 </body>
 </html>

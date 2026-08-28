@@ -6,6 +6,7 @@
     <title>Política de Privacidad - YÁYA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="js/components.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -14,72 +15,61 @@
                     colors: {
                         yayaRed: '#E85C5C',
                         yayaNavy: '#1E2A38',
-                    }
+                        darkBg: '#121212',
+                        darkSurface: '#1E1E1E',
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-[#121212] dark:text-gray-100 font-sans transition-colors duration-300">
-    <div class="max-w-4xl mx-auto px-6 py-12">
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 font-sans transition-colors duration-300">
+
+    <!-- Organismo: Navbar -->
+    <div id="yaya-navbar" data-page="legal"></div>
+
+    <div class="max-w-4xl mx-auto px-6 py-32">
         <a href="index.html" class="inline-flex items-center text-yayaRed font-bold mb-8 hover:underline">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Volver al inicio
         </a>
 
-        <h1 class="text-4xl font-black text-yayaNavy dark:text-white mb-4">Política de Privacidad</h1>
-        <p class="text-gray-500 mb-12">Última actualización: Agosto 2026</p>
+        <h1 class="text-5xl font-black text-yayaNavy dark:text-white mb-4 tracking-tighter">Política de Privacidad</h1>
+        <p class="text-gray-500 mb-16">Última actualización: Agosto 2026</p>
 
-        <div class="prose prose-lg dark:prose-invert max-w-none space-y-8">
-            <p>En <strong>YÁYA</strong>, operada por <strong>BH++ Team</strong>, nos tomamos muy en serio la seguridad de sus datos personales. Esta política detalla qué información recopilamos y cómo la protegemos.</p>
+        <div class="prose prose-lg dark:prose-invert max-w-none space-y-12">
+            <p class="text-xl font-medium leading-relaxed">En <strong>YÁYA</strong>, operada por <strong>BH++ Team</strong>, nos tomamos muy en serio la seguridad de sus datos personales.</p>
 
             <section>
-                <h2 class="text-2xl font-bold text-yayaRed mb-4">1. Información que Recopilamos</h2>
-                <ul class="list-disc pl-6 space-y-2">
-                    <li><strong>Identidad:</strong> Nombre completo, número de documento de identidad y fecha de nacimiento.</li>
-                    <li><strong>Contacto:</strong> Correo electrónico, número de teléfono y dirección de residencia/prestación.</li>
-                    <li><strong>Perfil:</strong> Foto de perfil (avatar) y descripciones de servicios.</li>
-                    <li><strong>Transacciones:</strong> Historial de pedidos, acuerdos de precios y calificaciones recibidas.</li>
-                    <li><strong>Comunicación:</strong> Mensajes enviados a través del chat interno de la aplicación.</li>
-                    <li><strong>Técnica:</strong> Token de notificaciones push (FCM) e identificadores únicos de dispositivo.</li>
-                </ul>
+                <h2 class="text-2xl font-bold text-yayaRed mb-6 uppercase tracking-widest">1. Información Recopilada</h2>
+                <div class="bg-white dark:bg-white/5 p-8 rounded-3xl border border-gray-100 dark:border-white/5 grid md:grid-cols-2 gap-6">
+                    <ul class="space-y-3">
+                        <li class="flex items-center font-semibold text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-400">● Identidad Real</li>
+                        <li class="flex items-center font-semibold text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-400">● Contacto Directo</li>
+                        <li class="flex items-center font-semibold text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-400">● Geo-Ubicación</li>
+                    </ul>
+                    <ul class="space-y-3">
+                        <li class="flex items-center font-semibold text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-400">● Historial Transaccional</li>
+                        <li class="flex items-center font-semibold text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-400">● Mensajería Chat</li>
+                        <li class="flex items-center font-semibold text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-400">● Token de Notificación</li>
+                    </ul>
+                </div>
             </section>
 
             <section>
-                <h2 class="text-2xl font-bold text-yayaRed mb-4">2. Uso de la Información</h2>
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>Gestionar su cuenta y perfil.</li>
-                    <li>Facilitar la conexión y negociación entre Clientes y Prestadores.</li>
-                    <li>Enviar notificaciones en tiempo real sobre el estado de sus solicitudes.</li>
-                    <li>Mantener el sistema de reputación y seguridad (moderación de reportes).</li>
-                    <li>Mejorar la experiencia de usuario y el rendimiento de la aplicación.</li>
-                </ul>
+                <h2 class="text-2xl font-bold text-yayaRed mb-6 uppercase tracking-widest">2. Uso Estratégico</h2>
+                <p class="leading-relaxed text-gray-600 dark:text-gray-400">Utilizamos sus datos exclusivamente para gestionar su cuenta, facilitar la conexión entre partes y mantener la seguridad comunitaria mediante moderación.</p>
             </section>
 
             <section>
-                <h2 class="text-2xl font-bold text-yayaRed mb-4">3. Seguridad de los Datos</h2>
-                <p>Implementamos estándares de nivel industrial: Encriptación HTTPS, <strong>Row Level Security (RLS)</strong> en Supabase y gestión de sesiones segura mediante tokens JWT.</p>
+                <h2 class="text-2xl font-bold text-yayaRed mb-6 uppercase tracking-widest">3. Seguridad Senior</h2>
+                <p class="leading-relaxed text-gray-600 dark:text-gray-400">Implementamos cifrado HTTPS, <strong>RLS</strong> en base de datos y autenticación de nivel bancario mediante tokens JWT.</p>
             </section>
-
-            <section>
-                <h2 class="text-2xl font-bold text-yayaRed mb-4">4. Terceros</h2>
-                <p>YÁYA utiliza infraestructura de <strong>Supabase</strong> (PostgreSQL, Auth, Storage) y <strong>Firebase</strong> (Notificaciones). No vendemos ni comercializamos su información personal a anunciantes externos.</p>
-            </section>
-
-            <section>
-                <h2 class="text-2xl font-bold text-yayaRed mb-4">5. Sus Derechos (ARCO)</h2>
-                <p>Usted tiene derecho a acceder, rectificar, cancelar u oponerse al procesamiento de sus datos personales directamente desde la aplicación o contactando al soporte.</p>
-            </section>
-        </div>
-
-        <div class="mt-20 pt-8 border-t border-gray-200 dark:border-white/10 text-center">
-            <p class="text-gray-400 text-sm italic">Comprometidos con la privacidad y la confianza digital.</p>
         </div>
     </div>
-    <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark')
-        }
-    </script>
+
+    <!-- Organismo: Footer -->
+    <div id="yaya-footer"></div>
 </body>
 </html>
