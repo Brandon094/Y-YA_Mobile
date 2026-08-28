@@ -10,6 +10,8 @@ import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.data.models.Report
+import com.bhplusplus.yaya.data.models.Message
+import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.launch
@@ -166,6 +168,39 @@ class AdminViewModel : ViewModel() {
                 loadAdminData()
             } catch (e: Exception) {
                 Log.e("AdminVM", "Error al eliminar cuenta: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Envía un mensaje automático de advertencia al usuario.
+     */
+    fun warnUser(userId: String, reportsCount: Int) {
+        viewModelScope.launch {
+            try {
+                val adminId = SupabaseManager.client.auth.currentUserOrNull()?.id ?: return@launch
+                val message = Message(
+                    sender_id = adminId,
+                    receiver_id = userId,
+                    content = """
+                        🚩 LLAMADO DE ATENCIÓN OFICIAL - YÁYA
+                        
+                        Has recibido $reportsCount denuncias por parte de la comunidad. 
+                        Este mensaje es una advertencia preventiva. Te invitamos a revisar tu comportamiento y cumplir con nuestras normas de convivencia.
+                        
+                        ⚠️ Ten en cuenta que si el número de reportes sigue aumentando, tu cuenta podrá ser SUSPENDIDA o ELIMINADA de forma permanente.
+                        
+                        Atentamente,
+                        Equipo de Moderación de YÁYA.
+                    """.trimIndent()
+                )
+                
+                SupabaseManager.client.postgrest["messages"].insert(message)
+                Log.i("AdminVM", "Llamado de atención enviado a $userId")
+                
+                // Opcional: Podrías marcar el reporte como 'atendido' si tuvieras esa columna
+            } catch (e: Exception) {
+                Log.e("AdminVM", "Error al enviar advertencia: ${e.message}")
             }
         }
     }

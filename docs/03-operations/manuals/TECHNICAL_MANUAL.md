@@ -36,6 +36,7 @@ Los ViewModels actúan como controladores de estado puro:
 ## 5. Gobernanza y Seguridad
 - **Account Purge:** Proceso de borrado de cuenta integrado en el cliente para cumplimiento con normativas de privacidad (Google/Apple).
 - **RLS (Row Level Security):** Políticas de base de datos que garantizan que un usuario solo pueda editar su propia información.
+- **Admin Warning Logic:** Implementación de la función `warnUser` en `AdminViewModel` para inyectar advertencias automatizadas en la tabla `messages`, reduciendo la carga operativa del equipo de moderación.
 
 ## 6. Sistema de Notificaciones y Conectividad
 - **Push Multi-Admin:** La Edge Function `notify-yaya-updates` permite el envío masivo de notificaciones a todos los administradores ante nuevos servicios por auditar.

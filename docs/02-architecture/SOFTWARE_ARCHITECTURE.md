@@ -55,5 +55,11 @@ YÁYA utiliza una infraestructura híbrida para alertas globales impulsada por *
 3.  **Lógica Multi-Destino:** La función unificada soporta el envío a múltiples administradores simultáneamente y feedback directo a usuarios sobre cambios de estado.
 4.  **FCM V1:** La entrega se realiza mediante la API HTTP v1 de Firebase, garantizando alta prioridad y entrega confiable.
 
+## 7. Moderación y Sanciones Progresivas
+El sistema administrativo implementa una lógica de protección comunitaria basada en la acumulación de reportes:
+- **Agrupamiento Atómico:** Los reportes se consolidan por infractor (`ReportedUserSummary`) para facilitar la toma de decisiones masivas.
+- **Semáforo de Severidad:** Cálculo en tiempo real del nivel de riesgo (Llamado de atención, Suspensión, Eliminación) basado en umbrales de reincidencia (3 y 5 reportes).
+- **Advertencias Automatizadas:** Los administradores pueden enviar "Llamados de Atención" pre-diseñados mediante el sistema de chat, automatizando la comunicación preventiva sin necesidad de redacción manual.
+
 ---
 *Documento Maestro de Arquitectura - BH++ Senior Engineering*

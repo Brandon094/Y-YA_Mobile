@@ -14,6 +14,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Sistema de Sanciones Progresivas:**
     - Rediseño de la gestión de reportes mediante agrupamiento por infractor (`ReportedUserSummary`).
     - Implementación de **Semáforo de Severidad**: Amarillo (1-2), Naranja (3-4) y Rojo (5+ reportes) con etiquetas dinámicas de recomendación de sanción.
+    - **Llamado de Atención Automático:** Nueva función para enviar mensajes de advertencia pre-diseñados a los infractores desde el Panel Admin, promoviendo la convivencia sin escalar a suspensiones inmediatas.
     - Nuevas acciones masivas: Suspender (desactivación inmediata de servicios del prestador) y Eliminación de cuenta directa desde el resumen de reportes.
 - **Flujo de Negociación "Handshake" (Doble Confirmación):**
     - Implementación de un ciclo de seguridad tripartito: Negociación -> Acuerdo (`accepted`) -> Confirmación de Inicio (`in_progress`) -> Finalización (`completed`).

@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -24,6 +26,7 @@ fun ReportSummaryCard(
     summary: ReportedUserSummary,
     onSuspend: (String) -> Unit,
     onDelete: (String) -> Unit,
+    onWarn: (String, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val (severityColor, actionLabel) = when {
@@ -97,6 +100,22 @@ fun ReportSummaryCard(
             }
 
             Spacer(Modifier.height(16.dp))
+
+            // Acción 1: Llamado de atención (Mensaje automático)
+            Button(
+                onClick = { onWarn(summary.profile?.id!!, summary.count) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                )
+            ) {
+                Icon(Icons.Default.Campaign, null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Enviar Llamado de Atención", fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(Modifier.height(12.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedButton(

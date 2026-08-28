@@ -42,6 +42,7 @@ fun AdminDashboardScreen(
         onRejectService = { viewModel.rejectService(it) },
         onSuspendUser = { viewModel.suspendUser(it) },
         onDeleteUser = { viewModel.deleteUserAccount(it) },
+        onWarnUser = { id, count -> viewModel.warnUser(id, count) },
         onBack = onBack,
         onLogout = onLogout
     )
@@ -58,6 +59,7 @@ fun AdminDashboardContent(
     onRejectService: (String) -> Unit,
     onSuspendUser: (String) -> Unit,
     onDeleteUser: (String) -> Unit,
+    onWarnUser: (String, Int) -> Unit,
     onBack: () -> Unit,
     onLogout: () -> Unit
 ) {
@@ -110,7 +112,8 @@ fun AdminDashboardContent(
                     2 -> ReportsList(
                         summaries = reportsSummary,
                         onSuspend = onSuspendUser,
-                        onDelete = onDeleteUser
+                        onDelete = onDeleteUser,
+                        onWarn = onWarnUser
                     )
                 }
             }
@@ -154,7 +157,8 @@ fun UsersList(profiles: List<UserProfile>) {
 fun ReportsList(
     summaries: List<ReportedUserSummary>,
     onSuspend: (String) -> Unit,
-    onDelete: (String) -> Unit
+    onDelete: (String) -> Unit,
+    onWarn: (String, Int) -> Unit
 ) {
     if (summaries.isEmpty()) {
         EmptyStateView(
@@ -165,7 +169,7 @@ fun ReportsList(
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             items(summaries) { summary ->
                 // Organismo: Tarjeta de resumen de reportes
-                ReportSummaryCard(summary, onSuspend, onDelete)
+                ReportSummaryCard(summary, onSuspend, onDelete, onWarn)
             }
         }
     }
@@ -174,9 +178,26 @@ fun ReportsList(
 @Preview(showBackground = true)
 @Composable
 fun AdminDashboardPreview() {
+    val sampleServices = listOf(
+        Service(id = "1", title = "Reparación de PC", description = "Técnico a domicilio", price = 50000.0)
+    )
+    val sampleProfiles = listOf(
+        UserProfile(id = "1", full_name = "Brandon Daza", role = "admin")
+    )
+
     MaterialTheme {
-        Box(Modifier.fillMaxSize().background(Color.White)) {
-            Text("Vista Previa Admin Dashboard")
-        }
+        AdminDashboardContent(
+            isLoading = false,
+            pendingServices = sampleServices,
+            allProfiles = sampleProfiles,
+            reportsSummary = emptyList(),
+            onApproveService = {},
+            onRejectService = {},
+            onSuspendUser = {},
+            onDeleteUser = {},
+            onWarnUser = { _, _ -> },
+            onBack = {},
+            onLogout = {}
+        )
     }
 }
