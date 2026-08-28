@@ -37,6 +37,10 @@ Toda la inteligencia del proyecto está organizada para una auditoría técnica 
 - **[Changelog Histórico (v0.1.3-alpha)](./docs/03-operations/CHANGELOG.md):** Trazabilidad total de cada mejora implementada.
 - **[Ecosistema de Agentes](./docs/agents/README.md):** Gobernanza mediante IA especializada.
 
+### 🔹 [05. Ecosistema Web & Marketing](./docs/05-web-portal/)
+- **[Arquitectura Web](./docs/05-web-portal/WEB_ARCHITECTURE.md):** Detalle del motor atómico JS y hosting Firebase.
+- **[Estrategia SEO & Conversión](./docs/05-web-portal/MARKETING_STRATEGY.md):** Cómo YÁYA domina los resultados de Google.
+
 ---
 
 ## 🛠️ Stack Tecnológico de Alto Nivel
