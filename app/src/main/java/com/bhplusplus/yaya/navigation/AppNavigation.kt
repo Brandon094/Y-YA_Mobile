@@ -1,6 +1,7 @@
 package com.bhplusplus.yaya.navigation
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.bhplusplus.yaya.ui.screens.welcome.WelcomeScreen
 import com.bhplusplus.yaya.ui.screens.home.HomeScreen
@@ -8,7 +9,7 @@ import com.bhplusplus.yaya.ui.screens.login.LoginScreen
 import com.bhplusplus.yaya.ui.screens.register.RegisterScreen
 import com.bhplusplus.yaya.ui.screens.reset.ResetPasswordScreen
 import com.bhplusplus.yaya.ui.screens.service_detail.ServiceDetailScreen
-
+import com.bhplusplus.yaya.R
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -35,6 +36,8 @@ import com.bhplusplus.yaya.ui.screens.my_services.MyServicesScreen
 import com.bhplusplus.yaya.ui.screens.admin.AdminDashboardScreen
 import com.bhplusplus.yaya.ui.screens.chat.ChatScreen
 import com.bhplusplus.yaya.ui.screens.chat.ChatListScreen
+import com.bhplusplus.yaya.ui.screens.legal.LegalViewerScreen
+import com.bhplusplus.yaya.utils.LegalConstants
 
 import android.util.Log
 
@@ -59,6 +62,8 @@ import android.util.Log
 @Serializable data class ChatRoute(val receiverId: String, val receiverName: String) 
 @Serializable data class ContratacionRoute(val serviceId: String)
 @Serializable data class ConfirmacionRoute(val serviceId: String, val requestId: String)
+@Serializable object TermsRoute
+@Serializable object PrivacyRoute
 
 /**
  * NAVEGACIÓN PRINCIPAL
@@ -107,7 +112,9 @@ fun AppNavigation(startRoute: Any) {
         composable<RegisterRoute> {
             RegisterScreen(
                 onRegister = { navController.navigate(LoginRoute) },
-                onGoToLogin = { navController.navigate(LoginRoute) }
+                onGoToLogin = { navController.navigate(LoginRoute) },
+                onViewTerms = { navController.navigate(TermsRoute) },
+                onViewPrivacy = { navController.navigate(PrivacyRoute) }
             )
         }
 
@@ -179,6 +186,8 @@ fun AppNavigation(startRoute: Any) {
                 onMyServices = { navController.navigate(MyServicesRoute) },
                 onAdminDashboard = { navController.navigate(AdminDashboardRoute) },
                 onChatList = { navController.navigate(ChatListRoute) },
+                onTerms = { navController.navigate(TermsRoute) },
+                onPrivacy = { navController.navigate(PrivacyRoute) },
                 onChangePassword = { navController.navigate(ResetRoute) },
                 onLogout = {
                     scope.launch {
@@ -188,6 +197,24 @@ fun AppNavigation(startRoute: Any) {
                         }
                     }
                 },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Términos y Condiciones
+        composable<TermsRoute> {
+            LegalViewerScreen(
+                title = stringResource(R.string.legal_terms_title),
+                content = LegalConstants.TERMS_AND_CONDITIONS,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Política de Privacidad
+        composable<PrivacyRoute> {
+            LegalViewerScreen(
+                title = stringResource(R.string.legal_privacy_title),
+                content = LegalConstants.PRIVACY_POLICY,
                 onBack = { navController.popBackStack() }
             )
         }

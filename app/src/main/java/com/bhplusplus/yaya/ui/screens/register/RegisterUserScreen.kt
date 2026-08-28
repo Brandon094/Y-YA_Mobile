@@ -45,6 +45,8 @@ import android.util.Patterns
 fun RegisterScreen(
     onRegister: () -> Unit,
     onGoToLogin: () -> Unit,
+    onViewTerms: () -> Unit,
+    onViewPrivacy: () -> Unit,
     viewModel: RegisterUserViewModel = viewModel()
 ) {
     // Administrador de foco para saltar entre campos automáticamente al usar el teclado
@@ -60,6 +62,8 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
     var selectedRole by remember { mutableStateOf("client") } // 'client' o 'provider'
     var passwordVisible by remember { mutableStateOf(false) } // Controla si se ve la clave
+    var acceptedTerms by remember { mutableStateOf(false) }
+    var acceptedPrivacy by remember { mutableStateOf(false) }
 
     // LÓGICA DE VALIDACIÓN: Se actualiza cada vez que el usuario escribe algo
     // Valida que el email tenga un formato estándar (nombre@dominio.com)
@@ -68,7 +72,8 @@ fun RegisterScreen(
     val isPasswordValid = password.length >= 6
     // El formulario es válido SOLO si todos los campos tienen contenido y cumplen sus reglas
     val isFormValid = name.isNotBlank() && documentId.isNotBlank() && birthDate.isNotBlank() && 
-                      isEmailValid && phone.isNotBlank() && address.isNotBlank() && isPasswordValid
+                      isEmailValid && phone.isNotBlank() && address.isNotBlank() && isPasswordValid &&
+                      acceptedTerms && acceptedPrivacy
 
     // ESTADOS DEL SELECTOR DE FECHA (DatePicker)
     var showDatePicker by remember { mutableStateOf(false) }
@@ -267,6 +272,25 @@ fun RegisterScreen(
             Text(stringResource(R.string.register_offer_talents))
         }
 
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // ACEPTACIÓN LEGAL
+        LegalConsentRow(
+            text = stringResource(R.string.legal_accept_terms),
+            checked = acceptedTerms,
+            onCheckedChange = { acceptedTerms = it },
+            onReadMore = onViewTerms,
+            enabled = !isLoading
+        )
+
+        LegalConsentRow(
+            text = stringResource(R.string.legal_accept_privacy),
+            checked = acceptedPrivacy,
+            onCheckedChange = { acceptedPrivacy = it },
+            onReadMore = onViewPrivacy,
+            enabled = !isLoading
+        )
+
         Spacer(modifier = Modifier.height(32.dp))
 
         // MENSAJE DE ERROR: Aparece solo si Supabase devuelve un problema
@@ -293,8 +317,42 @@ fun RegisterScreen(
     }
 }
 
+@Composable
+fun LegalConsentRow(
+    text: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    onReadMore: () -> Unit,
+    enabled: Boolean
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            enabled = enabled,
+            colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
+        )
+        Text(
+            text = text,
+            fontSize = 13.sp,
+            modifier = Modifier.weight(1f).clickable { onCheckedChange(!checked) }
+        )
+        TextButton(onClick = onReadMore, enabled = enabled) {
+            Text(
+                text = stringResource(R.string.legal_read_more),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun RegisterScreenPreview() {
-    RegisterScreen(onRegister = {}, onGoToLogin = {})
+    RegisterScreen(onRegister = {}, onGoToLogin = {}, onViewTerms = {}, onViewPrivacy = {})
 }

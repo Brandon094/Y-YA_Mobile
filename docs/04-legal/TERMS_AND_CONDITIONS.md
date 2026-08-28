@@ -1,6 +1,6 @@
 # Términos y Condiciones de Uso - YÁYA
 
-**Última actualización:** Marzo 2025
+**Última actualización:** Agosto 2026
 
 Bienvenido a **YÁYA**, una plataforma operada por **BH++ Team**. Al utilizar nuestra aplicación móvil, usted acepta cumplir con los siguientes términos y condiciones. Por favor, léalos atentamente.
 

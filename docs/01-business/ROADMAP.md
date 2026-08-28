@@ -61,9 +61,24 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 - [x] **Reportes de Comportamiento:** Implementación de tabla `public.reports` y sistema de denuncias visuales.
 - [x] **Auditoría de Servicios:** Flujo de aprobación para nuevos servicios de prestadores no verificados.
 
-## Hito 6: Finalización de Manuales y Lanzamiento
-- [ ] **Manual Técnico Completo:** Documentación de la API de Supabase y esquemas de seguridad.
-- [ ] **Refinamiento de UX de Estados:** Ajuste de paleta de colores funcional para máximo contraste.
+## Hito 6: Finalización de Manuales y Lanzamiento (Presentación SENA)
+- [x] **Consolidación Atómica:** Refactorización total de UI/UX (Atoms, Molecules, Organisms).
+- [x] **Auditoría Admin:** Sistema de moderación y sanciones progresivas funcional.
+- [x] **Manual Técnico Completo:** Documentación de arquitectura Senior y estándares de codificación.
+- [ ] **Ajuste Legal Final:** Revisión de políticas de privacidad para cumplimiento de Play Store.
+- [ ] **Carga de Datos Real:** Fase de pruebas con usuarios reales (Mauro, Harold, Brandon).
+
+## Futuro (Post-MVP & Expansión Comercial)
+### Inteligencia de Ubicación
+- [ ] **Geolocalización en Tiempo Real:** Integración de mapas para visualizar talento local por proximidad.
+- [ ] **Filtro de Radio:** Búsqueda de servicios basada en distancia (ej. 5km a la redonda).
+
+### Monetización y Pagos
+- [ ] **Pasarela de Pagos Integrada:** Escrow system (depósito en garantía) con Wompi/MercadoPago.
+- [ ] **Modelo de Suscripciones:** Planes Premium para prestadores con visibilidad destacada.
+
+### Confianza Bancaria
+- [ ] **Verificación Biométrica:** Validación de identidad mediante reconocimiento facial y OCR de documentos.
 
 ---
 *Roadmap mantenido por el equipo de ingeniería de BH++*

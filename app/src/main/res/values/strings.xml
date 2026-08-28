@@ -155,4 +155,11 @@
     <string name="incoming_requests_accept">Aceptar</string>
     <string name="incoming_requests_reject">Rechazar</string>
     <string name="incoming_requests_client_label">Cliente</string>
+
+    <!-- Legal -->
+    <string name="legal_terms_title">Términos y Condiciones</string>
+    <string name="legal_privacy_title">Política de Privacidad</string>
+    <string name="legal_accept_terms">Acepto los términos y condiciones</string>
+    <string name="legal_accept_privacy">Acepto la política de privacidad</string>
+    <string name="legal_read_more">Leer más</string>
 </resources>

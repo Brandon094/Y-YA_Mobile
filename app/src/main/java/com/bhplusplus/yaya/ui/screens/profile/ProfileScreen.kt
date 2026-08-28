@@ -41,7 +41,9 @@ fun ProfileScreen(
     onIncomingRequests: () -> Unit,
     onMyServices: () -> Unit,
     onAdminDashboard: () -> Unit,
-    onChatList: () -> Unit, // Añadido para navegación a chats
+    onChatList: () -> Unit,
+    onTerms: () -> Unit,
+    onPrivacy: () -> Unit,
     onChangePassword: () -> Unit,
     onLogout: () -> Unit,
     onBack: () -> Unit,
@@ -194,24 +196,41 @@ fun ProfileScreen(
                     ProfileSectionCard(
                         modifier = Modifier.padding(bottom = 40.dp)
                     ) {
-                        ProfileOptionItem(
-                            title = stringResource(R.string.profile_edit_option),
-                            icon = Icons.Default.Badge,
-                            onClick = onEditProfile
-                        )
-                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-                        ProfileOptionItem(
-                            title = stringResource(R.string.profile_change_password_option),
-                            icon = Icons.Default.Lock,
-                            onClick = onChangePassword
-                        )
-                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-                        ProfileOptionItem(
-                            title = "Eliminar mi cuenta",
-                            icon = Icons.Default.DeleteForever,
-                            onClick = { showDeleteDialog = true },
-                            isDestructive = true
-                        )
+                        Column {
+                            ProfileOptionItem(
+                                title = stringResource(R.string.profile_edit_option),
+                                icon = Icons.Default.Badge,
+                                onClick = onEditProfile
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                            ProfileOptionItem(
+                                title = stringResource(R.string.profile_change_password_option),
+                                icon = Icons.Default.Lock,
+                                onClick = onChangePassword
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                            
+                            // LEGAL
+                            ProfileOptionItem(
+                                title = stringResource(R.string.legal_terms_title),
+                                icon = Icons.Default.Gavel,
+                                onClick = onTerms
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                            ProfileOptionItem(
+                                title = stringResource(R.string.legal_privacy_title),
+                                icon = Icons.Default.PrivacyTip,
+                                onClick = onPrivacy
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+
+                            ProfileOptionItem(
+                                title = "Eliminar mi cuenta",
+                                icon = Icons.Default.DeleteForever,
+                                onClick = { showDeleteDialog = true },
+                                isDestructive = true
+                            )
+                        }
                     }
 
                     // Átomo: Botón Secundario (Outlined) para Salida
@@ -248,6 +267,8 @@ fun ProfileScreenPreview() {
             onMyServices = {},
             onAdminDashboard = {},
             onChatList = {},
+            onTerms = {},
+            onPrivacy = {},
             onChangePassword = {},
             onLogout = {},
             onBack = {}
