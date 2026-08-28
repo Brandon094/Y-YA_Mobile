@@ -31,19 +31,19 @@ const YayaComponents = {
     // 🧬 MOLÉCULAS: Grupos de átomos funcionales
     molecules: {
         featureCard: (icon, title, desc) => `
-            <div class="p-6 md:p-8 rounded-3xl bg-white dark:bg-white/5 transition border border-transparent hover:border-gray-100 dark:hover:border-white/10 group shadow-sm">
+            <div class="p-6 md:p-8 rounded-3xl bg-white dark:bg-white/5 transition border border-transparent hover:border-gray-100 dark:hover:border-white/10 group shadow-sm text-center">
                 <div class="w-14 h-14 md:w-16 md:h-16 bg-red-50 dark:bg-yayaRed/10 text-yayaRed rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-yayaRed group-hover:text-white transition-colors duration-500">
                     ${icon}
                 </div>
                 <h3 class="text-lg md:text-xl font-bold text-yayaNavy dark:text-white mb-4">${title}</h3>
-                <p class="text-gray-500 dark:text-gray-400 leading-relaxed text-sm">${desc}</p>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed text-sm font-medium">${desc}</p>
             </div>
         `,
         stepItem: (num, title, desc) => `
             <div class="text-center group">
                 <div class="text-3xl md:text-4xl font-black text-yayaRed mb-3 md:mb-4 group-hover:scale-110 transition duration-300">${num}</div>
-                <h4 class="font-bold mb-2 dark:text-white text-yayaNavy text-sm md:text-base">${title}</h4>
-                <p class="text-[11px] md:text-sm text-gray-500 dark:text-gray-400">${desc}</p>
+                <h3 class="font-bold mb-2 dark:text-white text-yayaNavy text-sm md:text-base">${title}</h3>
+                <p class="text-[11px] md:text-sm text-gray-600 dark:text-gray-400 font-medium">${desc}</p>
             </div>
         `
     },
@@ -58,7 +58,7 @@ const YayaComponents = {
                         <div class="flex justify-between h-16 md:h-20 items-center">
                             <div class="flex items-center space-x-2">
                                 <a href="index.html" class="flex items-center space-x-3 group">
-                                    <img src="assets/images/logo_yaya_typographic.png" alt="YÁYA" class="h-8 md:h-10 w-auto group-hover:scale-105 transition-transform duration-300">
+                                    <img src="assets/images/logo_yaya_typographic.png" alt="YÁYA" width="120" height="40" class="h-8 md:h-10 w-auto group-hover:scale-105 transition-transform duration-300">
                                 </a>
                             </div>
                             <!-- Menu desktop -->
@@ -68,15 +68,15 @@ const YayaComponents = {
                                 <a href="tecnica.html" class="text-sm font-bold text-yayaNavy dark:text-gray-300 hover:text-yayaRed transition">Arquitectura</a>
                             </div>
                             <div class="flex items-center space-x-2 md:space-x-4">
-                                <button onclick="toggleTheme()" class="p-2 md:p-2.5 rounded-xl bg-gray-100 dark:bg-darkSurface hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
-                                    <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                                    <svg class="w-5 h-5 hidden dark:block text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 18v1m9-11h1M3 12h1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                <button onclick="toggleTheme()" aria-label="Cambiar tema visual" class="p-2 md:p-2.5 rounded-xl bg-gray-100 dark:bg-darkSurface hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+                                    <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                                    <svg class="w-5 h-5 hidden dark:block text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 18v1m9-11h1M3 12h1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                                 </button>
                                 <a href="https://play.google.com/store/apps/details?id=com.bhplusplus.yaya" class="hidden sm:block bg-yayaNavy dark:bg-yayaRed text-white px-4 md:px-6 py-2 md:2.5 rounded-full text-xs md:text-sm font-extrabold hover:opacity-90 transition shadow-lg">Descargar App</a>
 
                                 <!-- Mobile Menu Toggle -->
-                                <button onclick="toggleMobileMenu()" class="lg:hidden p-2 text-yayaNavy dark:text-white">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                                <button onclick="toggleMobileMenu()" aria-label="Abrir menú de navegación" class="lg:hidden p-2 text-yayaNavy dark:text-white">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                                 </button>
                             </div>
                         </div>
@@ -95,7 +95,7 @@ const YayaComponents = {
                 <div class="max-w-7xl mx-auto px-4">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-8 md:mb-12">
                         <div class="flex items-center space-x-3 mb-6 md:mb-0">
-                            <img src="assets/images/ic_logo.png" alt="YÁYA Isotipo" class="h-6 md:h-8 w-auto">
+                            <img src="assets/images/ic_logo.png" alt="YÁYA Isotipo" width="32" height="32" class="h-6 md:h-8 w-auto">
                             <span class="text-xl md:text-3xl font-black text-yayaNavy dark:text-white italic">YÁYA</span>
                         </div>
                         <div class="flex flex-wrap justify-center gap-4 md:gap-8 text-xs md:text-sm font-bold text-gray-500">
