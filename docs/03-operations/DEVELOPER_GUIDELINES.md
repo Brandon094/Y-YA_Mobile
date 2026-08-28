@@ -27,9 +27,10 @@ Toda la interfaz de usuario debe construirse siguiendo la jerarquía atómica en
     - Usar `sizeIn` para contenedores circulares.
     - `Modifier.verticalScroll` obligatorio en formularios.
 
-## 5. Protocolo de Red & Feedback
+## 5. Protocolo de Red & Observabilidad
 - **Skeleton Ready:** Todas las pantallas de carga deben implementar un `ShimmerEffect` (Skeletons) que imite la estructura final.
 - **Handshake Flow:** El flujo de servicios debe respetar estrictamente los estados: `pending` -> `accepted` -> `in_progress` -> `completed`.
+- **Manejo de Errores Senior:** Prohibido dejar bloques `catch` vacíos. Es obligatorio usar `CrashReporter.logException(e)` para notificar errores no fatales a la consola de Firebase.
 
 ## 6. Gobernanza Git & Commits
 Usar **Conventional Commits** estrictos:

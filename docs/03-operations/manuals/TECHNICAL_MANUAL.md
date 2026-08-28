@@ -84,7 +84,12 @@ Todas las tablas en Supabase tienen políticas **RLS** activas:
 
 ## 5. Motor de Notificaciones y Tiempo Real
 
-### 5.1. Flujo de Notificación Push (Edge Functions)
+### 5.1. Observabilidad y Telemetría (Firebase)
+YÁYA utiliza un motor dual de captura de errores para garantizar un 99.9% de estabilidad:
+1.  **Crashes Fatales:** Capturados automáticamente por la SDK de Firebase Crashlytics.
+2.  **Excepciones No Fatales:** Gestionadas por `CrashReporter.kt`. Este componente permite enviar logs personalizados y trazas de error desde bloques `try-catch`, permitiendo depurar fallos en la lógica de Supabase o red sin que la App se cierre para el usuario.
+
+### 5.2. Flujo de Notificación Push (Edge Functions)
 YÁYA utiliza lógica Server-Side para automatizar alertas sin saturar el cliente:
 1.  Un evento (INSERT/UPDATE) en la DB dispara un **Webhook**.
 2.  La Edge Function `notify-yaya-updates` (TypeScript) procesa el evento.
