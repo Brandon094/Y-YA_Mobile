@@ -10,7 +10,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Versión de Lanzamiento Oficial (SENA Gold Edition):**
     - Consolidación de todo el ecosistema digital: App Android + Portal Web + Infraestructura Cloud.
     - **Security & Stability Patch:** Actualización masiva de dependencias a sus versiones estables más recientes (Patch 2026).
-    - Mitigación de vulnerabilidades reportadas por Dependabot (v0.1.3 -> v1.0.0), incluyendo parches críticos para **Netty** (DoS, SslHandler Crash, ByteBuf Leak, MadeYouReset DDoS, IPv6 Filter Bypass y Bzip2 Infinite Loop), **Apache HttpClient** (CVE-2020-13956) y **Bouncy Castle** (CVE-2024-34447).
+    - Mitigación de vulnerabilidades reportadas por Dependabot (v0.1.3 -> v1.0.0), incluyendo parches críticos para **Netty** (DoS, SslHandler Crash, ByteBuf Leak, MadeYouReset DDoS, IPv6 Filter Bypass y Bzip2 Infinite Loop), **Apache HttpClient** (CVE-2020-13956), **Bouncy Castle** (CVE-2024-34447 y algoritmos riesgosos), **Apache Commons Lang** (recursión incontrolada) y **jose4j** (DoS via JWE).
     - Soporte para **Android API 37** (Next-Gen Readiness).
 - **Evolución del Ciclo de Vida Admin:**
     - Los administradores ahora aterrizan en la pantalla de Inicio (`Home`) igual que cualquier usuario, permitiéndoles interactuar con la app (contratar, chatear, etc.).

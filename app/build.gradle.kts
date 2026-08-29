@@ -57,8 +57,17 @@ dependencies {
         implementation(libs.bouncycastle.bcprov) {
             because("Fixes CVE-2024-34447: Bouncy Castle for Java GOST 28147 CTR mode keystream reuse")
         }
+        implementation(libs.bouncycastle.bcpkix) {
+            because("Fixes Bouncy Castle Crypto Package For Java: Use of a Broken or Risky Cryptographic Algorithm")
+        }
         implementation(libs.apache.httpclient) {
             because("Fixes CVE-2020-13956: Apache HttpClient misinterprets malformed authority")
+        }
+        implementation(libs.apache.commons.lang3) {
+            because("Fixes Apache Commons Lang Uncontrolled Recursion vulnerability")
+        }
+        implementation(libs.jose4j) {
+            because("Fixes jose4j DoS via compressed JWE content")
         }
     }
 
