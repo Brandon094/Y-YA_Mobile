@@ -46,7 +46,7 @@ dependencies {
             because("Fixes Netty HTTP/2 CONTINUATION Frame Flood DoS and MadeYouReset DDoS vulnerabilities")
         }
         implementation(libs.netty.handler) {
-            because("Fixes Netty SslHandler native crash vulnerability")
+            because("Fixes Netty SslHandler native crash and IPv6 Subnet Filter Bypass vulnerabilities")
         }
         implementation(libs.netty.codec.http) {
             because("Fixes Netty SpdyHttpDecoder ByteBuf leak vulnerability")
