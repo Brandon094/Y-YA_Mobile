@@ -27,7 +27,9 @@ El sistema utiliza **Row Level Security (RLS)** de PostgreSQL para asegurar que 
     - **avatars:** Lectura pública; escritura/eliminación restringida al dueño del perfil (`auth.uid()`).
     - **portfolios:** Lectura pública; escritura/eliminación restringida al prestador dueño del servicio.
 
-## 3. Protección de API Keys
+## 3. Protección de API Keys y Secretos
+- **Mitigación de Fugas:** Los archivos sensibles como `app/google-services.json` y las llaves de producción (`.jks`) han sido removidos del rastreo de Git y añadidos al `.gitignore`.
+- **Inyección en CI/CD:** Para mantener la integridad de los flujos de calidad (CodeQL), se utilizan **GitHub Actions Secrets** (`GOOGLE_SERVICES_JSON`) que inyectan los archivos necesarios durante la compilación en la nube sin exponerlos al público.
 - **Nivel de Acceso:** Se utiliza la `anon_key` de Supabase, la cual es pública por diseño pero está limitada por las políticas de RLS mencionadas anteriormente.
 - **Entorno:** Aunque actualmente las llaves residen en el código (`SupabaseManager.kt`), la recomendación para producción es utilizar técnicas de ofuscación o inyección mediante archivos de propiedades no versionados.
 

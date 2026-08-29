@@ -18,7 +18,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
         - **Apache Commons Lang (v3.20.0):** Recursión incontrolada.
         - **jose4j (v0.9.6):** DoS via JWE.
     - Soporte para **Android API 37** (Next-Gen Readiness), **Java 17** y **Gradle 9.5**.
-    - **Infraestructura de Calidad:** Implementación de **Advanced CodeQL Analysis** mediante GitHub Actions para el monitoreo continuo de seguridad y calidad del código.
+    - **Ecosistema de Calidad y CI/CD:**
+        - Implementación de **Advanced CodeQL Analysis** mediante GitHub Actions para monitoreo continuo de seguridad y calidad.
+        - Configuración de **Secret Injections** para inyectar `google-services.json` en tiempo de ejecución, manteniendo la seguridad de las API Keys.
     - **Fix de Compilación:** Actualización de las librerías `androidx.fragment` and `androidx.activity` a versiones superiores a 1.3.0 para asegurar la compatibilidad con `registerForActivityResult`.
 - **Evolución del Ciclo de Vida Admin:**
     - Los administradores ahora aterrizan en la pantalla de Inicio (`Home`) igual que cualquier usuario, permitiéndoles interactuar con la app (contratar, chatear, etc.).
