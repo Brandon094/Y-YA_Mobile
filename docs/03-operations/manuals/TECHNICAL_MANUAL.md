@@ -106,7 +106,7 @@ Implementación de `ConnectivityObserver` basado en Flows que monitorea el hardw
 
 1.  **CodeQL Analysis:** GitHub Actions realiza escaneos automáticos de seguridad en cada Push.
 2.  **Secret Management:** Uso de GitHub Secrets para inyectar configuraciones privadas (`google-services.json`) en el entorno de build de la nube.
-3.  **App Bundle:** Generación de archivo `.aab` optimizado con firma SHA-256, incluyendo **símbolos de depuración nativos** (SYMBOL_TABLE) para facilitar el análisis de fallas en Play Console.
+3.  **App Bundle:** Generación de archivo `.aab` optimizado con firma SHA-256, incluyendo **símbolos de depuración nativos completos** (FULL) para maximizar la capacidad de análisis en Play Console.
 
 ---
 *Documento certificado por la Dirección Técnica de BH++ Team - 2026*
