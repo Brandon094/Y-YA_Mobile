@@ -51,6 +51,9 @@ dependencies {
         implementation(libs.netty.codec.http) {
             because("Fixes Netty SpdyHttpDecoder ByteBuf leak vulnerability")
         }
+        implementation(libs.netty.codec) {
+            because("Fixes Netty Bzip2Decoder Infinite Loop DoS vulnerability")
+        }
         implementation(libs.bouncycastle.bcprov) {
             because("Fixes CVE-2024-34447: Bouncy Castle for Java GOST 28147 CTR mode keystream reuse")
         }
