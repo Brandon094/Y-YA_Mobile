@@ -45,6 +45,9 @@ dependencies {
         implementation(libs.netty.codec.http2) {
             because("Fixes Netty HTTP/2 CONTINUATION Frame Flood DoS vulnerability")
         }
+        implementation(libs.netty.handler) {
+            because("Fixes Netty SslHandler native crash vulnerability")
+        }
         implementation(libs.apache.httpclient) {
             because("Fixes CVE-2020-13956: Apache HttpClient misinterprets malformed authority")
         }
