@@ -40,25 +40,31 @@ android {
 }
 
 dependencies {
-    // Force safe version of Netty to mitigate CVE-2024-29025
+    // Force safe version of dependencies to mitigate CVEs
     constraints {
         implementation(libs.netty.codec.http2) {
-            because("Fixes Netty HTTP/2 CONTINUATION Frame Flood DoS and MadeYouReset DDoS vulnerabilities")
+            because("Fixes Netty HTTP/2 DoS and MadeYouReset DDoS vulnerabilities")
         }
         implementation(libs.netty.handler) {
             because("Fixes Netty SslHandler native crash and IPv6 Subnet Filter Bypass vulnerabilities")
         }
         implementation(libs.netty.codec.http) {
-            because("Fixes Netty SpdyHttpDecoder ByteBuf leak vulnerability")
+            because("Fixes Netty SpdyHttpDecoder ByteBuf leak and Request Smuggling vulnerabilities")
         }
         implementation(libs.netty.codec) {
-            because("Fixes Netty Bzip2Decoder Infinite Loop DoS vulnerability")
+            because("Fixes Netty Bzip2Decoder Infinite Loop and Lz4FrameDecoder vulnerabilities")
+        }
+        implementation(libs.netty.common) {
+            because("Fixes Netty Windows App DoS vulnerabilities")
+        }
+        implementation(libs.netty.handler.proxy) {
+            because("Fixes Netty HTTP Header Injection via HttpProxyHandler")
         }
         implementation(libs.bouncycastle.bcprov) {
-            because("Fixes CVE-2024-34447: Bouncy Castle for Java GOST 28147 CTR mode keystream reuse")
+            because("Fixes CVE-2024-34447: Bouncy Castle GOST 28147 CTR mode and LDAP injection")
         }
         implementation(libs.bouncycastle.bcpkix) {
-            because("Fixes Bouncy Castle Crypto Package For Java: Use of a Broken or Risky Cryptographic Algorithm")
+            because("Fixes Bouncy Castle Crypto: Use of a Broken or Risky Cryptographic Algorithm")
         }
         implementation(libs.apache.httpclient) {
             because("Fixes CVE-2020-13956: Apache HttpClient misinterprets malformed authority")
@@ -68,6 +74,9 @@ dependencies {
         }
         implementation(libs.jose4j) {
             because("Fixes jose4j DoS via compressed JWE content")
+        }
+        implementation(libs.google.guava) {
+            because("Fixes Guava insecure use of temporary directory and Information Disclosure")
         }
     }
 
