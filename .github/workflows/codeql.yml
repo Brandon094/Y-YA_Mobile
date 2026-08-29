@@ -27,11 +27,11 @@ jobs:
         cache: gradle
 
     # 🚀 PASO CRÍTICO: Crea el archivo google-services.json de forma segura
-    # Esto inyecta el contenido del secreto sin corromper el formato JSON
     - name: Create Google Services JSON
-      env:
-        GOOGLE_SERVICES_DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
-      run: echo "$GOOGLE_SERVICES_DATA" > app/google-services.json
+      run: |
+        cat > app/google-services.json << 'EOF'
+        ${{ secrets.GOOGLE_SERVICES_JSON }}
+        EOF
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
