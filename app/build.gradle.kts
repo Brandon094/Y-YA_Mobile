@@ -48,6 +48,9 @@ dependencies {
         implementation(libs.netty.handler) {
             because("Fixes Netty SslHandler native crash vulnerability")
         }
+        implementation(libs.netty.codec.http) {
+            because("Fixes Netty SpdyHttpDecoder ByteBuf leak vulnerability")
+        }
         implementation(libs.bouncycastle.bcprov) {
             because("Fixes CVE-2024-34447: Bouncy Castle for Java GOST 28147 CTR mode keystream reuse")
         }
