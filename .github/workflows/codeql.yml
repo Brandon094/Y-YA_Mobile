@@ -26,9 +26,12 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    # 🚀 ESTE ES EL PASO CLAVE: Crea el archivo para que Gradle no falle
-    - name: Decode Google Services JSON
-      run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > app/google-services.json
+    # 🚀 PASO CRÍTICO: Crea el archivo google-services.json de forma segura
+    # Esto inyecta el contenido del secreto sin corromper el formato JSON
+    - name: Create Google Services JSON
+      env:
+        GOOGLE_SERVICES_DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
+      run: echo "$GOOGLE_SERVICES_DATA" > app/google-services.json
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
@@ -36,6 +39,7 @@ jobs:
         languages: 'java-kotlin'
         queries: security-extended,security-and-quality
 
+    # 🏗️ COMPILACIÓN: GitHub Actions construye la App para que CodeQL pueda analizarla
     - name: Build with Gradle
       run: ./gradlew assembleDebug --no-daemon
 
