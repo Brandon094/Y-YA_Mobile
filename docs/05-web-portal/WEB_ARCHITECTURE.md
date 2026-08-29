@@ -5,7 +5,7 @@ El Portal Web de YÁYA es una infraestructura estática de alto rendimiento dise
 ## 1. Stack Tecnológico
 *   **Lenguaje:** HTML5 / JavaScript (ES6+).
 *   **Estilos:** Tailwind CSS (via CDN para máxima velocidad de despliegue).
-*   **Arquitectura de Componentes:** Motor JS propio (`components.js`) para inyección de elementos atómicos.
+*   **Arquitectura de Componentes:** Motor JS propio (`components.js`) para inyección de elementos atómicos con soporte responsive y accesibilidad Senior.
 *   **Hosting:** Firebase Hosting (Google Cloud Infrastructure).
 
 ## 2. Metodología de Diseño: Web Atomic
