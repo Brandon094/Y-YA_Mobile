@@ -43,7 +43,7 @@ dependencies {
     // Force safe version of Netty to mitigate CVE-2024-29025
     constraints {
         implementation(libs.netty.codec.http2) {
-            because("Fixes Netty HTTP/2 CONTINUATION Frame Flood DoS vulnerability")
+            because("Fixes Netty HTTP/2 CONTINUATION Frame Flood DoS and MadeYouReset DDoS vulnerabilities")
         }
         implementation(libs.netty.handler) {
             because("Fixes Netty SslHandler native crash vulnerability")
