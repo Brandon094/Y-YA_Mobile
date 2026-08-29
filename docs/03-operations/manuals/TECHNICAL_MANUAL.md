@@ -59,6 +59,7 @@ Todas las tablas en Supabase tienen políticas **RLS** activas:
 *   **Target SDK:** Android API 37.
 *   **UI:** Jetpack Compose (Material 3).
 *   **Backend:** Supabase (PostgreSQL + Realtime + Storage).
+*   **Security Hardening:** Mitigación proactiva de vulnerabilidades (CVEs) mediante restricciones de dependencia (Netty, Bouncy Castle, HttpClient, Guava, jose4j).
 *   **Observabilidad:** Firebase Crashlytics & Analytics (Telemetría de errores y métricas). Se utiliza el wrapper `CrashReporter.kt` para centralizar los reportes.
 *   **Notificaciones:** Firebase Cloud Messaging (FCM V1) via Edge Functions.
 *   **Multimedia:** Coil 3.1.0 (Async Image Loading).

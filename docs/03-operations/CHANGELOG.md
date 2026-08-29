@@ -10,7 +10,13 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Versión de Lanzamiento Oficial (SENA Gold Edition):**
     - Consolidación de todo el ecosistema digital: App Android + Portal Web + Infraestructura Cloud.
     - **Security & Stability Patch:** Actualización masiva de dependencias a sus versiones estables más recientes (Patch 2026).
-    - Mitigación de vulnerabilidades reportadas por Dependabot (v0.1.3 -> v1.0.0), incluyendo parches críticos para **Netty** (DoS, SslHandler Crash, ByteBuf Leak, MadeYouReset DDoS, IPv6 Filter Bypass y Bzip2 Infinite Loop), **Apache HttpClient** (CVE-2020-13956), **Bouncy Castle** (CVE-2024-34447 y algoritmos riesgosos), **Apache Commons Lang** (recursión incontrolada) y **jose4j** (DoS via JWE).
+    - Mitigación masiva de vulnerabilidades reportadas por Dependabot (v0.1.3 -> v1.0.0), incluyendo parches críticos para:
+        - **Netty Stack (v4.1.138.Final):** DoS, SslHandler Crash, ByteBuf Leak, MadeYouReset DDoS, IPv6 Filter Bypass, Bzip2 Infinite Loop, Decompression Bomb, Request Smuggling, OOM en HttpPostRequestDecoder y WebSocket validation.
+        - **Apache HttpClient (v4.5.14):** CVE-2020-13956 (Authority Component misinterpretation).
+        - **Bouncy Castle (v1.85.2):** Reuso de keystream (CVE-2024-34447), algoritmos riesgosos e inyección LDAP.
+        - **Guava (v33.7.1-jre):** Uso inseguro de directorio temporal e información divulgada.
+        - **Apache Commons Lang (v3.20.0):** Recursión incontrolada.
+        - **jose4j (v0.9.6):** DoS via JWE.
     - Soporte para **Android API 37** (Next-Gen Readiness).
 - **Evolución del Ciclo de Vida Admin:**
     - Los administradores ahora aterrizan en la pantalla de Inicio (`Home`) igual que cualquier usuario, permitiéndoles interactuar con la app (contratar, chatear, etc.).
