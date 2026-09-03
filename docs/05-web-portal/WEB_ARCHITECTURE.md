@@ -29,13 +29,23 @@ Para mantener la consistencia con la App, se aplica una jerarquía de componente
 *   **Inclusión:** Cumplimiento de estándares de accesibilidad con semántica HTML5, etiquetas ARIA para navegación móvil y contraste de color optimizado para legibilidad.
 
 ## 5. Versionamiento Semántico
-El portal web sigue el versionamiento unificado del proyecto YÁYA (**v1.1.0 - versionCode 5**), asegurando que la documentación y la cara pública correspondan siempre a la última versión estable del binario móvil.
+El portal web sigue el versionamiento unificado del proyecto YÁYA (**v1.1.0 - versionCode 5**), asegurando que la documentación y la cara pública correspondan siempre a la última versión estable del binario móvil. El despliegue de la versión v1.1.0 consolida el Portal Web y el Portal de Manuales en producción.
 
-## 6. Pipeline de Despliegue
-El despliegue está automatizado mediante la Firebase CLI:
-1.  **Directorio Raíz:** `portal_web/`
-2.  **Comando:** `firebase deploy --only hosting`
-3.  **Dominio:** [https://y-ya-d5929.web.app](https://y-ya-d5929.web.app)
+## 6. Pipeline de Despliegue y Configuración de Hosting
+El despliegue está automatizado mediante la Firebase CLI sobre la infraestructura de Firebase Hosting (Google Cloud Infrastructure).
+
+### Configuración de Firebase (`firebase.json`)
+Para garantizar el soporte correcto de una arquitectura **multi-página estática** sin interferencias de enrutamiento Single Page Application (SPA), la configuración de `firebase.json` omite las reglas de rewrites de SPA y habilita la resolución de URLs limpias:
+*   **Directorio Público (`public`):** `"portal_web"`
+*   **URLs Limpias (`cleanUrls`):** `true` (permite servir `/manuales` directamente a partir de `portal_web/manuales.html` omitiendo la extensión `.html` en las URLs de producción).
+*   **Barras Finales (`trailingSlash`):** `false`
+*   **Archivos Ignorados (`ignore`):** `["firebase.json", "**/.*", "**/node_modules/**"]`
+
+### Confirmación de Despliegue en Producción
+*   **Comando de Despliegue:** `firebase deploy --only hosting`
+*   **Volumen de Publicación:** 13 archivos estáticos desplegados exitosamente.
+*   **Dominio Principal:** [https://y-ya-d5929.web.app](https://y-ya-d5929.web.app)
+*   **Portal Web de Manuales:** [https://y-ya-d5929.web.app/manuales](https://y-ya-d5929.web.app/manuales)
 
 ---
 *Documentación Web por BH++ Team - 2026*

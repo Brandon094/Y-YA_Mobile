@@ -51,6 +51,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Implementación del selector interactivo de pestañas por rol (`switchRoleTab`) en JavaScript para consultar de forma segregada los manuales de Cliente, Prestador y Administrador.
     - Incorporación de matrices atómicas de permisos con bloques visuales destacados en verde ("LO QUE PUEDE HACER EL USUARIO") y rojo ("LO QUE NO PUEDE HACER EL USUARIO") para los tres roles del sistema.
     - Adopción de estilo formal técnico sin emojis, con soporte de Tema Dual (Modo Claro / Modo Oscuro) e Interfaz Elástica Responsive, plenamente sincronizada con la versión v1.1.0 de la App (cobertura por municipio, jornada maestra, detección inteligente de traslapes horarios, reputación de talentos y semáforo de moderación disciplinario).
+- **Optimización de Firebase Hosting (`firebase.json`) y Despliegue en Producción del Portal Web (v1.1.0):**
+    - Configuración de `cleanUrls: true` con `public: "portal_web"` en `firebase.json` sin rewrites de SPA, garantizando soporte nativo para arquitectura multi-página estática y URLs limpias (acceso directo a `/manuales` a partir de `portal_web/manuales.html`).
+    - Confirmación del despliegue en producción de 13 archivos estáticos en la infraestructura de Firebase Hosting (Google Cloud Infrastructure).
+    - Despliegue verificado en producción en el Dominio Principal ([https://y-ya-d5929.web.app](https://y-ya-d5929.web.app)) y en el Portal Web de Manuales ([https://y-ya-d5929.web.app/manuales](https://y-ya-d5929.web.app/manuales)).
 
 ### Cambiado
 - **Rediseño del Selector de Rol (`RegisterUserScreen`):**

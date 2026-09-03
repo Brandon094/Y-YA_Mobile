@@ -104,6 +104,12 @@ En esta intervención, el Orquestador Maestro dirigió la implementación del mo
     - **Matriz Atómica de Permisos:** Diseño e integración de bloques destacados con Tailwind CSS que desglosan de forma explícita *"LO QUE PUEDE HACER EL USUARIO"* (verde `emerald`) y *"LO QUE NO PUEDE HACER EL USUARIO"* (rojo `rose`) para los tres roles.
     - **Estandarización Formal Sin Emojis:** Redacción técnica formal ajustada al estándar legal Markdown sin emojis, con soporte completo para Tema Dual (Modo Claro / Modo Oscuro) e Interfaz Elástica Responsive.
     - **Sincronización con Manuales v1.1.0 de la App:** Alineación total con los manuales de la aplicación (`ManualConstants.kt`), cubriendo la cobertura por municipios del Huila, la jornada maestra, la detección inteligente de traslapes horarios, la reputación de talentos y el semáforo de moderación disciplinario.
+17. **Optimización de Configuración Firebase Hosting (`firebase.json`) y Despliegue en Producción del Portal Web v1.1.0:**
+    - **Configuración de URLs Limpias sin SPA Rewrites:** Parametrización de `firebase.json` con `cleanUrls: true`, `public: "portal_web"` y `trailingSlash: false`, eliminando reescrituras SPA para soportar la arquitectura multi-página estática de forma nativa. Esto habilita el acceso directo y profesional a la ruta `/manuales` mapeada desde `portal_web/manuales.html`.
+    - **Despliegue Exitoso en Producción:** Publicación de 13 archivos estáticos en la infraestructura de Firebase Hosting (Google Cloud Infrastructure).
+    - **Confirmación de URLs en Producción:**
+      - Dominio Principal: [https://y-ya-d5929.web.app](https://y-ya-d5929.web.app)
+      - Portal Web de Manuales: [https://y-ya-d5929.web.app/manuales](https://y-ya-d5929.web.app/manuales)
 
 ### 🔹 Sesión Septiembre 2026 (Estabilidad, Cumplimiento Play Store y CI/CD)
 En esta intervención, el Orquestador Maestro dirigió un plan de optimización enfocado en la estabilidad de la interfaz, el cumplimiento regulatorio de Google Play y el fortalecimiento de la infraestructura de calidad:
