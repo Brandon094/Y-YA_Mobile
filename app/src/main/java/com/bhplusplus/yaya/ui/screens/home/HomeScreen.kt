@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
@@ -11,7 +12,10 @@ import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,6 +52,56 @@ fun HomeScreen(
     val userName = remember(viewModel.userProfile?.full_name) {
         viewModel.userProfile?.full_name?.substringBefore(" ") ?: ""
     }
+
+    var showMunicipalityDialog by remember { mutableStateOf(false) }
+    val municipalities = remember { listOf("La Plata", "Nátaga", "Paicol", "Tesalia", "Garzón", "Neiva", "Pitalito", "Gigante", "Todos") }
+
+    if (showMunicipalityDialog) {
+        AlertDialog(
+            onDismissRequest = { showMunicipalityDialog = false },
+            title = { Text("Selecciona tu Municipio", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    municipalities.forEach { muni ->
+                        val isSelected = viewModel.selectedMunicipality.equals(muni, ignoreCase = true) ||
+                                (muni == "Todos" && (viewModel.selectedMunicipality == null || viewModel.selectedMunicipality == "Todos"))
+                        Surface(
+                            onClick = {
+                                viewModel.onMunicipalitySelect(if (muni == "Todos") "Todos" else muni)
+                                showMunicipalityDialog = false
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface,
+                            border = if (isSelected) androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary) else null,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.LocationOn,
+                                    contentDescription = null,
+                                    tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    text = if (muni == "Todos") "Todos los municipios" else muni,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showMunicipalityDialog = false }) {
+                    Text("Cerrar")
+                }
+            }
+        )
+    }
     
     Scaffold(
         topBar = {
@@ -57,6 +111,8 @@ fun HomeScreen(
                 avatarUrl = viewModel.userProfile?.avatar_url,
                 unreadMessagesCount = viewModel.unreadMessagesCount,
                 notificationCount = viewModel.notificationCount,
+                selectedMunicipality = viewModel.selectedMunicipality,
+                onMunicipalityClick = { showMunicipalityDialog = true },
                 onProfileClick = onProfileClick,
                 onChatListClick = onChatListClick,
                 onNotificationsClick = {

@@ -39,6 +39,7 @@ class RegisterUserViewModel : ViewModel() {
         documentId: String,
         birthDate: String,
         role: String,
+        municipality: String = "La Plata",
         onResult: (Boolean) -> Unit
     ) {
         // Validaciones rigurosas con ValidationUtils (DRY)
@@ -122,6 +123,7 @@ class RegisterUserViewModel : ViewModel() {
                             document_id = documentId,
                             birth_date = birthDate,
                             address = address,
+                            municipality = municipality,
                             role = role
                         )
 

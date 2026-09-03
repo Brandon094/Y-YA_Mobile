@@ -25,6 +25,7 @@ class EditProfileViewModel : ViewModel() {
     var documentId by mutableStateOf("")
     var birthDate by mutableStateOf("")
     var address by mutableStateOf("")
+    var municipality by mutableStateOf("La Plata")
     var avatarUrl by mutableStateOf<String?>(null)
 
     var isLoading by mutableStateOf(false)
@@ -52,6 +53,7 @@ class EditProfileViewModel : ViewModel() {
                     documentId = profile.document_id ?: ""
                     birthDate = profile.birth_date ?: ""
                     address = profile.address ?: ""
+                    municipality = profile.municipality ?: "La Plata"
                     avatarUrl = profile.avatar_url
                 }
             } catch (e: Exception) {
@@ -123,6 +125,7 @@ class EditProfileViewModel : ViewModel() {
                             set("document_id", documentId)
                             set("birth_date", if(birthDate.isBlank()) null else birthDate)
                             set("address", address)
+                            set("municipality", municipality)
                             set("avatar_url", avatarUrl)
                         }
                     ) {

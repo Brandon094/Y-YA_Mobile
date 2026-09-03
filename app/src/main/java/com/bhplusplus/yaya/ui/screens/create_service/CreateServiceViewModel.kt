@@ -87,6 +87,7 @@ class CreateServiceViewModel : ViewModel() {
         endTime: String,
         materialsIncluded: Boolean,
         extraCost: String,
+        municipality: String = "La Plata",
         onResult: (Boolean) -> Unit
     ) {
         if (title.isBlank() || description.isBlank() || price.isBlank() || categoryId == null || workingDays.isEmpty()) {
@@ -119,7 +120,7 @@ class CreateServiceViewModel : ViewModel() {
                     end_time = endTime,
                     materials_included = materialsIncluded,
                     extra_cost = extraCostVal,
-                    // Hito 5: Requiere aprobación del admin
+                    municipality = municipality
                 )
 
                 val finalServiceId: String
@@ -147,6 +148,7 @@ class CreateServiceViewModel : ViewModel() {
                             set("end_time", endTime)
                             set("materials_included", materialsIncluded)
                             set("extra_cost", extraCostVal)
+                            set("municipality", municipality)
                         }
                     ) {
                         filter { eq("id", serviceId) }

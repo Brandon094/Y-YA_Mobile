@@ -60,6 +60,7 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
+    var municipality by remember { mutableStateOf("La Plata") }
     var password by remember { mutableStateOf("") }
     var selectedRole by remember { mutableStateOf("client") } // 'client' o 'provider'
     var passwordVisible by remember { mutableStateOf(false) } // Controla si se ve la clave
@@ -97,7 +98,7 @@ fun RegisterScreen(
     // FUNCIÓN DE REGISTRO: Solo se ejecuta si el formulario es válido
     val performRegister = {
         if (isFormValid) {
-            viewModel.register(name, email, password, phone, address, documentId, birthDate, selectedRole) { success ->
+            viewModel.register(name, email, password, phone, address, documentId, birthDate, selectedRole, municipality) { success ->
                 if (success) onRegister() // Si fue exitoso, navegamos fuera de la pantalla
             }
         }
@@ -234,6 +235,19 @@ fun RegisterScreen(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             leadingIcon = { Icon(Icons.Default.Home, contentDescription = null) }
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // CAMPO: MUNICIPIO / CIUDAD
+        YayaTextField(
+            value = municipality,
+            onValueChange = { municipality = it },
+            label = "Municipio / Ciudad",
+            enabled = !isLoading,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+            leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) }
         )
 
         Spacer(modifier = Modifier.height(12.dp))

@@ -5,6 +5,20 @@ Todas las modificaciones notables en este proyecto serán documentadas en este a
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-09-03
+### Añadido
+- **Estrategia de Filtrado Geográfico por Municipio/Zona:**
+    - Incorporación del campo opcional `municipality: String?` ("La Plata" por defecto) en los modelos de datos de dominio `UserProfile` y `Service`.
+    - Integración de Chip de Selección de Municipio interactivo en `HomeTopBar` e interfaz modal de diálogo de filtro por ubicación en `HomeScreen`.
+    - Lógica de filtrado dinámico en `HomeViewModel.applyFilters()` permitiendo segmentar el catálogo de servicios según la ubicación activa del usuario (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante, Todos).
+    - Captura y actualización del Municipio de Atención en los formularios de `RegisterUserScreen`, `EditProfileScreen` y `CreateServiceScreen`.
+- **Migración de Base de Datos Supabase (DDL):**
+    - Definición de scripts SQL para adicionar la columna `municipality` a las tablas `public.profiles` y `public.services` con valor predeterminado `'La Plata'`.
+
+### Cambiado
+- **Incremento de Versión de Producción:**
+    - Actualización de versión a `versionCode 7` (`versionName "1.0.2"`) en `app/build.gradle.kts`.
+
 ## [1.0.1] - 2026-09-02
 ### Corregido
 - **Deserialización Segura de Datos Supabase (KotlinX Serialization):**

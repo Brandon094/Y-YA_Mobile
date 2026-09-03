@@ -63,6 +63,13 @@ class HomeViewModel : ViewModel() {
     // Estado del filtro actual
     var searchQuery by mutableStateOf("")
     var selectedCategoryId by mutableStateOf<String?>(null)
+    var selectedMunicipality by mutableStateOf<String?>("La Plata")
+        private set
+
+    fun onMunicipalitySelect(municipality: String?) {
+        selectedMunicipality = municipality
+        applyFilters()
+    }
 
     var userRole by mutableStateOf<String?>(null)
     var userProfile by mutableStateOf<UserProfile?>(null)
@@ -127,6 +134,9 @@ class HomeViewModel : ViewModel() {
                             .decodeSingle<UserProfile>()
                         userRole = profile.role
                         userProfile = profile
+                        if (!profile.municipality.isNullOrBlank()) {
+                            selectedMunicipality = profile.municipality
+                        }
                         
                         // Contar notificaciones según el rol (Hito 4)
                         fetchNotificationCount(user.id, profile.role)
@@ -351,7 +361,12 @@ class HomeViewModel : ViewModel() {
             
             val matchesCategory = selectedCategoryId == null || service.category_id == selectedCategoryId
             
-            matchesSearch && matchesCategory
+            val serviceMuni = service.municipality ?: service.provider?.municipality ?: "La Plata"
+            val matchesMunicipality = selectedMunicipality.isNullOrEmpty() ||
+                                      selectedMunicipality.equals("Todos", ignoreCase = true) ||
+                                      serviceMuni.equals(selectedMunicipality, ignoreCase = true)
+
+            matchesSearch && matchesCategory && matchesMunicipality
         }
 
         filteredServices = filtered.map { service ->

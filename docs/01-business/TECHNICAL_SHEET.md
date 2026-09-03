@@ -2,7 +2,7 @@
 
 ## Información General
 - **Nombre del Proyecto:** YÁYA
-- **Versión Actual:** 1.0.1 (versionCode 6 - Play Store Ready)
+- **Versión Actual:** 1.0.2 (versionCode 7 - Play Store Ready)
 - **Desarrollador:** BH++
 - **Estado:** Producción / Play Store Ready
 - **Plataforma:** Android
@@ -15,13 +15,14 @@
 - **Autenticación:** Supabase Auth
 - **Notificaciones:** Firebase Cloud Messaging (FCM V1)
 
-## Funcionalidades Clave (v1.0.1)
+## Funcionalidades Clave (v1.0.2)
 1. **Cuenta Universal (No Doble Fricción):** Un mismo usuario puede actuar como Cliente y Prestador.
 2. **Chat en Tiempo Real:** Comunicación instantánea bidireccional vía Supabase Realtime.
 3. **Sistema de Reputación:** Calificaciones y reseñas dinámicas post-servicio.
 4. **Notificaciones Push:** Alertas automáticas para nuevas solicitudes y mensajes.
 5. **Dashboard Administrativo:** Panel de control para moderación de servicios y usuarios con sanciones progresivas.
 6. **Catálogo y Negociación:** Exploración de talentos y flujo de contraofertas ("Handshake" digital).
+7. **Filtrado Geográfico por Municipio:** Segmentación dinámica de servicios por ubicación/zona (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante, Todos).
 
 ## Entorno de Desarrollo y CI/CD
 - **IDE:** Android Studio Ladybug | 2024.2.1+

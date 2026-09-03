@@ -71,6 +71,7 @@ fun CreateServiceScreen(
     var endTime by remember { mutableStateOf("18:00") }
     var materialsIncluded by remember { mutableStateOf(false) }
     var extraCost by remember { mutableStateOf("0") }
+    var municipality by remember { mutableStateOf("La Plata") }
     
     var selectedCategoryId by remember { mutableStateOf<String?>(null) }
     var selectedCategoryName by remember { mutableStateOf("Selecciona una categoría") }
@@ -119,6 +120,7 @@ fun CreateServiceScreen(
                 endTime = service.end_time.substring(0, 5)
                 materialsIncluded = service.materials_included
                 extraCost = service.extra_cost.toString()
+                municipality = service.municipality ?: "La Plata"
                 selectedCategoryId = service.category_id
                 
                 // Buscamos el nombre de la categoría
@@ -208,6 +210,26 @@ fun CreateServiceScreen(
                         }
                     }
                 }
+            }
+
+            // MUNICIPIO DE ATENCIÓN
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "MUNICIPIO DE ATENCIÓN",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = municipality,
+                    onValueChange = { municipality = it },
+                    placeholder = { Text("Ej: La Plata, Nátaga, Neiva...") },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading,
+                    shape = RoundedCornerShape(12.dp),
+                    leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) }
+                )
             }
 
             // TÍTULO
@@ -456,7 +478,20 @@ fun CreateServiceScreen(
 
             Button(
                 onClick = {
-                    viewModel.saveService(serviceId, title, description, price, selectedCategoryId, estimatedTime, selectedDays.toList().sorted(), startTime, endTime, materialsIncluded, extraCost) { success ->
+                    viewModel.saveService(
+                        serviceId = serviceId,
+                        title = title,
+                        description = description,
+                        price = price,
+                        categoryId = selectedCategoryId,
+                        estimatedTime = estimatedTime,
+                        workingDays = selectedDays.toList().sorted(),
+                        startTime = startTime,
+                        endTime = endTime,
+                        materialsIncluded = materialsIncluded,
+                        extraCost = extraCost,
+                        municipality = municipality
+                    ) { success ->
                         if (success) {
                             if (serviceId == null) {
                                 // Si es nuevo, mostramos el aviso de moderación
@@ -470,7 +505,7 @@ fun CreateServiceScreen(
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(16.dp),
-                enabled = !isLoading && title.isNotBlank() && selectedCategoryId != null
+                enabled = !isLoading && title.isNotBlank() && selectedCategoryId != null && municipality.isNotBlank()
             ) {
                 if (isLoading) CircularProgressIndicator(color = Color.White)
                 else Text(

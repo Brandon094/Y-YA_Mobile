@@ -3,10 +3,12 @@ package com.bhplusplus.yaya.ui.components.organisms
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -24,6 +26,8 @@ fun HomeTopBar(
     avatarUrl: String?,
     unreadMessagesCount: Int,
     notificationCount: Int,
+    selectedMunicipality: String? = "La Plata",
+    onMunicipalityClick: (() -> Unit)? = null,
     onProfileClick: () -> Unit,
     onChatListClick: () -> Unit,
     onNotificationsClick: () -> Unit,
@@ -33,12 +37,45 @@ fun HomeTopBar(
         modifier = modifier,
         title = {
             Column {
-                Text(
-                    text = stringResource(R.string.app_brand_yaya),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.app_brand_yaya),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    if (onMunicipalityClick != null) {
+                        Surface(
+                            onClick = onMunicipalityClick,
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.LocationOn,
+                                    contentDescription = "Municipio",
+                                    modifier = Modifier.size(14.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = selectedMunicipality ?: "Todos",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+                }
                 if (userName.isNotEmpty()) {
                     Text(
                         text = stringResource(R.string.home_welcome_back, userName),

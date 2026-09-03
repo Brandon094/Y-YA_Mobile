@@ -39,6 +39,13 @@ El componente `ValidationUtils` centraliza las reglas de negocio para la captura
 *   **Fecha de Nacimiento:** Bloqueo en la UI de días futuros en el calendario (`SelectableDates`) y validación de fecha cronológica no futura (`isValidBirthDate`).
 *   **Agendamiento de Citas:** Dirección de atención válida (mín. 5 caracteres), restricción UI de calendario a días presentes o futuros (`SelectableDates`), verificación de fecha no pasada (`isValidFutureDate`) y validación de hora no transcurrida para el día actual (`isValidScheduleTime`).
 
+### 1.5. Arquitectura de Filtrado Geográfico por Municipio/Zona
+YÁYA implementa una estrategia de filtrado multizona para segmentar la oferta de servicios según la ubicación geográfica del usuario y la cobertura del prestador:
+*   **Modelos de Datos:** La propiedad opcional `municipality: String?` ("La Plata" por defecto) se integra en los modelos de dominio `UserProfile` y `Service`.
+*   **Controles UI:** El componente `HomeTopBar` expone un chip interactivo de selección de municipio y `HomeScreen` despliega un diálogo modal de filtrado por zona.
+*   **Lógica en ViewModel:** `HomeViewModel.applyFilters()` filtra dinámicamente el catálogo reactivo permitiendo seleccionar municipios específicos (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante) o la opción global "Todos".
+*   **Captura de Datos:** Los formularios de `RegisterUserScreen`, `EditProfileScreen` y `CreateServiceScreen` integran controles para seleccionar y actualizar el municipio de atención y cobertura.
+
 ---
 
 ## 2. Modelado de Datos y Seguridad (Supabase PostgreSQL)
@@ -64,12 +71,24 @@ Todas las tablas en Supabase tienen políticas **RLS** activas:
 ### 2.3. Resiliencia en Serialización (KotlinX Serialization)
 Los modelos de datos (`ServiceRequest`, `UserProfile`, `Message`, `Rating`, etc.) implementan valores por defecto defensivos para todas sus propiedades. Esto garantiza que las respuestas JSON provenientes de consultas con proyecciones relacionales parciales (ej: `Columns.raw("id, services!inner(provider_id)")`) se deserialicen de manera segura sin lanzar excepciones `MissingFieldException`.
 
+### 2.4. Migración de Esquema (DDL Supabase PostgreSQL)
+Para soportar el filtrado geográfico por municipio, la base de datos de Supabase integra la adición de la columna `municipality` en las tablas `public.profiles` y `public.services`:
+
+```sql
+-- Migración para agregar la columna municipality a las tablas public.profiles y public.services
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';
+
+ALTER TABLE public.services 
+ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';
+```
+
 ---
 
 ## 3. Stack Tecnológico y Dependencias Clave
 
 *   **Lenguaje:** Kotlin 2.4.10 (K2 Compiler, JVM Target 17).
-*   **Target SDK:** Android API 37 (minSdk 26, versionCode 6, versionName "1.0.1").
+*   **Target SDK:** Android API 37 (minSdk 26, versionCode 7, versionName "1.0.2").
 *   **UI:** Jetpack Compose (Material 3) con soporte para arquitectura atómica y componentes de desplazamiento optimizados.
 *   **Backend:** Supabase (PostgreSQL + Realtime + Storage).
 *   **Permisos y Cumplimiento Google Play:** Declaración de `com.google.android.gms.permission.AD_ID` para servicios de analítica e identificador de anuncios en Google Play.
@@ -94,7 +113,7 @@ Los modelos de datos (`ServiceRequest`, `UserProfile`, `Message`, `Rating`, etc.
 
 ### 4.2. Compilación
 *   **Debug:** Ejecutar tarea `app:assembleDebug`.
-*   **Release:** Configurar el archivo `.jks` y ejecutar `app:bundleRelease` (genera el archivo `.aab` para Google Play con `versionCode = 6` y símbolos de depuración nativos NDK en nivel `FULL`).
+*   **Release:** Configurar el archivo `.jks` y ejecutar `app:bundleRelease` (genera el archivo `.aab` para Google Play con `versionCode = 7` y símbolos de depuración nativos NDK en nivel `FULL`).
 
 ---
 
@@ -123,7 +142,7 @@ Para evitar excepciones en runtime como `IllegalStateException` durante la fase 
 
 1.  **Advanced CodeQL Analysis:** GitHub Actions (`.github/workflows/codeql.yml`) ejecuta análisis estático de código enfocado en Java 17 y Kotlin (`java-kotlin`), evaluando reglas de seguridad extendida (`security-extended,security-and-quality`).
 2.  **Secret Management:** Inyección automatizada de `google-services.json` durante el pipeline de integración continua utilizando secretos de GitHub y sintaxis heredoc.
-3.  **App Bundle & Depuración Nativa:** Generación del binario `.aab` con firma de producción SHA-256, `versionCode = 6` y la directiva `ndk { debugSymbolLevel = 'FULL' }` en `app/build.gradle.kts` para análisis nativo completo en Play Console.
+3.  **App Bundle & Depuración Nativa:** Generación del binario `.aab` con firma de producción SHA-256, `versionCode = 7` y la directiva `ndk { debugSymbolLevel = 'FULL' }` en `app/build.gradle.kts` para análisis nativo completo en Play Console.
 
 ---
 *Documento certificado por la Dirección Técnica de BH++ Team - 2026*

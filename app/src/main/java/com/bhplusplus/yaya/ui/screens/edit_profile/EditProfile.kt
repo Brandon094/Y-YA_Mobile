@@ -174,6 +174,15 @@ fun EditProfileScreen(
                 leadingIcon = { Icon(Icons.Default.Home, null) }
             )
 
+            // Átomo: Municipio
+            YayaTextField(
+                value = viewModel.municipality,
+                onValueChange = { viewModel.municipality = it },
+                label = "Municipio / Ciudad",
+                enabled = !viewModel.isLoading,
+                leadingIcon = { Icon(Icons.Default.LocationOn, null) }
+            )
+
             // Átomo: Fecha Nacimiento (Input no editable)
             YayaTextField(
                 value = viewModel.birthDate,

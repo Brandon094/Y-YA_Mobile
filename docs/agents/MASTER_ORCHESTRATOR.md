@@ -26,6 +26,19 @@ Este agente actúa como el "Cerebro Central" del ecosistema BH++. Su función es
 ---
 ## 🚀 Bitácora de Logros Recientes
 
+### 🔹 Sesión Septiembre 2026 - v1.0.2 (Filtrado Geográfico por Municipio e Incremento de Versión)
+En esta intervención, el Orquestador Maestro dirigió la implementación de la estrategia de segmentación geográfica por municipios y la preparación del release v1.0.2 (versionCode 7):
+
+1. **Estrategia de Filtrado Geográfico por Municipio/Zona:**
+   - Evolución de los modelos de dominio `UserProfile` y `Service` incorporando la propiedad opcional `municipality: String?` (con valor por defecto "La Plata").
+   - Integración de controles UI para selección de ubicación: Chip de ubicación activa en `HomeTopBar` y diálogo modal interactivo de filtro de municipio en `HomeScreen`.
+   - Lógica de filtrado dinámico en `HomeViewModel.applyFilters()` que restringe el catálogo de servicios según el municipio seleccionado (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante, Todos).
+   - Modificación de los flujos de captura de datos en `RegisterUserScreen`, `EditProfileScreen` y `CreateServiceScreen` para selección y persistencia del municipio de atención/cobertura.
+2. **Migración de Esquema de Base de Datos (Supabase PostgreSQL):**
+   - Incorporación de las sentencias SQL de migración DDL (`ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';` y `ALTER TABLE public.services ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';`).
+3. **Incremento de Versión y Publicación:**
+   - Actualización de versión de la aplicación a `versionName = "1.0.2"` y `versionCode = 7` en `app/build.gradle.kts` para despliegue en Google Play Store.
+
 ### 🔹 Sesión Septiembre 2026 (Estabilidad, Cumplimiento Play Store y CI/CD)
 En esta intervención, el Orquestador Maestro dirigió un plan de optimización enfocado en la estabilidad de la interfaz, el cumplimiento regulatorio de Google Play y el fortalecimiento de la infraestructura de calidad:
 

@@ -21,6 +21,7 @@ data class Service(
     val end_time: String = "18:00:00",    // Hora de fin
     val materials_included: Boolean = false,
     val extra_cost: Double = 0.0,
+    val municipality: String? = "La Plata",
     val status: String = "pending_approval", // active, inactive, pending_approval (Hito 5)
     val created_at: String? = null,
 
