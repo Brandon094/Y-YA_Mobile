@@ -26,7 +26,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - **Correo Electrónico:** Validación de estructura RFC/Patterns.
     - **Contraseña Segura:** Mínimo 8 caracteres con combinación obligatoria de mayúsculas, minúsculas y números o símbolos.
     - **Fecha de Nacimiento:** Bloqueo de días futuros en el calendario UI (`SelectableDates`) y validación de fecha cronológica no futura (`isValidBirthDate`).
-    - Extensión del átomo `YayaTextField` con soporte para mensajes de error contextuales (`errorMessage`) en `RegisterUserScreen`, `EditProfileScreen`, `LoginScreen` y `ResetPasswordScreen`.
+    - **Agendamiento de Citas (Contratación):** Validación de dirección de atención (mín. 5 caracteres), bloqueo UI de días pasados (`SelectableDates`), verificación de fecha no pasada (`isValidFutureDate`) y validación de hora no transcurrida para citas del mismo día (`isValidScheduleTime`).
+    - Extensión del átomo `YayaTextField` con soporte para mensajes de error contextuales (`errorMessage`) en `RegisterUserScreen`, `EditProfileScreen`, `PantallaContratacion`, `LoginScreen` y `ResetPasswordScreen`.
 - **Cumplimiento y Publicación en Google Play Store:**
     - Declaración del permiso `com.google.android.gms.permission.AD_ID` en `AndroidManifest.xml` para cumplimiento de las políticas de identificador de publicidad y analítica de Google Play.
     - Inclusión de símbolos de depuración nativos en nivel `FULL` (`ndk { debugSymbolLevel = 'FULL' }`) en `app/build.gradle.kts` para análisis de crashes nativos y desofuscación en Play Console.

@@ -30,6 +30,7 @@ import com.bhplusplus.yaya.ui.components.molecules.PriceNegotiator
 import com.bhplusplus.yaya.ui.components.molecules.YayaSelectorButton
 import com.bhplusplus.yaya.ui.components.organisms.ProfileSectionCard
 import com.bhplusplus.yaya.ui.components.organisms.ServiceRequestHero
+import com.bhplusplus.yaya.utils.ValidationUtils
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Calendar
@@ -51,7 +52,17 @@ fun PantallaContratacion(
     }
 
     var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                val todayStartUtc = java.time.LocalDate.now()
+                    .atStartOfDay(ZoneId.of("UTC"))
+                    .toInstant()
+                    .toEpochMilli()
+                return utcTimeMillis >= todayStartUtc
+            }
+        }
+    )
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -199,6 +210,7 @@ fun ContratacionContent(
                                 value = direccion,
                                 onValueChange = onDireccionChange,
                                 label = "Dirección de atención",
+                                errorMessage = if (direccion.isNotEmpty() && !ValidationUtils.isValidAddress(direccion)) "Ingresa una dirección válida (mínimo 5 caracteres)" else null,
                                 leadingIcon = { Icon(Icons.Default.LocationOn, null, tint = MaterialTheme.colorScheme.primary) },
                                 enabled = !isLoading
                             )

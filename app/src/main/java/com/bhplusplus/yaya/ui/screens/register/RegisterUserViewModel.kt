@@ -77,8 +77,16 @@ class RegisterUserViewModel : ViewModel() {
             return
         }
 
-        if (address.isBlank() || birthDate.isBlank()) {
-            _errorMessage.value = "Por favor, completa todos los campos"
+        val addressError = ValidationUtils.getAddressError(address)
+        if (addressError != null) {
+            _errorMessage.value = addressError
+            onResult(false)
+            return
+        }
+
+        val birthDateError = ValidationUtils.getBirthDateError(birthDate)
+        if (birthDateError != null) {
+            _errorMessage.value = birthDateError
             onResult(false)
             return
         }

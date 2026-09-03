@@ -73,11 +73,12 @@ fun RegisterScreen(
     val isEmailValid = ValidationUtils.isValidEmail(email)
     val isPasswordValid = ValidationUtils.isSecurePassword(password)
     val isBirthDateValid = ValidationUtils.isValidBirthDate(birthDate)
+    val isAddressValid = ValidationUtils.isValidAddress(address)
 
     // El formulario es válido SOLO si todos los campos tienen contenido y cumplen sus reglas
     val isFormValid = isNameValid && isDocumentValid && isPhoneValid && 
                       isEmailValid && isPasswordValid && isBirthDateValid && 
-                      address.isNotBlank() && acceptedTerms && acceptedPrivacy
+                      isAddressValid && acceptedTerms && acceptedPrivacy
 
     // ESTADOS DEL SELECTOR DE FECHA (DatePicker - Restringido a hoy o fechas pasadas)
     var showDatePicker by remember { mutableStateOf(false) }
@@ -229,6 +230,7 @@ fun RegisterScreen(
             onValueChange = { address = it },
             label = stringResource(R.string.register_address),
             enabled = !isLoading,
+            errorMessage = if (address.isNotEmpty() && !isAddressValid) "Ingresa una dirección válida (mínimo 5 caracteres)" else null,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             leadingIcon = { Icon(Icons.Default.Home, contentDescription = null) }

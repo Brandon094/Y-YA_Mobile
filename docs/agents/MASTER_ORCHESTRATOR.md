@@ -42,7 +42,7 @@ En esta intervención, el Orquestador Maestro dirigió un plan de optimización 
 5. **Resiliencia en Serialización de Datos (KotlinX Serialization):**
    - Incorporación de valores por defecto defensivos en los modelos de dominio (`ServiceRequest`, `UserProfile`, `Message`, `Rating`, `Report`, `ServiceImage`, `Availability`, `Category`) asegurando tolerancia total ante consultas Postgrest con proyecciones relacionales parciales (`Columns.raw`).
 6. **Motor de Validaciones de Entrada de Datos (DRY & MVVM):**
-   - Creación de `ValidationUtils.kt` e integración de soporte para `errorMessage` en el átomo `YayaTextField` para retroalimentación visual en tiempo real (nombres alfabéticos sin números, documento DNI/CC de 6 a 12 números, teléfono exacto de 10 dígitos, correo electrónico RFC/Patterns, contraseña segura y fechas de nacimiento no futuras).
+   - Creación de `ValidationUtils.kt` e integración de soporte para `errorMessage` en el átomo `YayaTextField` para retroalimentación visual en tiempo real (nombres alfabéticos sin números, documento DNI/CC de 6 a 12 números, teléfono exacto de 10 dígitos, correo electrónico RFC/Patterns, contraseña segura, fechas de nacimiento no futuras y agendamiento de citas con validación de dirección, fecha no pasada y hora no transcurrida).
 
 ### 🔹 Sesión Agosto 2026 (Consolidación MVP+ SENA Gold Edition)
 1. **Infraestructura de Notificaciones:** Cierre del ciclo de comunicación con Small Icons oficiales y despliegue de lógica Server-Side (Edge Functions) para una negociación en tiempo real totalmente automatizada.

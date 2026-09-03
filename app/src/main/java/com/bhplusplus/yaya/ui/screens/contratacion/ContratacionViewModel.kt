@@ -11,6 +11,7 @@ import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.data.models.ServiceRequest
 import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.utils.FormatterUtils
+import com.bhplusplus.yaya.utils.ValidationUtils
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
@@ -54,6 +55,9 @@ class ContratacionViewModel : ViewModel() {
     val uiState: ContratacionUiState? get() {
         val s = service ?: return null
         val currentOffer = oferta.toDoubleOrNull() ?: s.price
+        val isAddressValid = ValidationUtils.isValidAddress(direccion)
+        val isDateValid = ValidationUtils.isValidFutureDate(fecha)
+        val isTimeValid = ValidationUtils.isValidScheduleTime(fecha, hora)
         
         return ContratacionUiState(
             serviceTitle = s.title,
@@ -62,7 +66,7 @@ class ContratacionViewModel : ViewModel() {
             providerAvatarUrl = providerProfile?.avatar_url,
             formattedOffer = FormatterUtils.formatCurrency(currentOffer),
             isOfferAtBase = currentOffer <= s.price,
-            canContratar = direccion.isNotBlank() && fecha.isNotBlank() && hora.isNotBlank() && isAvailable && !isLoading
+            canContratar = isAddressValid && isDateValid && isTimeValid && isAvailable && !isLoading
         )
     }
 
@@ -141,6 +145,19 @@ class ContratacionViewModel : ViewModel() {
         val currentService = service ?: return
         if (fecha.isBlank()) return
 
+        // 0. Validar fecha futura y hora no transcurrida hoy
+        if (!ValidationUtils.isValidFutureDate(fecha)) {
+            isAvailable = false
+            errorMessage = "La fecha de la cita no puede ser en el pasado."
+            return
+        }
+
+        if (hora.isNotEmpty() && !ValidationUtils.isValidScheduleTime(fecha, hora)) {
+            isAvailable = false
+            errorMessage = "La hora seleccionada ya transcurrió el día de hoy."
+            return
+        }
+
         viewModelScope.launch {
             try {
                 val date = LocalDate.parse(fecha)
@@ -216,8 +233,23 @@ class ContratacionViewModel : ViewModel() {
     fun contratar(onResult: (Boolean, String?) -> Unit) {
         val currentService = service ?: return
 
-        if (direccion.isBlank() || fecha.isBlank() || hora.isBlank()) {
-            errorMessage = "Completa dirección, fecha y hora."
+        val addrError = ValidationUtils.getAddressError(direccion)
+        if (addrError != null) {
+            errorMessage = addrError
+            onResult(false, null)
+            return
+        }
+
+        val dateError = ValidationUtils.getFutureDateError(fecha)
+        if (dateError != null) {
+            errorMessage = dateError
+            onResult(false, null)
+            return
+        }
+
+        val timeError = ValidationUtils.getScheduleTimeError(fecha, hora)
+        if (timeError != null) {
+            errorMessage = timeError
             onResult(false, null)
             return
         }

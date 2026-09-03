@@ -81,6 +81,50 @@ object ValidationUtils {
         }
     }
 
+    /**
+     * Valida una dirección de atención.
+     * Debe tener al menos 5 caracteres.
+     */
+    fun isValidAddress(address: String): Boolean {
+        return address.trim().length >= 5
+    }
+
+    /**
+     * Valida que una fecha programada sea hoy o futura (no del pasado).
+     */
+    fun isValidFutureDate(dateString: String): Boolean {
+        if (dateString.isBlank()) return false
+        return try {
+            val selectedDate = java.time.LocalDate.parse(dateString.trim())
+            val today = java.time.LocalDate.now()
+            !selectedDate.isBefore(today)
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    /**
+     * Valida la hora programada.
+     * Si la fecha seleccionada es hoy, la hora debe ser posterior a la hora actual.
+     */
+    fun isValidScheduleTime(dateString: String, timeString: String): Boolean {
+        if (dateString.isBlank() || timeString.isBlank()) return false
+        return try {
+            val selectedDate = java.time.LocalDate.parse(dateString.trim())
+            val selectedTime = java.time.LocalTime.parse(timeString.trim())
+            val today = java.time.LocalDate.now()
+            val nowTime = java.time.LocalTime.now()
+
+            if (selectedDate.isEqual(today)) {
+                selectedTime.isAfter(nowTime)
+            } else {
+                selectedDate.isAfter(today)
+            }
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     // --- MÉTODOS DE MENSAJE DE ERROR PARA RETORNO DIRECTO ---
 
     fun getNameError(name: String): String? {
@@ -116,6 +160,24 @@ object ValidationUtils {
     fun getBirthDateError(birthDate: String): String? {
         if (birthDate.isBlank()) return "La fecha de nacimiento es obligatoria"
         if (!isValidBirthDate(birthDate)) return "La fecha de nacimiento no puede ser futura"
+        return null
+    }
+
+    fun getAddressError(address: String): String? {
+        if (address.isBlank()) return "La dirección de atención es obligatoria"
+        if (!isValidAddress(address)) return "Ingresa una dirección válida (mínimo 5 caracteres)"
+        return null
+    }
+
+    fun getFutureDateError(dateString: String): String? {
+        if (dateString.isBlank()) return "La fecha de la cita es obligatoria"
+        if (!isValidFutureDate(dateString)) return "La fecha debe ser hoy o futura"
+        return null
+    }
+
+    fun getScheduleTimeError(dateString: String, timeString: String): String? {
+        if (timeString.isBlank()) return "La hora es obligatoria"
+        if (!isValidScheduleTime(dateString, timeString)) return "La hora seleccionada ya transcurrió el día de hoy"
         return null
     }
 }
