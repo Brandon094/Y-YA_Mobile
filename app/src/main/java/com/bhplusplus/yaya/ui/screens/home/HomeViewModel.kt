@@ -17,6 +17,7 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.decodeRecord
 import io.github.jan.supabase.realtime.postgresChangeFlow
@@ -153,40 +154,45 @@ class HomeViewModel : ViewModel() {
      */
     private fun subscribeToServices() {
         val channel = SupabaseManager.client.channel("services_home")
+        if (channel.status.value != RealtimeChannel.Status.UNSUBSCRIBED) return
         
-        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = "services"
-        }.onEach { action ->
-            when (action) {
-                is PostgresAction.Insert -> {
-                    val newService = action.decodeRecord<Service>()
-                    if (newService.status == "active") {
-                        allServices = allServices + newService
+        try {
+            channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "services"
+            }.onEach { action ->
+                when (action) {
+                    is PostgresAction.Insert -> {
+                        val newService = action.decodeRecord<Service>()
+                        if (newService.status == "active") {
+                            allServices = allServices + newService
+                        }
                     }
-                }
-                is PostgresAction.Update -> {
-                    val updatedService = action.decodeRecord<Service>()
-                    allServices = if (updatedService.status == "active") {
-                        allServices.filter { it.id != updatedService.id } + updatedService
-                    } else {
-                        allServices.filter { it.id != updatedService.id }
+                    is PostgresAction.Update -> {
+                        val updatedService = action.decodeRecord<Service>()
+                        allServices = if (updatedService.status == "active") {
+                            allServices.filter { it.id != updatedService.id } + updatedService
+                        } else {
+                            allServices.filter { it.id != updatedService.id }
+                        }
                     }
+                    is PostgresAction.Delete -> {
+                        val deletedId = action.oldRecord["id"]?.jsonPrimitive?.content
+                        allServices = allServices.filter { it.id != deletedId }
+                    }
+                    else -> {}
                 }
-                is PostgresAction.Delete -> {
-                    val deletedId = action.oldRecord["id"]?.jsonPrimitive?.content
-                    allServices = allServices.filter { it.id != deletedId }
-                }
-                else -> {}
-            }
-            applyFilters()
-        }.launchIn(viewModelScope)
+                applyFilters()
+            }.launchIn(viewModelScope)
 
-        viewModelScope.launch {
-            try {
-                channel.subscribe()
-            } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error subscribing to services: ${e.message}")
+            viewModelScope.launch {
+                try {
+                    channel.subscribe()
+                } catch (e: Exception) {
+                    Log.e("HomeViewModel", "Error subscribing to services: ${e.message}")
+                }
             }
+        } catch (e: Exception) {
+            Log.e("HomeViewModel", "Error setting up services flow: ${e.message}")
         }
     }
 
@@ -195,19 +201,31 @@ class HomeViewModel : ViewModel() {
      */
     private fun subscribeToRatings() {
         val channel = SupabaseManager.client.channel("ratings_home")
-        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = "ratings"
-        }.onEach {
-            // Recargamos el mapa de calificaciones ante cualquier cambio
-            val ratingsResult = SupabaseManager.client.postgrest["ratings"]
-                .select()
-                .decodeList<Rating>()
-            
-            serviceRatingsMap = ratingsResult.groupBy { it.provider_id }
-            applyFilters()
-        }.launchIn(viewModelScope)
+        if (channel.status.value != RealtimeChannel.Status.UNSUBSCRIBED) return
 
-        viewModelScope.launch { channel.subscribe() }
+        try {
+            channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "ratings"
+            }.onEach {
+                // Recargamos el mapa de calificaciones ante cualquier cambio
+                val ratingsResult = SupabaseManager.client.postgrest["ratings"]
+                    .select()
+                    .decodeList<Rating>()
+                
+                serviceRatingsMap = ratingsResult.groupBy { it.provider_id }
+                applyFilters()
+            }.launchIn(viewModelScope)
+
+            viewModelScope.launch {
+                try {
+                    channel.subscribe()
+                } catch (e: Exception) {
+                    Log.e("HomeViewModel", "Error subscribing to ratings: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("HomeViewModel", "Error setting up ratings flow: ${e.message}")
+        }
     }
 
     /**
@@ -274,14 +292,26 @@ class HomeViewModel : ViewModel() {
      */
     private fun subscribeToRequests(userId: String, role: String) {
         val channel = SupabaseManager.client.channel("requests_notifications")
-        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = "requests"
-        }.onEach {
-            // Refrescamos el conteo real ante cualquier cambio (Insert, Update, Delete)
-            fetchNotificationCount(userId, role)
-        }.launchIn(viewModelScope)
+        if (channel.status.value != RealtimeChannel.Status.UNSUBSCRIBED) return
 
-        viewModelScope.launch { channel.subscribe() }
+        try {
+            channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "requests"
+            }.onEach {
+                // Refrescamos el conteo real ante cualquier cambio (Insert, Update, Delete)
+                fetchNotificationCount(userId, role)
+            }.launchIn(viewModelScope)
+
+            viewModelScope.launch {
+                try {
+                    channel.subscribe()
+                } catch (e: Exception) {
+                    Log.e("HomeViewModel", "Error subscribing to requests: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("HomeViewModel", "Error setting up requests flow: ${e.message}")
+        }
     }
 
     /**
@@ -289,14 +319,26 @@ class HomeViewModel : ViewModel() {
      */
     private fun subscribeToUnreadMessages(userId: String) {
         val channel = SupabaseManager.client.channel("messages_notifications")
-        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = "messages"
-        }.onEach { action ->
-            // Si llega un mensaje nuevo donde somos el receptor, o si se marca algo como leído
-            fetchUnreadMessagesCount(userId)
-        }.launchIn(viewModelScope)
+        if (channel.status.value != RealtimeChannel.Status.UNSUBSCRIBED) return
 
-        viewModelScope.launch { channel.subscribe() }
+        try {
+            channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "messages"
+            }.onEach { action ->
+                // Si llega un mensaje nuevo donde somos el receptor, o si se marca algo como leído
+                fetchUnreadMessagesCount(userId)
+            }.launchIn(viewModelScope)
+
+            viewModelScope.launch {
+                try {
+                    channel.subscribe()
+                } catch (e: Exception) {
+                    Log.e("HomeViewModel", "Error subscribing to unread messages: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("HomeViewModel", "Error setting up unread messages flow: ${e.message}")
+        }
     }
 
     /**

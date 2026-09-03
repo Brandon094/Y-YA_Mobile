@@ -14,6 +14,7 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import kotlinx.coroutines.flow.launchIn
@@ -127,20 +128,25 @@ class MyOrdersViewModel : ViewModel() {
      */
     private fun subscribeToMyOrders(userId: String) {
         val channel = SupabaseManager.client.channel("my_orders_realtime")
-        
-        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = "requests"
-        }.onEach {
-            // Refrescamos silenciosamente para mantener Joins actualizados
-            fetchMyOrdersSilently()
-        }.launchIn(viewModelScope)
+        if (channel.status.value != RealtimeChannel.Status.UNSUBSCRIBED) return
 
-        viewModelScope.launch {
-            try {
-                channel.subscribe()
-            } catch (e: Exception) {
-                Log.e("MyOrdersVM", "Error subscribing: ${e.message}")
+        try {
+            channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "requests"
+            }.onEach {
+                // Refrescamos silenciosamente para mantener Joins actualizados
+                fetchMyOrdersSilently()
+            }.launchIn(viewModelScope)
+
+            viewModelScope.launch {
+                try {
+                    channel.subscribe()
+                } catch (e: Exception) {
+                    Log.e("MyOrdersVM", "Error subscribing: ${e.message}")
+                }
             }
+        } catch (e: Exception) {
+            Log.e("MyOrdersVM", "Error setting up postgresChangeFlow: ${e.message}")
         }
     }
 

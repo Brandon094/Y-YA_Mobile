@@ -12,6 +12,7 @@ import com.bhplusplus.yaya.utils.FormatterUtils
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.decodeRecord
 import io.github.jan.supabase.realtime.postgresChangeFlow
@@ -115,42 +116,47 @@ class MyServicesViewModel : ViewModel() {
      */
     private fun subscribeToMyServices(userId: String) {
         val channel = SupabaseManager.client.channel("my_services_realtime")
-        
-        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = "services"
-        }.onEach { action ->
-            when (action) {
-                is PostgresAction.Insert -> {
-                    val newService = action.decodeRecord<Service>()
-                    if (newService.provider_id == userId) {
-                        val currentList = services.map { it.domain }
-                        val updatedList = (listOf(newService) + currentList).sortedByDescending { it.created_at }
-                        services = updatedList.map { mapToUiState(it) }
-                    }
-                }
-                is PostgresAction.Update -> {
-                    val updatedService = action.decodeRecord<Service>()
-                    if (updatedService.provider_id == userId) {
-                        val currentList = services.map { it.domain }
-                        val updatedList = currentList.map { if (it.id == updatedService.id) updatedService else it }
-                                                     .sortedByDescending { it.created_at }
-                        services = updatedList.map { mapToUiState(it) }
-                    }
-                }
-                is PostgresAction.Delete -> {
-                    val deletedId = action.oldRecord["id"]?.jsonPrimitive?.content
-                    services = services.filter { it.domain.id != deletedId }
-                }
-                else -> {}
-            }
-        }.launchIn(viewModelScope)
+        if (channel.status.value != RealtimeChannel.Status.UNSUBSCRIBED) return
 
-        viewModelScope.launch {
-            try {
-                channel.subscribe()
-            } catch (e: Exception) {
-                Log.e("MyServicesVM", "Error subscribing: ${e.message}")
+        try {
+            channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "services"
+            }.onEach { action ->
+                when (action) {
+                    is PostgresAction.Insert -> {
+                        val newService = action.decodeRecord<Service>()
+                        if (newService.provider_id == userId) {
+                            val currentList = services.map { it.domain }
+                            val updatedList = (listOf(newService) + currentList).sortedByDescending { it.created_at }
+                            services = updatedList.map { mapToUiState(it) }
+                        }
+                    }
+                    is PostgresAction.Update -> {
+                        val updatedService = action.decodeRecord<Service>()
+                        if (updatedService.provider_id == userId) {
+                            val currentList = services.map { it.domain }
+                            val updatedList = currentList.map { if (it.id == updatedService.id) updatedService else it }
+                                                         .sortedByDescending { it.created_at }
+                            services = updatedList.map { mapToUiState(it) }
+                        }
+                    }
+                    is PostgresAction.Delete -> {
+                        val deletedId = action.oldRecord["id"]?.jsonPrimitive?.content
+                        services = services.filter { it.domain.id != deletedId }
+                    }
+                    else -> {}
+                }
+            }.launchIn(viewModelScope)
+
+            viewModelScope.launch {
+                try {
+                    channel.subscribe()
+                } catch (e: Exception) {
+                    Log.e("MyServicesVM", "Error subscribing: ${e.message}")
+                }
             }
+        } catch (e: Exception) {
+            Log.e("MyServicesVM", "Error setting up postgresChangeFlow: ${e.message}")
         }
     }
 

@@ -12,6 +12,7 @@ import com.bhplusplus.yaya.data.models.UserProfile
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.decodeRecord
 import io.github.jan.supabase.realtime.postgresChangeFlow
@@ -171,44 +172,85 @@ class ChatViewModel : ViewModel() {
         }
     }
 
+    private var realtimeChannel: RealtimeChannel? = null
+    private var subscribedReceiverId: String? = null
+
     /**
      * Se suscribe a cambios en tiempo real en la tabla 'messages'.
      */
     private fun subscribeToMessages(receiverId: String) {
         val currentUserId = currentUser?.id ?: return
         
-        // Usamos un nombre de canal único por conversación para evitar colisiones
-        val channelId = if (currentUserId < receiverId) "${currentUserId}_$receiverId" else "${receiverId}_$currentUserId"
-        val channel = SupabaseManager.client.channel("chat_$channelId")
-        
-        // Escuchamos inserciones en la tabla messages
-        channel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
-            table = "messages"
-        }.onEach { action ->
-            val newMessage = action.decodeRecord<Message>()
-            
-            // Solo añadimos el mensaje si pertenece a esta conversación específica
-            if ((newMessage.sender_id == currentUserId && newMessage.receiver_id == receiverId) ||
-                (newMessage.sender_id == receiverId && newMessage.receiver_id == currentUserId)) {
-                
-                // Usamos el Dispatcher Main para actualizar la UI
-                if (messages.none { it.id == newMessage.id }) {
-                    messages = (messages + newMessage).sortedBy { it.sent_at }
-                }
+        if (subscribedReceiverId == receiverId && realtimeChannel?.status?.value != RealtimeChannel.Status.UNSUBSCRIBED) {
+            Log.d("ChatViewModel", "Ya suscrito al chat con $receiverId")
+            return
+        }
 
-                // Si nosotros somos los receptores, lo marcamos como leído de inmediato (el "visto")
-                if (newMessage.receiver_id == currentUserId && !newMessage.is_read) {
-                    markMessagesAsRead(receiverId)
+        // Si cambió el receptor, liberamos el canal previo
+        if (subscribedReceiverId != null && subscribedReceiverId != receiverId) {
+            val previousChannel = realtimeChannel
+            viewModelScope.launch {
+                try {
+                    previousChannel?.unsubscribe()
+                } catch (e: Exception) {
+                    Log.w("ChatViewModel", "Error al desuscribir canal previo: ${e.message}")
                 }
             }
-        }.launchIn(viewModelScope)
+        }
 
+        val channelId = if (currentUserId < receiverId) "${currentUserId}_$receiverId" else "${receiverId}_$currentUserId"
+        val channel = SupabaseManager.client.channel("chat_$channelId")
+        realtimeChannel = channel
+        subscribedReceiverId = receiverId
+
+        if (channel.status.value != RealtimeChannel.Status.UNSUBSCRIBED) {
+            Log.d("ChatViewModel", "El canal chat_$channelId ya está en estado ${channel.status.value}")
+            return
+        }
+
+        try {
+            // Escuchamos inserciones en la tabla messages
+            channel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
+                table = "messages"
+            }.onEach { action ->
+                val newMessage = action.decodeRecord<Message>()
+                
+                // Solo añadimos el mensaje si pertenece a esta conversación específica
+                if ((newMessage.sender_id == currentUserId && newMessage.receiver_id == receiverId) ||
+                    (newMessage.sender_id == receiverId && newMessage.receiver_id == currentUserId)) {
+                    
+                    // Usamos el Dispatcher Main para actualizar la UI
+                    if (messages.none { it.id == newMessage.id }) {
+                        messages = (messages + newMessage).sortedBy { it.sent_at }
+                    }
+
+                    // Si nosotros somos los receptores, lo marcamos como leído de inmediato (el "visto")
+                    if (newMessage.receiver_id == currentUserId && !newMessage.is_read) {
+                        markMessagesAsRead(receiverId)
+                    }
+                }
+            }.launchIn(viewModelScope)
+
+            viewModelScope.launch {
+                try {
+                    channel.subscribe()
+                    Log.d("ChatViewModel", "Suscrito al canal: chat_$channelId")
+                } catch (e: Exception) {
+                    Log.e("ChatViewModel", "Error al suscribirse: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("ChatViewModel", "Error al configurar postgresChangeFlow: ${e.message}")
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
         viewModelScope.launch {
             try {
-                channel.subscribe()
-                Log.d("ChatViewModel", "Suscrito al canal: chat_$channelId")
+                realtimeChannel?.unsubscribe()
             } catch (e: Exception) {
-                Log.e("ChatViewModel", "Error al suscribirse: ${e.message}")
+                Log.w("ChatViewModel", "Error al desuscribir canal en onCleared: ${e.message}")
             }
         }
     }

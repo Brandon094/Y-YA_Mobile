@@ -12,6 +12,7 @@ import com.bhplusplus.yaya.data.models.UserProfile
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import kotlinx.coroutines.flow.launchIn
@@ -142,20 +143,25 @@ class ChatListViewModel : ViewModel() {
      */
     private fun subscribeToNewChats() {
         val channel = SupabaseManager.client.channel("chat_list_realtime")
-        
-        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = "messages"
-        }.onEach {
-            // Refrescamos la lista de chats ante cualquier mensaje nuevo o cambio de estado (is_read)
-            loadChatsSilently()
-        }.launchIn(viewModelScope)
+        if (channel.status.value != RealtimeChannel.Status.UNSUBSCRIBED) return
 
-        viewModelScope.launch {
-            try {
-                channel.subscribe()
-            } catch (e: Exception) {
-                Log.e("ChatListVM", "Error subscribing: ${e.message}")
+        try {
+            channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "messages"
+            }.onEach {
+                // Refrescamos la lista de chats ante cualquier mensaje nuevo o cambio de estado (is_read)
+                loadChatsSilently()
+            }.launchIn(viewModelScope)
+
+            viewModelScope.launch {
+                try {
+                    channel.subscribe()
+                } catch (e: Exception) {
+                    Log.e("ChatListVM", "Error subscribing: ${e.message}")
+                }
             }
+        } catch (e: Exception) {
+            Log.e("ChatListVM", "Error setting up postgresChangeFlow: ${e.message}")
         }
     }
 

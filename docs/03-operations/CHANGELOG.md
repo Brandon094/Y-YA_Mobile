@@ -7,6 +7,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [1.0.1] - 2026-09-02
 ### Corregido
+- **Estabilidad de Canales Supabase Realtime:**
+    - Corrección de `IllegalStateException: You cannot call postgresChangeFlow after joining the channel` al reinicializar la vista de chat o refrescar datos en ViewModels.
+    - Validación proactiva del estado `RealtimeChannel.Status.UNSUBSCRIBED` antes de registrar escuchas `postgresChangeFlow` en `ChatViewModel`, `ChatListViewModel`, `HomeViewModel`, `IncomingRequestsViewModel`, `MyOrdersViewModel`, `MyServicesViewModel` y `ProfileViewModel`.
 - **Estabilidad de UI/Layout (Jetpack Compose):**
     - Corrección de `IllegalStateException` producida por componentes scrolleables medidos con restricciones de altura infinita (conflictos de medición entre `LazyColumn` y `Column` con `verticalScroll`).
     - Ajustes y refactorización estructural en `NegotiationHistoryBox.kt`, `ConfirmacionScreen.kt` y `MyServicesScreen.kt`.

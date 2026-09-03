@@ -16,6 +16,7 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import kotlinx.coroutines.flow.launchIn
@@ -119,25 +120,36 @@ class ProfileViewModel : ViewModel() {
 
     private fun subscribeToNotifications(userId: String, role: String) {
         val channel = SupabaseManager.client.channel("profile_notifications")
+        if (channel.status.value != RealtimeChannel.Status.UNSUBSCRIBED) return
 
-        // Escuchar Mensajes
-        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = "messages"
-        }.onEach { fetchNotificationCounts(userId, role) }.launchIn(viewModelScope)
-
-        // Escuchar Solicitudes
-        channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-            table = "requests"
-        }.onEach { fetchNotificationCounts(userId, role) }.launchIn(viewModelScope)
-
-        // Escuchar Servicios (Para Admin)
-        if (role == "admin") {
+        try {
+            // Escuchar Mensajes
             channel.postgresChangeFlow<PostgresAction>(schema = "public") {
-                table = "services"
+                table = "messages"
             }.onEach { fetchNotificationCounts(userId, role) }.launchIn(viewModelScope)
-        }
 
-        viewModelScope.launch { channel.subscribe() }
+            // Escuchar Solicitudes
+            channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "requests"
+            }.onEach { fetchNotificationCounts(userId, role) }.launchIn(viewModelScope)
+
+            // Escuchar Servicios (Para Admin)
+            if (role == "admin") {
+                channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                    table = "services"
+                }.onEach { fetchNotificationCounts(userId, role) }.launchIn(viewModelScope)
+            }
+
+            viewModelScope.launch {
+                try {
+                    channel.subscribe()
+                } catch (e: Exception) {
+                    Log.e("ProfileViewModel", "Error subscribing to notifications: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("ProfileViewModel", "Error setting up notifications flow: ${e.message}")
+        }
     }
 
     /**
