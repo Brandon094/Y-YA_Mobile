@@ -28,6 +28,7 @@ import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.ui.components.ServiceItemShimmer
 import com.bhplusplus.yaya.ui.components.molecules.CategorySelector
 import com.bhplusplus.yaya.ui.components.molecules.EmptyStateView
+import com.bhplusplus.yaya.ui.components.molecules.YayaConfirmationDialog
 import com.bhplusplus.yaya.ui.components.organisms.HomeTopBar
 import com.bhplusplus.yaya.ui.components.organisms.SearchBarIntegrated
 import com.bhplusplus.yaya.ui.components.organisms.ServiceCard
@@ -55,7 +56,21 @@ fun HomeScreen(
     }
 
     var showMunicipalityDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
     val municipalities = remember { ValidationUtils.HUILA_MUNICIPALITIES + "Todos" }
+
+    if (showLogoutDialog) {
+        YayaConfirmationDialog(
+            title = "¿Cerrar sesión?",
+            message = "¿Estás seguro de que deseas salir de tu cuenta en YÁYA?",
+            confirmButtonText = "Cerrar sesión",
+            onConfirm = {
+                showLogoutDialog = false
+                onLogout()
+            },
+            onDismiss = { showLogoutDialog = false }
+        )
+    }
 
     if (showMunicipalityDialog) {
         AlertDialog(
@@ -156,7 +171,7 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = onLogout,
+                        onClick = { showLogoutDialog = true },
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                             contentColor = MaterialTheme.colorScheme.primary

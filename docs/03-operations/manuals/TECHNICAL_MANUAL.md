@@ -107,6 +107,9 @@ YÁYA implementa una estrategia de filtrado multizona, gestión elástica de tie
     *   *Optimización del Enlace de Recuperación de Clave (`LoginScreen`):* El enlace *"¿Olvidaste tu contraseña?"* se configuró con `MaterialTheme.colorScheme.primary` (`RedPrimary` con `FontWeight.Bold`), garantizando visibilidad y legibilidad del 100% en Tema Claro y Tema Oscuro (Deep Midnight).
     *   *Soporte Dinámico con `MaterialTheme.colorScheme.onBackground` (`RegisterUserScreen`):* Las etiquetas de los roles (*"Quiero contratar un servicio"*, *"Quiero ofrecer un talento"*) y las filas de consentimiento legal (`LegalConsentRow`) especifican explícitamente `color = MaterialTheme.colorScheme.onBackground`, garantizando la inversión tipográfica automática (texto blanco/slate azulado en Tema Oscuro y texto oscuro en Tema Claro).
     *   *Rediseño de Tarjetas de Rol:* Sustitución de los RadioButton sueltos por Tarjetas Atómicas de Selección (`Surface` / `OutlinedCard`) con borde en color primario (`MaterialTheme.colorScheme.primary`) al ser seleccionadas, mejorando el área táctil y la jerarquía de interacción.
+*   **Confirmación Atómica de Cierre de Sesión en Barra Inferior (`HomeScreen` & `YayaConfirmationDialog`):**
+    *   *Protección Antiacidentes y Reutilización de Componentes Atómicos:* Reutilización de la molécula `YayaConfirmationDialog` en la barra inferior de navegación de `HomeScreen` al accionar el botón de cerrar sesión.
+    *   *Flujo de Confirmación Activa:* Despliegue del diálogo modal de confirmación atómica que intercepta la acción de salida, solicitando la confirmación activa e intencional del usuario antes de proceder a desautenticar la sesión en Supabase Auth y limpiar el estado activo, previniendo salidas accidentales por toques involuntarios en la barra inferior.
 
 ---
 

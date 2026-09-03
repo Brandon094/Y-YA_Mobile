@@ -94,6 +94,9 @@ En esta intervención, el Orquestador Maestro dirigió la implementación del mo
     - Sincronización integral de la enciclopedia de documentación de YÁYA a la versión v1.1.0 (`versionCode 5`).
     - Actualización de `README.md` con las nuevas características v1.1.0 (Motor de Validaciones, Filtrado Geográfico por Municipio, Reputación ⭐, Rediseño Profile 2.0, Visor de Manuales por rol, Onboarding de Prestadores y Contraste Adaptativo en Tema Oscuro).
     - Alineación completa de `TECHNICAL_MANUAL.md`, `USER_MANUAL.md`, `ADMIN_MANUAL.md`, `CHANGELOG.md`, `TECHNICAL_SHEET.md`, `ROADMAP.md` y `PLAY_STORE_CHECKLIST.md` al estado `🟢 Producción / Play Store Ready (v1.1.0 - versionCode 5)`.
+15. **Confirmación Atómica de Cierre de Sesión en Barra Inferior (`HomeScreen` & `YayaConfirmationDialog`):**
+    - **Protección Antiacidentes y Mejora UX:** Integración de la molécula atómica `YayaConfirmationDialog` en el botón de cerrar sesión ubicado en la barra inferior de navegación de `HomeScreen`.
+    - **Flujo de Desautenticación Segura:** Se previno el cierre de sesión accidental solicitando la confirmación activa e intencional del usuario antes de desautenticar la sesión y destruir el estado activo, garantizando coherencia con los estándares de seguridad y experiencia de usuario de YÁYA.
 
 ### 🔹 Sesión Septiembre 2026 (Estabilidad, Cumplimiento Play Store y CI/CD)
 En esta intervención, el Orquestador Maestro dirigió un plan de optimización enfocado en la estabilidad de la interfaz, el cumplimiento regulatorio de Google Play y el fortalecimiento de la infraestructura de calidad:

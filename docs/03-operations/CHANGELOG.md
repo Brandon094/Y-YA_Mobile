@@ -44,6 +44,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - **Navegación por Pestañas Segmentadas (`TabRow`):** Organización modular de las 14 opciones en 2 pestañas limpias:
         - *Pestaña 1 ("💼 Mi Operación"):* Operatividad diaria (Horario de trabajo, servicios publicados, solicitudes, mis pedidos, mensajes y panel admin).
         - *Pestaña 2 ("⚙️ Ajustes y Ayuda"):* Seguridad y soporte (Cambio de clave, Manual de uso, Términos y Condiciones, Política de Privacidad, Borrado de cuenta y Cerrar sesión).
+- **Confirmación Atómica de Cierre de Sesión en Barra Inferior (`HomeScreen` & `YayaConfirmationDialog`):**
+    - Integración del diálogo modal atómico de confirmación `YayaConfirmationDialog` en el botón de cerrar sesión de la barra de navegación inferior de `HomeScreen`.
+    - Prevención del cierre de sesión accidental solicitando la confirmación activa e intencional del usuario antes de desautenticar la sesión.
 
 ### Cambiado
 - **Rediseño del Selector de Rol (`RegisterUserScreen`):**

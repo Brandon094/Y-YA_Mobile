@@ -30,6 +30,7 @@ import com.bhplusplus.yaya.ui.components.atoms.YayaSecondaryButton
 import com.bhplusplus.yaya.ui.components.atoms.YayaSectionHeader
 import com.bhplusplus.yaya.ui.components.molecules.ProfileOptionItem
 import com.bhplusplus.yaya.ui.components.molecules.RatingIndicator
+import com.bhplusplus.yaya.ui.components.molecules.YayaConfirmationDialog
 import com.bhplusplus.yaya.ui.components.molecules.YayaRatingItem
 import com.bhplusplus.yaya.ui.components.organisms.ProfileHeroHeader
 import com.bhplusplus.yaya.ui.components.organisms.ProfileSectionCard
@@ -58,8 +59,23 @@ fun ProfileScreen(
 ) {
     val profile = viewModel.userProfile
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
     var showRatingsSheet by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableIntStateOf(0) }
+
+    // DIÁLOGO DE CONFIRMACIÓN DE CERRAR SESIÓN (Molécula Atómica)
+    if (showLogoutDialog) {
+        YayaConfirmationDialog(
+            title = "¿Cerrar sesión?",
+            message = "¿Estás seguro de que deseas salir de tu cuenta en YÁYA?",
+            confirmButtonText = "Cerrar sesión",
+            onConfirm = {
+                showLogoutDialog = false
+                onLogout()
+            },
+            onDismiss = { showLogoutDialog = false }
+        )
+    }
 
     if (showRatingsSheet) {
         ModalBottomSheet(
@@ -105,37 +121,21 @@ fun ProfileScreen(
         }
     }
 
-    // DIÁLOGO DE CONFIRMACIÓN DE BORRADO
+    // DIÁLOGO DE CONFIRMACIÓN DE BORRADO (Molécula Atómica)
     if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("¿Eliminar tu cuenta?", fontWeight = FontWeight.Bold) },
-            text = { 
-                Text("Esta acción eliminará tu perfil y datos de servicios de YÁYA de forma permanente. No podrás deshacerlo.") 
-            },
-            confirmButton = {
-                Button(
-                    onClick = { 
-                        viewModel.deleteAccount {
-                            showDeleteDialog = false
-                            onLogout()
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                    enabled = !viewModel.isDeletingAccount
-                ) {
-                    if (viewModel.isDeletingAccount) {
-                        CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
-                    } else {
-                        Text("Eliminar para siempre", color = Color.White)
-                    }
+        YayaConfirmationDialog(
+            title = "¿Eliminar tu cuenta?",
+            message = "Esta acción eliminará tu perfil y datos de servicios de YÁYA de forma permanente. No podrás deshacerlo.",
+            confirmButtonText = "Eliminar para siempre",
+            onConfirm = {
+                viewModel.deleteAccount {
+                    showDeleteDialog = false
+                    onLogout()
                 }
             },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }, enabled = !viewModel.isDeletingAccount) {
-                    Text("Cancelar")
-                }
-            }
+            onDismiss = { showDeleteDialog = false },
+            isDestructive = true,
+            isLoading = viewModel.isDeletingAccount
         )
     }
 
@@ -436,7 +436,7 @@ fun ProfileScreen(
 
                         YayaSecondaryButton(
                             text = stringResource(R.string.profile_logout_button),
-                            onClick = onLogout,
+                            onClick = { showLogoutDialog = true },
                             modifier = Modifier.fillMaxWidth()
                         )
 
