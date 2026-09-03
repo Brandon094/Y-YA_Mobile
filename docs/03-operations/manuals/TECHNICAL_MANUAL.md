@@ -1,4 +1,4 @@
-# Biblia Técnica de Ingeniería y Despliegue - YÁYA
+# Biblia Técnica de Ingeniería y Despliegue - YÁYA (v1.1.0 - versionCode 5)
 
 Este documento constituye la fuente de verdad técnica para la plataforma **YÁYA**. Detalla la arquitectura, el modelado de datos, los estándares de codificación y los procedimientos de despliegue para garantizar la escalabilidad y mantenibilidad del sistema por parte de **BH++ Team**.
 
@@ -20,6 +20,13 @@ graph TD
 *   **UI Layer (Stateless):** Funciones Composable puras que renderizan un `UiState`.
 *   **ViewModel Layer:** Controladores de estado que gestionan corrutinas y transforman datos crudos en información lista para la vista (Principio DRY).
 *   **Data Layer:** Integración directa con Supabase mediante el cliente global, gestionando Auth, Postgrest y Realtime.
+
+### 1.2. Estructura de Módulos y Paquetes Principales
+*   `com.yaya.app.data.models`: Data classes de dominio serializables (`UserProfile`, `Service`, `ServiceRequest`, `Availability`, `Rating`, `Report`, etc.).
+*   `com.yaya.app.data.utils`: Utilidades centralizadas DRY (`ValidationUtils`, `FormatterUtils`, `ImageUtils`).
+*   `com.yaya.app.ui.components`: Componentes reutilizables bajo Atomic Design (`atoms`, `molecules`, `organisms`).
+*   `com.yaya.app.ui.screens`: Pantallas composables pasivas divididas por flujo funcional.
+*   `com.yaya.app.ui.viewmodels`: Controladores de estado con arquitectura Jetpack ViewModel y Kotlin Flows.
 
 ### 1.3. Arquitectura de Clases (MVVM Pattern)
 Para cada pantalla, se implementa el siguiente flujo de componentes:
@@ -48,7 +55,8 @@ YÁYA implementa una estrategia de filtrado multizona, gestión elástica de tie
 *   **Modelos de Datos de Ubicación:** La propiedad opcional `municipality: String?` ("La Plata" por defecto) se integra en los modelos de dominio `UserProfile` y `Service`.
 *   **Controles UI y Flujo de Inicialización Secuencial de Filtrado (`HomeViewModel`):**
     *   El componente `HomeTopBar` expone un chip interactivo de selección de municipio y `HomeViewModel.applyFilters()` filtra dinámicamente el catálogo reactivo permitiendo seleccionar municipios específicos o la opción global "Todos".
-    *   *Sincronización Inicial de Municipio (`HomeViewModel.loadData`):* Para prevenir condiciones de carrera al iniciar la app, `HomeViewModel.loadData()` ejecuta una secuencia asíncrona estrictamente ordenada: recupera primero el perfil del usuario autenticado (`userProfile`) y actualiza el municipio seleccionado (`selectedMunicipality`) con la ubicación real configurada en su perfil (ej. "Nátaga") **antes** de ejecutar `applyFilters()`. Esto elimina la carga inicial filtrada por la ubicación predeterminada ("La Plata") y asegura que la vista principal despliegue inmediatamente los servicios acordes a la ubicación geográfica real del usuario sin requerir un refresco manual.
+    *   *Sincronización Inicial de Municipio (`HomeViewModel.loadData`):* Para prevenir condiciones de carrera al iniciar la app, `HomeViewModel.loadData()` ejecuta una secuencia asíncrona strictly ordenada: recupera primero el perfil del usuario autenticado (`userProfile`) y actualiza el municipio seleccionado (`selectedMunicipality`) con la ubicación real configurada en su perfil (ej. "Nátaga") **antes** de ejecutar `applyFilters()`. Esto elimina la carga inicial filtrada por la ubicación predeterminada ("La Plata") y asegura que la vista principal despliegue inmediatamente los servicios acordes a la ubicación geográfica real del usuario sin requerir un refresco manual.
+    *   *Optimización de Desplazamiento en Selector Modal de Municipios (`HomeScreen`):* El diálogo modal `AlertDialog` de selección de municipios en `HomeScreen` utiliza `LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 350.dp))` para presentar la lista unificada de municipios de cobertura (`ValidationUtils.HUILA_MUNICIPALITIES`). Esta implementación sustituye la estructura previa basada en `Column`, solucionando problemas de desbordamiento en pantallas pequeñas y garantizando un desplazamiento vertical fluido con acceso completo a la totalidad de municipios disponibles.
 *   **Flujo de Onboarding del Prestador (Post-Registro):**
     *   **Navegación Guiada de Registro:** Al completar el registro con rol `provider`, el sistema ejecuta la redirección automática hacia la pantalla de configuración de Jornada Maestra (`AvailabilityScreen`).
     *   **Establecimiento de Base Temporal:** Garantiza que todo nuevo prestador configure su rango de disponibilidad laboral general y días activos en la tabla `public.availability` antes de publicar servicios o recibir solicitudes de agendamiento.

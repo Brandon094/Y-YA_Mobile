@@ -1,4 +1,4 @@
-# Arquitectura de Software - YÁYA (Master Document)
+# Arquitectura de Software - YÁYA (Master Document - v1.1.0 - versionCode 5)
 
 Este documento define la columna vertebral técnica de YÁYA, detallando los patrones de diseño, la jerarquía de componentes y las decisiones de ingeniería que garantizan un software de clase empresarial.
 
@@ -21,7 +21,8 @@ La interfaz de usuario se construye siguiendo la metodología **Atomic Design**,
 ### 1.2. Capa de ViewModel (The Orchestrator)
 El ViewModel es el único responsable de la toma de decisiones y la transformación de datos.
 - **UiState Driven:** Expone un modelo de datos único y procesado a la vista.
-- **DRY Transformation:** Utiliza `FormatterUtils.kt` para centralizar el formateo de moneda colombiana compacta ($ 50k), normalización de fechas y tiempos.
+- **DRY Validation & Transformation:** Utiliza `ValidationUtils.kt` para la validación centralizada de entrada de datos y `FormatterUtils.kt` para el formateo de moneda colombiana compacta ($ 50k), normalización de fechas y tiempos.
+- **Estrategia Geográfica:** Segmentación por municipio/zona mediante `ValidationUtils.HUILA_MUNICIPALITIES` y `ExposedDropdownMenuBox` para filtrado preciso del catálogo de servicios.
 - **Business Logic:** Valida estados de disponibilidad, gestiona el flujo de negociación y controla las suscripciones en tiempo real.
 
 ### 1.3. Capa de Datos (Supabase Core)

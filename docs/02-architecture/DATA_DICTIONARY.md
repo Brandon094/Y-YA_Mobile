@@ -13,6 +13,7 @@ Información de identidad de los usuarios, vinculada a `auth.users`.
 | `document_id` | varchar | UNIQUE | DNI, Cédula o ID oficial. |
 | `birth_date` | date | | Fecha de nacimiento. |
 | `address` | text | | Dirección física. |
+| `municipality` | text | DEFAULT 'La Plata' | Municipio de residencia del usuario (`ValidationUtils.HUILA_MUNICIPALITIES`). |
 | `role` | varchar | CHECK (client, provider, admin) | Rol asignado en la plataforma. |
 | `avatar_url` | text | | URL de la imagen de perfil. |
 | `fcm_token` | text | | Token de Firebase para notificaciones push (Hito 4). |
@@ -45,6 +46,7 @@ Ofertas específicas publicadas por los prestadores.
 | `working_days` | integer[] | DEFAULT '{}' | Lista de días (1=Lunes, 7=Domingo) en que se presta el servicio. |
 | `start_time` | time | DEFAULT '08:00:00' | Hora de inicio de la jornada para este servicio. |
 | `end_time` | time | DEFAULT '18:00:00' | Hora de finalización de la jornada para este servicio. |
+| `municipality` | text | DEFAULT 'La Plata' | Municipio de cobertura del servicio (`ValidationUtils.HUILA_MUNICIPALITIES`). |
 | `status` | varchar | CHECK (active, inactive, pending_approval) | Estado de visibilidad (Aprobación en Hito 5). |
 | `created_at` | timestamptz | DEFAULT now() | Fecha de publicación del servicio. |
 

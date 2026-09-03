@@ -1,5 +1,7 @@
 # 🚀 Guía de Lanzamiento: Google Play Store - YÁYA
 
+**Estado del Release:** 🟢 Producción / Play Store Ready (v1.1.0 - versionCode 5)
+
 Este documento detalla los pasos críticos para pasar de un entorno de desarrollo a la publicación oficial en la tienda de aplicaciones de Android.
 
 ---

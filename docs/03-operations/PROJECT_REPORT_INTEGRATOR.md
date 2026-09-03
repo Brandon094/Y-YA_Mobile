@@ -1,5 +1,5 @@
 # Informe Técnico: Taller Integrador de Codificación
-**Proyecto:** YÁYA (v0.1.3-alpha)  
+**Proyecto:** YÁYA (v1.1.0 - versionCode 5)  
 **Desarrollador:** Brandon Daza  
 **Organización:** BH++ Team  
 **Fecha:** 27 de Agosto de 2026

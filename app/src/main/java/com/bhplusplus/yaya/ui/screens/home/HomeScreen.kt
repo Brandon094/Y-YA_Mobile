@@ -62,8 +62,13 @@ fun HomeScreen(
             onDismissRequest = { showMunicipalityDialog = false },
             title = { Text("Selecciona tu Municipio", fontWeight = FontWeight.Bold) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    municipalities.forEach { muni ->
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 350.dp)
+                ) {
+                    items(municipalities) { muni ->
                         val isSelected = viewModel.selectedMunicipality.equals(muni, ignoreCase = true) ||
                                 (muni == "Todos" && (viewModel.selectedMunicipality == null || viewModel.selectedMunicipality == "Todos"))
                         Surface(

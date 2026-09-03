@@ -68,6 +68,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Normalización de las cadenas de horario al formato de 8 caracteres (`"HH:mm:ss"`) para compatibilidad estricta con el tipo de dato SQL `time without time zone`, e incorporación de contenedor visual de error en `AvailabilityScreen`.
 - **Prevención de Traslapes y Solapamientos Horarios entre Servicios:**
     - Verificación estricta mediante `ValidationUtils.isTimeRangeOverlapping` para bloquear la creación o edición de servicios cuyos rangos horarios colisionen con otros servicios activos del mismo prestador en días compartidos.
+- **Desplazamiento Suave en Selector Modal de Municipios (`HomeScreen`):**
+    - Corrección del diálogo `AlertDialog` de selección de municipio en `HomeScreen`, sustituyendo el contenedor rígido `Column` por `LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 350.dp))`.
+    - Solución a la imposibilidad de seleccionar municipios ubicados al final de la lista (ej. Neiva, Pitalito, Todos los municipios) en pantallas de dimensiones reducidas debido al desbordamiento sin scroll, garantizando desplazamiento vertical suave y acceso al 100% de las opciones de cobertura.
 
 ## [1.0.1] - 2026-09-02
 ### Corregido

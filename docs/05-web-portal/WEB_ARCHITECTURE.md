@@ -24,7 +24,7 @@ Para mantener la consistencia con la App, se aplica una jerarquía de componente
 *   **Inclusión:** Cumplimiento de estándares de accesibilidad con semántica HTML5, etiquetas ARIA para navegación móvil y contraste de color optimizado para legibilidad.
 
 ## 5. Versionamiento Semántico
-El portal web sigue el versionamiento unificado del proyecto YÁYA (**v1.0.0**), asegurando que la documentación y la cara pública correspondan siempre a la última versión estable del binario móvil.
+El portal web sigue el versionamiento unificado del proyecto YÁYA (**v1.1.0 - versionCode 5**), asegurando que la documentación y la cara pública correspondan siempre a la última versión estable del binario móvil.
 
 ## 6. Pipeline de Despliegue
 El despliegue está automatizado mediante la Firebase CLI:
