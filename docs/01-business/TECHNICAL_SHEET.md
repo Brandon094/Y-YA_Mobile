@@ -2,7 +2,7 @@
 
 ## Información General
 - **Nombre del Proyecto:** YÁYA
-- **Versión Actual:** 1.0.2 (versionCode 7 - Play Store Ready)
+- **Versión Actual:** 1.0.1 (versionCode 5 - Play Store Ready)
 - **Desarrollador:** BH++
 - **Estado:** Producción / Play Store Ready
 - **Plataforma:** Android
@@ -15,7 +15,7 @@
 - **Autenticación:** Supabase Auth
 - **Notificaciones:** Firebase Cloud Messaging (FCM V1)
 
-## Funcionalidades Clave (v1.0.2)
+## Funcionalidades Clave (v1.0.1)
 1. **Cuenta Universal (No Doble Fricción):** Un mismo usuario puede actuar como Cliente y Prestador.
 2. **Chat en Tiempo Real:** Comunicación instantánea bidireccional vía Supabase Realtime.
 3. **Sistema de Reputación:** Calificaciones y reseñas dinámicas post-servicio.

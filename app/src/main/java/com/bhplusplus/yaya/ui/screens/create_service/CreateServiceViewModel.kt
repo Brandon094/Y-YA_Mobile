@@ -36,8 +36,59 @@ class CreateServiceViewModel : ViewModel() {
     // Imágenes seleccionadas para el portafolio (ByteArray para subir)
     var selectedImages by mutableStateOf<List<ByteArray>>(emptyList())
 
+    // Jornada maestra configurada en public.availability
+    var masterWorkingDays by mutableStateOf<List<Int>>(emptyList())
+        private set
+
+    // Días ocupados por OTROS servicios del mismo prestador (Map: dayNumber -> serviceTitle)
+    var occupiedDaysByOtherServices by mutableStateOf<Map<Int, String>>(emptyMap())
+        private set
+
     init {
         fetchCategories()
+        loadProviderAvailabilityAndServices()
+    }
+
+    /**
+     * Carga la jornada maestra del prestador y sus otros servicios activos
+     * para advertir sobre días ocupados o sugerir su horario laboral.
+     */
+    fun loadProviderAvailabilityAndServices(currentEditingServiceId: String? = null) {
+        viewModelScope.launch {
+            try {
+                val user = SupabaseManager.client.auth.currentUserOrNull() ?: return@launch
+
+                // 1. Cargar disponibilidad maestra desde public.availability
+                val availabilityList = SupabaseManager.client.postgrest["availability"]
+                    .select { filter { eq("provider_id", user.id) } }
+                    .decodeList<com.bhplusplus.yaya.data.models.Availability>()
+
+                masterWorkingDays = availabilityList.map { it.day_of_week }.sorted()
+
+                // 2. Cargar otros servicios del prestador
+                val existingServices = SupabaseManager.client.postgrest["services"]
+                    .select { filter { eq("provider_id", user.id) } }
+                    .decodeList<Service>()
+
+                val occupiedMap = mutableMapOf<Int, String>()
+                existingServices.forEach { existing ->
+                    if (existing.id != currentEditingServiceId) {
+                        val startShort = if (existing.start_time.length >= 5) existing.start_time.substring(0, 5) else existing.start_time
+                        val endShort = if (existing.end_time.length >= 5) existing.end_time.substring(0, 5) else existing.end_time
+                        val timeRange = if (startShort.isNotEmpty() && endShort.isNotEmpty()) " ($startShort - $endShort)" else ""
+                        val serviceInfo = "${existing.title}$timeRange"
+
+                        existing.working_days.forEach { day ->
+                            val current = occupiedMap[day]
+                            occupiedMap[day] = if (current != null) "$current | $serviceInfo" else serviceInfo
+                        }
+                    }
+                }
+                occupiedDaysByOtherServices = occupiedMap
+            } catch (e: Exception) {
+                Log.w("CreateServiceVM", "Info: No se cargó disponibilidad previa: ${e.message}")
+            }
+        }
     }
 
     private fun fetchCategories() {

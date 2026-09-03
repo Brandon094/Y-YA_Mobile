@@ -31,6 +31,7 @@ import com.bhplusplus.yaya.ui.components.molecules.EmptyStateView
 import com.bhplusplus.yaya.ui.components.organisms.HomeTopBar
 import com.bhplusplus.yaya.ui.components.organisms.SearchBarIntegrated
 import com.bhplusplus.yaya.ui.components.organisms.ServiceCard
+import com.bhplusplus.yaya.utils.ValidationUtils
 
 /**
  * PANTALLA PRINCIPAL (HOME)
@@ -54,7 +55,7 @@ fun HomeScreen(
     }
 
     var showMunicipalityDialog by remember { mutableStateOf(false) }
-    val municipalities = remember { listOf("La Plata", "Nátaga", "Paicol", "Tesalia", "Garzón", "Neiva", "Pitalito", "Gigante", "Todos") }
+    val municipalities = remember { ValidationUtils.HUILA_MUNICIPALITIES + "Todos" }
 
     if (showMunicipalityDialog) {
         AlertDialog(

@@ -37,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.utils.ImageUtils
+import com.bhplusplus.yaya.utils.ValidationUtils
 
 /**
  * PANTALLA DE CREACIÓN Y EDICIÓN DE SERVICIO
@@ -72,6 +73,7 @@ fun CreateServiceScreen(
     var materialsIncluded by remember { mutableStateOf(false) }
     var extraCost by remember { mutableStateOf("0") }
     var municipality by remember { mutableStateOf("La Plata") }
+    var municipalityExpanded by remember { mutableStateOf(false) }
     
     var selectedCategoryId by remember { mutableStateOf<String?>(null) }
     var selectedCategoryName by remember { mutableStateOf("Selecciona una categoría") }
@@ -109,6 +111,7 @@ fun CreateServiceScreen(
 
     // Si recibimos un ID, cargamos los datos del servicio para editar
     LaunchedEffect(serviceId) {
+        viewModel.loadProviderAvailabilityAndServices(serviceId)
         if (serviceId != null) {
             viewModel.loadServiceData(serviceId) { service ->
                 title = service.title
@@ -212,7 +215,7 @@ fun CreateServiceScreen(
                 }
             }
 
-            // MUNICIPIO DE ATENCIÓN
+            // MUNICIPIO DE ATENCIÓN (Dropdown)
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "MUNICIPIO DE ATENCIÓN",
@@ -221,15 +224,40 @@ fun CreateServiceScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = municipality,
-                    onValueChange = { municipality = it },
-                    placeholder = { Text("Ej: La Plata, Nátaga, Neiva...") },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading,
-                    shape = RoundedCornerShape(12.dp),
-                    leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) }
-                )
+                ExposedDropdownMenuBox(
+                    expanded = municipalityExpanded,
+                    onExpandedChange = { if (!isLoading) municipalityExpanded = !municipalityExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = municipality,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = municipalityExpanded) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        enabled = !isLoading,
+                        shape = RoundedCornerShape(12.dp),
+                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+                    ExposedDropdownMenu(
+                        expanded = municipalityExpanded,
+                        onDismissRequest = { municipalityExpanded = false }
+                    ) {
+                        ValidationUtils.HUILA_MUNICIPALITIES.forEach { muni ->
+                            DropdownMenuItem(
+                                text = { Text(muni) },
+                                onClick = {
+                                    municipality = muni
+                                    municipalityExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
 
             // TÍTULO
@@ -303,13 +331,30 @@ fun CreateServiceScreen(
 
             // DISPONIBILIDAD (Day Picker UX con FlowRow)
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "DÍAS DE PRESTACIÓN",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "DÍAS DE PRESTACIÓN",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    if (viewModel.masterWorkingDays.isNotEmpty()) {
+                        TextButton(
+                            onClick = { selectedDays = viewModel.masterWorkingDays.toSet() },
+                            enabled = !isLoading,
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Text("Cargar mi jornada maestra", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+
                 @OptIn(ExperimentalLayoutApi::class)
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
@@ -320,12 +365,18 @@ fun CreateServiceScreen(
                     days.forEachIndexed { index, name ->
                         val dayNumber = index + 1
                         val isSelected = selectedDays.contains(dayNumber)
+                        val occupiedByTitle = viewModel.occupiedDaysByOtherServices[dayNumber]
+                        val isOccupiedByOther = occupiedByTitle != null
                         
                         Box(
                             modifier = Modifier
                                 .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
                                 .background(
-                                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray.copy(alpha = 0.2f),
+                                    color = when {
+                                        isSelected -> MaterialTheme.colorScheme.primary
+                                        isOccupiedByOther -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+                                        else -> Color.LightGray.copy(alpha = 0.2f)
+                                    },
                                     shape = CircleShape
                                 )
                                 .clip(CircleShape)
@@ -336,12 +387,30 @@ fun CreateServiceScreen(
                         ) {
                             Text(
                                 text = name,
-                                color = if (isSelected) Color.White else Color.Gray,
+                                color = when {
+                                    isSelected -> Color.White
+                                    isOccupiedByOther -> MaterialTheme.colorScheme.error
+                                    else -> Color.Gray
+                                },
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )
                         }
                     }
+                }
+
+                if (viewModel.occupiedDaysByOtherServices.isNotEmpty()) {
+                    val dayNames = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
+                    val occupiedInfo = viewModel.occupiedDaysByOtherServices.entries.joinToString(", ") { (day, title) ->
+                        "${dayNames[day - 1]}: $title"
+                    }
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = "ℹ️ Días asignados a otros de tus servicios: $occupiedInfo",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 11.sp
+                    )
                 }
             }
 

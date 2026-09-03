@@ -51,6 +51,7 @@ fun EditProfileScreen(
     viewModel: EditProfileViewModel = viewModel()
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
+    var municipalityExpanded by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
@@ -174,14 +175,44 @@ fun EditProfileScreen(
                 leadingIcon = { Icon(Icons.Default.Home, null) }
             )
 
-            // Átomo: Municipio
-            YayaTextField(
-                value = viewModel.municipality,
-                onValueChange = { viewModel.municipality = it },
-                label = "Municipio / Ciudad",
-                enabled = !viewModel.isLoading,
-                leadingIcon = { Icon(Icons.Default.LocationOn, null) }
-            )
+            // Átomo: Municipio (Dropdown)
+            Column(modifier = Modifier.fillMaxWidth()) {
+                ExposedDropdownMenuBox(
+                    expanded = municipalityExpanded,
+                    onExpandedChange = { if (!viewModel.isLoading) municipalityExpanded = !municipalityExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = viewModel.municipality,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Municipio / Ciudad") },
+                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = municipalityExpanded) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        enabled = !viewModel.isLoading,
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+                    ExposedDropdownMenu(
+                        expanded = municipalityExpanded,
+                        onDismissRequest = { municipalityExpanded = false }
+                    ) {
+                        ValidationUtils.HUILA_MUNICIPALITIES.forEach { muni ->
+                            DropdownMenuItem(
+                                text = { Text(muni) },
+                                onClick = {
+                                    viewModel.municipality = muni
+                                    municipalityExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
 
             // Átomo: Fecha Nacimiento (Input no editable)
             YayaTextField(

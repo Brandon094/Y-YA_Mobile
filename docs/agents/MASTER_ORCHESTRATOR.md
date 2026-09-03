@@ -26,18 +26,36 @@ Este agente actúa como el "Cerebro Central" del ecosistema BH++. Su función es
 ---
 ## 🚀 Bitácora de Logros Recientes
 
-### 🔹 Sesión Septiembre 2026 - v1.0.2 (Filtrado Geográfico por Municipio e Incremento de Versión)
-En esta intervención, el Orquestador Maestro dirigió la implementación de la estrategia de segmentación geográfica por municipios y la preparación del release v1.0.2 (versionCode 7):
+### 🔹 Sesión Septiembre 2026 - v1.0.1 (Estandarización Geográfica por Municipio, Horarios por Servicio e Incremento de Versión)
+En esta intervención, el Orquestador Maestro dirigió la estandarización de componentes de ubicación por municipios, el perfeccionamiento del flujo de horarios por servicio, el onboarding del prestador, la prevención de traslapes en la asignación de disponibilidad y la preparación del release v1.0.1 (versionCode 5):
 
-1. **Estrategia de Filtrado Geográfico por Municipio/Zona:**
+1. **Estrategia de Filtrado Geográfico por Municipio/Zona y Estandarización de Desplegables (`ExposedDropdownMenuBox`):**
    - Evolución de los modelos de dominio `UserProfile` y `Service` incorporando la propiedad opcional `municipality: String?` (con valor por defecto "La Plata").
-   - Integración de controles UI para selección de ubicación: Chip de ubicación activa en `HomeTopBar` y diálogo modal interactivo de filtro de municipio en `HomeScreen`.
+   - Estandarización de la lista oficial de municipios de cobertura del Huila en `ValidationUtils.HUILA_MUNICIPALITIES`.
+   - Reemplazo de campos de texto libre por selecciones desplegables inmutables (`ExposedDropdownMenuBox`) en `RegisterUserScreen`, `EditProfileScreen` y `CreateServiceScreen`, eliminando errores de tipeo e inconsistencias en la captura de datos de ubicación.
+   - Sincronización del diálogo modal de filtro geográfico en `HomeScreen` consumiendo la fuente estandarizada de `ValidationUtils`.
    - Lógica de filtrado dinámico en `HomeViewModel.applyFilters()` que restringe el catálogo de servicios según el municipio seleccionado (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante, Todos).
-   - Modificación de los flujos de captura de datos en `RegisterUserScreen`, `EditProfileScreen` y `CreateServiceScreen` para selección y persistencia del municipio de atención/cobertura.
-2. **Migración de Esquema de Base de Datos (Supabase PostgreSQL):**
+2. **Flujo de Onboarding del Prestador y Carga Inteligente de Disponibilidad por Servicio:**
+   - **Onboarding Post-Registro de Prestadores:** Redirección automática de nuevos usuarios registrados con el rol `provider` hacia la pantalla de configuración de Jornada Maestra (`AvailabilityScreen`), asegurando la definición del horario base de atención antes de publicar talentos.
+   - **Carga Automatizada de Jornada Maestra:** Incorporación del botón de acción rápida *"Cargar mi jornada maestra"* en `CreateServiceScreen`, que puebla automáticamente los días de prestación (`working_days`) basándose en `masterWorkingDays` recuperados desde `public.availability`.
+   - **Detección y Prevención de Traslapes:** Implementación en `CreateServiceViewModel.loadProviderAvailabilityAndServices()` de un algoritmo que recupera los días ocupados y sus rangos horarios por otros servicios activos del mismo prestador (`occupiedDaysByOtherServices`).
+   - **Feedback Contextual en Pantalla con Rangos Horarios:** Resaltado visual en el selector de días mediante colores de alerta (`errorContainer`) para días previamente comprometidos, acompañado de un mensaje informativo claro que detalla los títulos de los servicios asignados junto con sus rangos horarios activos (ej: `Desarrollo de aplicaciones móviles (08:00 - 18:00)`), dándole visibilidad completa para saber en qué horas del día tiene disponibilidad libre para ofertar otro servicio.
+3. **Arquitectura y Flujo Optimizado de Horarios y Días por Servicio:**
+   - Separación estricta entre la Jornada Maestra de Disponibilidad del Prestador (`public.availability`) y los días (`working_days`) y horarios de atención asignados específicamente a cada talento o servicio (`public.services`).
+   - Sincronización de validación cruzada en `ContratacionViewModel` que restringe el calendario de agendamiento a los días permitidos por servicio y bloquea opciones de horario fuera de rango o pasadas.
+4. **Migración de Esquema de Base de Datos (Supabase PostgreSQL):**
    - Incorporación de las sentencias SQL de migración DDL (`ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';` y `ALTER TABLE public.services ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';`).
-3. **Incremento de Versión y Publicación:**
-   - Actualización de versión de la aplicación a `versionName = "1.0.2"` y `versionCode = 7` en `app/build.gradle.kts` para despliegue en Google Play Store.
+5. **Incremento de Versión y Publicación:**
+   - Actualización de versión de la aplicación a `versionName = "1.0.1"` y `versionCode = 5` en `app/build.gradle.kts` para despliegue en Google Play Store.
+6. **Corrección de Persistencia de Disponibilidad General (`AvailabilityViewModel` & `AvailabilityScreen`):**
+   - Eliminación del error `null value in column "id" violates not-null constraint` en Supabase PostgreSQL mediante la generación de UUIDs de cliente (`java.util.UUID.randomUUID()`) previas al `upsert` cuando no existe un ID preexistente.
+   - Normalización del formato de horas a 8 caracteres (`"HH:mm:ss"`) para cumplir con la restricción estricta del tipo SQL `time without time zone`.
+   - Adición de un contenedor de error visual en `AvailabilityScreen` para presentar mensajes de excepción contextuales y retroalimentación clara al prestador en la UI ante fallos de guardado.
+7. **Resolución de Violación de Restricción `NOT NULL` en `day_of_week` (`Availability.kt`):**
+   - Eliminación de valores por defecto en las propiedades del modelo `Availability.kt` (`day_of_week`, `provider_id`, `start_time`, `end_time`) para evitar que `kotlinx.serialization` omita campos en el JSON enviado a Postgrest cuando su valor coincide con el valor por defecto (`day_of_week = 1`), erradicando el fallo `null value in column "day_of_week" violates not-null constraint`.
+   - Reafirmación en la documentación de la arquitectura del modelo de disponibilidad vs. servicios:
+     - `public.availability`: Marco o Jornada Maestra del Prestador (días/horas globales de disponibilidad).
+     - `public.services`: Horarios y días específicos asignados a cada servicio en particular dentro de dicha jornada (ej. Mañana: Panadería / Tarde: Programación).
 
 ### 🔹 Sesión Septiembre 2026 (Estabilidad, Cumplimiento Play Store y CI/CD)
 En esta intervención, el Orquestador Maestro dirigió un plan de optimización enfocado en la estabilidad de la interfaz, el cumplimiento regulatorio de Google Play y el fortalecimiento de la infraestructura de calidad:

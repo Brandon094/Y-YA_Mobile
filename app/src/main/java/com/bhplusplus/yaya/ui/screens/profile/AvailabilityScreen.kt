@@ -103,6 +103,23 @@ fun AvailabilityScreen(
                             )
                         }
 
+                        if (!viewModel.message.isNullOrBlank()) {
+                            item {
+                                Surface(
+                                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.8f),
+                                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                                ) {
+                                    Text(
+                                        text = viewModel.message!!,
+                                        color = MaterialTheme.colorScheme.onErrorContainer,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.padding(12.dp)
+                                    )
+                                }
+                            }
+                        }
+
                         items(viewModel.daysState) { dayState ->
                             // Organismo: Tarjeta de disponibilidad diaria
                             AvailabilityDayCard(

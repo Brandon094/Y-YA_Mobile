@@ -94,20 +94,24 @@ class AvailabilityViewModel : ViewModel() {
         val userId = SupabaseManager.client.auth.currentUserOrNull()?.id ?: return
         viewModelScope.launch {
             isSaving = true
+            message = null
             try {
-                // 1. Identificar qué días guardar
+                // 1. Identificar qué días guardar asignando UUID para evitar 'null value in id column' en PostgreSQL
                 val itemsToSave = daysState.filter { it.isWorking }.map {
+                    val formattedStart = if (it.startTime.length == 5) "${it.startTime}:00" else it.startTime
+                    val formattedEnd = if (it.endTime.length == 5) "${it.endTime}:00" else it.endTime
+
                     Availability(
-                        id = it.originalId,
+                        id = it.originalId ?: java.util.UUID.randomUUID().toString(),
                         provider_id = userId,
                         day_of_week = it.dayOfWeek,
-                        start_time = it.startTime,
-                        end_time = it.endTime
+                        start_time = formattedStart,
+                        end_time = formattedEnd
                     )
                 }
 
-                // 2. Identificar qué días borrar (los que estaban marcados como working y ya no)
-                val idsToDelete = daysState.filter { !it.isWorking && it.originalId != null }
+                // 2. Identificar qué días borrar (los que estaban guardados previamente y ahora se desactivaron)
+                val idsToDelete = daysState.filter { !it.isWorking && !it.originalId.isNullOrEmpty() }
                     .map { it.originalId!! }
 
                 // Operación en Supabase: Borramos los inactivos
@@ -125,8 +129,8 @@ class AvailabilityViewModel : ViewModel() {
                 message = "Horario guardado correctamente."
                 onSuccess()
             } catch (e: Exception) {
-                Log.e("AvailabilityVM", "Error al guardar: ${e.message}")
-                message = "Error al guardar los cambios."
+                Log.e("AvailabilityVM", "Error al guardar: ${e.message}", e)
+                message = "Error al guardar los cambios: ${e.localizedMessage}"
             } finally {
                 isSaving = false
             }

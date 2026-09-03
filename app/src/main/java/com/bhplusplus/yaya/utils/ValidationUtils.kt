@@ -10,6 +10,27 @@ import android.util.Patterns
 object ValidationUtils {
 
     /**
+     * Lista estandarizada de municipios de cobertura (Huila / Colombia)
+     * para evitar errores de tipeo en formularios de la aplicación.
+     */
+    val HUILA_MUNICIPALITIES = listOf(
+        "La Plata",
+        "Nátaga",
+        "Paicol",
+        "Tesalia",
+        "Garzón",
+        "Gigante",
+        "Neiva",
+        "Pitalito",
+        "Apepe",
+        "Agrado",
+        "Inzá",
+        "Páez (Belalcázar)",
+        "San Agustín",
+        "Silvia"
+    )
+
+    /**
      * Valida nombres y apellidos.
      * Debe contener solo letras (incluyendo acentos, ñ, ü), espacios y guiones/apóstrofes.
      * Mínimo 2 caracteres. Sin números ni símbolos especiales.

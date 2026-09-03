@@ -5,19 +5,38 @@ Todas las modificaciones notables en este proyecto serán documentadas en este a
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.2] - 2026-09-03
+## [1.0.1] - 2026-09-03
 ### Añadido
-- **Estrategia de Filtrado Geográfico por Municipio/Zona:**
+- **Estrategia de Filtrado Geográfico y Desplegables de Municipio (`ExposedDropdownMenuBox`):**
+    - Definición de la lista inmutable y estandarizada de municipios del departamento del Huila en `ValidationUtils.HUILA_MUNICIPALITIES`.
+    - Reemplazo de campos de texto libre por controles desplegables inmutables `ExposedDropdownMenuBox` en `RegisterUserScreen`, `EditProfileScreen` y `CreateServiceScreen`, garantizando la captura limpia de la ubicación de atención y cobertura sin errores de tipeo.
+    - Sincronización de la interfaz modal de diálogo de filtro de municipio en `HomeScreen` consumiendo la fuente de datos unificada de `ValidationUtils.HUILA_MUNICIPALITIES`.
     - Incorporación del campo opcional `municipality: String?` ("La Plata" por defecto) en los modelos de datos de dominio `UserProfile` y `Service`.
-    - Integración de Chip de Selección de Municipio interactivo en `HomeTopBar` e interfaz modal de diálogo de filtro por ubicación en `HomeScreen`.
-    - Lógica de filtrado dinámico en `HomeViewModel.applyFilters()` permitiendo segmentar el catálogo de servicios según la ubicación activa del usuario (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante, Todos).
-    - Captura y actualización del Municipio de Atención en los formularios de `RegisterUserScreen`, `EditProfileScreen` y `CreateServiceScreen`.
+    - Integración de Chip de Selección de Municipio interactivo en `HomeTopBar` y lógica de filtrado dinámico en `HomeViewModel.applyFilters()` (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante, Todos).
+- **Flujo de Onboarding del Prestador (Post-Registro):**
+    - Redirección automática de usuarios recién registrados con rol `provider` hacia la pantalla de configuración de Jornada Maestra (`AvailabilityScreen`), garantizando la parametrización de rangos de disponibilidad base (`public.availability`) antes de la creación y oferta de servicios.
+- **Carga Inteligente de Disponibilidad y Detector de Cruces (`CreateServiceScreen` & `CreateServiceViewModel`):**
+    - Action button *"Cargar mi jornada maestra"* que puebla de forma instantánea el listado de días laborables (`working_days`) utilizando la configuración general almacenada en `public.availability`.
+    - Algoritmo de detección de ocupación en `CreateServiceViewModel.loadProviderAvailabilityAndServices()` que consulta servicios previos del prestador e identifica la distribución de días ya asignados a otros servicios (`occupiedDaysByOtherServices`).
+    - Destacado visual en `CreateServiceScreen` con círculos de días ocupados resaltados en tono de advertencia (`errorContainer`) y notificación informativa contextual que explicita los días, nombres de los servicios asignados y sus rangos horarios activos (ej: `Desarrollo de aplicaciones móviles (08:00 - 18:00)`) para visibilidad de horas libres y prevención de solapamientos y traslapes de agenda.
+- **Arquitectura de Horarios y Días de Trabajo por Servicio:**
+    - Separación estricta entre la Jornada Maestra del Prestador (`public.availability`) y los días (`working_days`) y horarios específicos asignados a cada talento o servicio (`public.services`).
+    - Lógica de validación sincronizada en `ContratacionViewModel` que restringe el calendario a los días permitidos por el servicio y bloquea selecciones de horas fuera de rango de disponibilidad o transcurridas.
 - **Migración de Base de Datos Supabase (DDL):**
     - Definición de scripts SQL para adicionar la columna `municipality` a las tablas `public.profiles` y `public.services` con valor predeterminado `'La Plata'`.
 
 ### Cambiado
 - **Incremento de Versión de Producción:**
-    - Actualización de versión a `versionCode 7` (`versionName "1.0.2"`) en `app/build.gradle.kts`.
+    - Actualización de versión a `versionCode 5` (`versionName "1.0.1"`) en `app/build.gradle.kts`.
+
+### Corregido
+- **Persistencia de Disponibilidad General (`AvailabilityViewModel` & `AvailabilityScreen`):**
+    - Corrección del error `null value in column "id" violates not-null constraint` al guardar la disponibilidad en Supabase PostgreSQL, mediante la generación proactiva de UUIDs de cliente (`java.util.UUID.randomUUID()`) previa a la operación de `upsert`.
+    - Normalización de las cadenas de horario al formato de 8 caracteres (`"HH:mm:ss"`) para compatibilidad estricta con el tipo de dato SQL `time without time zone`.
+    - Incorporación de un contenedor de error visual contextual en `AvailabilityScreen` para desplegar mensajes informativos sobre excepciones de red o persistencia en la UI.
+- **Serialización Explícita de Disponibilidad (`Availability.kt` & Postgrest):**
+    - Eliminación de valores por defecto en las propiedades de `Availability.kt` (`day_of_week`, `provider_id`, `start_time`, `end_time`) para evitar que `kotlinx.serialization` omita propiedades en la codificación JSON cuando coinciden con su valor por defecto (ej. `day_of_week = 1`), garantizando la transmisión explícita de `day_of_week` y eliminando el error `null value in column "day_of_week" violates not-null constraint`.
+    - Reafirmación de la arquitectura de disponibilidad: `public.availability` mapea la Jornada Maestra/Marco global del prestador y `public.services` los horarios/días específicos asignados a cada servicio.
 
 ## [1.0.1] - 2026-09-02
 ### Corregido

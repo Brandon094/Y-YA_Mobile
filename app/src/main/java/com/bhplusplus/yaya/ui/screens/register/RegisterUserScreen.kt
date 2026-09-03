@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -61,6 +62,7 @@ fun RegisterScreen(
     var phone by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var municipality by remember { mutableStateOf("La Plata") }
+    var municipalityExpanded by remember { mutableStateOf(false) }
     var password by remember { mutableStateOf("") }
     var selectedRole by remember { mutableStateOf("client") } // 'client' o 'provider'
     var passwordVisible by remember { mutableStateOf(false) } // Controla si se ve la clave
@@ -239,16 +241,44 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // CAMPO: MUNICIPIO / CIUDAD
-        YayaTextField(
-            value = municipality,
-            onValueChange = { municipality = it },
-            label = "Municipio / Ciudad",
-            enabled = !isLoading,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-            leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) }
-        )
+        // SELECTOR DESPLEGABLE: MUNICIPIO / CIUDAD
+        Column(modifier = Modifier.fillMaxWidth()) {
+            ExposedDropdownMenuBox(
+                expanded = municipalityExpanded,
+                onExpandedChange = { if (!isLoading) municipalityExpanded = !municipalityExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = municipality,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Municipio / Ciudad de Residencia") },
+                    leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = municipalityExpanded) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    enabled = !isLoading,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                    )
+                )
+                ExposedDropdownMenu(
+                    expanded = municipalityExpanded,
+                    onDismissRequest = { municipalityExpanded = false }
+                ) {
+                    ValidationUtils.HUILA_MUNICIPALITIES.forEach { muni ->
+                        DropdownMenuItem(
+                            text = { Text(muni) },
+                            onClick = {
+                                municipality = muni
+                                municipalityExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
