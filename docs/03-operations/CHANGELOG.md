@@ -55,8 +55,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Reubicación visual de la estrella e indicador promedio de calificación (`RatingIndicator`) hacia la cabecera del componente `ServiceCard`, situándolo directamente debajo del nombre del prestador (`state.domain.provider?.full_name`).
     - Alineación semántica directa con la tabla SQL `public.ratings` (que califica al prestador / `provider_id` y su reputación general de talento), eliminando cualquier confusión previa donde la estrella aparentaba ser una calificación del servicio individual en lugar del prestador.
     - Reorganización visual de la categoría del servicio y la disponibilidad de días en el pie de página de la tarjeta (`ServiceCard`) para un layout limpio e intuitivo.
-- **Incremento de Versión del Proyecto:**
+- **Incremento de Versión y Etiquetado Oficial Git:**
     - Actualización de versión oficial a `versionName = "1.1.0"` y `versionCode = 5` en `app/build.gradle.kts` para despliegue en Google Play Store.
+    - Etiquetado oficial del Release Tag `v1.1.0` en Git para GitHub con el mensaje `"Lanzamiento Oficial YÁYA v1.1.0 (versionCode 5)"`, consolidando el Hito de Versión Oficial en Producción / Play Store Ready (`versionCode = 5`, `versionName = "1.1.0"`).
 
 ### Corregido
 - **Optimización de Legibilidad y Contraste en Tema Oscuro (`LoginScreen` & `RegisterUserScreen`):**

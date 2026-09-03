@@ -51,8 +51,9 @@ En esta intervención, el Orquestador Maestro dirigió la implementación del mo
    - Sincronización de validación cruzada en `ContratacionViewModel` que restringe el calendario de agendamiento a los días permitidos por servicio y bloquea opciones de horario fuera de rango o pasadas.
 4. **Migración de Esquema de Base de Datos (Supabase PostgreSQL):**
    - Incorporación de las sentencias SQL de migración DDL (`ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';` y `ALTER TABLE public.services ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';`).
-5. **Incremento de Versión y Publicación:**
+5. **Incremento de Versión, Etiquetado Git y Publicación:**
    - Actualización de versión de la aplicación a `versionName = "1.1.0"` y `versionCode = 5` en `app/build.gradle.kts` para despliegue en Google Play Store.
+   - **Registro de Etiqueta Git (Release Tag `v1.1.0`):** Etiquetado oficial del Release Tag `v1.1.0` en Git para GitHub con el mensaje `"Lanzamiento Oficial YÁYA v1.1.0 (versionCode 5)"`, oficializando el Hito de Versión Oficial en Producción / Play Store Ready (`versionCode = 5`, `versionName = "1.1.0"`).
 6. **Corrección de Persistencia de Disponibilidad General (`AvailabilityViewModel` & `AvailabilityScreen`):**
    - Eliminación del error `null value in column "id" violates not-null constraint` en Supabase PostgreSQL mediante la generación de UUIDs de cliente (`java.util.UUID.randomUUID()`) previas al `upsert` cuando no existe un ID preexistente.
    - Normalización del formato de horas a 8 caracteres (`"HH:mm:ss"`) para cumplir con la restricción estricta del tipo SQL `time without time zone`.
@@ -94,6 +95,7 @@ En esta intervención, el Orquestador Maestro dirigió la implementación del mo
     - Sincronización integral de la enciclopedia de documentación de YÁYA a la versión v1.1.0 (`versionCode 5`).
     - Actualización de `README.md` con las nuevas características v1.1.0 (Motor de Validaciones, Filtrado Geográfico por Municipio, Reputación ⭐, Rediseño Profile 2.0, Visor de Manuales por rol, Onboarding de Prestadores y Contraste Adaptativo en Tema Oscuro).
     - Alineación completa de `TECHNICAL_MANUAL.md`, `USER_MANUAL.md`, `ADMIN_MANUAL.md`, `CHANGELOG.md`, `TECHNICAL_SHEET.md`, `ROADMAP.md` y `PLAY_STORE_CHECKLIST.md` al estado `🟢 Producción / Play Store Ready (v1.1.0 - versionCode 5)`.
+    - Registro oficial del Release Tag `v1.1.0` en Git para GitHub con el mensaje `"Lanzamiento Oficial YÁYA v1.1.0 (versionCode 5)"` en la bitácora del Orquestador y en el `CHANGELOG.md`.
 15. **Confirmación Atómica de Cierre de Sesión en Barra Inferior (`HomeScreen` & `YayaConfirmationDialog`):**
     - **Protección Antiacidentes y Mejora UX:** Integración de la molécula atómica `YayaConfirmationDialog` en el botón de cerrar sesión ubicado en la barra inferior de navegación de `HomeScreen`.
     - **Flujo de Desautenticación Segura:** Se previno el cierre de sesión accidental solicitando la confirmación activa e intencional del usuario antes de desautenticar la sesión y destruir el estado activo, garantizando coherencia con los estándares de seguridad y experiencia de usuario de YÁYA.
