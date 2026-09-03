@@ -38,6 +38,7 @@ import com.bhplusplus.yaya.ui.screens.chat.ChatScreen
 import com.bhplusplus.yaya.ui.screens.chat.ChatListScreen
 import com.bhplusplus.yaya.ui.screens.legal.LegalViewerScreen
 import com.bhplusplus.yaya.utils.LegalConstants
+import com.bhplusplus.yaya.utils.ManualConstants
 
 import android.util.Log
 
@@ -53,6 +54,7 @@ import android.util.Log
 @Serializable object ProfileRoute
 @Serializable object EditProfileRoute
 @Serializable object AvailabilityRoute
+@Serializable object UserManualRoute
 @Serializable data class CreateServiceRoute(val serviceId: String? = null)
 @Serializable object MyOrdersRoute
 @Serializable object IncomingRequestsRoute
@@ -186,6 +188,7 @@ fun AppNavigation(startRoute: Any) {
                 onMyServices = { navController.navigate(MyServicesRoute) },
                 onAdminDashboard = { navController.navigate(AdminDashboardRoute) },
                 onChatList = { navController.navigate(ChatListRoute) },
+                onUserManual = { navController.navigate(UserManualRoute) },
                 onTerms = { navController.navigate(TermsRoute) },
                 onPrivacy = { navController.navigate(PrivacyRoute) },
                 onChangePassword = { navController.navigate(ResetRoute) },
@@ -197,6 +200,36 @@ fun AppNavigation(startRoute: Any) {
                         }
                     }
                 },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Manual de Uso de la App (Segregado por Rol)
+        composable<UserManualRoute> {
+            var activeRole by remember { mutableStateOf("client") }
+
+            LaunchedEffect(Unit) {
+                try {
+                    val user = SupabaseManager.client.auth.currentUserOrNull()
+                    if (user != null) {
+                        val profile = SupabaseManager.client.postgrest["profiles"]
+                            .select { filter { eq("id", user.id) } }
+                            .decodeSingle<UserProfile>()
+                        activeRole = profile.role
+                    }
+                } catch (_: Exception) {
+                    val user = SupabaseManager.client.auth.currentUserOrNull()
+                    activeRole = user?.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
+                }
+            }
+
+            LegalViewerScreen(
+                title = when (activeRole) {
+                    "admin" -> "Manual Maestro de YÁYA"
+                    "provider" -> "Manual para Prestadores"
+                    else -> "Manual para Clientes"
+                },
+                content = ManualConstants.getManualContentForRole(activeRole),
                 onBack = { navController.popBackStack() }
             )
         }

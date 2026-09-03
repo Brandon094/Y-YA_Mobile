@@ -3,11 +3,13 @@ package com.bhplusplus.yaya.ui.screens.profile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -46,6 +48,7 @@ fun ProfileScreen(
     onMyServices: () -> Unit,
     onAdminDashboard: () -> Unit,
     onChatList: () -> Unit,
+    onUserManual: () -> Unit,
     onTerms: () -> Unit,
     onPrivacy: () -> Unit,
     onChangePassword: () -> Unit,
@@ -56,6 +59,7 @@ fun ProfileScreen(
     val profile = viewModel.userProfile
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showRatingsSheet by remember { mutableStateOf(false) }
+    var selectedTab by remember { mutableIntStateOf(0) }
 
     if (showRatingsSheet) {
         ModalBottomSheet(
@@ -167,145 +171,283 @@ fun ProfileScreen(
                     .background(MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
             ) {
-                // Organismo: Cabecera Hero
+                // Organismo: Cabecera Hero 2.0 (con botón flotante de Lápiz/Editar)
                 ProfileHeroHeader(
                     name = profile?.full_name ?: "Usuario YÁYA",
                     email = viewModel.email,
                     avatarUrl = profile?.avatar_url,
                     role = profile?.role ?: "client",
                     averageRating = viewModel.averageRating,
-                    totalRatings = viewModel.totalRatings
+                    totalRatings = viewModel.totalRatings,
+                    onEditProfileClick = onEditProfile
                 )
 
-                Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)) {
-                    
-                    // --- SECCIÓN: ADMINISTRACIÓN (Solo Admin) ---
-                    if (profile?.role == "admin") {
-                        YayaSectionHeader("ADMINISTRACIÓN")
-                        ProfileSectionCard(
-                            modifier = Modifier.padding(bottom = 24.dp)
-                        ) {
-                            ProfileOptionItem(
-                                title = "Panel Administrativo",
-                                icon = Icons.Default.AdminPanelSettings,
-                                onClick = onAdminDashboard,
-                                badgeCount = viewModel.pendingAdminServicesCount
-                            )
-                        }
-                    }
+                Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
 
-                    // --- SECCIÓN: GESTIÓN DE TALENTO (Solo Prestadores/Admin) ---
+                    // TARJETAS DE ACCESO RÁPIDO (Quick Action Cards para Prestador / Admin)
                     if (profile?.role == "provider" || profile?.role == "admin") {
-                        YayaSectionHeader("MI TALENTO")
-                        ProfileSectionCard(
-                            modifier = Modifier.padding(bottom = 24.dp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 20.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            ProfileOptionItem(
-                                title = "Mi Reputación y Reseñas",
-                                icon = Icons.Default.Star,
-                                onClick = { showRatingsSheet = true },
-                                badgeText = if (viewModel.totalRatings > 0) String.format(java.util.Locale.US, "⭐ %.1f (%d)", viewModel.averageRating, viewModel.totalRatings) else "Sin opiniones"
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-                            ProfileOptionItem(
-                                title = "Mi Horario de Trabajo",
-                                icon = Icons.Default.Schedule,
-                                onClick = onAvailability
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-                            ProfileOptionItem(
-                                title = "Mis Servicios Publicados",
-                                icon = Icons.Default.Work,
-                                onClick = onMyServices
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-                            ProfileOptionItem(
-                                title = stringResource(R.string.incoming_requests_title),
-                                icon = Icons.Default.MoveToInbox,
+                            // Card 1: Servicios
+                            Surface(
+                                onClick = onMyServices,
+                                shape = RoundedCornerShape(16.dp),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(vertical = 14.dp, horizontal = 8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Work,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                    Spacer(Modifier.height(6.dp))
+                                    Text(
+                                        text = "Mis Servicios",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "Gestionar",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontSize = 11.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+
+                            // Card 2: Solicitudes
+                            Surface(
                                 onClick = onIncomingRequests,
-                                badgeCount = viewModel.pendingRequestsCount
-                            )
+                                shape = RoundedCornerShape(16.dp),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(vertical = 14.dp, horizontal = 8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    BadgedBox(
+                                        badge = {
+                                            if (viewModel.pendingRequestsCount > 0) {
+                                                Badge(
+                                                    containerColor = MaterialTheme.colorScheme.primary,
+                                                    contentColor = Color.White
+                                                ) {
+                                                    Text(viewModel.pendingRequestsCount.toString())
+                                                }
+                                            }
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.MoveToInbox,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                    }
+                                    Spacer(Modifier.height(6.dp))
+                                    Text(
+                                        text = "Solicitudes",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = if (viewModel.pendingRequestsCount > 0) "${viewModel.pendingRequestsCount} pendientes" else "Al día",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontSize = 11.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+
+                            // Card 3: Reputación
+                            Surface(
+                                onClick = { showRatingsSheet = true },
+                                shape = RoundedCornerShape(16.dp),
+                                color = Color(0xFFFFB800).copy(alpha = 0.12f),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(vertical = 14.dp, horizontal = 8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = null,
+                                        tint = Color(0xFFFFB800),
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                    Spacer(Modifier.height(6.dp))
+                                    Text(
+                                        text = "Reputación",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = if (viewModel.totalRatings > 0) String.format(java.util.Locale.US, "⭐ %.1f (%d)", viewModel.averageRating, viewModel.totalRatings) else "Sin reseñas",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontSize = 11.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
                         }
                     }
 
-                    // --- SECCIÓN: MI ACTIVIDAD ---
-                    YayaSectionHeader("MI ACTIVIDAD")
-                    ProfileSectionCard(
-                        modifier = Modifier.padding(bottom = 24.dp)
+                    // PESTAÑAS DE NAVEGACIÓN SEGMENTADA
+                    TabRow(
+                        selectedTabIndex = selectedTab,
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        divider = { HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant) },
+                        modifier = Modifier.padding(bottom = 20.dp)
                     ) {
-                        Column {
-                            ProfileOptionItem(
-                                title = stringResource(R.string.my_orders_title),
-                                icon = Icons.Default.History,
-                                onClick = onMyOrders
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-                            ProfileOptionItem(
-                                title = "Mis Mensajes",
-                                icon = Icons.AutoMirrored.Filled.Chat,
-                                onClick = onChatList,
-                                badgeCount = viewModel.unreadMessagesCount
-                            )
-                        }
+                        Tab(
+                            selected = selectedTab == 0,
+                            onClick = { selectedTab = 0 },
+                            text = { Text("💼 Mi Operación", fontWeight = FontWeight.Bold, fontSize = 14.sp) }
+                        )
+                        Tab(
+                            selected = selectedTab == 1,
+                            onClick = { selectedTab = 1 },
+                            text = { Text("⚙️ Ajustes y Ayuda", fontWeight = FontWeight.Bold, fontSize = 14.sp) }
+                        )
                     }
 
-                    // --- SECCIÓN: CONFIGURACIÓN DE CUENTA ---
-                    YayaSectionHeader("CONFIGURACIÓN")
-                    ProfileSectionCard(
-                        modifier = Modifier.padding(bottom = 40.dp)
-                    ) {
-                        Column {
-                            ProfileOptionItem(
-                                title = stringResource(R.string.profile_edit_option),
-                                icon = Icons.Default.Badge,
-                                onClick = onEditProfile
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-                            ProfileOptionItem(
-                                title = stringResource(R.string.profile_change_password_option),
-                                icon = Icons.Default.Lock,
-                                onClick = onChangePassword
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-                            
-                            // LEGAL
-                            ProfileOptionItem(
-                                title = stringResource(R.string.legal_terms_title),
-                                icon = Icons.Default.Gavel,
-                                onClick = onTerms
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-                            ProfileOptionItem(
-                                title = stringResource(R.string.legal_privacy_title),
-                                icon = Icons.Default.PrivacyTip,
-                                onClick = onPrivacy
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-
-                            ProfileOptionItem(
-                                title = "Eliminar mi cuenta",
-                                icon = Icons.Default.DeleteForever,
-                                onClick = { showDeleteDialog = true },
-                                isDestructive = true
-                            )
+                    if (selectedTab == 0) {
+                        // --- PESTAÑA 0: OPERACIÓN Y ACTIVIDAD ---
+                        if (profile?.role == "admin") {
+                            YayaSectionHeader("ADMINISTRACIÓN")
+                            ProfileSectionCard(modifier = Modifier.padding(bottom = 20.dp)) {
+                                ProfileOptionItem(
+                                    title = "Panel Administrativo",
+                                    icon = Icons.Default.AdminPanelSettings,
+                                    onClick = onAdminDashboard,
+                                    badgeCount = viewModel.pendingAdminServicesCount
+                                )
+                            }
                         }
-                    }
 
-                    // Átomo: Botón Secundario (Outlined) para Salida
-                    YayaSecondaryButton(
-                        text = stringResource(R.string.profile_logout_button),
-                        onClick = onLogout,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        if (profile?.role == "provider" || profile?.role == "admin") {
+                            YayaSectionHeader("MI TALENTO Y DISPONIBILIDAD")
+                            ProfileSectionCard(modifier = Modifier.padding(bottom = 20.dp)) {
+                                ProfileOptionItem(
+                                    title = "Mi Horario de Trabajo",
+                                    icon = Icons.Default.Schedule,
+                                    onClick = onAvailability
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                                ProfileOptionItem(
+                                    title = "Mis Servicios Publicados",
+                                    icon = Icons.Default.Work,
+                                    onClick = onMyServices
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                                ProfileOptionItem(
+                                    title = stringResource(R.string.incoming_requests_title),
+                                    icon = Icons.Default.MoveToInbox,
+                                    onClick = onIncomingRequests,
+                                    badgeCount = viewModel.pendingRequestsCount
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                                ProfileOptionItem(
+                                    title = "Mi Reputación y Reseñas",
+                                    icon = Icons.Default.Star,
+                                    onClick = { showRatingsSheet = true },
+                                    badgeText = if (viewModel.totalRatings > 0) String.format(java.util.Locale.US, "⭐ %.1f (%d)", viewModel.averageRating, viewModel.totalRatings) else "Sin opiniones"
+                                )
+                            }
+                        }
 
-                    Spacer(Modifier.height(16.dp))
-                    
-                    // Sello de Marca Atómico
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        PoweredByBH()
+                        YayaSectionHeader("MI ACTIVIDAD DE CLIENTE")
+                        ProfileSectionCard(modifier = Modifier.padding(bottom = 20.dp)) {
+                            Column {
+                                ProfileOptionItem(
+                                    title = stringResource(R.string.my_orders_title),
+                                    icon = Icons.Default.History,
+                                    onClick = onMyOrders
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                                ProfileOptionItem(
+                                    title = "Mis Mensajes",
+                                    icon = Icons.AutoMirrored.Filled.Chat,
+                                    onClick = onChatList,
+                                    badgeCount = viewModel.unreadMessagesCount
+                                )
+                            }
+                        }
+                    } else {
+                        // --- PESTAÑA 1: AJUSTES, AYUDA Y LEGAL ---
+                        YayaSectionHeader("SEGURIDAD Y CONFIGURACIÓN")
+                        ProfileSectionCard(modifier = Modifier.padding(bottom = 20.dp)) {
+                            Column {
+                                ProfileOptionItem(
+                                    title = stringResource(R.string.profile_edit_option),
+                                    icon = Icons.Default.Badge,
+                                    onClick = onEditProfile
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                                ProfileOptionItem(
+                                    title = stringResource(R.string.profile_change_password_option),
+                                    icon = Icons.Default.Lock,
+                                    onClick = onChangePassword
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                                ProfileOptionItem(
+                                    title = "Manual de Uso de la App",
+                                    icon = Icons.AutoMirrored.Filled.MenuBook,
+                                    onClick = onUserManual
+                                )
+                            }
+                        }
+
+                        YayaSectionHeader("LEGAL Y SOPORTE")
+                        ProfileSectionCard(modifier = Modifier.padding(bottom = 24.dp)) {
+                            Column {
+                                ProfileOptionItem(
+                                    title = stringResource(R.string.legal_terms_title),
+                                    icon = Icons.Default.Gavel,
+                                    onClick = onTerms
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                                ProfileOptionItem(
+                                    title = stringResource(R.string.legal_privacy_title),
+                                    icon = Icons.Default.PrivacyTip,
+                                    onClick = onPrivacy
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                                ProfileOptionItem(
+                                    title = "Eliminar mi cuenta",
+                                    icon = Icons.Default.DeleteForever,
+                                    onClick = { showDeleteDialog = true },
+                                    isDestructive = true
+                                )
+                            }
+                        }
+
+                        YayaSecondaryButton(
+                            text = stringResource(R.string.profile_logout_button),
+                            onClick = onLogout,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(Modifier.height(16.dp))
+                        
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            PoweredByBH()
+                        }
                     }
                 }
             }
@@ -325,6 +467,7 @@ fun ProfileScreenPreview() {
             onMyServices = {},
             onAdminDashboard = {},
             onChatList = {},
+            onUserManual = {},
             onTerms = {},
             onPrivacy = {},
             onChangePassword = {},

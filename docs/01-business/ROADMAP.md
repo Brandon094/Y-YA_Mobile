@@ -61,8 +61,10 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 - [x] **Reportes de Comportamiento:** Implementación de tabla `public.reports` y sistema de denuncias visuales.
 - [x] **Auditoría de Servicios:** Flujo de aprobación para nuevos servicios de prestadores no verificados.
 
-## Hito 6: Finalización de Manuales y Lanzamiento (Presentación SENA & Play Store)
+## Hito 6: Finalización de Manuales, Rediseño Profile 2.0 y Lanzamiento (Presentación SENA & Play Store)
 - [x] **Consolidación Atómica:** Refactorización total de UI/UX (Atoms, Molecules, Organisms).
+- [x] **Rediseño ProfileScreen 2.0:** Hero Header 2.0 con botón flotante de edición (`IconButton Icons.Default.Edit`), Quick Action Cards (*Mis Servicios*, *Solicitudes* con badge de pendientes, *Reputación* ⭐ 4.9) y navegación por `TabRow` (*"💼 Mi Operación"* y *"⚙️ Ajustes y Ayuda"*).
+- [x] **Visor de Manuales Integrado por Rol:** Segregación por rol (`ManualConstants.getManualContentForRole`) en `LegalViewerScreen` con estilo formal Markdown sin emojis para Cliente, Prestador y Admin.
 - [x] **Auditoría Admin:** Sistema de moderación y sanciones progresivas funcional.
 - [x] **Manual Técnico Completo:** Documentación de arquitectura Senior y estándares de codificación.
 - [x] **Ajuste Legal Final & Google Play:** Cumplimiento de políticas con visor legal, link de privacidad y permiso `AD_ID`.

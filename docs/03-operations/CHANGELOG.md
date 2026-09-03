@@ -33,6 +33,17 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Deshabilitación visual (`alpha = 0.3f`) y desacoplamiento de clics en el selector de días (`FlowRow`) para días fuera de la jornada maestra (`masterWorkingDays`), con evaluación reactiva `currentValidationError` y deshabilitación dinámica del botón de guardado ante inconsistencias.
 - **Migración de Base de Datos Supabase (DDL):**
     - Definición de scripts SQL para adicionar la columna `municipality` a las tablas `public.profiles` y `public.services` con valor predeterminado `'La Plata'`.
+- **Visor del Manual de Uso Integrado con Segregación Estricta por Rol y Estilo Formal Sin Emojis (`ManualConstants.kt`, `AppNavigation.kt`, `LegalViewerScreen`, `USER_MANUAL.md`, `ADMIN_MANUAL.md`):**
+    - Implementación de la función `ManualConstants.getManualContentForRole(role)` en `ManualConstants.kt` que retorna dinámicamente el manual personalizado según el rol del usuario autenticado (`CLIENT_ROLE_MANUAL_CONTENT`, `PROVIDER_ROLE_MANUAL_CONTENT`, `ADMIN_ROLE_MANUAL_CONTENT`).
+    - Lógica de enrutamiento dinámico por rol en `UserManualRoute` de `AppNavigation.kt`: consulta asíncrona de `activeRole` desde el perfil Postgrest (`profiles.role`) con fallback a `userMetadata["role"]`, pasando a `LegalViewerScreen` títulos adaptativos ("Manual para Clientes", "Manual para Prestadores", "Manual Maestro de YÁYA") y el contenido correspondiente.
+    - Adopción de estilo formal, ejecutivo y técnico (estilo legal Markdown) con erradicación total de emojis en todos los textos de manuales (`ManualConstants.kt`, `USER_MANUAL.md` y `ADMIN_MANUAL.md`) para cumplir con los estándares de documentación formal de BH++ Team.
+    - Reescritura integral de los manuales oficiales físicos en `docs/03-operations/manuals/USER_MANUAL.md` y `ADMIN_MANUAL.md` detallando formalmente facultades ("Lo que PUEDE hacer") y restricciones ("Lo que NO PUEDE hacer") para Cliente, Prestador y Administrador.
+- **Rediseño Limpio, Modular y Estructurado (ProfileScreen 2.0):**
+    - **Hero Header 2.0:** Integración de un botón flotante de lápiz/editar (`IconButton Icons.Default.Edit`) en la esquina superior derecha del encabezado, eliminando la necesidad de un botón largo en la lista.
+    - **Tarjetas de Acceso Rápido (Quick Action Cards):** Fila de 3 tarjetas compactas en grid para prestadores y administradores (*Mis Servicios*, *Solicitudes* con badge flotante en rojo de pendientes, y *Reputación* con calificación ⭐ 4.9).
+    - **Navegación por Pestañas Segmentadas (`TabRow`):** Organización modular de las 14 opciones en 2 pestañas limpias:
+        - *Pestaña 1 ("💼 Mi Operación"):* Operatividad diaria (Horario de trabajo, servicios publicados, solicitudes, mis pedidos, mensajes y panel admin).
+        - *Pestaña 2 ("⚙️ Ajustes y Ayuda"):* Seguridad y soporte (Cambio de clave, Manual de uso, Términos y Condiciones, Política de Privacidad, Borrado de cuenta y Cerrar sesión).
 
 ### Cambiado
 - **Alineación Semántica de Calificaciones en `ServiceCard` (`RatingIndicator`):**

@@ -1,4 +1,4 @@
-# 🛡️ Auditoría de Calidad y Requisitos - YÁYA (v0.1.5-alpha)
+# 🛡️ Auditoría de Calidad y Requisitos - YÁYA (v1.1.0)
 
 Este documento sirve como guía oficial para el proceso de verificación de requisitos y aseguramiento de la calidad basado en el estándar **ISO/IEC 25010**.
 
@@ -42,7 +42,7 @@ Este documento sirve como guía oficial para el proceso de verificación de requ
 | | ¿Consumo de recursos estable? | Sí | Perfilado de memoria realizado con Android Profiler. |
 | **Compatibilidad** | ¿Funciona en SO objetivo? | Sí | Soporte nativo para Android 8.0 hasta Android 15. |
 | | ¿Integración con APIs correcta? | Sí | Sincronización perfecta con Supabase Postgrest y Realtime. |
-| **Usabilidad** | ¿Interfaz intuitiva y coherente? | Sí | Refactorización masiva bajo **Atomic Design** que garantiza consistencia visual DRY. |
+| **Usabilidad** | ¿Interfaz intuitiva y coherente? | Sí | Refactorización masiva bajo **Atomic Design**, ProfileScreen 2.0 (Hero Header, Quick Action Cards, TabRow) y Visor de Manuales por rol en estilo Markdown formal sin emojis. |
 | | ¿Mensajes de error claros? | Sí | Captura de excepciones con mensajes amigables al usuario. |
 | **Fiabilidad** | ¿Maneja fallos sin cerrarse (crashes)? | Sí | Implementación de `try-catch` en ViewModels y Scaffold de seguridad. |
 | | ¿Evita pérdida de datos? | Sí | Persistencia inmediata en PostgreSQL tras cada acción del usuario. |
