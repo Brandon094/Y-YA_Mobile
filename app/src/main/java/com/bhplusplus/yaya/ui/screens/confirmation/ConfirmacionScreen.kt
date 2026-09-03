@@ -65,44 +65,48 @@ fun PantallaReservaConfirmada(
             }
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Organismo: Hero Banner de Éxito
-            SuccessHeroBanner(
-                title = stringResource(R.string.confirmation_success_title),
-                subtitle = stringResource(R.string.confirmation_success_message)
-            )
-
-            if (viewModel.isLoading && uiState == null) {
+        if (viewModel.isLoading && uiState == null) {
+            Box(modifier = Modifier.padding(padding).fillMaxSize()) {
                 ContratacionShimmer()
-            } else if (uiState != null) {
-                // CUERPO: TICKET DE DETALLES (Organismo)
-                Column(modifier = Modifier.padding(24.dp)) {
-                    ConfirmationTicketCard(state = uiState)
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Organismo: Hero Banner de Éxito
+                SuccessHeroBanner(
+                    title = stringResource(R.string.confirmation_success_title),
+                    subtitle = stringResource(R.string.confirmation_success_message)
+                )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                if (uiState != null) {
+                    // CUERPO: TICKET DE DETALLES (Organismo)
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        ConfirmationTicketCard(state = uiState)
 
-                    // NOTA DE SEGURIDAD (Sección persistente)
-                    Surface(
-                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(20.dp))
-                            Spacer(Modifier.width(12.dp))
-                            Text(
-                                text = "Recuerda que el prestador puede enviarte una contraoferta. Mantente atento al chat.",
-                                fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                lineHeight = 18.sp
-                            )
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // NOTA DE SEGURIDAD (Sección persistente)
+                        Surface(
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(20.dp))
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    text = "Recuerda que el prestador puede enviarte una contraoferta. Mantente atento al chat.",
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    lineHeight = 18.sp
+                                )
+                            }
                         }
                     }
                 }

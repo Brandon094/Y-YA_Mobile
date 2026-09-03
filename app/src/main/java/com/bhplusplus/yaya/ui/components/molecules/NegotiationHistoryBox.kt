@@ -1,9 +1,7 @@
 package com.bhplusplus.yaya.ui.components.molecules
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
@@ -19,6 +17,8 @@ fun NegotiationHistoryBox(
     description: String,
     modifier: Modifier = Modifier
 ) {
+    if (description.isBlank()) return
+
     Column(modifier = modifier) {
         Text(
             text = "ESTADO DE LA PROPUESTA",
@@ -42,14 +42,12 @@ fun NegotiationHistoryBox(
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(Modifier.width(10.dp))
-                Box(modifier = Modifier.heightIn(max = 200.dp).verticalScroll(rememberScrollState())) {
-                    Text(
-                        text = description,
-                        fontSize = 13.sp,
-                        lineHeight = 18.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                Text(
+                    text = description,
+                    fontSize = 13.sp,
+                    lineHeight = 18.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
