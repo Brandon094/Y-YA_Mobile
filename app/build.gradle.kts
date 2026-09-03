@@ -14,8 +14,8 @@ android {
         applicationId = "com.bhplusplus.yaya"
         minSdk = 26
         targetSdk = 37
-        versionCode = 5
-        versionName = "1.0.0"
+        versionCode = 6
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -59,7 +59,7 @@ Los modelos de datos (`ServiceRequest`, `UserProfile`, `Message`, `Rating`, etc.
 ## 3. Stack Tecnológico y Dependencias Clave
 
 *   **Lenguaje:** Kotlin 2.4.10 (K2 Compiler, JVM Target 17).
-*   **Target SDK:** Android API 37 (minSdk 26, versionCode 5, versionName "1.0.0").
+*   **Target SDK:** Android API 37 (minSdk 26, versionCode 6, versionName "1.0.1").
 *   **UI:** Jetpack Compose (Material 3) con soporte para arquitectura atómica y componentes de desplazamiento optimizados.
 *   **Backend:** Supabase (PostgreSQL + Realtime + Storage).
 *   **Permisos y Cumplimiento Google Play:** Declaración de `com.google.android.gms.permission.AD_ID` para servicios de analítica e identificador de anuncios en Google Play.
@@ -84,7 +84,7 @@ Los modelos de datos (`ServiceRequest`, `UserProfile`, `Message`, `Rating`, etc.
 
 ### 4.2. Compilación
 *   **Debug:** Ejecutar tarea `app:assembleDebug`.
-*   **Release:** Configurar el archivo `.jks` y ejecutar `app:bundleRelease` (genera el archivo `.aab` para Google Play con `versionCode = 5` y símbolos de depuración nativos NDK en nivel `FULL`).
+*   **Release:** Configurar el archivo `.jks` y ejecutar `app:bundleRelease` (genera el archivo `.aab` para Google Play con `versionCode = 6` y símbolos de depuración nativos NDK en nivel `FULL`).
 
 ---
 
@@ -113,7 +113,7 @@ Para evitar excepciones en runtime como `IllegalStateException` durante la fase 
 
 1.  **Advanced CodeQL Analysis:** GitHub Actions (`.github/workflows/codeql.yml`) ejecuta análisis estático de código enfocado en Java 17 y Kotlin (`java-kotlin`), evaluando reglas de seguridad extendida (`security-extended,security-and-quality`).
 2.  **Secret Management:** Inyección automatizada de `google-services.json` durante el pipeline de integración continua utilizando secretos de GitHub y sintaxis heredoc.
-3.  **App Bundle & Depuración Nativa:** Generación del binario `.aab` con firma de producción SHA-256, `versionCode = 5` y la directiva `ndk { debugSymbolLevel = 'FULL' }` en `app/build.gradle.kts` para análisis nativo completo en Play Console.
+3.  **App Bundle & Depuración Nativa:** Generación del binario `.aab` con firma de producción SHA-256, `versionCode = 6` y la directiva `ndk { debugSymbolLevel = 'FULL' }` en `app/build.gradle.kts` para análisis nativo completo en Play Console.
 
 ---
 *Documento certificado por la Dirección Técnica de BH++ Team - 2026*
