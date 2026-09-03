@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
+import com.bhplusplus.yaya.utils.ValidationUtils
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import kotlinx.coroutines.launch
@@ -30,9 +31,15 @@ class LoginViewModel : ViewModel() {
      * @param onResult Callback para avisar a la UI si el login fue exitoso.
      */
     fun login(email: String, password: String, onResult: (Boolean) -> Unit) {
-        // Validación básica inicial
-        if (email.isBlank() || password.isBlank()) {
-            _errorMessage.value = "Completa todos los campos"
+        val emailError = ValidationUtils.getEmailError(email)
+        if (emailError != null) {
+            _errorMessage.value = emailError
+            onResult(false)
+            return
+        }
+
+        if (password.isBlank()) {
+            _errorMessage.value = "Por favor, ingresa tu contraseña"
             onResult(false)
             return
         }

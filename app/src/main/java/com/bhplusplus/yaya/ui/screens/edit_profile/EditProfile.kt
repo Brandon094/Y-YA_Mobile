@@ -35,6 +35,7 @@ import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
 import com.bhplusplus.yaya.ui.components.atoms.YayaTextField
 import com.bhplusplus.yaya.ui.components.molecules.AvatarSelector
 import com.bhplusplus.yaya.utils.ImageUtils
+import com.bhplusplus.yaya.utils.ValidationUtils
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -50,7 +51,13 @@ fun EditProfileScreen(
     viewModel: EditProfileViewModel = viewModel()
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis <= System.currentTimeMillis()
+            }
+        }
+    )
     val context = LocalContext.current
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
@@ -132,6 +139,7 @@ fun EditProfileScreen(
                 onValueChange = { viewModel.name = it },
                 label = stringResource(R.string.edit_profile_full_name_label),
                 enabled = !viewModel.isLoading,
+                errorMessage = if (viewModel.name.isNotEmpty() && !ValidationUtils.isValidName(viewModel.name)) "Ingresa nombres válidos sin números ni símbolos" else null,
                 leadingIcon = { Icon(Icons.Default.Person, null) }
             )
 
@@ -141,6 +149,7 @@ fun EditProfileScreen(
                 onValueChange = { viewModel.documentId = it },
                 label = stringResource(R.string.register_id_number),
                 enabled = !viewModel.isLoading,
+                errorMessage = if (viewModel.documentId.isNotEmpty() && !ValidationUtils.isValidDocumentId(viewModel.documentId)) "El documento debe contener de 6 a 12 dígitos" else null,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 leadingIcon = { Icon(Icons.Default.Badge, null) }
             )
@@ -151,6 +160,7 @@ fun EditProfileScreen(
                 onValueChange = { viewModel.phone = it },
                 label = stringResource(R.string.edit_profile_phone_label),
                 enabled = !viewModel.isLoading,
+                errorMessage = if (viewModel.phone.isNotEmpty() && !ValidationUtils.isValidPhone(viewModel.phone)) "El teléfono debe contener exactamente 10 números" else null,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 leadingIcon = { Icon(Icons.Default.Phone, null) }
             )
@@ -169,6 +179,7 @@ fun EditProfileScreen(
                 value = viewModel.birthDate,
                 onValueChange = {},
                 label = stringResource(R.string.register_birth_date),
+                errorMessage = if (viewModel.birthDate.isNotEmpty() && !ValidationUtils.isValidBirthDate(viewModel.birthDate)) "La fecha de nacimiento no puede ser futura" else null,
                 modifier = Modifier.clickable { if(!viewModel.isLoading) showDatePicker = true },
                 enabled = false,
                 readOnly = true,

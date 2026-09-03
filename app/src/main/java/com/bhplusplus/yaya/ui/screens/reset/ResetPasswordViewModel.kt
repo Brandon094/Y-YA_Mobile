@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
+import com.bhplusplus.yaya.utils.ValidationUtils
 import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.launch
 import android.util.Log
@@ -29,8 +30,9 @@ class ResetPasswordViewModel : ViewModel() {
      * @param email Correo del usuario que olvidó la clave.
      */
     fun sendResetPasswordEmail(email: String) {
-        if (email.isBlank()) {
-            _errorMessage.value = "Ingresa tu correo electrónico"
+        val emailError = ValidationUtils.getEmailError(email)
+        if (emailError != null) {
+            _errorMessage.value = emailError
             return
         }
 
@@ -56,6 +58,13 @@ class ResetPasswordViewModel : ViewModel() {
      * (Usado habitualmente después de entrar con un enlace de recuperación).
      */
     fun updatePassword(newPassword: String, onResult: (Boolean) -> Unit) {
+        val passwordError = ValidationUtils.getPasswordError(newPassword)
+        if (passwordError != null) {
+            _errorMessage.value = passwordError
+            onResult(false)
+            return
+        }
+
         _isLoading.value = true
         _errorMessage.value = null
 

@@ -29,6 +29,15 @@ Para cada pantalla, se implementa el siguiente flujo de componentes:
 *   **Screen (Composable):** Recibe el `UiState` y emite eventos de usuario al ViewModel.
 *   **Components (Composables):** Átomos y moléculas desacoplados que renderizan partes específicas del `UiState`.
 
+### 1.4. Engine de Validaciones de Entrada (ValidationUtils - DRY)
+El componente `ValidationUtils` centraliza las reglas de negocio para la captura y edición de datos de usuario en toda la aplicación:
+*   **Nombres:** Letras latinas (incluyendo tildes y ñ), espacios y guiones. Sin dígitos numéricos.
+*   **Documento DNI/CC:** Formato exclusivamente numérico entre 6 y 12 dígitos.
+*   **Teléfono móvil:** Cadena de exactamente 10 dígitos numéricos.
+*   **Correo Electrónico:** Formato estándar RFC/Patterns (`Patterns.EMAIL_ADDRESS`).
+*   **Contraseña Segura:** Mínimo 8 caracteres combinando mayúscula, minúscula y número o carácter especial.
+*   **Fecha de Nacimiento:** Bloqueo en la UI de días futuros en el calendario (`SelectableDates`) y validación de fecha cronológica no futura (`isValidBirthDate`).
+
 ---
 
 ## 2. Modelado de Datos y Seguridad (Supabase PostgreSQL)

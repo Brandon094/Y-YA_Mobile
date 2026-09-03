@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.UserProfile
+import com.bhplusplus.yaya.utils.ValidationUtils
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.postgrest.postgrest
@@ -40,9 +41,43 @@ class RegisterUserViewModel : ViewModel() {
         role: String,
         onResult: (Boolean) -> Unit
     ) {
-        // Validación de campos obligatorios
-        if (name.isBlank() || email.isBlank() || password.isBlank() || phone.isBlank() || 
-            address.isBlank() || documentId.isBlank() || birthDate.isBlank()) {
+        // Validaciones rigurosas con ValidationUtils (DRY)
+        val nameError = ValidationUtils.getNameError(name)
+        if (nameError != null) {
+            _errorMessage.value = nameError
+            onResult(false)
+            return
+        }
+
+        val docError = ValidationUtils.getDocumentIdError(documentId)
+        if (docError != null) {
+            _errorMessage.value = docError
+            onResult(false)
+            return
+        }
+
+        val phoneError = ValidationUtils.getPhoneError(phone)
+        if (phoneError != null) {
+            _errorMessage.value = phoneError
+            onResult(false)
+            return
+        }
+
+        val emailError = ValidationUtils.getEmailError(email)
+        if (emailError != null) {
+            _errorMessage.value = emailError
+            onResult(false)
+            return
+        }
+
+        val passwordError = ValidationUtils.getPasswordError(password)
+        if (passwordError != null) {
+            _errorMessage.value = passwordError
+            onResult(false)
+            return
+        }
+
+        if (address.isBlank() || birthDate.isBlank()) {
             _errorMessage.value = "Por favor, completa todos los campos"
             onResult(false)
             return

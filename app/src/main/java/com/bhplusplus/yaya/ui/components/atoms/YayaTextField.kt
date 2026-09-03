@@ -20,6 +20,7 @@ fun YayaTextField(
     readOnly: Boolean = false,
     placeholder: String? = null,
     isError: Boolean = false,
+    errorMessage: String? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -28,6 +29,8 @@ fun YayaTextField(
     singleLine: Boolean = true,
     colors: TextFieldColors? = null
 ) {
+    val showBorderError = isError || !errorMessage.isNullOrBlank()
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -37,7 +40,16 @@ fun YayaTextField(
         modifier = modifier.fillMaxWidth(),
         enabled = enabled,
         readOnly = readOnly,
-        isError = isError,
+        isError = showBorderError,
+        supportingText = if (!errorMessage.isNullOrBlank()) {
+            {
+                Text(
+                    text = errorMessage,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        } else null,
         shape = RoundedCornerShape(16.dp),
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
@@ -46,7 +58,8 @@ fun YayaTextField(
         trailingIcon = trailingIcon,
         colors = colors ?: OutlinedTextFieldDefaults.colors(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            errorBorderColor = MaterialTheme.colorScheme.error
         )
     )
 }

@@ -30,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.ui.components.atoms.YayaPrimaryButton
 import com.bhplusplus.yaya.ui.components.atoms.YayaTextField
+import com.bhplusplus.yaya.utils.ValidationUtils
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -65,19 +66,28 @@ fun RegisterScreen(
     var acceptedTerms by remember { mutableStateOf(false) }
     var acceptedPrivacy by remember { mutableStateOf(false) }
 
-    // LÓGICA DE VALIDACIÓN: Se actualiza cada vez que el usuario escribe algo
-    // Valida que el email tenga un formato estándar (nombre@dominio.com)
-    val isEmailValid = Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    // Valida que la contraseña sea lo suficientemente larga y segura (mínimo 6 chars)
-    val isPasswordValid = password.length >= 6
-    // El formulario es válido SOLO si todos los campos tienen contenido y cumplen sus reglas
-    val isFormValid = name.isNotBlank() && documentId.isNotBlank() && birthDate.isNotBlank() && 
-                      isEmailValid && phone.isNotBlank() && address.isNotBlank() && isPasswordValid &&
-                      acceptedTerms && acceptedPrivacy
+    // LÓGICA DE VALIDACIÓN CENTRALIZADA (ValidationUtils - DRY)
+    val isNameValid = ValidationUtils.isValidName(name)
+    val isDocumentValid = ValidationUtils.isValidDocumentId(documentId)
+    val isPhoneValid = ValidationUtils.isValidPhone(phone)
+    val isEmailValid = ValidationUtils.isValidEmail(email)
+    val isPasswordValid = ValidationUtils.isSecurePassword(password)
+    val isBirthDateValid = ValidationUtils.isValidBirthDate(birthDate)
 
-    // ESTADOS DEL SELECTOR DE FECHA (DatePicker)
+    // El formulario es válido SOLO si todos los campos tienen contenido y cumplen sus reglas
+    val isFormValid = isNameValid && isDocumentValid && isPhoneValid && 
+                      isEmailValid && isPasswordValid && isBirthDateValid && 
+                      address.isNotBlank() && acceptedTerms && acceptedPrivacy
+
+    // ESTADOS DEL SELECTOR DE FECHA (DatePicker - Restringido a hoy o fechas pasadas)
     var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis <= System.currentTimeMillis()
+            }
+        }
+    )
 
     // OBSERVACIÓN DEL VIEWMODEL: Escuchamos si Supabase está cargando o devolvió un error
     val isLoading by viewModel.isLoading.observeAsState(false)
@@ -150,6 +160,7 @@ fun RegisterScreen(
             onValueChange = { name = it },
             label = stringResource(R.string.register_full_name),
             enabled = !isLoading,
+            errorMessage = if (name.isNotEmpty() && !isNameValid) "Ingresa nombres válidos sin números ni símbolos" else null,
             leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
@@ -163,6 +174,7 @@ fun RegisterScreen(
             onValueChange = { documentId = it },
             label = stringResource(R.string.register_id_number),
             enabled = !isLoading,
+            errorMessage = if (documentId.isNotEmpty() && !isDocumentValid) "El documento debe contener entre 6 y 12 dígitos" else null,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             leadingIcon = { Icon(Icons.Default.Badge, contentDescription = null) }
@@ -176,6 +188,7 @@ fun RegisterScreen(
             onValueChange = { },
             label = stringResource(R.string.register_birth_date),
             placeholder = stringResource(R.string.register_select_date_placeholder),
+            errorMessage = if (birthDate.isNotEmpty() && !isBirthDateValid) "La fecha de nacimiento no puede ser futura" else null,
             modifier = Modifier
                 .clickable { if (!isLoading) showDatePicker = true },
             enabled = false,
@@ -202,6 +215,7 @@ fun RegisterScreen(
             onValueChange = { phone = it },
             label = stringResource(R.string.register_phone),
             enabled = !isLoading,
+            errorMessage = if (phone.isNotEmpty() && !isPhoneValid) "El teléfono debe contener exactamente 10 números" else null,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) }
@@ -228,7 +242,7 @@ fun RegisterScreen(
             onValueChange = { email = it },
             label = stringResource(R.string.register_email),
             enabled = !isLoading,
-            isError = email.isNotEmpty() && !isEmailValid,
+            errorMessage = if (email.isNotEmpty() && !isEmailValid) "Ingresa un correo válido (ej. usuario@dominio.com)" else null,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
             leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) }
@@ -242,7 +256,7 @@ fun RegisterScreen(
             onValueChange = { password = it },
             label = stringResource(R.string.register_password),
             enabled = !isLoading,
-            isError = password.isNotEmpty() && !isPasswordValid,
+            errorMessage = if (password.isNotEmpty() && !isPasswordValid) "Mín. 8 caracteres, con mayúscula, minúscula y número/símbolo" else null,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = { performRegister() }),

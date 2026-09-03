@@ -33,7 +33,7 @@ En esta intervención, el Orquestador Maestro dirigió un plan de optimización 
 2. **Cumplimiento y Publicación en Google Play:** 
    - Declaración del permiso obligatorio `com.google.android.gms.permission.AD_ID` en `AndroidManifest.xml` para alineación con las políticas de identificador de publicidad y analítica de Play Store.
    - Configuración de depuración nativa con nivel `FULL` (`ndk { debugSymbolLevel = 'FULL' }`) en `app/build.gradle.kts` para garantizar la recepción y desofuscación completa de trazas de fallos nativos en Play Console.
-   - Incremento del código de versión a `versionCode = 5` en `app/build.gradle.kts` para despliegue de release oficial.
+   - Incremento del código de versión a `versionCode = 6` (`versionName "1.0.1"`) en `app/build.gradle.kts` para despliegue de release oficial.
 3. **Infraestructura de CI/CD y Calidad:**
    - Despliegue de **Advanced CodeQL Analysis** optimizado con soporte para Java 17 y Kotlin en GitHub Actions (`.github/workflows/codeql.yml`).
    - Inyección segura y automatizada del secreto `google-services.json` mediante sintaxis heredoc en el flujo de CI/CD para proteger credenciales sensibles sin romper los pipelines de compilación.
@@ -41,6 +41,8 @@ En esta intervención, el Orquestador Maestro dirigió un plan de optimización 
    - Validación defensiva del estado `RealtimeChannel.Status.UNSUBSCRIBED` en `ChatViewModel`, `ChatListViewModel`, `HomeViewModel`, `IncomingRequestsViewModel`, `MyOrdersViewModel`, `MyServicesViewModel` y `ProfileViewModel`, evitando crashes por suscripciones duplicadas (`IllegalStateException`).
 5. **Resiliencia en Serialización de Datos (KotlinX Serialization):**
    - Incorporación de valores por defecto defensivos en los modelos de dominio (`ServiceRequest`, `UserProfile`, `Message`, `Rating`, `Report`, `ServiceImage`, `Availability`, `Category`) asegurando tolerancia total ante consultas Postgrest con proyecciones relacionales parciales (`Columns.raw`).
+6. **Motor de Validaciones de Entrada de Datos (DRY & MVVM):**
+   - Creación de `ValidationUtils.kt` e integración de soporte para `errorMessage` en el átomo `YayaTextField` para retroalimentación visual en tiempo real (nombres alfabéticos sin números, documento DNI/CC de 6 a 12 números, teléfono exacto de 10 dígitos, correo electrónico RFC/Patterns, contraseña segura y fechas de nacimiento no futuras).
 
 ### 🔹 Sesión Agosto 2026 (Consolidación MVP+ SENA Gold Edition)
 1. **Infraestructura de Notificaciones:** Cierre del ciclo de comunicación con Small Icons oficiales y despliegue de lógica Server-Side (Edge Functions) para una negociación en tiempo real totalmente automatizada.

@@ -18,10 +18,19 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Ajustes y refactorización estructural en `NegotiationHistoryBox.kt`, `ConfirmacionScreen.kt` y `MyServicesScreen.kt`.
 
 ### Añadido
+- **Motor Centralizado de Validaciones de Datos (ValidationUtils):**
+    - Implementación del componente `ValidationUtils.kt` aplicando el principio DRY y la arquitectura MVVM para validación integral de entrada de usuarios en toda la app.
+    - **Nombres y Apellidos:** Validación alfabética estricta sin números ni caracteres especiales no permitidos.
+    - **Documento de Identidad:** Formato exclusivamente numérico de 6 a 12 dígitos.
+    - **Teléfono Móvil:** Validación numérica exacta de 10 dígitos.
+    - **Correo Electrónico:** Validación de estructura RFC/Patterns.
+    - **Contraseña Segura:** Mínimo 8 caracteres con combinación obligatoria de mayúsculas, minúsculas y números o símbolos.
+    - **Fecha de Nacimiento:** Bloqueo de días futuros en el calendario UI (`SelectableDates`) y validación de fecha cronológica no futura (`isValidBirthDate`).
+    - Extensión del átomo `YayaTextField` con soporte para mensajes de error contextuales (`errorMessage`) en `RegisterUserScreen`, `EditProfileScreen`, `LoginScreen` y `ResetPasswordScreen`.
 - **Cumplimiento y Publicación en Google Play Store:**
     - Declaración del permiso `com.google.android.gms.permission.AD_ID` en `AndroidManifest.xml` para cumplimiento de las políticas de identificador de publicidad y analítica de Google Play.
     - Inclusión de símbolos de depuración nativos en nivel `FULL` (`ndk { debugSymbolLevel = 'FULL' }`) en `app/build.gradle.kts` para análisis de crashes nativos y desofuscación en Play Console.
-    - Incremento de la versión interna a `versionCode 5` (`versionName "1.0.0"`) en `app/build.gradle.kts`.
+    - Incremento de versión a `versionCode 6` (`versionName "1.0.1"`) en `app/build.gradle.kts`.
 
 ### Cambiado
 - **Infraestructura CI/CD y Automatización de Calidad:**

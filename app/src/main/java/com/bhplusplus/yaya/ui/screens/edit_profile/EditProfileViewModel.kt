@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
 import com.bhplusplus.yaya.data.models.UserProfile
+import com.bhplusplus.yaya.utils.ValidationUtils
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.storage.storage
@@ -78,9 +79,34 @@ class EditProfileViewModel : ViewModel() {
     }
 
     fun updateProfile(onComplete: () -> Unit) {
-        if (name.isBlank()) {
-            errorMessage = "El nombre es obligatorio"
+        val nameError = ValidationUtils.getNameError(name)
+        if (nameError != null) {
+            errorMessage = nameError
             return
+        }
+
+        if (phone.isNotBlank()) {
+            val phoneError = ValidationUtils.getPhoneError(phone)
+            if (phoneError != null) {
+                errorMessage = phoneError
+                return
+            }
+        }
+
+        if (documentId.isNotBlank()) {
+            val docError = ValidationUtils.getDocumentIdError(documentId)
+            if (docError != null) {
+                errorMessage = docError
+                return
+            }
+        }
+
+        if (birthDate.isNotBlank()) {
+            val birthDateError = ValidationUtils.getBirthDateError(birthDate)
+            if (birthDateError != null) {
+                errorMessage = birthDateError
+                return
+            }
         }
 
         isLoading = true
