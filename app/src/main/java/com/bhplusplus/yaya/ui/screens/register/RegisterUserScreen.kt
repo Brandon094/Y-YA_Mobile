@@ -1,5 +1,6 @@
 package com.bhplusplus.yaya.ui.screens.register
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -319,17 +320,82 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // SELECTOR DE ROL: Define cómo el usuario participará en el sistema
+        // SELECTOR DE ROL: Tarjetas de selección con alto contraste adaptativas para Tema Oscuro y Claro
         Text(
             text = stringResource(R.string.register_how_to_use),
             modifier = Modifier.align(Alignment.Start),
-            fontWeight = FontWeight.Medium
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onBackground,
+            fontWeight = FontWeight.Bold
         )
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(selected = selectedRole == "client", onClick = { selectedRole = "client" }, enabled = !isLoading)
-            Text(stringResource(R.string.register_want_services), modifier = Modifier.padding(end = 16.dp))
-            RadioButton(selected = selectedRole == "provider", onClick = { selectedRole = "provider" }, enabled = !isLoading)
-            Text(stringResource(R.string.register_offer_talents))
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Card Opción Cliente
+            Surface(
+                onClick = { selectedRole = "client" },
+                shape = RoundedCornerShape(16.dp),
+                color = if (selectedRole == "client") MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                border = if (selectedRole == "client") BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+                enabled = !isLoading,
+                modifier = Modifier.weight(1f)
+            ) {
+                Row(
+                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selectedRole == "client",
+                        onClick = null,
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = MaterialTheme.colorScheme.primary,
+                            unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = stringResource(R.string.register_want_services),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }
+
+            // Card Opción Prestador
+            Surface(
+                onClick = { selectedRole = "provider" },
+                shape = RoundedCornerShape(16.dp),
+                color = if (selectedRole == "provider") MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                border = if (selectedRole == "provider") BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+                enabled = !isLoading,
+                modifier = Modifier.weight(1f)
+            ) {
+                Row(
+                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selectedRole == "provider",
+                        onClick = null,
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = MaterialTheme.colorScheme.primary,
+                            unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = stringResource(R.string.register_offer_talents),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -398,6 +464,7 @@ fun LegalConsentRow(
         Text(
             text = text,
             fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.weight(1f).clickable { onCheckedChange(!checked) }
         )
         TextButton(onClick = onReadMore, enabled = enabled) {

@@ -133,7 +133,8 @@ fun LoginScreen(
                 Text(
                     text = stringResource(R.string.login_forgot_password),
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
                 )
             }
 

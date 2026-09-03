@@ -46,6 +46,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
         - *Pestaña 2 ("⚙️ Ajustes y Ayuda"):* Seguridad y soporte (Cambio de clave, Manual de uso, Términos y Condiciones, Política de Privacidad, Borrado de cuenta y Cerrar sesión).
 
 ### Cambiado
+- **Rediseño del Selector de Rol (`RegisterUserScreen`):**
+    - Reemplazo de los RadioButton sueltos por Tarjetas Atómicas de Selección (`Surface` / `OutlinedCard`) con borde en color primario (`MaterialTheme.colorScheme.primary`) al ser seleccionadas, mejorando el área táctil y la jerarquía visual del selector de rol.
 - **Alineación Semántica de Calificaciones en `ServiceCard` (`RatingIndicator`):**
     - Reubicación visual de la estrella e indicador promedio de calificación (`RatingIndicator`) hacia la cabecera del componente `ServiceCard`, situándolo directamente debajo del nombre del prestador (`state.domain.provider?.full_name`).
     - Alineación semántica directa con la tabla SQL `public.ratings` (que califica al prestador / `provider_id` y su reputación general de talento), eliminando cualquier confusión previa donde la estrella aparentaba ser una calificación del servicio individual en lugar del prestador.
@@ -54,6 +56,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Actualización de versión oficial a `versionName = "1.1.0"` y `versionCode = 5` en `app/build.gradle.kts` para despliegue en Google Play Store.
 
 ### Corregido
+- **Optimización de Legibilidad y Contraste en Tema Oscuro (`LoginScreen` & `RegisterUserScreen`):**
+    - Corrección de la visibilidad del enlace *"¿Olvidaste tu contraseña?"* en `LoginScreen` mediante la sustitución del color estático `secondary` (`NavyBlue` `#1E2A38`) por `MaterialTheme.colorScheme.primary` (`RedPrimary` con `FontWeight.Bold`), eliminando el contraste deficiente sobre fondos oscuros (Deep Midnight).
+    - Ajuste de contraste en `RegisterUserScreen` aplicando explícitamente `color = MaterialTheme.colorScheme.onBackground` en las etiquetas de selección de rol (*"Quiero contratar un servicio"*, *"Quiero ofrecer un talento"*) y en la fila de consentimiento legal (`LegalConsentRow`), garantizando la adaptabilidad dinámica del texto (blanco/slate en Tema Oscuro y oscuro en Tema Claro).
 - **Solución a Condición de Carrera en Inicialización de Municipio (`HomeViewModel.loadData`):**
     - Corrección de condición de carrera en la secuencia de carga inicial de `HomeViewModel.loadData()`, donde `applyFilters()` se ejecutaba previamente a la recuperación del perfil de usuario (`userProfile`), provocando que la vista inicial se filtrara por la ubicación por defecto ("La Plata").
     - Reorganización de la ejecución asíncrona para asegurar la descarga del perfil del usuario e inicializar `selectedMunicipality` con su municipio real **antes** de invocar `applyFilters()`, garantizando la presentación inmediata de los servicios filtrados por la ubicación real del usuario sin requerir refresco manual.

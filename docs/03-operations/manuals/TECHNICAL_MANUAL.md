@@ -94,6 +94,11 @@ YÁYA implementa una estrategia de filtrado multizona, gestión elástica de tie
     *   *Navegación por Pestañas Segmentadas (`TabRow`):* Segmentación modular y limpia de las 14 opciones de perfil en un control `TabRow` de 2 pestañas:
         - **Pestaña 1 ("💼 Mi Operación"):** Agrupa la operatividad diaria del usuario (Horario de trabajo, servicios publicados, solicitudes recibidas, mis pedidos, mensajes y acceso al panel administrativo).
         - **Pestaña 2 ("⚙️ Ajustes y Ayuda"):** Agrupa la configuración de seguridad, soporte e información institucional (Cambio de contraseña, Manual de uso de la app, Términos y Condiciones, Política de Privacidad, Borrado de cuenta y Cerrar sesión).
+*   **Norma de Accesibilidad, Contraste de Color y Adaptabilidad a Tema Oscuro (`LoginScreen` & `RegisterUserScreen`):**
+    *   *Inhabilitación de Colores Oscuros Estáticos:* Queda estrictamente prohibido fijar colores oscuros o de baja luminancia (como `NavyBlue` `#1E2A38` asignado a `secondary`) en textos o enlaces que se renderizan sobre superficies variables o fondos en Tema Oscuro.
+    *   *Optimización del Enlace de Recuperación de Clave (`LoginScreen`):* El enlace *"¿Olvidaste tu contraseña?"* se configuró con `MaterialTheme.colorScheme.primary` (`RedPrimary` con `FontWeight.Bold`), garantizando visibilidad y legibilidad del 100% en Tema Claro y Tema Oscuro (Deep Midnight).
+    *   *Soporte Dinámico con `MaterialTheme.colorScheme.onBackground` (`RegisterUserScreen`):* Las etiquetas de los roles (*"Quiero contratar un servicio"*, *"Quiero ofrecer un talento"*) y las filas de consentimiento legal (`LegalConsentRow`) especifican explícitamente `color = MaterialTheme.colorScheme.onBackground`, garantizando la inversión tipográfica automática (texto blanco/slate azulado en Tema Oscuro y texto oscuro en Tema Claro).
+    *   *Rediseño de Tarjetas de Rol:* Sustitución de los RadioButton sueltos por Tarjetas Atómicas de Selección (`Surface` / `OutlinedCard`) con borde en color primario (`MaterialTheme.colorScheme.primary`) al ser seleccionadas, mejorando el área táctil y la jerarquía de interacción.
 
 ---
 
@@ -153,7 +158,7 @@ ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';
 
 *   **Lenguaje:** Kotlin 2.4.10 (K2 Compiler, JVM Target 17).
 *   **Target SDK:** Android API 37 (minSdk 26, versionCode 5, versionName "1.1.0").
-*   **UI:** Jetpack Compose (Material 3) con soporte para arquitectura atómica y componentes de desplazamiento optimizados.
+*   **UI & Accesibilidad:** Jetpack Compose (Material 3) con soporte para arquitectura atómica, componentes de desplazamiento optimizados y estandarización estricta de contraste en Tema Oscuro (Deep Midnight) mediante tokens dinámicos (`MaterialTheme.colorScheme.onBackground` y `primary`) e inhabilitación de colores oscuros estáticos en textos sobre superficies.
 *   **Backend:** Supabase (PostgreSQL + Realtime + Storage).
 *   **Permisos y Cumplimiento Google Play:** Declaración de `com.google.android.gms.permission.AD_ID` para servicios de analítica e identificador de anuncios en Google Play.
 *   **Security Hardening:** Mitigación proactiva de vulnerabilidades (CVEs) mediante restricciones de dependencia (Netty, Bouncy Castle, HttpClient, Guava, jose4j).

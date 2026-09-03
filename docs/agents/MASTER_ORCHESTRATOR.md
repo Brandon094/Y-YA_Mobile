@@ -86,6 +86,9 @@ En esta intervención, el Orquestador Maestro dirigió la implementación del mo
     - **Navegación por Pestañas Segmentadas (`TabRow`):** Organización modular de las 14 opciones en 2 pestañas limpias:
       - *Pestaña 1 ("💼 Mi Operación"):* Operatividad diaria (Horario de trabajo, servicios publicados, solicitudes, mis pedidos, mensajes y panel admin).
       - *Pestaña 2 ("⚙️ Ajustes y Ayuda"):* Seguridad y soporte (Cambio de clave, Manual de uso, Términos y Condiciones, Política de Privacidad, Borrado de cuenta y Cerrar sesión).
+13. **Optimización de Contraste de Color y Legibilidad en Tema Oscuro (`LoginScreen` & `RegisterUserScreen`):**
+    - **Enlace de Recuperación de Clave (`LoginScreen`):** Sustitución del color estático `secondary` (`NavyBlue` `#1E2A38`, inaccesible sobre fondos oscuros) por `MaterialTheme.colorScheme.primary` (`RedPrimary` con `FontWeight.Bold`), logrando legibilidad 100% accesible para *"¿Olvidaste tu contraseña?"* tanto en Tema Claro como en Tema Oscuro (Deep Midnight).
+    - **Selector de Rol y Textos Legales (`RegisterUserScreen`):** Reemplazo de los RadioButton aislados por Tarjetas Atómicas de Selección (`Surface` / `OutlinedCard`) con borde primario al estar seleccionadas. Especificación explícita de `color = MaterialTheme.colorScheme.onBackground` en las etiquetas de rol (*"Quiero contratar un servicio"*, *"Quiero ofrecer un talento"*) y en la fila de consentimiento legal (`LegalConsentRow`), garantizando texto blanco/slate azulado en Tema Oscuro y texto oscuro en Tema Claro.
 
 ### 🔹 Sesión Septiembre 2026 (Estabilidad, Cumplimiento Play Store y CI/CD)
 En esta intervención, el Orquestador Maestro dirigió un plan de optimización enfocado en la estabilidad de la interfaz, el cumplimiento regulatorio de Google Play y el fortalecimiento de la infraestructura de calidad:
