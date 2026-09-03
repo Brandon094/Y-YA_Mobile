@@ -5,6 +5,23 @@ Todas las modificaciones notables en este proyecto serán documentadas en este a
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-09-02
+### Corregido
+- **Estabilidad de UI/Layout (Jetpack Compose):**
+    - Corrección de `IllegalStateException` producida por componentes scrolleables medidos con restricciones de altura infinita (conflictos de medición entre `LazyColumn` y `Column` con `verticalScroll`).
+    - Ajustes y refactorización estructural en `NegotiationHistoryBox.kt`, `ConfirmacionScreen.kt` y `MyServicesScreen.kt`.
+
+### Añadido
+- **Cumplimiento y Publicación en Google Play Store:**
+    - Declaración del permiso `com.google.android.gms.permission.AD_ID` en `AndroidManifest.xml` para cumplimiento de las políticas de identificador de publicidad y analítica de Google Play.
+    - Inclusión de símbolos de depuración nativos en nivel `FULL` (`ndk { debugSymbolLevel = 'FULL' }`) en `app/build.gradle.kts` para análisis de crashes nativos y desofuscación en Play Console.
+    - Incremento de la versión interna a `versionCode 5` (`versionName "1.0.0"`) en `app/build.gradle.kts`.
+
+### Cambiado
+- **Infraestructura CI/CD y Automatización de Calidad:**
+    - Implementación de **Advanced CodeQL Analysis** en GitHub Actions (`.github/workflows/codeql.yml`) con soporte para Java 17 y Kotlin (`java-kotlin`) y reglas `security-extended,security-and-quality`.
+    - Inyección segura de `google-services.json` mediante secretos de GitHub Actions y formato heredoc en los pipelines de integración continua.
+
 ## [1.0.0] - 2026-08-28
 ### Añadido
 - **Versión de Lanzamiento Oficial (SENA Gold Edition):**

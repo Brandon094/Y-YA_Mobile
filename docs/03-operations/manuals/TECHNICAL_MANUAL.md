@@ -55,10 +55,11 @@ Todas las tablas en Supabase tienen políticas **RLS** activas:
 
 ## 3. Stack Tecnológico y Dependencias Clave
 
-*   **Lenguaje:** Kotlin 2.4.10 (K2 Compiler).
-*   **Target SDK:** Android API 37.
-*   **UI:** Jetpack Compose (Material 3).
+*   **Lenguaje:** Kotlin 2.4.10 (K2 Compiler, JVM Target 17).
+*   **Target SDK:** Android API 37 (minSdk 26, versionCode 5, versionName "1.0.0").
+*   **UI:** Jetpack Compose (Material 3) con soporte para arquitectura atómica y componentes de desplazamiento optimizados.
 *   **Backend:** Supabase (PostgreSQL + Realtime + Storage).
+*   **Permisos y Cumplimiento Google Play:** Declaración de `com.google.android.gms.permission.AD_ID` para servicios de analítica e identificador de anuncios en Google Play.
 *   **Security Hardening:** Mitigación proactiva de vulnerabilidades (CVEs) mediante restricciones de dependencia (Netty, Bouncy Castle, HttpClient, Guava, jose4j).
 *   **Observabilidad:** Firebase Crashlytics & Analytics (Telemetría de errores y métricas). Se utiliza el wrapper `CrashReporter.kt` para centralizar los reportes.
 *   **Notificaciones:** Firebase Cloud Messaging (FCM V1) via Edge Functions.
@@ -80,11 +81,11 @@ Todas las tablas en Supabase tienen políticas **RLS** activas:
 
 ### 4.2. Compilación
 *   **Debug:** Ejecutar tarea `app:assembleDebug`.
-*   **Release:** Configurar el archivo `.jks` y ejecutar `app:bundleRelease`.
+*   **Release:** Configurar el archivo `.jks` y ejecutar `app:bundleRelease` (genera el archivo `.aab` para Google Play con `versionCode = 5` y símbolos de depuración nativos NDK en nivel `FULL`).
 
 ---
 
-## 5. Motor de Notificaciones y Tiempo Real
+## 5. Motor de Notificaciones, Tiempo Real y Estabilidad Visual
 
 ### 5.1. Observabilidad y Telemetría (Firebase)
 YÁYA utiliza un motor dual de captura de errores para garantizar un 99.9% de estabilidad:
@@ -97,16 +98,19 @@ YÁYA utiliza lógica Server-Side para automatizar alertas sin saturar el client
 2.  La Edge Function `notify-yaya-updates` (TypeScript) procesa el evento.
 3.  Se identifica al destinatario y se envía la alerta via **FCM API V1**.
 
-### 5.2. Conectividad Resiliente
+### 5.3. Conectividad Resiliente
 Implementación de `ConnectivityObserver` basado en Flows que monitorea el hardware de red y notifica mediante el `YayaOfflineBanner` atómico.
+
+### 5.4. Estabilidad de Layouts en Jetpack Compose
+Para evitar excepciones en runtime como `IllegalStateException` durante la fase de medición, los layouts scrolleables evitan anidar componentes de scroll ilimitado (`LazyColumn` dentro de `Column` con `verticalScroll` sin restricciones fijas). Los contenedores en `NegotiationHistoryBox.kt`, `ConfirmacionScreen.kt` y `MyServicesScreen.kt` están optimizados con restricciones explícitas de altura (`heightIn`/`fillMaxHeight`).
 
 ---
 
 ### 6. Pipeline de Despliegue y Calidad (CI/CD)
 
-1.  **CodeQL Analysis:** GitHub Actions realiza escaneos automáticos de seguridad en cada Push.
-2.  **Secret Management:** Uso de GitHub Secrets para inyectar configuraciones privadas (`google-services.json`) en el entorno de build de la nube.
-3.  **App Bundle:** Generación de archivo `.aab` optimizado con firma SHA-256, incluyendo **símbolos de depuración nativos completos** (FULL) para maximizar la capacidad de análisis en Play Console.
+1.  **Advanced CodeQL Analysis:** GitHub Actions (`.github/workflows/codeql.yml`) ejecuta análisis estático de código enfocado en Java 17 y Kotlin (`java-kotlin`), evaluando reglas de seguridad extendida (`security-extended,security-and-quality`).
+2.  **Secret Management:** Inyección automatizada de `google-services.json` durante el pipeline de integración continua utilizando secretos de GitHub y sintaxis heredoc.
+3.  **App Bundle & Depuración Nativa:** Generación del binario `.aab` con firma de producción SHA-256, `versionCode = 5` y la directiva `ndk { debugSymbolLevel = 'FULL' }` en `app/build.gradle.kts` para análisis nativo completo en Play Console.
 
 ---
 *Documento certificado por la Dirección Técnica de BH++ Team - 2026*

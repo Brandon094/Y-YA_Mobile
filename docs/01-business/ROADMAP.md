@@ -2,12 +2,12 @@
 
 Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA, dividida en hitos (milestones) que llevan el proyecto desde su estado actual hasta el lanzamiento del MVP (Producto Mínimo Viable) y futuras expansiones.
 
-## Estado Actual: 🟢 MVP+ Finalizado (v0.1.0-alpha)
+## Estado Actual: 🟢 Producción / Play Store Ready (v1.0.1 - versionCode 5)
 - **Cuenta Universal:** Sin doble fricción entre clientes y prestadores.
-- **Negociación Activa:** Flujo de contraofertas funcional.
-- **Gestión Dual:** Historial de pedidos y panel de solicitudes recibidas.
-- **Publicación:** Módulo de creación y edición de servicios para talentos.
-- **Identidad:** Branding y manuales operativos completados.
+- **Negociación Activa ("Handshake"):** Flujo de contraofertas con doble confirmación funcional.
+- **Gestión Dual & Admin:** Panel administrativo con sanciones progresivas y anonimato de moderación.
+- **Publicación & Play Store:** Preparación técnica para Google Play con permiso `AD_ID`, símbolos NDK FULL y `versionCode = 5`.
+- **CI/CD & Calidad:** CodeQL Advanced Analysis con Java 17 y secret injections heredoc.
 
 ---
 
@@ -61,11 +61,12 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 - [x] **Reportes de Comportamiento:** Implementación de tabla `public.reports` y sistema de denuncias visuales.
 - [x] **Auditoría de Servicios:** Flujo de aprobación para nuevos servicios de prestadores no verificados.
 
-## Hito 6: Finalización de Manuales y Lanzamiento (Presentación SENA)
+## Hito 6: Finalización de Manuales y Lanzamiento (Presentación SENA & Play Store)
 - [x] **Consolidación Atómica:** Refactorización total de UI/UX (Atoms, Molecules, Organisms).
 - [x] **Auditoría Admin:** Sistema de moderación y sanciones progresivas funcional.
 - [x] **Manual Técnico Completo:** Documentación de arquitectura Senior y estándares de codificación.
-- [ ] **Ajuste Legal Final:** Revisión de políticas de privacidad para cumplimiento de Play Store.
+- [x] **Ajuste Legal Final & Google Play:** Cumplimiento de políticas con visor legal, link de privacidad y permiso `AD_ID`.
+- [x] **Estabilidad de Layouts & CI/CD:** Fix de `IllegalStateException` en scrolleables Compose, símbolos NDK FULL y CodeQL CI/CD con Java 17.
 - [ ] **Carga de Datos Real:** Fase de pruebas con usuarios reales (Mauro, Harold, Brandon).
 
 ## Futuro (Post-MVP & Expansión Comercial)
@@ -82,4 +83,4 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 
 ---
 *Roadmap mantenido por el equipo de ingeniería de BH++*
-*Última revisión: Agosto 2026*
+*Última revisión: Septiembre 2026*
