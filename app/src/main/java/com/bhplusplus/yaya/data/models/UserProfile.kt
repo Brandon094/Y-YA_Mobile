@@ -9,9 +9,9 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class UserProfile(
-    val id: String,
-    val full_name: String,
-    val role: String,
+    val id: String = "",
+    val full_name: String = "",
+    val role: String = "client",
     val phone: String? = null,
     val document_id: String? = null,
     val birth_date: String? = null,

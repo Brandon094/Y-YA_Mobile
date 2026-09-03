@@ -8,8 +8,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Category(
-    val id: String,
-    val name: String,
+    val id: String = "",
+    val name: String = "",
     val description: String? = null,
     val icon_name: String? = null
 )

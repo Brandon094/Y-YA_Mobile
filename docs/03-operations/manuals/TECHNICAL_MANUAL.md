@@ -51,6 +51,9 @@ Todas las tablas en Supabase tienen políticas **RLS** activas:
 *   **Escritura:** Restringida al `auth.uid()` del propietario (proteger identidad y finanzas).
 *   **Negociación:** Solo el cliente y el prestador vinculados a una `request_id` pueden actualizar su estado.
 
+### 2.3. Resiliencia en Serialización (KotlinX Serialization)
+Los modelos de datos (`ServiceRequest`, `UserProfile`, `Message`, `Rating`, etc.) implementan valores por defecto defensivos para todas sus propiedades. Esto garantiza que las respuestas JSON provenientes de consultas con proyecciones relacionales parciales (ej: `Columns.raw("id, services!inner(provider_id)")`) se deserialicen de manera segura sin lanzar excepciones `MissingFieldException`.
+
 ---
 
 ## 3. Stack Tecnológico y Dependencias Clave

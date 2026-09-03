@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ServiceImage(
     val id: String? = null,
-    val service_id: String,
-    val image_url: String,
+    val service_id: String = "",
+    val image_url: String = "",
     val created_at: String? = null
 )

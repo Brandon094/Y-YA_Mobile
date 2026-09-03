@@ -10,9 +10,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Message(
     val id: String? = null,
-    val sender_id: String,
-    val receiver_id: String,
-    val content: String,
+    val sender_id: String = "",
+    val receiver_id: String = "",
+    val content: String = "",
     val is_read: Boolean = false,
     val sent_at: String? = null
 )

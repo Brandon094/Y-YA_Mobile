@@ -11,9 +11,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Report(
     val id: String? = null,
-    val reporter_id: String,
-    val reported_user_id: String,
-    val reason: String,
+    val reporter_id: String = "",
+    val reported_user_id: String = "",
+    val reason: String = "",
     val created_at: String? = null,
 
     // Datos vinculados (Joins) para mostrar nombres en el Dashboard

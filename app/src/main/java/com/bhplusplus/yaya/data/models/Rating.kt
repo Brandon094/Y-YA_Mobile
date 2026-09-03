@@ -10,10 +10,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Rating(
     val id: String? = null,
-    val request_id: String,
-    val client_id: String,
-    val provider_id: String,
-    val score: Int, // 1 a 5
+    val request_id: String = "",
+    val client_id: String = "",
+    val provider_id: String = "",
+    val score: Int = 0, // 1 a 5
     val comment: String? = null,
     val created_at: String? = null
 )

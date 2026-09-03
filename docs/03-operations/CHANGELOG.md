@@ -7,6 +7,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [1.0.1] - 2026-09-02
 ### Corregido
+- **Deserialización Segura de Datos Supabase (KotlinX Serialization):**
+    - Corrección de `MissingFieldException` al deserializar respuestas JSON de consultas con proyecciones relacionales parciales (`Columns.raw("id, services!inner(provider_id)")`) en `ProfileViewModel` y `HomeViewModel`.
+    - Asignación de valores por defecto en los modelos de datos (`ServiceRequest`, `UserProfile`, `Message`, `Rating`, `Report`, `ServiceImage`, `Availability`, `Category`) asegurando tolerancia ante campos omitidos o nulables en las consultas de Supabase Postgrest.
 - **Estabilidad de Canales Supabase Realtime:**
     - Corrección de `IllegalStateException: You cannot call postgresChangeFlow after joining the channel` al reinicializar la vista de chat o refrescar datos en ViewModels.
     - Validación proactiva del estado `RealtimeChannel.Status.UNSUBSCRIBED` antes de registrar escuchas `postgresChangeFlow` en `ChatViewModel`, `ChatListViewModel`, `HomeViewModel`, `IncomingRequestsViewModel`, `MyOrdersViewModel`, `MyServicesViewModel` y `ProfileViewModel`.
