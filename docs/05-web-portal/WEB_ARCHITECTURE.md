@@ -18,6 +18,11 @@ Para mantener la consistencia con la App, se aplica una jerarquía de componente
 *   **Tema Dual:** Soporte nativo para Modo Claro y Modo Oscuro con persistencia en `localStorage`.
 *   **Responsive UI:** Menú de hamburguesa y layouts elásticos que se adaptan a cualquier resolución móvil.
 *   **Legal Rendering:** Motor de visualización jerárquico para documentos normativos (Markdown-lite).
+*   **Manuales de Uso Interconectados y Segregados por Rol (`portal_web/manuales.html`):**
+    *   **Selector Interactivo de Roles (`switchRoleTab`):** Controlador en JavaScript para conmutación fluida entre las guías operativas de *Rol Cliente*, *Rol Prestador* y *Rol Administrador*.
+    *   **Matriz Atómica de Permisos:** Componentes con bloques destacados estilizados con Tailwind CSS que desglosan minuciosamente facultades ("LO QUE PUEDE HACER EL USUARIO" en contenedor verde `emerald`) y prohibiciones/restricciones ("LO QUE NO PUEDE HACER EL USUARIO" en contenedor rojo `rose`).
+    *   **Sincronización con Manuales v1.1.0 de la App:** Alineación total con el motor interno de la aplicación (`ManualConstants.kt`), reflejando el filtrado por municipio, la jornada maestra, la prevención de traslapes horarios, la reputación de talentos y el semáforo disciplinario de moderación.
+    *   **Estándar Técnico Sin Emojis:** Redacción formal acorde al estándar legal Markdown sin emojis, con soporte de Tema Dual e Interfaz Elástica Responsive.
 
 ## 4. Optimización y Accesibilidad
 *   **Web Performance:** Reducción de CLS (Cumulative Layout Shift) mediante dimensiones explícitas y reserva de espacio (min-height). Optimización de LCP mediante pre-carga de recursos críticos.

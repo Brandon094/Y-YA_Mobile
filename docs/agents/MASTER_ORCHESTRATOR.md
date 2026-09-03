@@ -99,6 +99,11 @@ En esta intervención, el Orquestador Maestro dirigió la implementación del mo
 15. **Confirmación Atómica de Cierre de Sesión en Barra Inferior (`HomeScreen` & `YayaConfirmationDialog`):**
     - **Protección Antiacidentes y Mejora UX:** Integración de la molécula atómica `YayaConfirmationDialog` en el botón de cerrar sesión ubicado en la barra inferior de navegación de `HomeScreen`.
     - **Flujo de Desautenticación Segura:** Se previno el cierre de sesión accidental solicitando la confirmación activa e intencional del usuario antes de desautenticar la sesión y destruir el estado activo, garantizando coherencia con los estándares de seguridad y experiencia de usuario de YÁYA.
+16. **Modernización y Reestructuración Interactiva del Portal Web de Manuales (`portal_web/manuales.html`):**
+    - **Controlador Interactivo de Pestañas (`switchRoleTab`):** Implementación de pestañas dinámicas en JavaScript (*Rol Cliente*, *Rol Prestador*, *Rol Administrador*) para consultar de forma segregada y fluida el manual correspondiente a cada perfil.
+    - **Matriz Atómica de Permisos:** Diseño e integración de bloques destacados con Tailwind CSS que desglosan de forma explícita *"LO QUE PUEDE HACER EL USUARIO"* (verde `emerald`) y *"LO QUE NO PUEDE HACER EL USUARIO"* (rojo `rose`) para los tres roles.
+    - **Estandarización Formal Sin Emojis:** Redacción técnica formal ajustada al estándar legal Markdown sin emojis, con soporte completo para Tema Dual (Modo Claro / Modo Oscuro) e Interfaz Elástica Responsive.
+    - **Sincronización con Manuales v1.1.0 de la App:** Alineación total con los manuales de la aplicación (`ManualConstants.kt`), cubriendo la cobertura por municipios del Huila, la jornada maestra, la detección inteligente de traslapes horarios, la reputación de talentos y el semáforo de moderación disciplinario.
 
 ### 🔹 Sesión Septiembre 2026 (Estabilidad, Cumplimiento Play Store y CI/CD)
 En esta intervención, el Orquestador Maestro dirigió un plan de optimización enfocado en la estabilidad de la interfaz, el cumplimiento regulatorio de Google Play y el fortalecimiento de la infraestructura de calidad:

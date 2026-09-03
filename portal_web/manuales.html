@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Biblia de Operaciones de YÁYA. Guía detallada para clientes, prestadores y administradores sobre el uso de la plataforma.">
+    <meta name="description" content="Manuales de Uso Oficiales de YÁYA. Guía detallada y segregada por roles para Clientes, Prestadores y Administradores.">
     <meta name="author" content="BH++ Team">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://y-ya-d5929.web.app/manuales.html">
-    <meta property="og:title" content="Biblia de Operaciones - YÁYA">
-    <meta property="og:description" content="Guía detallada sobre el uso de YÁYA para clientes y prestadores.">
+    <meta property="og:title" content="Manuales de Uso Oficiales - YÁYA">
+    <meta property="og:description" content="Guía detallada de uso de YÁYA segregada para Clientes, Prestadores y Administradores.">
     <meta property="og:image" content="https://y-ya-d5929.web.app/assets/images/logo_splash.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://y-ya-d5929.web.app/manuales.html">
-    <meta property="twitter:title" content="Biblia de Operaciones - YÁYA">
-    <meta property="twitter:description" content="Guía detallada sobre el uso de YÁYA para clientes y prestadores.">
+    <meta property="twitter:title" content="Manuales de Uso Oficiales - YÁYA">
+    <meta property="twitter:description" content="Guía detallada de uso de YÁYA segregada para Clientes, Prestadores y Administradores.">
     <meta property="twitter:image" content="https://y-ya-d5929.web.app/assets/images/logo_splash.png">
 
-    <title>Biblia de Operaciones - YÁYA</title>
+    <title>Manuales de Uso Oficiales - YÁYA v1.1.0</title>
     <link rel="icon" type="image/png" href="assets/images/ic_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="js/components.js"></script>
     <script>
         tailwind.config = {
@@ -33,8 +33,9 @@
                     colors: {
                         yayaRed: '#E85C5C',
                         yayaNavy: '#1E2A38',
-                        darkBg: '#121212',
-                        darkSurface: '#1E1E1E',
+                        darkBg: '#0F172A',
+                        darkSurface: '#1E293B',
+                        darkBorder: '#334155'
                     },
                     fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
@@ -43,135 +44,259 @@
     </script>
     <style>
         html { scroll-behavior: smooth; }
-        .prose strong { color: #E85C5C; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 font-sans transition-colors duration-300 overflow-x-hidden">
+<body class="bg-slate-50 text-slate-900 dark:bg-darkBg dark:text-slate-100 font-sans transition-colors duration-300 overflow-x-hidden">
 
     <!-- Organismo: Navbar -->
     <div id="yaya-navbar" data-page="manuals"></div>
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 py-24 md:py-32">
-        <div class="mb-12 md:mb-20 text-center lg:text-left">
-            <script>document.write(YayaComponents.atoms.badge("BH++ Senior Standards"));</script>
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-yayaNavy dark:text-white mt-6 tracking-tighter uppercase leading-none">Biblia de Operaciones</h1>
-            <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 mt-4 max-w-2xl mx-auto lg:mx-0 font-medium">Guía exahustiva sobre el ciclo de vida, arquitectura y manual de usuario final de la plataforma YÁYA.</p>
+        <!-- Header Principal -->
+        <div class="mb-12 text-center lg:text-left">
+            <script>document.write(YayaComponents.atoms.badge("BH++ Senior Standards - v1.1.0"));</script>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-yayaNavy dark:text-white mt-6 tracking-tighter uppercase leading-none">
+                Manuales de Uso Oficiales
+            </h1>
+            <p class="text-lg md:text-xl text-slate-600 dark:text-slate-300 mt-4 max-w-3xl font-medium">
+                Guía técnica de operaciones de YÁYA segregada por rol de usuario para garantizar una experiencia clara, técnica y profesional.
+            </p>
         </div>
 
-        <div class="grid lg:grid-cols-4 gap-12 lg:gap-16">
-            <!-- Sidebar Navigation -->
-            <aside class="lg:col-span-1">
-                <nav class="sticky top-24 md:top-28 space-y-6 md:space-y-8 bg-white dark:bg-darkSurface lg:bg-transparent p-6 lg:p-0 rounded-3xl border lg:border-0 border-gray-100 dark:border-white/5">
-                    <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 md:mb-6">01. Acceso y Perfil</p>
-                        <ul class="space-y-3 md:space-y-4 text-sm font-bold">
-                            <li><a href="#onboarding" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Bienvenida & Onboarding</a></li>
-                            <li><a href="#registration" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition border-l-2 border-yayaRed pl-4">Registro Universal</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 md:mb-6">02. Manual del Usuario</p>
-                        <ul class="space-y-3 md:space-y-4 text-sm font-bold">
-                            <li><a href="#clients" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Guía para Clientes</a></li>
-                            <li><a href="#providers" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition border-l-2 border-yayaRed pl-4">Guía para Prestadores</a></li>
-                            <li><a href="#handshake" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Handshake Digital</a></li>
-                        </ul>
-                    </div>
-                </nav>
-            </aside>
+        <!-- Selector de Roles (Tabs Interactivas) -->
+        <div class="mb-12 bg-white dark:bg-darkSurface p-2 md:p-3 rounded-2xl border border-slate-200 dark:border-darkBorder shadow-sm flex flex-wrap gap-2">
+            <button id="btn-tab-client" onclick="switchRoleTab('client')" class="flex-1 min-w-[140px] py-3 px-5 rounded-xl font-extrabold text-sm transition-all duration-200 text-center bg-yayaRed text-white shadow-md">
+                Rol Cliente
+            </button>
+            <button id="btn-tab-provider" onclick="switchRoleTab('provider')" class="flex-1 min-w-[140px] py-3 px-5 rounded-xl font-extrabold text-sm transition-all duration-200 text-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                Rol Prestador
+            </button>
+            <button id="btn-tab-admin" onclick="switchRoleTab('admin')" class="flex-1 min-w-[140px] py-3 px-5 rounded-xl font-extrabold text-sm transition-all duration-200 text-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                Rol Administrador
+            </button>
+        </div>
 
-            <!-- Main Content -->
-            <main class="lg:col-span-3 space-y-20 md:space-y-32">
+        <!-- CONTENIDO: MANUAL DEL CLIENTE -->
+        <div id="manual-client" class="space-y-12">
+            <div class="bg-white dark:bg-darkSurface p-6 md:p-10 rounded-3xl border border-slate-200 dark:border-darkBorder shadow-sm space-y-8">
+                <div class="border-b border-slate-100 dark:border-darkBorder pb-6">
+                    <span class="text-xs font-black uppercase tracking-widest text-yayaRed">Guía del Solicitante</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-yayaNavy dark:text-white mt-1">Manual de Uso para Clientes</h2>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm md:text-base mt-2">Instrucciones de búsqueda local por municipio, agendamiento de citas, negociación transaccional y evaluaciones.</p>
+                </div>
 
-                <!-- Onboarding -->
-                <section id="onboarding" class="scroll-mt-32">
-                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">01. Bienvenida y Onboarding</h2>
-                    <div class="bg-white dark:bg-darkSurface p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-6">
-                        <p class="text-base md:text-lg leading-relaxed text-gray-700 dark:text-gray-300 font-medium">
-                            La experiencia inicia con un <strong>Carrusel Interactivo</strong> que comunica la propuesta de valor. Este módulo utiliza un motor de navegación inteligente que valida la sesión en tiempo real.
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">1. Búsqueda y Filtrado Local</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Seleccione su municipio (La Plata, Nátaga, Paicol, Neiva, Garzón, Pitalito, etc.) desde la barra superior de la aplicación para explorar servicios disponibles en su localidad.
                         </p>
-                        <div class="p-6 bg-red-50 dark:bg-yayaRed/5 rounded-3xl border border-red-100 dark:border-yayaRed/10">
-                            <h3 class="font-bold text-yayaRed mb-2 uppercase text-xs tracking-widest">Requisitos del Sistema</h3>
-                            <ul class="text-xs md:text-sm space-y-2 text-gray-600 dark:text-gray-400 font-bold">
-                                <li>● Android 8.0 (Oreo) o superior.</li>
-                                <li>● Conexión a internet activa (Detección Realtime).</li>
-                                <li>● Almacenamiento libre de 50MB.</li>
-                            </ul>
-                        </div>
                     </div>
-                </section>
-
-                <!-- Registration -->
-                <section id="registration" class="scroll-mt-32">
-                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">02. Registro Universal (Multi-Rol)</h2>
-                    <div class="bg-white dark:bg-darkSurface p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-10">
-                        <p class="text-base md:text-gray-700 dark:text-gray-300 leading-relaxed md:text-lg font-medium">YÁYA utiliza un modelo de <strong>Cuenta Universal</strong>. No necesitas crear dos cuentas para ser cliente y prestador al mismo tiempo.</p>
-
-                        <div class="space-y-6">
-                            <h3 class="font-black text-yayaRed uppercase text-[10px] md:text-xs tracking-[0.2em]">Paso a Paso del Registro</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
-                                <div class="space-y-2">
-                                    <p class="text-sm font-bold text-yayaNavy dark:text-white">1. Datos Personales</p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400 font-bold uppercase tracking-wider">Carga de nombre, cédula, fecha de nacimiento, teléfono y dirección.</p>
-                                </div>
-                                <div class="space-y-2">
-                                    <p class="text-sm font-bold text-yayaNavy dark:text-white">2. Selección de Rol</p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400 font-bold uppercase tracking-wider">Eliges "Quiero Servicios" o "Ofrecer Talentos" para definir tu vista inicial.</p>
-                                </div>
-                                <div class="space-y-2">
-                                    <p class="text-sm font-bold text-yayaNavy dark:text-white">3. Cumplimiento Legal</p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400 font-bold uppercase tracking-wider">Aceptación obligatoria de términos y políticas para habilitar el registro.</p>
-                                </div>
-                                <div class="space-y-2">
-                                    <p class="text-sm font-bold text-yayaNavy dark:text-white">4. Validación</p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400 font-bold uppercase tracking-wider">El sistema verifica la unicidad del documento y el formato del correo.</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">2. Reputación del Prestador</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Consulte el promedio de estrellas y las opiniones reales recibidas por el prestador en su trayectoria antes de solicitar la reserva.
+                        </p>
                     </div>
-                </section>
-
-                <!-- Clients -->
-                <section id="clients" class="scroll-mt-32">
-                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">03. Guía para Clientes</h2>
-                    <div class="bg-white dark:bg-darkSurface p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-8">
-                        <div class="space-y-4">
-                            <h4 class="text-xl font-bold text-yayaNavy dark:text-white">Búsqueda y Contratación</h4>
-                            <p class="text-gray-500 text-sm md:text-base leading-relaxed">
-                                Encuentra al experto ideal usando la barra de búsqueda o el selector de categorías. Dentro del detalle del servicio, pulsa <strong>"Solicitar"</strong> para definir los parámetros de tu cita.
-                            </p>
-                        </div>
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">3. Agendamiento e Integridad Temporal</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Defina dirección, fecha y hora. El sistema valida en tiempo real bloqueando fechas pasadas u horarios ya transcurridos durante el día.
+                        </p>
                     </div>
-                </section>
-
-                <!-- Providers -->
-                <section id="providers" class="scroll-mt-32">
-                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">04. Guía para Prestadores</h2>
-                    <div class="bg-white dark:bg-darkSurface p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-8">
-                        <div class="space-y-4">
-                             <h4 class="text-xl font-bold text-yayaNavy dark:text-white">Publicar Talento</h4>
-                             <p class="text-gray-500 text-sm md:text-base leading-relaxed">Usa el botón <strong>"+"</strong> para subir tu oferta. Define un título atractivo, sube fotos de tu portafolio y establece un precio competitivo.</p>
-                        </div>
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">4. Negociación "Handshake" y Chat</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Proponga una tarifa inicial, negocie directamente con el prestador y confirme el acuerdo con el mecanismo Handshake Digital.
+                        </p>
                     </div>
-                </section>
+                </div>
 
-                <!-- Handshake Section -->
-                 <section id="handshake" class="scroll-mt-32">
-                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">05. Handshake Digital</h2>
-                    <div class="bg-yayaRed text-white p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-xl relative overflow-hidden">
-                        <div class="relative z-10 space-y-4 text-center sm:text-left">
-                            <h3 class="text-xl md:text-2xl font-black italic uppercase">Cierre de Trato Blindado</h3>
-                            <p class="text-base md:text-lg text-white/90 leading-relaxed font-bold">
-                                Tras acordar el precio, el cliente debe pulsar <strong>"Confirmar y Empezar"</strong>. Solo este acto digital activa el estado <strong>In Progress</strong>, asegurando protección total.
-                            </p>
-                        </div>
-                        <div class="absolute -right-20 -bottom-20 w-48 md:w-64 h-48 md:h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+                <!-- Matriz de Permisos del Cliente -->
+                <div class="grid md:grid-cols-2 gap-6 pt-6">
+                    <div class="p-6 rounded-2xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 space-y-4">
+                        <h4 class="font-black text-emerald-800 dark:text-emerald-400 text-sm uppercase tracking-wider">LO QUE PUEDE HACER EL CLIENTE</h4>
+                        <ul class="text-xs md:text-sm space-y-2 text-emerald-900 dark:text-emerald-200 font-medium">
+                            <li>● Buscar y contratar servicios en cualquier municipio registrado.</li>
+                            <li>● Negociar tarifas mediante contraofertas antes de confirmar la solicitud.</li>
+                            <li>● Calificar y redactar reseñas sobre el desempeño del prestador.</li>
+                            <li>● Mantener comunicación directa mediante chat en tiempo real.</li>
+                        </ul>
                     </div>
-                </section>
+                    <div class="p-6 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/40 space-y-4">
+                        <h4 class="font-black text-rose-800 dark:text-rose-400 text-sm uppercase tracking-wider">LO QUE NO PUEDE HACER EL CLIENTE</h4>
+                        <ul class="text-xs md:text-sm space-y-2 text-rose-900 dark:text-rose-200 font-medium">
+                            <li>● Agendar citas en fechas pasadas o en horas transcurridas.</li>
+                            <li>● Seleccionar horarios fuera de la jornada del prestador.</li>
+                            <li>● Registrar documentos o números telefónicos con formato inválido.</li>
+                            <li>● Incurrir en conductas inapropiadas o engañosas en el chat.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            </main>
+        <!-- CONTENIDO: MANUAL DEL PRESTADOR -->
+        <div id="manual-provider" class="space-y-12 hidden">
+            <div class="bg-white dark:bg-darkSurface p-6 md:p-10 rounded-3xl border border-slate-200 dark:border-darkBorder shadow-sm space-y-8">
+                <div class="border-b border-slate-100 dark:border-darkBorder pb-6">
+                    <span class="text-xs font-black uppercase tracking-widest text-yayaRed">Guía de Talentos</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-yayaNavy dark:text-white mt-1">Manual de Uso para Prestadores</h2>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm md:text-base mt-2">Gestión de publicaciones por municipio, jornada maestra, detección inteligente de traslapes y reputación.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">1. Publicación de Servicios</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Registre sus ofertas especificando título, descripción, precio sugerido, materiales e imágenes de portafolio asociando el municipio de atención.
+                        </p>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">2. Jornada Maestra ("Mi Horario")</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Configure sus días y horas hábiles globales en la sección "Mi Horario de Trabajo" para cargar rápidamente disponibilidades por servicio.
+                        </p>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">3. Detección Inteligente de Traslapes</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            El sistema valida automáticamente que el horario asignado a un servicio no colisione con otro de sus servicios activos en el mismo rango de tiempo.
+                        </p>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">4. Consulta de Reputación</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Acceda a la sección "Mi Reputación y Reseñas" desde su perfil para monitorear su promedio de estrellas y comentarios recibidos.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Matriz de Permisos del Prestador -->
+                <div class="grid md:grid-cols-2 gap-6 pt-6">
+                    <div class="p-6 rounded-2xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 space-y-4">
+                        <h4 class="font-black text-emerald-800 dark:text-emerald-400 text-sm uppercase tracking-wider">LO QUE PUEDE HACER EL PRESTADOR</h4>
+                        <ul class="text-xs md:text-sm space-y-2 text-emerald-900 dark:text-emerald-200 font-medium">
+                            <li>● Publicar múltiples servicios definiendo municipio de atención y horarios.</li>
+                            <li>● Utilizar la carga rápida de jornada maestra al configurar disponibilidad.</li>
+                            <li>● Aceptar, contraofertar o rechazar solicitudes recibidas.</li>
+                            <li>● Consultar su reputación acumulada y reseñas de clientes.</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/40 space-y-4">
+                        <h4 class="font-black text-rose-800 dark:text-rose-400 text-sm uppercase tracking-wider">LO QUE NO PUEDE HACER EL PRESTADOR</h4>
+                        <ul class="text-xs md:text-sm space-y-2 text-rose-900 dark:text-rose-200 font-medium">
+                            <li>● Ofertar servicios en días u horarios desactivados en su jornada maestra.</li>
+                            <li>● Traslapar horarios entre dos servicios activos el mismo día.</li>
+                            <li>● Publicar precios irreales o imágenes no autorizadas.</li>
+                            <li>● Alterar o manipular las calificaciones recibidas.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENIDO: MANUAL DEL ADMINISTRADOR -->
+        <div id="manual-admin" class="space-y-12 hidden">
+            <div class="bg-white dark:bg-darkSurface p-6 md:p-10 rounded-3xl border border-slate-200 dark:border-darkBorder shadow-sm space-y-8">
+                <div class="border-b border-slate-100 dark:border-darkBorder pb-6">
+                    <span class="text-xs font-black uppercase tracking-widest text-yayaRed">Guía de Moderación</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-yayaNavy dark:text-white mt-1">Manual Maestro de Administración</h2>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm md:text-base mt-2">Auditoría del catálogo por municipio, semáforo disciplinario de reportes y capa de anonimato.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">1. Auditoría del Catálogo</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Aprobar o pausar publicaciones de servicios pendientes por municipio para mantener los estándares de calidad de la plataforma.
+                        </p>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">2. Semáforo Disciplinario</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Atención de denuncias con esquema progresivo: Amarillo (1-2 reportes: Aviso por chat), Naranja (3-4 reportes: Suspensión) y Rojo (5+ reportes: Eliminación).
+                        </p>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">3. Llamado de Atención Automático</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Envío de mensajes informativos disciplinarios directamente vía chat al usuario objeto de reporte desde el panel.
+                        </p>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="font-black text-yayaNavy dark:text-white text-lg">4. Capa de Protección de Anonimato</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Interacción con usuarios comunitarios bajo el nombre protegido "Equipo de Moderación YÁYA" e isotipo oficial.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Matriz de Permisos del Administrador -->
+                <div class="grid md:grid-cols-2 gap-6 pt-6">
+                    <div class="p-6 rounded-2xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 space-y-4">
+                        <h4 class="font-black text-emerald-800 dark:text-emerald-400 text-sm uppercase tracking-wider">LO QUE PUEDE HACER EL ADMINISTRADOR</h4>
+                        <ul class="text-xs md:text-sm space-y-2 text-emerald-900 dark:text-emerald-200 font-medium">
+                            <li>● Aprobar o rechazar solicitudes de publicación de servicios.</li>
+                            <li>● Aplicar sanciones del semáforo disciplinario progresivo.</li>
+                            <li>● Enviar llamados de atención automáticos por chat.</li>
+                            <li>● Operar bajo la capa de identidad administrativa protegida.</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/40 space-y-4">
+                        <h4 class="font-black text-rose-800 dark:text-rose-400 text-sm uppercase tracking-wider">LO QUE NO PUEDE HACER EL ADMINISTRADOR</h4>
+                        <ul class="text-xs md:text-sm space-y-2 text-rose-900 dark:text-rose-200 font-medium">
+                            <li>● Revelar su identidad personal o datos reales ante usuarios sancionados.</li>
+                            <li>● Alterar negociaciones o acuerdos transaccionales legítimos entre usuarios.</li>
+                            <li>● Omitir la revisión de reportes comunitarios recibidos.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <!-- Script de Control de Pestañas (Role Switcher) -->
+    <script>
+        function switchRoleTab(role) {
+            const clientTab = document.getElementById('btn-tab-client');
+            const providerTab = document.getElementById('btn-tab-provider');
+            const adminTab = document.getElementById('btn-tab-admin');
+
+            const clientContent = document.getElementById('manual-client');
+            const providerContent = document.getElementById('manual-provider');
+            const adminContent = document.getElementById('manual-admin');
+
+            const activeClasses = ['bg-yayaRed', 'text-white', 'shadow-md'];
+            const inactiveClasses = ['text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-100', 'dark:hover:bg-slate-800'];
+
+            // Resetea todas las pestañas
+            [clientTab, providerTab, adminTab].forEach(tab => {
+                tab.classList.remove(...activeClasses);
+                tab.classList.add(...inactiveClasses);
+            });
+
+            // Oculta todos los contenidos
+            clientContent.classList.add('hidden');
+            providerContent.classList.add('hidden');
+            adminContent.classList.add('hidden');
+
+            // Activa la pestaña seleccionada
+            if (role === 'client') {
+                clientTab.classList.add(...activeClasses);
+                clientTab.classList.remove(...inactiveClasses);
+                clientContent.classList.remove('hidden');
+            } else if (role === 'provider') {
+                providerTab.classList.add(...activeClasses);
+                providerTab.classList.remove(...inactiveClasses);
+                providerContent.classList.remove('hidden');
+            } else if (role === 'admin') {
+                adminTab.classList.add(...activeClasses);
+                adminTab.classList.remove(...inactiveClasses);
+                adminContent.classList.remove('hidden');
+            }
+        }
+    </script>
 
     <!-- Organismo: Footer -->
     <div id="yaya-footer"></div>

@@ -47,6 +47,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Confirmación Atómica de Cierre de Sesión en Barra Inferior (`HomeScreen` & `YayaConfirmationDialog`):**
     - Integración del diálogo modal atómico de confirmación `YayaConfirmationDialog` en el botón de cerrar sesión de la barra de navegación inferior de `HomeScreen`.
     - Prevención del cierre de sesión accidental solicitando la confirmación activa e intencional del usuario antes de desautenticar la sesión.
+- **Modernización y Reestructuración Interactiva del Portal Web de Manuales (`portal_web/manuales.html`):**
+    - Implementación del selector interactivo de pestañas por rol (`switchRoleTab`) en JavaScript para consultar de forma segregada los manuales de Cliente, Prestador y Administrador.
+    - Incorporación de matrices atómicas de permisos con bloques visuales destacados en verde ("LO QUE PUEDE HACER EL USUARIO") y rojo ("LO QUE NO PUEDE HACER EL USUARIO") para los tres roles del sistema.
+    - Adopción de estilo formal técnico sin emojis, con soporte de Tema Dual (Modo Claro / Modo Oscuro) e Interfaz Elástica Responsive, plenamente sincronizada con la versión v1.1.0 de la App (cobertura por municipio, jornada maestra, detección inteligente de traslapes horarios, reputación de talentos y semáforo de moderación disciplinario).
 
 ### Cambiado
 - **Rediseño del Selector de Rol (`RegisterUserScreen`):**
