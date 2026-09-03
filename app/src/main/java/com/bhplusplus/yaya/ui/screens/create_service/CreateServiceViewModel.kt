@@ -40,8 +40,14 @@ class CreateServiceViewModel : ViewModel() {
     var masterWorkingDays by mutableStateOf<List<Int>>(emptyList())
         private set
 
+    var masterAvailabilityList by mutableStateOf<List<com.bhplusplus.yaya.data.models.Availability>>(emptyList())
+        private set
+
     // Días ocupados por OTROS servicios del mismo prestador (Map: dayNumber -> serviceTitle)
     var occupiedDaysByOtherServices by mutableStateOf<Map<Int, String>>(emptyMap())
+        private set
+
+    var existingServicesList by mutableStateOf<List<Service>>(emptyList())
         private set
 
     init {
@@ -63,12 +69,15 @@ class CreateServiceViewModel : ViewModel() {
                     .select { filter { eq("provider_id", user.id) } }
                     .decodeList<com.bhplusplus.yaya.data.models.Availability>()
 
+                masterAvailabilityList = availabilityList
                 masterWorkingDays = availabilityList.map { it.day_of_week }.sorted()
 
                 // 2. Cargar otros servicios del prestador
                 val existingServices = SupabaseManager.client.postgrest["services"]
                     .select { filter { eq("provider_id", user.id) } }
                     .decodeList<Service>()
+
+                existingServicesList = existingServices
 
                 val occupiedMap = mutableMapOf<Int, String>()
                 existingServices.forEach { existing ->
@@ -124,6 +133,80 @@ class CreateServiceViewModel : ViewModel() {
     }
 
     /**
+     * Valida de manera reactiva todos los campos del formulario antes de guardar.
+     * Retorna null si la información es válida, o un mensaje de error descriptivo si hay algún fallo.
+     */
+    fun validateServiceData(
+        title: String,
+        price: String,
+        categoryId: String?,
+        workingDays: List<Int>,
+        startTime: String,
+        endTime: String,
+        serviceId: String? = null
+    ): String? {
+        if (title.isBlank()) return "Ingresa el título del servicio"
+        if (categoryId == null) return "Selecciona una categoría de talento"
+        if (price.isBlank() || (price.toDoubleOrNull() ?: 0.0) <= 0) return "Ingresa un precio base válido"
+        if (workingDays.isEmpty()) return "Selecciona al menos un día de prestación"
+
+        val parseTime = { t: String ->
+            val shortStr = if (t.length >= 5) t.substring(0, 5) else t
+            java.time.LocalTime.parse(shortStr)
+        }
+        val serviceStart = try { parseTime(startTime) } catch (_: Exception) { null }
+        val serviceEnd = try { parseTime(endTime) } catch (_: Exception) { null }
+
+        if (serviceStart == null || serviceEnd == null || !serviceStart.isBefore(serviceEnd)) {
+            return "La hora de inicio debe ser anterior a la hora de fin"
+        }
+
+        val dayNames = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
+
+        // 1. Validar que los días y horas estén dentro de la jornada maestra
+        if (masterWorkingDays.isNotEmpty()) {
+            for (day in workingDays) {
+                if (!masterWorkingDays.contains(day)) {
+                    return "El día ${dayNames[day - 1]} no forma parte de tu jornada maestra"
+                }
+                val master = masterAvailabilityList.find { it.day_of_week == day }
+                if (master != null) {
+                    val masterStart = try { parseTime(master.start_time) } catch (_: Exception) { null }
+                    val masterEnd = try { parseTime(master.end_time) } catch (_: Exception) { null }
+                    if (masterStart != null && masterEnd != null) {
+                        if (serviceStart.isBefore(masterStart) || serviceEnd.isAfter(masterEnd)) {
+                            val mStart = master.start_time.take(5)
+                            val mEnd = master.end_time.take(5)
+                            return "El horario para ${dayNames[day - 1]} debe estar dentro de tu jornada maestra ($mStart - $mEnd)"
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Validar que no se traslape con otros servicios del mismo prestador
+        for (existing in existingServicesList) {
+            if (existing.id != serviceId) {
+                val commonDays = workingDays.intersect(existing.working_days.toSet())
+                if (commonDays.isNotEmpty()) {
+                    val isOverlap = com.bhplusplus.yaya.utils.ValidationUtils.isTimeRangeOverlapping(
+                        startTime, endTime,
+                        existing.start_time, existing.end_time
+                    )
+                    if (isOverlap) {
+                        val firstDay = commonDays.first()
+                        val exStart = existing.start_time.take(5)
+                        val exEnd = existing.end_time.take(5)
+                        return "Conflicto el ${dayNames[firstDay - 1]}: Ya tienes '${existing.title}' de $exStart a $exEnd"
+                    }
+                }
+            }
+        }
+
+        return null
+    }
+
+    /**
      * Crea o actualiza un servicio vinculado al usuario actual.
      */
     fun saveService(
@@ -145,6 +228,67 @@ class CreateServiceViewModel : ViewModel() {
             _errorMessage.value = "Completa los campos y selecciona al menos un día de trabajo"
             onResult(false)
             return
+        }
+
+        // 1. Validar que hora inicio < hora fin
+        val parseTime = { t: String ->
+            val shortStr = if (t.length >= 5) t.substring(0, 5) else t
+            java.time.LocalTime.parse(shortStr)
+        }
+        val serviceStart = try { parseTime(startTime) } catch (_: Exception) { null }
+        val serviceEnd = try { parseTime(endTime) } catch (_: Exception) { null }
+
+        if (serviceStart == null || serviceEnd == null || !serviceStart.isBefore(serviceEnd)) {
+            _errorMessage.value = "La hora de inicio debe ser anterior a la hora de fin."
+            onResult(false)
+            return
+        }
+
+        val dayNames = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
+
+        // 2. Validar que esté dentro de la jornada maestra si el prestador la tiene configurada
+        if (masterAvailabilityList.isNotEmpty()) {
+            for (day in workingDays) {
+                val master = masterAvailabilityList.find { it.day_of_week == day }
+                if (master == null) {
+                    _errorMessage.value = "El día ${dayNames[day - 1]} no está incluido en tu jornada maestra de trabajo."
+                    onResult(false)
+                    return
+                } else {
+                    val masterStart = try { parseTime(master.start_time) } catch (_: Exception) { null }
+                    val masterEnd = try { parseTime(master.end_time) } catch (_: Exception) { null }
+                    if (masterStart != null && masterEnd != null) {
+                        if (serviceStart.isBefore(masterStart) || serviceEnd.isAfter(masterEnd)) {
+                            val masterStartShort = master.start_time.take(5)
+                            val masterEndShort = master.end_time.take(5)
+                            _errorMessage.value = "El horario para el ${dayNames[day - 1]} debe estar dentro de tu jornada maestra ($masterStartShort - $masterEndShort)."
+                            onResult(false)
+                            return
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Validar que no se cruce con el horario de OTROS servicios del mismo prestador
+        for (existing in existingServicesList) {
+            if (existing.id != serviceId) {
+                val commonDays = workingDays.intersect(existing.working_days.toSet())
+                if (commonDays.isNotEmpty()) {
+                    val isOverlap = com.bhplusplus.yaya.utils.ValidationUtils.isTimeRangeOverlapping(
+                        startTime, endTime,
+                        existing.start_time, existing.end_time
+                    )
+                    if (isOverlap) {
+                        val firstCommonDay = commonDays.first()
+                        val existingStartShort = existing.start_time.take(5)
+                        val existingEndShort = existing.end_time.take(5)
+                        _errorMessage.value = "Conflicto de horario el ${dayNames[firstCommonDay - 1]}: Ya tienes el servicio '${existing.title}' de $existingStartShort a $existingEndShort."
+                        onResult(false)
+                        return
+                    }
+                }
+            }
         }
 
         val priceVal = price.toDoubleOrNull() ?: 0.0

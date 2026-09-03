@@ -24,7 +24,8 @@ fun ProfileOptionItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isDestructive: Boolean = false,
-    badgeCount: Int = 0
+    badgeCount: Int = 0,
+    badgeText: String? = null
 ) {
     Surface(
         onClick = onClick,
@@ -65,7 +66,21 @@ fun ProfileOptionItem(
                 overflow = TextOverflow.Ellipsis
             )
 
-            if (badgeCount > 0) {
+            if (!badgeText.isNullOrBlank()) {
+                Surface(
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                ) {
+                    Text(
+                        text = badgeText,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else if (badgeCount > 0) {
                 Surface(
                     color = MaterialTheme.colorScheme.primary,
                     shape = CircleShape,

@@ -89,45 +89,10 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             isLoading = true
             try {
-                // 1. Obtener categorías reales de la DB
-                categories = SupabaseManager.client.postgrest["categories"]
-                    .select()
-                    .decodeList<Category>()
-
-                // 2. Obtener todos los servicios (Filtrando por estado activo para usuarios normales) con Join del prestador
-                val servicesResult = SupabaseManager.client.postgrest["services"]
-                    .select(Columns.raw("*, provider_profile:provider_id(*)")) {
-                        filter {
-                            eq("status", "active") // Solo servicios aprobados
-                        }
-                    }
-                    .decodeList<Service>()
-                
-                allServices = servicesResult
-
-                // 3. Obtener todas las calificaciones para estos servicios
-                val serviceIds = allServices.mapNotNull { it.id }
-                if (serviceIds.isNotEmpty()) {
-                    val ratingsResult = SupabaseManager.client.postgrest["ratings"]
-                        .select()
-                        .decodeList<Rating>()
-                    
-                    // Agrupamos por provider_id (ya que las calificaciones son al prestador)
-                    serviceRatingsMap = ratingsResult.groupBy { it.provider_id }
-                }
-
-                applyFilters() // Inicializamos la lista filtrada
-
-                // Activar suscripción Realtime para servicios
-                subscribeToServices()
-                subscribeToRatings()
-
-                // 3. Obtener rol del usuario y contar notificaciones
+                // 1. Cargar perfil del usuario autenticado primero para obtener su municipio por defecto
                 val user = SupabaseManager.client.auth.currentUserOrNull()
                 if (user != null) {
-                    // Sincronizar Token de Notificaciones proactivamente
                     SupabaseManager.syncFcmToken()
-
                     try {
                         val profile = SupabaseManager.client.postgrest["profiles"]
                             .select { filter { eq("id", user.id) } }
@@ -138,19 +103,49 @@ class HomeViewModel : ViewModel() {
                             selectedMunicipality = profile.municipality
                         }
                         
-                        // Contar notificaciones según el rol (Hito 4)
                         fetchNotificationCount(user.id, profile.role)
                         fetchUnreadMessagesCount(user.id)
-
-                        // Activar suscripciones reactivas para Badges
                         subscribeToRequests(user.id, profile.role)
                         subscribeToUnreadMessages(user.id)
                     } catch (e: Exception) {
-                        Log.w("HomeViewModel", "Perfil no encontrado en DB, usando metadata.")
-                        // Recuperamos el rol desde los metadatos de Auth para no bloquear la UI
+                        Log.w("HomeViewModel", "Perfil no encontrado en DB, usando metadata: ${e.message}")
                         userRole = user.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
                     }
                 }
+
+                // 2. Obtener categorías reales de la DB
+                categories = SupabaseManager.client.postgrest["categories"]
+                    .select()
+                    .decodeList<Category>()
+
+                // 3. Obtener todos los servicios activos
+                val servicesResult = SupabaseManager.client.postgrest["services"]
+                    .select(Columns.raw("*, provider_profile:provider_id(*)")) {
+                        filter {
+                            eq("status", "active") // Solo servicios aprobados
+                        }
+                    }
+                    .decodeList<Service>()
+                
+                allServices = servicesResult
+
+                // 4. Obtener calificaciones para estos servicios
+                val serviceIds = allServices.mapNotNull { it.id }
+                if (serviceIds.isNotEmpty()) {
+                    val ratingsResult = SupabaseManager.client.postgrest["ratings"]
+                        .select()
+                        .decodeList<Rating>()
+                    
+                    serviceRatingsMap = ratingsResult.groupBy { it.provider_id }
+                }
+
+                // 5. Aplicar filtros con el municipio del usuario ya inicializado
+                applyFilters()
+
+                // Activar suscripción Realtime
+                subscribeToServices()
+                subscribeToRatings()
+
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "ERROR: ${e.message}")
             } finally {

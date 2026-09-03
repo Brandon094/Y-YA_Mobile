@@ -12,6 +12,7 @@ import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.data.models.ServiceRequest
 import com.bhplusplus.yaya.data.models.Message
 import com.bhplusplus.yaya.data.models.Service
+import com.bhplusplus.yaya.data.models.Rating
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -48,6 +49,14 @@ class ProfileViewModel : ViewModel() {
     var unreadMessagesCount by mutableIntStateOf(0)
     var pendingAdminServicesCount by mutableIntStateOf(0)
 
+    // Reputación del Prestador
+    var averageRating by mutableStateOf(0.0)
+        private set
+    var totalRatings by mutableIntStateOf(0)
+        private set
+    var providerRatings by mutableStateOf<List<Rating>>(emptyList())
+        private set
+
     init {
         fetchProfile()
     }
@@ -67,8 +76,11 @@ class ProfileViewModel : ViewModel() {
                     val profile = loadProfileData(user.id, user.userMetadata)
                     userProfile = profile
 
-                    // 2. Cargar conteos iniciales
+                    // 2. Cargar conteos iniciales y reputación del prestador
                     fetchNotificationCounts(user.id, profile.role)
+                    if (profile.role == "provider" || profile.role == "admin") {
+                        fetchProviderRatings(user.id)
+                    }
 
                     // 3. Activar suscripciones Realtime
                     subscribeToNotifications(user.id, profile.role)
@@ -90,6 +102,24 @@ class ProfileViewModel : ViewModel() {
             val name = metadata?.get("full_name")?.jsonPrimitive?.content ?: "Usuario"
             val role = metadata?.get("role")?.jsonPrimitive?.content ?: "client"
             UserProfile(id = userId, full_name = name, role = role)
+        }
+    }
+
+    private fun fetchProviderRatings(providerId: String) {
+        viewModelScope.launch {
+            try {
+                val ratingsResult = SupabaseManager.client.postgrest["ratings"]
+                    .select { filter { eq("provider_id", providerId) } }
+                    .decodeList<Rating>()
+
+                providerRatings = ratingsResult.sortedByDescending { it.created_at }
+                totalRatings = ratingsResult.size
+                averageRating = if (ratingsResult.isNotEmpty()) {
+                    ratingsResult.map { it.score }.average()
+                } else 0.0
+            } catch (e: Exception) {
+                Log.e("ProfileVM", "Error al cargar calificaciones del prestador: ${e.message}")
+            }
         }
     }
 

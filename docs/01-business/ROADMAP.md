@@ -2,7 +2,7 @@
 
 Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA, dividida en hitos (milestones) que llevan el proyecto desde su estado actual hasta el lanzamiento del MVP (Producto Mínimo Viable) y futuras expansiones.
 
-## Estado Actual: 🟢 Producción / Play Store Ready (v1.0.1 - versionCode 5)
+## Estado Actual: 🟢 Producción / Play Store Ready (v1.1.0 - versionCode 5)
 - **Cuenta Universal:** Sin doble fricción entre clientes y prestadores.
 - **Negociación Activa ("Handshake"):** Flujo de contraofertas con doble confirmación funcional.
 - **Gestión Dual & Admin:** Panel administrativo con sanciones progresivas y anonimato de moderación.

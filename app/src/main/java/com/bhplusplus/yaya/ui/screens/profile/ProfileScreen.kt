@@ -20,11 +20,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.ui.components.atoms.PoweredByBH
 import com.bhplusplus.yaya.ui.components.atoms.YayaSecondaryButton
 import com.bhplusplus.yaya.ui.components.atoms.YayaSectionHeader
 import com.bhplusplus.yaya.ui.components.molecules.ProfileOptionItem
+import com.bhplusplus.yaya.ui.components.molecules.RatingIndicator
+import com.bhplusplus.yaya.ui.components.molecules.YayaRatingItem
 import com.bhplusplus.yaya.ui.components.organisms.ProfileHeroHeader
 import com.bhplusplus.yaya.ui.components.organisms.ProfileSectionCard
 
@@ -51,6 +55,51 @@ fun ProfileScreen(
 ) {
     val profile = viewModel.userProfile
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showRatingsSheet by remember { mutableStateOf(false) }
+
+    if (showRatingsSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showRatingsSheet = false },
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+            ) {
+                Text(
+                    text = "Mi Reputación y Reseñas",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(Modifier.height(8.dp))
+                RatingIndicator(
+                    rating = viewModel.averageRating,
+                    totalRatings = viewModel.totalRatings
+                )
+                Spacer(Modifier.height(16.dp))
+
+                if (viewModel.providerRatings.isEmpty()) {
+                    Text(
+                        text = "Aún no has recibido reseñas de clientes.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                } else {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 350.dp)
+                    ) {
+                        items(viewModel.providerRatings) { rating ->
+                            YayaRatingItem(rating = rating)
+                        }
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
+            }
+        }
+    }
 
     // DIÁLOGO DE CONFIRMACIÓN DE BORRADO
     if (showDeleteDialog) {
@@ -123,7 +172,9 @@ fun ProfileScreen(
                     name = profile?.full_name ?: "Usuario YÁYA",
                     email = viewModel.email,
                     avatarUrl = profile?.avatar_url,
-                    role = profile?.role ?: "client"
+                    role = profile?.role ?: "client",
+                    averageRating = viewModel.averageRating,
+                    totalRatings = viewModel.totalRatings
                 )
 
                 Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)) {
@@ -149,6 +200,13 @@ fun ProfileScreen(
                         ProfileSectionCard(
                             modifier = Modifier.padding(bottom = 24.dp)
                         ) {
+                            ProfileOptionItem(
+                                title = "Mi Reputación y Reseñas",
+                                icon = Icons.Default.Star,
+                                onClick = { showRatingsSheet = true },
+                                badgeText = if (viewModel.totalRatings > 0) String.format(java.util.Locale.US, "⭐ %.1f (%d)", viewModel.averageRating, viewModel.totalRatings) else "Sin opiniones"
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
                             ProfileOptionItem(
                                 title = "Mi Horario de Trabajo",
                                 icon = Icons.Default.Schedule,

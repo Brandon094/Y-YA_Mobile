@@ -5,38 +5,53 @@ Todas las modificaciones notables en este proyecto serán documentadas en este a
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.1] - 2026-09-03
+## [1.1.0] - 2026-09-03
 ### Añadido
-- **Estrategia de Filtrado Geográfico y Desplegables de Municipio (`ExposedDropdownMenuBox`):**
-    - Definición de la lista inmutable y estandarizada de municipios del departamento del Huila en `ValidationUtils.HUILA_MUNICIPALITIES`.
+- **Motor Centralizado de Validaciones de Datos (`ValidationUtils.kt`):**
+    - Implementación del componente `ValidationUtils.kt` aplicando el principio DRY y la arquitectura MVVM para validación integral de entrada de usuarios en toda la app.
+    - Soporte para nombres alfabéticos (sin números ni caracteres especiales no permitidos), documento de identidad DNI/CC (6 a 12 dígitos), teléfono móvil de exactamente 10 dígitos, correo electrónico en formato RFC/Patterns y contraseña segura (mín. 8 caracteres combinando mayúscula, minúscula y número o símbolo).
+    - Validación de fechas de nacimiento no futuras con restricción en UI (`SelectableDates`), agendamiento de citas con dirección válida (mín. 5 caracteres), restricción de días pasados, fecha no transcurrida y hora no pasada para citas del mismo día.
+    - Extensión del átomo `YayaTextField` con soporte para mensajes de error contextuales (`errorMessage`) en `RegisterUserScreen`, `EditProfileScreen`, `PantallaContratacion`, `LoginScreen` y `ResetPasswordScreen`.
+- **Estrategia de Filtrado Geográfico por Municipio/Zona (`municipality`):**
+    - Definición de la lista inmutable y estandarizada de municipios del departamento del Huila en `ValidationUtils.HUILA_MUNICIPALITIES` (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante).
     - Reemplazo de campos de texto libre por controles desplegables inmutables `ExposedDropdownMenuBox` en `RegisterUserScreen`, `EditProfileScreen` y `CreateServiceScreen`, garantizando la captura limpia de la ubicación de atención y cobertura sin errores de tipeo.
-    - Sincronización de la interfaz modal de diálogo de filtro de municipio en `HomeScreen` consumiendo la fuente de datos unificada de `ValidationUtils.HUILA_MUNICIPALITIES`.
+    - Sincronización del diálogo modal de filtro geográfico en `HomeScreen` consumiendo la fuente de datos unificada de `ValidationUtils.HUILA_MUNICIPALITIES`.
     - Incorporación del campo opcional `municipality: String?` ("La Plata" por defecto) en los modelos de datos de dominio `UserProfile` y `Service`.
-    - Integración de Chip de Selección de Municipio interactivo en `HomeTopBar` y lógica de filtrado dinámico en `HomeViewModel.applyFilters()` (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante, Todos).
-- **Flujo de Onboarding del Prestador (Post-Registro):**
+    - Chip de Selección de Municipio interactivo en `HomeTopBar` y lógica de filtrado dinámico en `HomeViewModel.applyFilters()` (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante, Todos).
+- **Módulo de Visualización de Reputación y Reseñas en Perfil del Prestador (`ProfileViewModel`, `ProfileHeroHeader`, `ProfileScreen`, `ProfileOptionItem`):**
+    - Consulta y cálculo dinámico de puntuación promedio (`averageRating`), total de evaluaciones (`totalRatings`) y lista ordenada de opiniones (`providerRatings`) mediante Postgrest sobre la tabla `public.ratings` para usuarios con rol `provider` o `admin`.
+    - Incorporación del indicador gráfico `RatingIndicator` en la cabecera Hero del perfil (`ProfileHeroHeader`) directamente alineado con el badge de rol.
+    - Integración de la opción *"Mi Reputación y Reseñas"* en la sección *"MI TALENTO"* del perfil con soporte para badges textuales con resumen de estrellas (`badgeText`, ej: `⭐ 4.9 (18)` o `"Sin opiniones"`) en `ProfileOptionItem`.
+    - Despliegue de modal de hoja inferior (`ModalBottomSheet`) en `ProfileScreen` para examinar el listado completo de reseñas recibidas mediante componentes atómicos `YayaRatingItem`, con feedback para estado sin calificaciones.
+- **Redirección Automática de Onboarding para Prestadores (Post-Registro):**
     - Redirección automática de usuarios recién registrados con rol `provider` hacia la pantalla de configuración de Jornada Maestra (`AvailabilityScreen`), garantizando la parametrización de rangos de disponibilidad base (`public.availability`) antes de la creación y oferta de servicios.
 - **Carga Inteligente de Disponibilidad y Detector de Cruces (`CreateServiceScreen` & `CreateServiceViewModel`):**
     - Action button *"Cargar mi jornada maestra"* que puebla de forma instantánea el listado de días laborables (`working_days`) utilizando la configuración general almacenada en `public.availability`.
     - Algoritmo de detección de ocupación en `CreateServiceViewModel.loadProviderAvailabilityAndServices()` que consulta servicios previos del prestador e identifica la distribución de días ya asignados a otros servicios (`occupiedDaysByOtherServices`).
     - Destacado visual en `CreateServiceScreen` con círculos de días ocupados resaltados en tono de advertencia (`errorContainer`) y notificación informativa contextual que explicita los días, nombres de los servicios asignados y sus rangos horarios activos (ej: `Desarrollo de aplicaciones móviles (08:00 - 18:00)`) para visibilidad de horas libres y prevención de solapamientos y traslapes de agenda.
-- **Arquitectura de Horarios y Días de Trabajo por Servicio:**
-    - Separación estricta entre la Jornada Maestra del Prestador (`public.availability`) y los días (`working_days`) y horarios específicos asignados a cada talento o servicio (`public.services`).
-    - Lógica de validación sincronizada en `ContratacionViewModel` que restringe el calendario a los días permitidos por el servicio y bloquea selecciones de horas fuera de rango de disponibilidad o transcurridas.
+    - Validaciones estrictas de horarios y conformidad con Jornada Maestra: verificación de secuencia horaria (`startTime < endTime`), conformidad con la disponibilidad maestra (`masterStart` - `masterEnd`) y evaluación de solapamiento de horarios entre servicios del mismo prestador (`ValidationUtils.isTimeRangeOverlapping`).
+    - Deshabilitación visual (`alpha = 0.3f`) y desacoplamiento de clics en el selector de días (`FlowRow`) para días fuera de la jornada maestra (`masterWorkingDays`), con evaluación reactiva `currentValidationError` y deshabilitación dinámica del botón de guardado ante inconsistencias.
 - **Migración de Base de Datos Supabase (DDL):**
     - Definición de scripts SQL para adicionar la columna `municipality` a las tablas `public.profiles` y `public.services` con valor predeterminado `'La Plata'`.
 
 ### Cambiado
-- **Incremento de Versión de Producción:**
-    - Actualización de versión a `versionCode 5` (`versionName "1.0.1"`) en `app/build.gradle.kts`.
+- **Alineación Semántica de Calificaciones en `ServiceCard` (`RatingIndicator`):**
+    - Reubicación visual de la estrella e indicador promedio de calificación (`RatingIndicator`) hacia la cabecera del componente `ServiceCard`, situándolo directamente debajo del nombre del prestador (`state.domain.provider?.full_name`).
+    - Alineación semántica directa con la tabla SQL `public.ratings` (que califica al prestador / `provider_id` y su reputación general de talento), eliminando cualquier confusión previa donde la estrella aparentaba ser una calificación del servicio individual en lugar del prestador.
+    - Reorganización visual de la categoría del servicio y la disponibilidad de días en el pie de página de la tarjeta (`ServiceCard`) para un layout limpio e intuitivo.
+- **Incremento de Versión del Proyecto:**
+    - Actualización de versión oficial a `versionName = "1.1.0"` y `versionCode = 5` en `app/build.gradle.kts` para despliegue en Google Play Store.
 
 ### Corregido
-- **Persistencia de Disponibilidad General (`AvailabilityViewModel` & `AvailabilityScreen`):**
+- **Solución a Condición de Carrera en Inicialización de Municipio (`HomeViewModel.loadData`):**
+    - Corrección de condición de carrera en la secuencia de carga inicial de `HomeViewModel.loadData()`, donde `applyFilters()` se ejecutaba previamente a la recuperación del perfil de usuario (`userProfile`), provocando que la vista inicial se filtrara por la ubicación por defecto ("La Plata").
+    - Reorganización de la ejecución asíncrona para asegurar la descarga del perfil del usuario e inicializar `selectedMunicipality` con su municipio real **antes** de invocar `applyFilters()`, garantizando la presentación inmediata de los servicios filtrados por la ubicación real del usuario sin requerir refresco manual.
+- **Corrección de Error de Columna `id` y `day_of_week` Nulos (`Availability.kt` & `AvailabilityViewModel`):**
     - Corrección del error `null value in column "id" violates not-null constraint` al guardar la disponibilidad en Supabase PostgreSQL, mediante la generación proactiva de UUIDs de cliente (`java.util.UUID.randomUUID()`) previa a la operación de `upsert`.
-    - Normalización de las cadenas de horario al formato de 8 caracteres (`"HH:mm:ss"`) para compatibilidad estricta con el tipo de dato SQL `time without time zone`.
-    - Incorporación de un contenedor de error visual contextual en `AvailabilityScreen` para desplegar mensajes informativos sobre excepciones de red o persistencia en la UI.
-- **Serialización Explícita de Disponibilidad (`Availability.kt` & Postgrest):**
-    - Eliminación de valores por defecto en las propiedades de `Availability.kt` (`day_of_week`, `provider_id`, `start_time`, `end_time`) para evitar que `kotlinx.serialization` omita propiedades en la codificación JSON cuando coinciden con su valor por defecto (ej. `day_of_week = 1`), garantizando la transmisión explícita de `day_of_week` y eliminando el error `null value in column "day_of_week" violates not-null constraint`.
-    - Reafirmación de la arquitectura de disponibilidad: `public.availability` mapea la Jornada Maestra/Marco global del prestador y `public.services` los horarios/días específicos asignados a cada servicio.
+    - Eliminación de valores por defecto en las propiedades de `Availability.kt` (`day_of_week`, `provider_id`, `start_time`, `end_time`) para evitar que `kotlinx.serialization` omita propiedades en la codificación JSON cuando coinciden con su valor por defecto, garantizando la transmisión explícita de `day_of_week` y eliminando el error `null value in column "day_of_week" violates not-null constraint`.
+    - Normalización de las cadenas de horario al formato de 8 caracteres (`"HH:mm:ss"`) para compatibilidad estricta con el tipo de dato SQL `time without time zone`, e incorporación de contenedor visual de error en `AvailabilityScreen`.
+- **Prevención de Traslapes y Solapamientos Horarios entre Servicios:**
+    - Verificación estricta mediante `ValidationUtils.isTimeRangeOverlapping` para bloquear la creación o edición de servicios cuyos rangos horarios colisionen con otros servicios activos del mismo prestador en días compartidos.
 
 ## [1.0.1] - 2026-09-02
 ### Corregido
@@ -64,7 +79,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Cumplimiento y Publicación en Google Play Store:**
     - Declaración del permiso `com.google.android.gms.permission.AD_ID` en `AndroidManifest.xml` para cumplimiento de las políticas de identificador de publicidad y analítica de Google Play.
     - Inclusión de símbolos de depuración nativos en nivel `FULL` (`ndk { debugSymbolLevel = 'FULL' }`) en `app/build.gradle.kts` para análisis de crashes nativos y desofuscación en Play Console.
-    - Incremento de versión a `versionCode 6` (`versionName "1.0.1"`) en `app/build.gradle.kts`.
+    - Configuración de versión `versionCode 5` (`versionName "1.1.0"`) en `app/build.gradle.kts`.
 
 ### Cambiado
 - **Infraestructura CI/CD y Automatización de Calidad:**

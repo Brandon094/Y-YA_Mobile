@@ -90,19 +90,11 @@ fun ServiceCard(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                    // Badge de Categoría mini
-                    Surface(
-                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(6.dp)
-                    ) {
-                        Text(
-                            text = (state.categoryName ?: "General").uppercase(),
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                    }
+                    Spacer(Modifier.height(2.dp))
+                    RatingIndicator(
+                        rating = state.averageRating,
+                        totalRatings = state.totalRatings
+                    )
                 }
 
                 // Precio
@@ -149,16 +141,24 @@ fun ServiceCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // FOOTER: Calificación + Disponibilidad
+            // FOOTER: Categoría + Disponibilidad de Días
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                RatingIndicator(
-                    rating = state.averageRating,
-                    totalRatings = state.totalRatings
-                )
+                Surface(
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = (state.categoryName ?: "General").uppercase(),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
 
                 DayIndicator(workingDays = state.workingDays)
             }

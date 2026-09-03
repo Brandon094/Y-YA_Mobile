@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bhplusplus.yaya.ui.components.atoms.YayaAvatar
+import com.bhplusplus.yaya.ui.components.molecules.RatingIndicator
 
 @Composable
 fun ProfileHeroHeader(
@@ -23,6 +24,8 @@ fun ProfileHeroHeader(
     email: String,
     avatarUrl: String?,
     role: String,
+    averageRating: Double = 0.0,
+    totalRatings: Int = 0,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -61,18 +64,31 @@ fun ProfileHeroHeader(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Badge de Rol
-            Surface(
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(8.dp)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = if (role == "provider") "PRESTADOR" else "CLIENTE",
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                // Badge de Rol
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = if (role == "provider") "PRESTADOR" else if (role == "admin") "ADMINISTRADOR" else "CLIENTE",
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+
+                // Badge de Reputación / Estrellas para Prestador o Admin
+                if (role == "provider" || role == "admin") {
+                    RatingIndicator(
+                        rating = averageRating,
+                        totalRatings = totalRatings
+                    )
+                }
             }
         }
     }

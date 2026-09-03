@@ -111,6 +111,30 @@ object ValidationUtils {
     }
 
     /**
+     * Compara dos rangos de horas ("HH:mm" o "HH:mm:ss") para verificar si existe traslape.
+     * Retorna true si hay colisión horaria.
+     */
+    fun isTimeRangeOverlapping(
+        startA: String, endA: String,
+        startB: String, endB: String
+    ): Boolean {
+        return try {
+            val parseTime = { t: String ->
+                val shortStr = if (t.length >= 5) t.substring(0, 5) else t
+                java.time.LocalTime.parse(shortStr)
+            }
+            val sA = parseTime(startA)
+            val eA = parseTime(endA)
+            val sB = parseTime(startB)
+            val eB = parseTime(endB)
+
+            sA < eB && eA > sB
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    /**
      * Valida que una fecha programada sea hoy o futura (no del pasado).
      */
     fun isValidFutureDate(dateString: String): Boolean {

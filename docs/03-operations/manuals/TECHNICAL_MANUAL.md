@@ -38,13 +38,17 @@ El componente `ValidationUtils` centraliza las reglas de negocio para la captura
 *   **Contraseña Segura:** Mínimo 8 caracteres combinando mayúscula, minúscula y número o carácter especial.
 *   **Fecha de Nacimiento:** Bloqueo en la UI de días futuros en el calendario (`SelectableDates`) y validación de fecha cronológica no futura (`isValidBirthDate`).
 *   **Agendamiento de Citas:** Dirección de atención válida (mín. 5 caracteres), restricción UI de calendario a días presentes o futuros (`SelectableDates`), verificación de fecha no pasada (`isValidFutureDate`) y validación de hora no transcurrida para el día actual (`isValidScheduleTime`).
+*   **Evaluación de Traslape Horario (`ValidationUtils.isTimeRangeOverlapping`):** Función estática de validación que evalúa si dos rangos temporales (`start1`-`end1` y `start2`-`end2`) se solapan entre sí, utilizada para evitar colisiones de agenda entre servicios de un mismo prestador.
+*   **Validación de Publicación de Servicios (`CreateServiceViewModel.validateServiceData`):** Lógica pura de validación que analiza en tiempo real la integridad del servicio antes de su persistencia: requiere título (mín. 3 caracteres) y descripción no vacíos, precio > 0, secuencia horaria estricta (`startTime < endTime`), inclusión de todos los días seleccionados (`workingDays`) en la jornada maestra (`masterWorkingDays`), rango de horas contenido en los límites maestros (`masterStart` - `masterEnd`), y ausencia de traslapes con otros servicios del mismo prestador.
 *   **Municipios y Cobertura:** Lista inmutable centralizada en `ValidationUtils.HUILA_MUNICIPALITIES` que suministra las opciones de municipios de cobertura en el departamento del Huila (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante) a componentes desplegables `ExposedDropdownMenuBox` en `RegisterUserScreen`, `EditProfileScreen`, `CreateServiceScreen` y al filtro geográfico de `HomeScreen`, eliminando errores de tipeo y campos de texto libre.
 
-### 1.5. Arquitectura de Filtrado Geográfico por Municipio/Zona y Flujo de Horarios por Servicio
-YÁYA implementa una estrategia de filtrado multizona y gestión elástica de tiempos de atención para segmentar la oferta de servicios según la ubicación y disponibilidad del prestador:
+### 1.5. Arquitectura de Filtrado Geográfico por Municipio/Zona, Flujo de Horarios y Reputación del Prestador
+YÁYA implementa una estrategia de filtrado multizona, gestión elástica de tiempos de atención y un motor de reputación transparente para segmentar la oferta de servicios y exponer la valoración de los prestadores:
 *   **Estandarización de Ubicación con `ExposedDropdownMenuBox`:** Los formularios de captura e interacción (`RegisterUserScreen`, `EditProfileScreen`, `CreateServiceScreen`) y el diálogo modal de filtro geográfico en `HomeScreen` consumen la lista inmutable `ValidationUtils.HUILA_MUNICIPALITIES`. Los campos de texto libre fueron reemplazados por selecciones desplegables inmutables con `ExposedDropdownMenuBox`, garantizando consistencia total en la base de datos y eliminando errores tipográficos.
 *   **Modelos de Datos de Ubicación:** La propiedad opcional `municipality: String?` ("La Plata" por defecto) se integra en los modelos de dominio `UserProfile` y `Service`.
-*   **Controles UI y Lógica de Filtrado:** El componente `HomeTopBar` expone un chip interactivo de selección de municipio y `HomeViewModel.applyFilters()` filtra dinámicamente el catálogo reactivo permitiendo seleccionar municipios específicos o la opción global "Todos".
+*   **Controles UI y Flujo de Inicialización Secuencial de Filtrado (`HomeViewModel`):**
+    *   El componente `HomeTopBar` expone un chip interactivo de selección de municipio y `HomeViewModel.applyFilters()` filtra dinámicamente el catálogo reactivo permitiendo seleccionar municipios específicos o la opción global "Todos".
+    *   *Sincronización Inicial de Municipio (`HomeViewModel.loadData`):* Para prevenir condiciones de carrera al iniciar la app, `HomeViewModel.loadData()` ejecuta una secuencia asíncrona estrictamente ordenada: recupera primero el perfil del usuario autenticado (`userProfile`) y actualiza el municipio seleccionado (`selectedMunicipality`) con la ubicación real configurada en su perfil (ej. "Nátaga") **antes** de ejecutar `applyFilters()`. Esto elimina la carga inicial filtrada por la ubicación predeterminada ("La Plata") y asegura que la vista principal despliegue inmediatamente los servicios acordes a la ubicación geográfica real del usuario sin requerir un refresco manual.
 *   **Flujo de Onboarding del Prestador (Post-Registro):**
     *   **Navegación Guiada de Registro:** Al completar el registro con rol `provider`, el sistema ejecuta la redirección automática hacia la pantalla de configuración de Jornada Maestra (`AvailabilityScreen`).
     *   **Establecimiento de Base Temporal:** Garantiza que todo nuevo prestador configure su rango de disponibilidad laboral general y días activos en la tabla `public.availability` antes de publicar servicios o recibir solicitudes de agendamiento.
@@ -55,8 +59,23 @@ YÁYA implementa una estrategia de filtrado multizona y gestión elástica de ti
 *   **Separación entre Disponibilidad Maestra y Horarios por Servicio:**
     *   **Jornada Maestra del Prestador (`public.availability`):** Define el rango horario global (hora de inicio y hora de fin) y días laborables generales configurados por el usuario prestador en su perfil general.
     *   **Horarios por Servicio (`public.services`):** Especifica los días de atención (`working_days`) y particularidades aplicables de manera independiente a cada servicio o talento publicado.
+    *   **Validaciones Estrictas Previa al Guardado (`CreateServiceViewModel`):** Antes de crear o actualizar un servicio en `public.services`, se aplica un algoritmo defensivo en tres fases:
+        1. *Secuencia Horaria:* Exige que la hora de inicio (`startTime`) sea strictly menor a la hora de fin (`endTime`).
+        2. *Conformidad con la Jornada Maestra:* Verifica que todos los días asignados (`workingDays`) pertenezcan a la jornada maestra del prestador y que el rango horario (`startTime` - `endTime`) esté contenido entre `masterStart` y `masterEnd` para cada día correspondiente.
+        3. *Evaluación de Solapamiento Horario:* Si el prestador ya posee otros servicios activos compartiendo días de trabajo, se evalúa si colisionan con el rango propuesto mediante `ValidationUtils.isTimeRangeOverlapping`. Ante un traslape, se deniega el guardado y se notifica el conflicto específico (ej. *"Conflicto de horario el Lunes: Ya tienes el servicio 'Servicio X' de 08:00 a 14:00"*).
+    *   **Deshabilitación Visual de Días y Control Reactivo de Guardado (`CreateServiceScreen`):**
+        - *Deshabilitación de Días no Laborables (`FlowRow`):* Los días que no forman parte de la jornada maestra del prestador (`masterWorkingDays`) se deshabilitan visualmente en la UI (`alpha = 0.3f`) y se desacoplan del click (`clickable(enabled = false)`), impidiendo que el usuario seleccione días fuera de su disponibilidad maestra.
+        - *Evaluación Reactiva `currentValidationError`:* La interfaz calcula en tiempo real `currentValidationError` utilizando `remember(...)` sobre `validateServiceData`. Ante inconsistencias (días no incluidos en la jornada maestra, rango de horas fuera del marco maestro, `startTime >= endTime` o traslape con otros servicios del prestador), se muestra de inmediato un banner descriptivo de error en la pantalla y el botón *"Publicar Servicio / Guardar Cambios"* permanece estrictamente deshabilitado (`enabled = !isLoading && currentValidationError == null`).
     *   **Validación Sincronizada en Agendamiento (`ContratacionViewModel`):** Al iniciar un proceso de contratación, `ContratacionViewModel` intercepta el calendario y horario de la cita: restringe los días seleccionables a aquellos habilitados para el servicio específico (`currentService.working_days`) y valida que la hora propuesta coincida con el rango activo en la tabla `availability`, bloqueando selecciones fuera de rango o en horas pasadas.
     *   **Resolución de Persistencia, Serialización y Formateo SQL (`AvailabilityViewModel` & `Availability.kt`):** Corrección del fallo de guardado en `public.availability` mediante la generación de UUIDs de cliente (`java.util.UUID.randomUUID()`) previa a la operación de `upsert`, resolviendo la restricción not-null en la columna `id` de Supabase PostgreSQL (evitando el envío de `"id": null`). Se removieron además los valores por defecto en las propiedades de `Availability.kt` (`day_of_week`, `provider_id`, `start_time`, `end_time`) para impedir que `kotlinx.serialization` omita campos en el payload JSON cuando coinciden con sus valores por defecto, solucionando la excepción `null value in column "day_of_week" violates not-null constraint`. Asimismo, se normalizó el formato de las horas a 8 caracteres (`"HH:mm:ss"`, ej. `"08:00:00"`), asegurando alineación estricta con el tipo SQL `time without time zone` y desplegando errores contextuales en `AvailabilityScreen` mediante un contenedor visual dedicado.
+    *   **Refinamiento Semántico y Correspondencia Visual de `ServiceCard`:**
+        - *Reubicación de `RatingIndicator`:* La estrella y promedio de calificaciones se reubicaron en la cabecera de la tarjeta (`ServiceCard`), situándose directamente debajo del nombre del prestador (`state.domain.provider?.full_name`).
+        - *Alineación con Reputación en `public.ratings`:* Esta distribución alinea visualmente la interfaz con la tabla relacional `public.ratings`, la cual evalúa la reputación del talento (`provider_id`). Se elimina así la ambigüedad semántica previa donde la calificación aparentaba pertenecer al servicio individual.
+        - *Reorganización de Footer:* La categoría del servicio y el indicador de días de disponibilidad se reubicaron en el pie de página de la tarjeta (`ServiceCard`) para mantener una clara jerarquía visual y facilitar la lectura.
+*   **Consulta y Visualización de Reputación y Reseñas del Prestador (`public.ratings` -> `ProfileViewModel` & `ProfileScreen`):**
+    *   *Consulta y Cálculo de Reputación (`ProfileViewModel.fetchProviderRatings`):* Ejecuta la consulta a la tabla `public.ratings` de Supabase Postgrest filtrando por `provider_id` igual al ID del usuario autenticado. Calcula el promedio de estrellas (`averageRating`), el total de opiniones recibidas (`totalRatings`) y mantiene la lista ordenada de valoraciones (`providerRatings`).
+    *   *Despliegue en Cabecera Hero (`ProfileHeroHeader`):* Para usuarios con rol `provider` o `admin`, la cabecera del perfil integra dinámicamente la molécula `RatingIndicator` desplegando el promedio visual de estrellas y el conteo de reseñas junto al badge de rol.
+    *   *Sección "MI TALENTO" y Modal de Reseñas (`ProfileScreen` & `ProfileOptionItem`):* Adición de la opción *"Mi Reputación y Reseñas"* en el bloque de gestión de talento. Utiliza la propiedad `badgeText` en `ProfileOptionItem` para renderizar el resumen numérico (ej: `⭐ 4.9 (18)` o `"Sin opiniones"`). Al pulsar la opción, despliega un `ModalBottomSheet` con la lista completa de comentarios y calificaciones del prestador (`YayaRatingItem`), brindando retroalimentación transparente al prestador sobre la percepción de sus servicios.
 
 ---
 
@@ -73,6 +92,11 @@ erDiagram
     REQUESTS ||--o| RATINGS : "genera"
     PROFILES ||--o{ MESSAGES : "envía/recibe"
 ```
+
+*   **Correspondencia Directa UI-DB (`ServiceCard` y `public.ratings`):**
+    - La tabla `public.ratings` vincula cada evaluación realizada con el `provider_id` (prestador/talento) a través de la solicitud de servicio (`request_id`).
+    - La reputación consolidada (promedio de estrellas y total de valoraciones) pertenece al perfil del prestador (`public.profiles.id` / `provider_id`).
+    - En la interfaz de usuario, la tarjeta de servicio `ServiceCard` refleja fielmente esta relación situando el `RatingIndicator` en la cabecera del componente, directamente junto a los datos del prestador (`state.domain.provider?.full_name`). Esto garantiza consistencia semántica completa entre el modelo relacional PostgreSQL y la experiencia de usuario.
 
 ### 2.2. Seguridad a Nivel de Fila (RLS)
 Todas las tablas en Supabase tienen políticas **RLS** activas:
@@ -110,7 +134,7 @@ ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';
 ## 3. Stack Tecnológico y Dependencias Clave
 
 *   **Lenguaje:** Kotlin 2.4.10 (K2 Compiler, JVM Target 17).
-*   **Target SDK:** Android API 37 (minSdk 26, versionCode 5, versionName "1.0.1").
+*   **Target SDK:** Android API 37 (minSdk 26, versionCode 5, versionName "1.1.0").
 *   **UI:** Jetpack Compose (Material 3) con soporte para arquitectura atómica y componentes de desplazamiento optimizados.
 *   **Backend:** Supabase (PostgreSQL + Realtime + Storage).
 *   **Permisos y Cumplimiento Google Play:** Declaración de `com.google.android.gms.permission.AD_ID` para servicios de analítica e identificador de anuncios en Google Play.
@@ -135,7 +159,7 @@ ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';
 
 ### 4.2. Compilación
 *   **Debug:** Ejecutar tarea `app:assembleDebug`.
-*   **Release:** Configurar el archivo `.jks` y ejecutar `app:bundleRelease` (genera el archivo `.aab` para Google Play con `versionCode = 5` y símbolos de depuración nativos NDK en nivel `FULL`).
+*   **Release:** Configurar el archivo `.jks` y ejecutar `app:bundleRelease` (genera el archivo `.aab` para Google Play con `versionCode = 5` (`versionName "1.1.0"`) y símbolos de depuración nativos NDK en nivel `FULL`).
 
 ---
 
@@ -164,7 +188,7 @@ Para evitar excepciones en runtime como `IllegalStateException` durante la fase 
 
 1.  **Advanced CodeQL Analysis:** GitHub Actions (`.github/workflows/codeql.yml`) ejecuta análisis estático de código enfocado en Java 17 y Kotlin (`java-kotlin`), evaluando reglas de seguridad extendida (`security-extended,security-and-quality`).
 2.  **Secret Management:** Inyección automatizada de `google-services.json` durante el pipeline de integración continua utilizando secretos de GitHub y sintaxis heredoc.
-3.  **App Bundle & Depuración Nativa:** Generación del binario `.aab` con firma de producción SHA-256, `versionCode = 5` y la directiva `ndk { debugSymbolLevel = 'FULL' }` en `app/build.gradle.kts` para análisis nativo completo en Play Console.
+3.  **App Bundle & Depuración Nativa:** Generación del binario `.aab` con firma de producción SHA-256, `versionCode = 5` (`versionName "1.1.0"`) y la directiva `ndk { debugSymbolLevel = 'FULL' }` en `app/build.gradle.kts` para análisis nativo completo en Play Console.
 
 ---
 *Documento certificado por la Dirección Técnica de BH++ Team - 2026*

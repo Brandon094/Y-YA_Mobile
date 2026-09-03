@@ -83,6 +83,25 @@ fun CreateServiceScreen(
     val isLoading by viewModel.isLoading.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
 
+    val currentValidationError = remember(
+        title, price, selectedCategoryId, selectedDays, startTime, endTime, municipality,
+        viewModel.masterWorkingDays, viewModel.existingServicesList
+    ) {
+        if (municipality.isBlank()) {
+            "Selecciona un municipio de atención"
+        } else {
+            viewModel.validateServiceData(
+                title = title,
+                price = price,
+                categoryId = selectedCategoryId,
+                workingDays = selectedDays.toList().sorted(),
+                startTime = startTime,
+                endTime = endTime,
+                serviceId = serviceId
+            )
+        }
+    }
+
     // Diálogo de éxito y moderación
     if (showSuccessDialog) {
         AlertDialog(
@@ -367,12 +386,14 @@ fun CreateServiceScreen(
                         val isSelected = selectedDays.contains(dayNumber)
                         val occupiedByTitle = viewModel.occupiedDaysByOtherServices[dayNumber]
                         val isOccupiedByOther = occupiedByTitle != null
+                        val isMasterAllowed = viewModel.masterWorkingDays.isEmpty() || viewModel.masterWorkingDays.contains(dayNumber)
                         
                         Box(
                             modifier = Modifier
                                 .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
                                 .background(
                                     color = when {
+                                        !isMasterAllowed -> Color.LightGray.copy(alpha = 0.15f)
                                         isSelected -> MaterialTheme.colorScheme.primary
                                         isOccupiedByOther -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
                                         else -> Color.LightGray.copy(alpha = 0.2f)
@@ -380,7 +401,7 @@ fun CreateServiceScreen(
                                     shape = CircleShape
                                 )
                                 .clip(CircleShape)
-                                .clickable(enabled = !isLoading) {
+                                .clickable(enabled = !isLoading && isMasterAllowed) {
                                     selectedDays = if (isSelected) selectedDays - dayNumber else selectedDays + dayNumber
                                 },
                             contentAlignment = Alignment.Center
@@ -388,6 +409,7 @@ fun CreateServiceScreen(
                             Text(
                                 text = name,
                                 color = when {
+                                    !isMasterAllowed -> Color.Gray.copy(alpha = 0.3f)
                                     isSelected -> Color.White
                                     isOccupiedByOther -> MaterialTheme.colorScheme.error
                                     else -> Color.Gray
@@ -541,8 +563,28 @@ fun CreateServiceScreen(
                 }
             }
 
-            if (!errorMessage.isNullOrEmpty()) {
-                Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error)
+            val displayedError = errorMessage ?: currentValidationError
+
+            if (!displayedError.isNullOrEmpty()) {
+                Surface(
+                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.85f),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            text = displayedError,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
             }
 
             Button(
@@ -574,7 +616,7 @@ fun CreateServiceScreen(
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(16.dp),
-                enabled = !isLoading && title.isNotBlank() && selectedCategoryId != null && municipality.isNotBlank()
+                enabled = !isLoading && currentValidationError == null
             ) {
                 if (isLoading) CircularProgressIndicator(color = Color.White)
                 else Text(

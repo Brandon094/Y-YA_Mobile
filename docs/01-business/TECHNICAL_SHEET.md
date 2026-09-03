@@ -2,7 +2,7 @@
 
 ## Información General
 - **Nombre del Proyecto:** YÁYA
-- **Versión Actual:** 1.0.1 (versionCode 5 - Play Store Ready)
+- **Versión Actual:** 1.1.0 (versionCode 5 - Play Store Ready)
 - **Desarrollador:** BH++
 - **Estado:** Producción / Play Store Ready
 - **Plataforma:** Android
@@ -15,14 +15,16 @@
 - **Autenticación:** Supabase Auth
 - **Notificaciones:** Firebase Cloud Messaging (FCM V1)
 
-## Funcionalidades Clave (v1.0.1)
+## Funcionalidades Clave (v1.1.0)
 1. **Cuenta Universal (No Doble Fricción):** Un mismo usuario puede actuar como Cliente y Prestador.
-2. **Chat en Tiempo Real:** Comunicación instantánea bidireccional vía Supabase Realtime.
-3. **Sistema de Reputación:** Calificaciones y reseñas dinámicas post-servicio.
-4. **Notificaciones Push:** Alertas automáticas para nuevas solicitudes y mensajes.
-5. **Dashboard Administrativo:** Panel de control para moderación de servicios y usuarios con sanciones progresivas.
-6. **Catálogo y Negociación:** Exploración de talentos y flujo de contraofertas ("Handshake" digital).
-7. **Filtrado Geográfico por Municipio:** Segmentación dinámica de servicios por ubicación/zona (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante, Todos).
+2. **Motor Centralizado de Validaciones de Datos (`ValidationUtils.kt`):** Validación estricta de nombres alfabéticos, DNI/CC (6 a 12 dígitos), teléfono de 10 dígitos, correo RFC/Patterns, contraseña segura, fechas no futuras y direcciones válidas.
+3. **Estrategia de Filtrado Geográfico por Municipio/Zona (`municipality`):** Segmentación dinámica y selecciones desplegables inmutables (`ExposedDropdownMenuBox` / `ValidationUtils.HUILA_MUNICIPALITIES`) en Registro, Perfil, Creación de Servicios y Catálogo (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante, Todos).
+4. **Módulo de Visualización de Reputación y Reseñas en Perfil:** Consulta e integración de la reputación de prestadores (`public.ratings`) en `ProfileHeroHeader`, `ProfileScreen` y `ProfileOptionItem` con hoja desplegable modal (`ModalBottomSheet`) de reseñas recibidas.
+5. **Redirección Automática de Onboarding para Prestadores:** Enrutamiento inteligente post-registro hacia la pantalla de configuración de Jornada Maestra (`AvailabilityScreen`).
+6. **Carga Inteligente de Disponibilidad y Prevención de Traslapes:** Botón de carga rápida de disponibilidad maestra y algoritmo de prevención de cruces de horarios entre servicios del mismo prestador.
+7. **Chat en Tiempo Real:** Comunicación instantánea bidireccional vía Supabase Realtime.
+8. **Dashboard Administrativo:** Panel de control para moderación de servicios y usuarios con sanciones progresivas.
+9. **Catálogo y Negociación:** Exploración de talentos y flujo de contraofertas ("Handshake" digital).
 
 ## Entorno de Desarrollo y CI/CD
 - **IDE:** Android Studio Ladybug | 2024.2.1+

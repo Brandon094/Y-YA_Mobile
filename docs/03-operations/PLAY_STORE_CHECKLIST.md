@@ -15,7 +15,7 @@ Este documento detalla los pasos críticos para pasar de un entorno de desarroll
 ### 🔹 Optimización y Limpieza
 *   [x] **Minificación (R8/ProGuard):** Habilitado `isMinifyEnabled = true` e `isShrinkResources = true` en el build de release.
 *   [x] **Símbolos de Depuración Nativos:** Configurado `ndk { debugSymbolLevel = 'FULL' }` en `app/build.gradle.kts` para desofuscación y diagnóstico de crashes nativos en Play Console.
-*   [x] **Versionado:** Incrementado `versionCode` a `5` (`versionName "1.0.1"`) en `app/build.gradle.kts`.
+*   [x] **Versionado:** Configurado `versionCode` a `5` (`versionName "1.1.0"`) en `app/build.gradle.kts`.
 *   [x] **Permisos de Google Play (AD_ID):** Declaración explícita del permiso `com.google.android.gms.permission.AD_ID` en `AndroidManifest.xml` para cumplimiento de políticas de publicidad/analítica.
 *   [ ] **Iconos Adaptativos:** Verificar que el logo de YÁYA se vea bien en todas las máscaras de iconos de Android.
 
