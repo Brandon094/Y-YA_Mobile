@@ -321,13 +321,24 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // SELECTOR DE ROL: Tarjetas de selección con alto contraste adaptativas para Tema Oscuro y Claro
-        Text(
-            text = stringResource(R.string.register_how_to_use),
-            modifier = Modifier.align(Alignment.Start),
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onBackground,
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.register_how_to_use),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = if (selectedRole == "client") "Rol: Cliente" else "Rol: Prestador",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.ExtraBold
+            )
+        }
 
         Spacer(modifier = Modifier.height(10.dp))
 

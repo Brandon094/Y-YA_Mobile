@@ -129,6 +129,9 @@ En esta intervención, el Orquestador Maestro dirigió la implementación del mo
 22. **Extracción Directa de `userResponse?.id` en `RegisterUserViewModel`:**
     - **Respuesta Directa de `signUpWith`:** Aprovechamiento de la respuesta de `signUpWith(Email)` en `supabase-kt` que suministra directamente la instancia de `UserInfo?` conteniendo la propiedad `userResponse?.id` (el UUID generado en `auth.users`).
     - **Independencia de Confirmación/Login e Inserción Inmediata:** Se elimina la necesidad de haber iniciado sesión previa o confirmado el correo electrónico para obtener el UUID, ejecutando de forma inmediata `postgrest["profiles"].upsert(newProfile)` en `public.profiles` para todos los roles (`client`, `provider`, `admin`).
+23. **Indicador Visual de Rol Seleccionado y Validación Estricta de Dominios de Rol (`RegisterUserScreen` & `RegisterUserViewModel`):**
+    - **Feedback Visual de Rol Seleccionado (`RegisterUserScreen`):** Incorporación de un indicador contextual permanente en la cabecera del selector de roles (*"Rol: Cliente"* / *"Rol: Prestador"*), otorgando retroalimentación visual inmediata al usuario sobre la opción activa.
+    - **Validación Estricta de Rol en ViewModel (`RegisterUserViewModel`):** Restricción y validación estricta del parámetro `role` limitado exclusivamente a dominios válidos (`client`, `provider`, `admin`), evitando el procesamiento de solicitudes de registro con roles vacíos o malformados y garantizando la integridad del dominio de datos.
 
 ### 🔹 Sesión Septiembre 2026 (Estabilidad, Cumplimiento Play Store y CI/CD)
 En esta intervención, el Orquestador Maestro dirigió un plan de optimización enfocado en la estabilidad de la interfaz, el cumplimiento regulatorio de Google Play y el fortalecimiento de la infraestructura de calidad:

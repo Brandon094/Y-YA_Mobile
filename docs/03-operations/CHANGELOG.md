@@ -58,6 +58,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Sincronización Defensiva y Autocompletado de Perfiles en Registro y Login (`RegisterUserViewModel` & `LoginViewModel`):**
     - **Registro (`RegisterUserViewModel`):** Ejecución de `signInWith(Email)` explícito post-registro para activación inmediata de sesión, recuperación de `userId` e inserción directa de `newProfile` en `public.profiles` vía `upsert` cargando la metadata de Auth (`full_name`, `role`, `phone`, `address`, `municipality`).
     - **Login (`LoginViewModel`):** Integración de la rutina defensiva `ensureProfileExists(user)` durante el inicio de sesión para verificar la existencia del usuario en `public.profiles` e insertarlo automáticamente utilizando la metadata de Auth en caso de filas faltantes.
+- **Feedback Visual de Rol Seleccionado y Validación Estricta en Registro (`RegisterUserScreen` & `RegisterUserViewModel`):**
+    - **Indicador Contextual Dinámico (`RegisterUserScreen`):** Incorporación de una etiqueta permanente en la cabecera del selector (*"Rol: Cliente"* / *"Rol: Prestador"*), brindando retroalimentación visual inmediata e inequívoca sobre el rol activo seleccionado.
+    - **Validación de Dominios de Rol (`RegisterUserViewModel`):** Validación estricta del parámetro `role` restringiendo su aceptación únicamente a los valores permitidos (`client`, `provider`, `admin`), evitando el procesamiento de peticiones de registro con roles vacíos, nulos o malformados.
 
 ### Cambiado
 - **Armonización y Unificación Total del Tema Oscuro en el Portal Web (`#0F172A` / `#1E293B`):**

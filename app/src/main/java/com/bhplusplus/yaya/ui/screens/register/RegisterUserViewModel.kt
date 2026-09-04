@@ -92,6 +92,12 @@ class RegisterUserViewModel : ViewModel() {
             return
         }
 
+        if (role.isBlank() || (role != "client" && role != "provider" && role != "admin")) {
+            _errorMessage.value = "Por favor selecciona tu rol principal (Cliente o Prestador)"
+            onResult(false)
+            return
+        }
+
         _isLoading.value = true
         _errorMessage.value = null
 
