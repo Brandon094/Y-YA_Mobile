@@ -123,9 +123,9 @@ En esta intervención, el Orquestador Maestro dirigió un plan de optimización 
    - Declaración del permiso obligatorio `com.google.android.gms.permission.AD_ID` en `AndroidManifest.xml` para alineación con las políticas de identificador de publicidad y analítica de Play Store.
    - Configuración de depuración nativa con nivel `FULL` (`ndk { debugSymbolLevel = 'FULL' }`) en `app/build.gradle.kts` para garantizar la recepción y desofuscación completa de trazas de fallos nativos en Play Console.
    - Preparación de versión `versionName = "1.1.0"` (`versionCode = 5`) en `app/build.gradle.kts` para despliegue de release oficial.
-3. **Infraestructura de CI/CD y Calidad:**
+3. **Infraestructura de CI/CD, Resiliencia y Calidad (`.github/workflows/codeql.yml`):**
    - Despliegue de **Advanced CodeQL Analysis** optimizado con soporte para Java 17 y Kotlin en GitHub Actions (`.github/workflows/codeql.yml`).
-   - Inyección segura y automatizada del secreto `google-services.json` mediante sintaxis heredoc en el flujo de CI/CD para proteger credenciales sensibles sin romper los pipelines de compilación.
+   - **Resolución del Error "Malformed root json" en CI/CD:** Optimización del flujo de inyección del secreto `secrets.GOOGLE_SERVICES_JSON` en GitHub Actions mediante un mecanismo de autodetección y decodificación para formatos Base64 o JSON plano, inyección automatizada de plantilla de respaldo (*fallback*) con paquete `com.bhplusplus.yaya` ante secretos vacíos o malformados, y verificación estricta de sintaxis con `jq empty` previo al paso de compilación `./gradlew assembleDebug`, garantizando 100% de estabilidad en los builds de análisis de seguridad.
 4. **Estabilidad de Canales Realtime:**
    - Validación defensiva del estado `RealtimeChannel.Status.UNSUBSCRIBED` en `ChatViewModel`, `ChatListViewModel`, `HomeViewModel`, `IncomingRequestsViewModel`, `MyOrdersViewModel`, `MyServicesViewModel` y `ProfileViewModel`, evitando crashes por suscripciones duplicadas (`IllegalStateException`).
 5. **Resiliencia en Serialización de Datos (KotlinX Serialization):**

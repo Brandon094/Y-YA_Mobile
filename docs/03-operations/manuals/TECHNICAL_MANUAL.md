@@ -221,7 +221,11 @@ Para evitar excepciones en runtime como `IllegalStateException` durante la fase 
 ### 6. Pipeline de Despliegue y Calidad (CI/CD)
 
 1.  **Advanced CodeQL Analysis:** GitHub Actions (`.github/workflows/codeql.yml`) ejecuta análisis estático de código enfocado en Java 17 y Kotlin (`java-kotlin`), evaluando reglas de seguridad extendida (`security-extended,security-and-quality`).
-2.  **Secret Management:** Inyección automatizada de `google-services.json` durante el pipeline de integración continua utilizando secretos de GitHub y sintaxis heredoc.
+2.  **Secret Management & Inyección Resiliente de `google-services.json`:**
+    *   **Diagnóstico:** Previene el error *"Malformed root json"* cuando el secreto `secrets.GOOGLE_SERVICES_JSON` en GitHub Actions está vacío, ausente, malformado o codificado en Base64.
+    *   **Procesamiento Dinámico:** Autodetección y decodificación transparente de datos codificados en Base64 o JSON plano.
+    *   **Fallback Resiliente de CI/CD:** Si el secreto está ausente o es inválido, se inyecta automáticamente un archivo `app/google-services.json` de respaldo funcional con el paquete `com.bhplusplus.yaya` y la estructura dummy requerida por el plugin de Google Services.
+    *   **Validación de Sintaxis con `jq`:** Verificación obligatoria de integridad JSON mediante `jq empty` antes de ejecutar `./gradlew assembleDebug`, garantizando un pipeline de CI/CD 100% estable sin interrupciones por credenciales en entornos de análisis de seguridad.
 3.  **App Bundle & Depuración Nativa:** Generación del binario `.aab` con firma de producción SHA-256, `versionCode = 5` (`versionName "1.1.0"`) y la directiva `ndk { debugSymbolLevel = 'FULL' }` en `app/build.gradle.kts` para análisis nativo completo en Play Console.
 
 ---

@@ -72,6 +72,11 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Etiquetado oficial del Release Tag `v1.1.0` en Git para GitHub con el mensaje `"Lanzamiento Oficial YÁYA v1.1.0 (versionCode 5)"`, consolidando el Hito de Versión Oficial en Producción / Play Store Ready (`versionCode = 5`, `versionName = "1.1.0"`).
 
 ### Corregido
+- **Resolución de Error "Malformed root json" en CI/CD (`codeql.yml`):**
+    - Corrección de fallos en el análisis CodeQL de GitHub Actions causados cuando el secreto `secrets.GOOGLE_SERVICES_JSON` estaba vacío, malformado o codificado en Base64.
+    - Implementación de un algoritmo de autodetección y decodificación automática para formatos Base64 y JSON plano.
+    - Inyección automatizada de un archivo `app/google-services.json` de respaldo (*fallback*) con paquete `com.bhplusplus.yaya` para asegurar que `./gradlew assembleDebug` ejecute sin fallos en builds de CI/CD.
+    - Integración de validación previa mediante `jq empty` para garantizar 100% de integridad y conformidad sintáctica JSON antes de compilar.
 - **Optimización de Legibilidad y Contraste en Tema Oscuro (`LoginScreen` & `RegisterUserScreen`):**
     - Corrección de la visibilidad del enlace *"¿Olvidaste tu contraseña?"* en `LoginScreen` mediante la sustitución del color estático `secondary` (`NavyBlue` `#1E2A38`) por `MaterialTheme.colorScheme.primary` (`RedPrimary` con `FontWeight.Bold`), eliminando el contraste deficiente sobre fondos oscuros (Deep Midnight).
     - Ajuste de contraste en `RegisterUserScreen` aplicando explícitamente `color = MaterialTheme.colorScheme.onBackground` en las etiquetas de selección de rol (*"Quiero contratar un servicio"*, *"Quiero ofrecer un talento"*) y en la fila de consentimiento legal (`LegalConsentRow`), garantizando la adaptabilidad dinámica del texto (blanco/slate en Tema Oscuro y oscuro en Tema Claro).

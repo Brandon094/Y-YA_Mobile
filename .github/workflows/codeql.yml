@@ -26,12 +26,40 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    # 🚀 PASO CRÍTICO: Crea el archivo google-services.json de forma segura
-    - name: Create Google Services JSON
+    # 🚀 PASO CRÍTICO: Crea y valida el archivo google-services.json
+    - name: Create and Validate Google Services JSON
+      env:
+        GOOGLE_SERVICES_SECRET: ${{ secrets.GOOGLE_SERVICES_JSON }}
       run: |
-        cat > app/google-services.json << 'EOF'
-        ${{ secrets.GOOGLE_SERVICES_JSON }}
+        mkdir -p app
+        if [ -n "$GOOGLE_SERVICES_SECRET" ]; then
+          if echo "$GOOGLE_SERVICES_SECRET" | base64 --decode 2>/dev/null | jq empty 2>/dev/null; then
+            echo "$GOOGLE_SERVICES_SECRET" | base64 --decode > app/google-services.json
+          elif echo "$GOOGLE_SERVICES_SECRET" | jq empty 2>/dev/null; then
+            echo "$GOOGLE_SERVICES_SECRET" > app/google-services.json
+          else
+            echo "::warning::El secreto GOOGLE_SERVICES_JSON no es JSON ni Base64 válido. Usando fallback..."
+            cat << 'EOF' > app/google-services.json
+        {
+          "project_info": { "project_number": "000000000000", "project_id": "y-ya-dummy", "storage_bucket": "y-ya-dummy.appspot.com" },
+          "client": [{ "client_info": { "mobilesdk_app_id": "1:000000000000:android:0000000000000000", "android_client_info": { "package_name": "com.bhplusplus.yaya" } }, "oauth_client": [], "api_key": [{ "current_key": "AIzaSyDummyKeySpecForCIBuilds000000000" }], "services": {} }],
+          "configuration_version": "1"
+        }
         EOF
+          fi
+        else
+          echo "::warning::GOOGLE_SERVICES_JSON está vacío. Usando fallback para compilación en CI..."
+          cat << 'EOF' > app/google-services.json
+        {
+          "project_info": { "project_number": "000000000000", "project_id": "y-ya-dummy", "storage_bucket": "y-ya-dummy.appspot.com" },
+          "client": [{ "client_info": { "mobilesdk_app_id": "1:000000000000:android:0000000000000000", "android_client_info": { "package_name": "com.bhplusplus.yaya" } }, "oauth_client": [], "api_key": [{ "current_key": "AIzaSyDummyKeySpecForCIBuilds000000000" }], "services": {} }],
+          "configuration_version": "1"
+        }
+        EOF
+        fi
+
+        echo "Validando app/google-services.json generado..."
+        jq empty app/google-services.json
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
