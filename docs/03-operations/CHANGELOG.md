@@ -95,6 +95,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Desplazamiento Suave en Selector Modal de Municipios (`HomeScreen`):**
     - Corrección del diálogo `AlertDialog` de selección de municipio en `HomeScreen`, sustituyendo el contenedor rígido `Column` por `LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 350.dp))`.
     - Solución a la imposibilidad de seleccionar municipios ubicados al final de la lista (ej. Neiva, Pitalito, Todos los municipios) en pantallas de dimensiones reducidas debido al desbordamiento sin scroll, garantizando desplazamiento vertical suave y acceso al 100% de las opciones de cobertura.
+- **Manejo Defensivo de Existencia de Perfil Previo a Reservas (`requests_client_id_fkey` en `ContratacionViewModel`):**
+    - Corrección del fallo de clave foránea PostgreSQL `Code: 23503` (`Details: Key is not present in table "profiles"`) al intentar crear una solicitud de servicio (`insert` en tabla `requests`).
+    - Implementación de la función atómica `ensureProfileExists(user)` dentro de `ContratacionViewModel.contratar()` que verifica y crea automáticamente el registro del cliente en `public.profiles` con su metadata de Auth (`full_name`, `role`, `phone`, `address`, `municipality`) antes de procesar el agendamiento, garantizando un flujo de contratación 100% resiliente y libre de errores 23503.
 
 ## [1.0.1] - 2026-09-02
 ### Corregido

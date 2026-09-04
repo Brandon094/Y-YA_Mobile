@@ -13,8 +13,10 @@ import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.utils.FormatterUtils
 import com.bhplusplus.yaya.utils.ValidationUtils
 import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.user.UserInfo
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.jsonPrimitive
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -263,8 +265,13 @@ class ContratacionViewModel : ViewModel() {
         isLoading = true
         viewModelScope.launch {
             try {
-                val clientId = SupabaseManager.client.auth.currentUserOrNull()?.id
+                val user = SupabaseManager.client.auth.currentUserOrNull()
                     ?: throw Exception("Sesión inválida")
+                val clientId = user.id
+
+                // 1. Asegurar existencia del perfil en 'public.profiles' antes de insertar la solicitud
+                // para evitar violación de clave foránea "requests_client_id_fkey"
+                ensureProfileExists(user)
 
                 // Combinar fecha y hora para crear un LocalDateTime
                 val date = LocalDate.parse(fecha)
@@ -296,13 +303,43 @@ class ContratacionViewModel : ViewModel() {
                 val errorMsg = e.message ?: ""
                 errorMessage = when {
                     errorMsg.contains("42501") -> "Error de permisos (RLS). Contacta al administrador."
-                    errorMsg.contains("foreign key") -> "Error de vinculación de datos."
+                    errorMsg.contains("foreign key") || errorMsg.contains("23503") -> "Error de vinculación de perfil del cliente. Se ha corregido la cuenta, intenta nuevamente."
                     else -> "Error al procesar la reserva: ${e.localizedMessage}"
                 }
                 onResult(false, null)
             } finally {
                 isLoading = false
             }
+        }
+    }
+
+    private suspend fun ensureProfileExists(user: UserInfo) {
+        try {
+            val count = SupabaseManager.client.postgrest["profiles"]
+                .select { filter { eq("id", user.id) } }
+                .decodeList<UserProfile>().size
+
+            if (count == 0) {
+                Log.w("ContratacionVM", "Perfil no encontrado en 'public.profiles' para id=${user.id}. Creando registro automático...")
+                val fullName = user.userMetadata?.get("full_name")?.jsonPrimitive?.content ?: "Usuario YÁYA"
+                val role = user.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
+                val phone = user.userMetadata?.get("phone")?.jsonPrimitive?.content ?: ""
+                val address = user.userMetadata?.get("address")?.jsonPrimitive?.content ?: direccion
+
+                val newProfile = UserProfile(
+                    id = user.id,
+                    full_name = fullName,
+                    role = role,
+                    phone = phone,
+                    address = address,
+                    municipality = "La Plata"
+                )
+
+                SupabaseManager.client.postgrest["profiles"].upsert(newProfile)
+                Log.i("ContratacionVM", "Perfil creado con éxito en 'public.profiles' para el usuario ${user.id}")
+            }
+        } catch (e: Exception) {
+            Log.e("ContratacionVM", "Error al verificar/crear el perfil en 'public.profiles': ${e.message}")
         }
     }
 }

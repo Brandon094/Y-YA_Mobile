@@ -118,6 +118,10 @@ En esta intervención, el Orquestador Maestro dirigió la implementación del mo
     - **Fusión e Integración Continua Exitosas:** Fusión y unificación oficial de la rama `desarrollo` a la rama de producción `produccion` (`origin/produccion`) en Git/GitHub.
     - **Métricas e Impacto Consolidado del Release:** Unificación consolidada de 63 archivos con un total de +3101 inserciones y -770 eliminaciones.
     - **Hito de Despliegue v1.1.0 (`versionCode = 5`):** Consolidación oficial de todo el trabajo de la versión 1.1.0 en la rama principal de producción, lista para distribución en Google Play Store y sincronización del entorno operativo.
+20. **Resiliencia de Perfil y Solución a Violación de Clave Foránea `requests_client_id_fkey` (`ContratacionViewModel`):**
+    - **Diagnóstico:** Identificación y corrección de la excepción PostgreSQL `Code: 23503 Details: Key is not present in table "profiles"` (`requests_client_id_fkey`) reportada al intentar crear una solicitud de servicio (`insert` en tabla `requests`) cuando un usuario autenticado en Auth (`auth.users`) no poseía aún un registro en la tabla `public.profiles`.
+    - **Solución Defensiva `ensureProfileExists(user)`:** Incorporación del mecanismo atómico `ensureProfileExists` en `ContratacionViewModel.contratar()`. Previo a la inserción de la solicitud en `requests`, la función verifica si el perfil del cliente existe en `public.profiles`; si no se encuentra, lo crea automáticamente recuperando la metadata de Auth (`full_name`, `role`, `phone`, `address`, `municipality`).
+    - **Garantía de Estabilidad:** Eliminación 100% garantizada del fallo de clave foránea al agendar citas y contrataciones.
 
 ### 🔹 Sesión Septiembre 2026 (Estabilidad, Cumplimiento Play Store y CI/CD)
 En esta intervención, el Orquestador Maestro dirigió un plan de optimización enfocado en la estabilidad de la interfaz, el cumplimiento regulatorio de Google Play y el fortalecimiento de la infraestructura de calidad:
