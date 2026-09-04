@@ -5,10 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bhplusplus.yaya.data.SupabaseManager
+import com.bhplusplus.yaya.data.models.UserProfile
 import com.bhplusplus.yaya.utils.ValidationUtils
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.auth.user.UserInfo
+import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * LÓGICA DE NEGOCIO PARA EL LOGIN
@@ -56,6 +60,12 @@ class LoginViewModel : ViewModel() {
                     this.password = password
                 }
 
+                // Asegurar la existencia del perfil en 'public.profiles' tras login
+                val user = SupabaseManager.client.auth.currentUserOrNull()
+                if (user != null) {
+                    ensureProfileExists(user)
+                }
+
                 // Hito 4: Sincronizar Token de Notificaciones tras login exitoso
                 SupabaseManager.syncFcmToken()
 
@@ -77,6 +87,37 @@ class LoginViewModel : ViewModel() {
                 }
                 onResult(false)
             }
+        }
+    }
+
+    private suspend fun ensureProfileExists(user: UserInfo) {
+        try {
+            val count = SupabaseManager.client.postgrest["profiles"]
+                .select { filter { eq("id", user.id) } }
+                .decodeList<UserProfile>().size
+
+            if (count == 0) {
+                android.util.Log.w("LoginVM", "Perfil no encontrado en 'public.profiles' para id=${user.id}. Creando automáticamente...")
+                val fullName = user.userMetadata?.get("full_name")?.jsonPrimitive?.content ?: "Usuario YÁYA"
+                val role = user.userMetadata?.get("role")?.jsonPrimitive?.content ?: "client"
+                val phone = user.userMetadata?.get("phone")?.jsonPrimitive?.content
+                val address = user.userMetadata?.get("address")?.jsonPrimitive?.content
+                val municipality = user.userMetadata?.get("municipality")?.jsonPrimitive?.content ?: "La Plata"
+
+                val newProfile = UserProfile(
+                    id = user.id,
+                    full_name = fullName,
+                    role = role,
+                    phone = phone,
+                    address = address,
+                    municipality = municipality
+                )
+
+                SupabaseManager.client.postgrest["profiles"].upsert(newProfile)
+                android.util.Log.i("LoginVM", "Perfil sincronizado con éxito en 'public.profiles' para id=${user.id}")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("LoginVM", "Error al verificar/crear perfil en 'public.profiles': ${e.message}")
         }
     }
 }

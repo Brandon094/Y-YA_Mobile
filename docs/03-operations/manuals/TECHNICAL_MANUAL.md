@@ -111,6 +111,9 @@ YÁYA implementa una estrategia de filtrado multizona, gestión elástica de tie
 *   **Confirmación Atómica de Cierre de Sesión en Barra Inferior (`HomeScreen` & `YayaConfirmationDialog`):**
     *   *Protección Antiacidentes y Reutilización de Componentes Atómicos:* Reutilización de la molécula `YayaConfirmationDialog` en la barra inferior de navegación de `HomeScreen` al accionar el botón de cerrar sesión.
     *   *Flujo de Confirmación Activa:* Despliegue del diálogo modal de confirmación atómica que intercepta la acción de salida, solicitando la confirmación activa e intencional del usuario antes de proceder a desautenticar la sesión en Supabase Auth y limpiar el estado activo, previniendo salidas accidentales por toques involuntarios en la barra inferior.
+*   **Sincronización Defensiva Automática de Perfiles (`auth.users -> public.profiles`) en Registro y Login (`RegisterUserViewModel` & `LoginViewModel`):**
+    *   *Flujo de Registro (`RegisterUserViewModel`):* Al completar `signUpWith(Email)`, el sistema realiza inmediatamente un `signInWith(Email)` explícito para activar la sesión en tiempo real y obtener la credencial activa del usuario. Con el `userId` recuperado, se construye la entidad `UserProfile` con la metadata de registro (`full_name`, `role`, `phone`, `address`, `municipality`) y se ejecuta `SupabaseManager.client.postgrest["profiles"].upsert(newProfile)` para insertar inmediatamente el registro en la tabla pública `public.profiles`.
+    *   *Flujo de Autenticación Defensiva en Login (`LoginViewModel`):* Al iniciar sesión (`login`), la rutina atómica `ensureProfileExists(user)` consulta la existencia del perfil en `public.profiles`. Si la fila no existe (por ejemplo, en cuentas creadas sin triggers automáticos de DB), extrae la metadata de Supabase Auth (`full_name`, `role`, `phone`, `address`, `municipality`) e inserta automáticamente la fila en `public.profiles`, garantizando la sincronización inmediata del perfil en Postgrest.
 
 ---
 
@@ -132,9 +135,12 @@ erDiagram
     - La tabla `public.ratings` vincula cada evaluación realizada con el `provider_id` (prestador/talento) a través de la solicitud de servicio (`request_id`).
     - La reputación consolidada (promedio de estrellas y total de valoraciones) pertenece al perfil del prestador (`public.profiles.id` / `provider_id`).
     - En la interfaz de usuario, la tarjeta de servicio `ServiceCard` refleja fielmente esta relación situando el `RatingIndicator` en la cabecera del componente, directamente junto a los datos del prestador (`state.domain.provider?.full_name`). Esto garantiza consistencia semántica completa entre el modelo relacional PostgreSQL y la experiencia de usuario.
-*   **Integridad de Clave Foránea y Sincronización de Perfiles (`requests_client_id_fkey`):**
-    - La tabla `public.requests` mantiene una relación de clave foránea `requests_client_id_fkey` con la columna `id` de `public.profiles`.
-    - Para prevenir errores de integridad referencial PostgreSQL `23503` (`Key is not present in table "profiles"`), la arquitectura impone la verificación atómica mediante el patrón `ensureProfileExists`. Antes de persistir un registro en `requests`, el sistema asegura la existencia del perfil del cliente en `public.profiles`, sincronizándolo automáticamente a partir de la metadata de Auth en caso de discrepancias.
+*   **Integridad de Clave Foránea y Sincronización de Perfiles (`requests`, `services`, `ratings`, `messages`, `reports`):**
+    - Las tablas públicas (`requests`, `services`, `ratings`, `messages`, `reports`) mantienen relaciones de clave foránea FK (ej. `requests_client_id_fkey`, `services_provider_id_fkey`, `ratings_user_id_fkey`) apuntando a la columna `id` de `public.profiles`.
+    - Para prevenir fallos de integridad referencial PostgreSQL `23503` (`Key is not present in table "profiles"`), la arquitectura impone una estrategia defensiva multicapa (`RegisterUserViewModel`, `LoginViewModel`, `ContratacionViewModel`):
+      1. *Sincronización en Registro:* Inserción directa de `newProfile` vía `upsert` en `public.profiles` inmediatamente tras la autenticación post-registro.
+      2. *Verificación Defensiva en Login y Contratación (`ensureProfileExists`):* Verificación y creación atómica del perfil consumiendo la metadata de Auth previa a operaciones de negocio o inicio de sesión.
+    - Esta arquitectura garantiza que cualquier usuario registrado o autenticado en Supabase Auth (`auth.users`) posea de forma garantizada su registro correspondiente en `public.profiles`, erradicando por completo las violaciones de clave foránea 23503 en todo el sistema.
 
 ### 2.2. Seguridad a Nivel de Fila (RLS)
 Todas las tablas en Supabase tienen políticas **RLS** activas:

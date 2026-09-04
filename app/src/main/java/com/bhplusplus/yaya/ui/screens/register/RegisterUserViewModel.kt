@@ -97,62 +97,65 @@ class RegisterUserViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // 1. Crear el usuario en Supabase Auth
-                // Pasamos Metadata para que el perfil sea recuperable incluso si falla el insert en 'profiles'
+                // 1. Crear el usuario en Supabase Auth con metadatos completos
                 SupabaseManager.client.auth.signUpWith(Email) {
                     this.email = email
                     this.password = password
                     data = buildJsonObject {
-                        put("full_name", name)
+                        put("full_name", name.trim())
                         put("role", role)
+                        put("phone", phone.trim())
+                        put("address", address.trim())
+                        put("municipality", municipality.ifBlank { "La Plata" })
                     }
                 }
-                
-                // 2. Obtener el ID del usuario. 
-                // IMPORTANTE: En supabase-kt, después de signUpWith, podemos intentar obtener el ID del usuario
-                // incluso si la sesión no se ha iniciado (ej. si requiere confirmación).
-                val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
-                
-                if (userId != null) {
-                    // 3. Intentar crear el perfil detallado en la tabla pública
-                    try {
-                        val newProfile = UserProfile(
-                            id = userId,
-                            full_name = name,
-                            phone = phone,
-                            document_id = documentId,
-                            birth_date = birthDate,
-                            address = address,
-                            municipality = municipality,
-                            role = role
-                        )
 
-                        // Usamos Upsert para mayor robustez
-                        SupabaseManager.client.postgrest["profiles"].upsert(newProfile)
-                        
-                        Log.d("Register", "Perfil creado exitosamente.")
-                        _isLoading.value = false
-                        onResult(true)
-                    } catch (e: Exception) {
-                        Log.e("Register", "Error al insertar en profiles: ${e.message}")
-                        // Si falla aquí, pero el usuario ya existe en Auth, notificamos éxito parcial
-                        _isLoading.value = false
-                        onResult(true) 
+                // 2. Iniciar sesión explícitamente para establecer la sesión activa y obtener el ID
+                try {
+                    SupabaseManager.client.auth.signInWith(Email) {
+                        this.email = email
+                        this.password = password
                     }
-                } else {
-                    // Si no hay ID, informamos sobre la confirmación de email necesaria
-                    Log.i("Register", "Usuario creado. Esperando confirmación de email.")
+                } catch (e: Exception) {
+                    Log.w("Register", "Autologin inmediato diferido: ${e.message}")
+                }
+
+                // 3. Obtener el ID del usuario autenticado
+                val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
+                    ?: SupabaseManager.client.auth.currentSessionOrNull()?.user?.id
+
+                if (userId != null) {
+                    // 4. Crear obligatoriamente el perfil en la tabla 'public.profiles'
+                    val newProfile = UserProfile(
+                        id = userId,
+                        full_name = name.trim(),
+                        phone = phone.ifBlank { null },
+                        document_id = documentId.ifBlank { null },
+                        birth_date = birthDate.ifBlank { null },
+                        address = address.ifBlank { null },
+                        municipality = municipality.ifBlank { "La Plata" },
+                        role = role
+                    )
+
+                    SupabaseManager.client.postgrest["profiles"].upsert(newProfile)
+                    Log.i("Register", "Perfil insertado con éxito en 'public.profiles' para id=$userId")
+
                     _isLoading.value = false
-                    _errorMessage.value = "Cuenta creada. Revisa tu correo para confirmar y activar tu perfil."
+                    _errorMessage.value = null
+                    onResult(true)
+                } else {
+                    Log.w("Register", "Usuario creado en Auth. Esperando confirmación de email.")
+                    _isLoading.value = false
+                    _errorMessage.value = "Cuenta creada. Revisa tu correo electrónico para confirmar e iniciar sesión."
                     onResult(true)
                 }
 
             } catch (e: Exception) {
-                Log.e("Register", "Error fatal: ${e.message}", e)
+                Log.e("Register", "Error fatal durante el registro: ${e.message}", e)
                 _isLoading.value = false
                 _errorMessage.value = when {
                     e.message?.contains("already registered", true) == true -> "Este correo ya está registrado"
-                    else -> "Error: ${e.localizedMessage}"
+                    else -> "Error en el registro: ${e.localizedMessage}"
                 }
                 onResult(false)
             }

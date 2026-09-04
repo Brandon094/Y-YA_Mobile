@@ -55,6 +55,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Configuración de `cleanUrls: true` con `public: "portal_web"` en `firebase.json` sin rewrites de SPA, garantizando soporte nativo para arquitectura multi-página estática y URLs limpias (acceso directo a `/manuales` a partir de `portal_web/manuales.html`).
     - Confirmación del despliegue en producción de 13 archivos estáticos en la infraestructura de Firebase Hosting (Google Cloud Infrastructure).
     - Despliegue verificado en producción en el Dominio Principal ([https://y-ya-d5929.web.app](https://y-ya-d5929.web.app)) y en el Portal Web de Manuales ([https://y-ya-d5929.web.app/manuales](https://y-ya-d5929.web.app/manuales)).
+- **Sincronización Defensiva y Autocompletado de Perfiles en Registro y Login (`RegisterUserViewModel` & `LoginViewModel`):**
+    - **Registro (`RegisterUserViewModel`):** Ejecución de `signInWith(Email)` explícito post-registro para activación inmediata de sesión, recuperación de `userId` e inserción directa de `newProfile` en `public.profiles` vía `upsert` cargando la metadata de Auth (`full_name`, `role`, `phone`, `address`, `municipality`).
+    - **Login (`LoginViewModel`):** Integración de la rutina defensiva `ensureProfileExists(user)` durante el inicio de sesión para verificar la existencia del usuario en `public.profiles` e insertarlo automáticamente utilizando la metadata de Auth en caso de filas faltantes.
 
 ### Cambiado
 - **Armonización y Unificación Total del Tema Oscuro en el Portal Web (`#0F172A` / `#1E293B`):**
@@ -98,6 +101,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Manejo Defensivo de Existencia de Perfil Previo a Reservas (`requests_client_id_fkey` en `ContratacionViewModel`):**
     - Corrección del fallo de clave foránea PostgreSQL `Code: 23503` (`Details: Key is not present in table "profiles"`) al intentar crear una solicitud de servicio (`insert` en tabla `requests`).
     - Implementación de la función atómica `ensureProfileExists(user)` dentro de `ContratacionViewModel.contratar()` que verifica y crea automáticamente el registro del cliente en `public.profiles` con su metadata de Auth (`full_name`, `role`, `phone`, `address`, `municipality`) antes de procesar el agendamiento, garantizando un flujo de contratación 100% resiliente y libre de errores 23503.
+- **Eliminación Definitiva de Violaciones de Clave Foránea `23503` (PostgreSQL FK Constraints):**
+    - Erradicación global de errores PostgreSQL `Code: 23503` (`Key is not present in table "profiles"`) al vincular usuarios autenticados en `auth.users` con las tablas dependientes (`requests`, `services`, `ratings`, `messages` y `reports`), asegurando mediante sincronización automática en registro y login que todo usuario en Auth posea garantizada su fila en `public.profiles`.
 
 ## [1.0.1] - 2026-09-02
 ### Corregido
