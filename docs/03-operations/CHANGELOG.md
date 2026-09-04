@@ -110,6 +110,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Extracción directa de `userResponse?.id` (UUID generado en `auth.users`) desde el objeto `UserInfo?` retornado por `signUpWith(Email)` en `supabase-kt`.
     - Eliminación de la dependencia de inicio de sesión previa o confirmación de correo electrónico para la obtención del UUID del usuario.
     - Inserción e `upsert` inmediato del perfil en `public.profiles` (`postgrest["profiles"].upsert(newProfile)`) sin importar si el rol es `client`, `provider` o `admin`, asegurando la sincronización del perfil en la base de datos desde el instante del registro.
+- **Solución al Error de Serialización PostgreSQL 23502 en Registro (`UserProfile.kt`):**
+    - Eliminación de los valores por defecto en las propiedades no nulas `id`, `full_name` y `role` en `UserProfile.kt`.
+    - Corrección de la omisión implícita por parte de `kotlinx.serialization` cuando `role = "client"` coincidía con su valor predeterminado, forzando la codificación explícita de `"role"` en las peticiones HTTP POST/UPSERT hacia Postgrest y erradicando la violación de restricción `NOT NULL` (`Code: 23502`).
 
 ## [1.0.1] - 2026-09-02
 ### Corregido
