@@ -103,6 +103,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Implementación de la función atómica `ensureProfileExists(user)` dentro de `ContratacionViewModel.contratar()` que verifica y crea automáticamente el registro del cliente en `public.profiles` con su metadata de Auth (`full_name`, `role`, `phone`, `address`, `municipality`) antes de procesar el agendamiento, garantizando un flujo de contratación 100% resiliente y libre de errores 23503.
 - **Eliminación Definitiva de Violaciones de Clave Foránea `23503` (PostgreSQL FK Constraints):**
     - Erradicación global de errores PostgreSQL `Code: 23503` (`Key is not present in table "profiles"`) al vincular usuarios autenticados en `auth.users` con las tablas dependientes (`requests`, `services`, `ratings`, `messages` y `reports`), asegurando mediante sincronización automática en registro y login que todo usuario en Auth posea garantizada su fila en `public.profiles`.
+- **Garantía de Creación de Perfil en `public.profiles` mediante Respuesta Directa de `signUpWith` (`RegisterUserViewModel`):**
+    - Extracción directa de `userResponse?.id` (UUID generado en `auth.users`) desde el objeto `UserInfo?` retornado por `signUpWith(Email)` en `supabase-kt`.
+    - Eliminación de la dependencia de inicio de sesión previa o confirmación de correo electrónico para la obtención del UUID del usuario.
+    - Inserción e `upsert` inmediato del perfil en `public.profiles` (`postgrest["profiles"].upsert(newProfile)`) sin importar si el rol es `client`, `provider` o `admin`, asegurando la sincronización del perfil en la base de datos desde el instante del registro.
 
 ## [1.0.1] - 2026-09-02
 ### Corregido

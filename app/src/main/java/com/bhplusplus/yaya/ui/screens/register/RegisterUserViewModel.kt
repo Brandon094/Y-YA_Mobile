@@ -97,8 +97,8 @@ class RegisterUserViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // 1. Crear el usuario en Supabase Auth con metadatos completos
-                SupabaseManager.client.auth.signUpWith(Email) {
+                // 1. Crear el usuario en Supabase Auth y recibir el UserInfo directamente de signUpWith
+                val userResponse = SupabaseManager.client.auth.signUpWith(Email) {
                     this.email = email
                     this.password = password
                     data = buildJsonObject {
@@ -110,45 +110,39 @@ class RegisterUserViewModel : ViewModel() {
                     }
                 }
 
-                // 2. Iniciar sesión explícitamente para establecer la sesión activa y obtener el ID
+                // 2. Extraer el ID único (UUID) asignado en auth.users
+                val userId = userResponse?.id
+                    ?: SupabaseManager.client.auth.currentUserOrNull()?.id
+                    ?: throw Exception("No se pudo obtener la identidad del usuario en Supabase Auth")
+
+                // 3. Crear e insertar inmediatamente el perfil obligatorio en la tabla pública 'public.profiles'
+                val newProfile = UserProfile(
+                    id = userId,
+                    full_name = name.trim(),
+                    phone = phone.ifBlank { null },
+                    document_id = documentId.ifBlank { null },
+                    birth_date = birthDate.ifBlank { null },
+                    address = address.ifBlank { null },
+                    municipality = municipality.ifBlank { "La Plata" },
+                    role = role
+                )
+
+                SupabaseManager.client.postgrest["profiles"].upsert(newProfile)
+                Log.i("Register", "Perfil insertado con éxito en 'public.profiles' para id=$userId (rol=$role)")
+
+                // 4. Intentar iniciar sesión para dejar la sesión activa en el dispositivo
                 try {
                     SupabaseManager.client.auth.signInWith(Email) {
                         this.email = email
                         this.password = password
                     }
                 } catch (e: Exception) {
-                    Log.w("Register", "Autologin inmediato diferido: ${e.message}")
+                    Log.w("Register", "Autologin posterior diferido: ${e.message}")
                 }
 
-                // 3. Obtener el ID del usuario autenticado
-                val userId = SupabaseManager.client.auth.currentUserOrNull()?.id
-                    ?: SupabaseManager.client.auth.currentSessionOrNull()?.user?.id
-
-                if (userId != null) {
-                    // 4. Crear obligatoriamente el perfil en la tabla 'public.profiles'
-                    val newProfile = UserProfile(
-                        id = userId,
-                        full_name = name.trim(),
-                        phone = phone.ifBlank { null },
-                        document_id = documentId.ifBlank { null },
-                        birth_date = birthDate.ifBlank { null },
-                        address = address.ifBlank { null },
-                        municipality = municipality.ifBlank { "La Plata" },
-                        role = role
-                    )
-
-                    SupabaseManager.client.postgrest["profiles"].upsert(newProfile)
-                    Log.i("Register", "Perfil insertado con éxito en 'public.profiles' para id=$userId")
-
-                    _isLoading.value = false
-                    _errorMessage.value = null
-                    onResult(true)
-                } else {
-                    Log.w("Register", "Usuario creado en Auth. Esperando confirmación de email.")
-                    _isLoading.value = false
-                    _errorMessage.value = "Cuenta creada. Revisa tu correo electrónico para confirmar e iniciar sesión."
-                    onResult(true)
-                }
+                _isLoading.value = false
+                _errorMessage.value = null
+                onResult(true)
 
             } catch (e: Exception) {
                 Log.e("Register", "Error fatal durante el registro: ${e.message}", e)
