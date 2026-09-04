@@ -61,9 +61,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Feedback Visual de Rol Seleccionado y Validación Estricta en Registro (`RegisterUserScreen` & `RegisterUserViewModel`):**
     - **Indicador Contextual Dinámico (`RegisterUserScreen`):** Incorporación de una etiqueta permanente en la cabecera del selector (*"Rol: Cliente"* / *"Rol: Prestador"*), brindando retroalimentación visual inmediata e inequívoca sobre el rol activo seleccionado.
     - **Validación de Dominios de Rol (`RegisterUserViewModel`):** Validación estricta del parámetro `role` restringiendo su aceptación únicamente a los valores permitidos (`client`, `provider`, `admin`), evitando el procesamiento de peticiones de registro con roles vacíos, nulos o malformados.
-- **Guía Oficial del Stand de Exposición para la Muestra SENA (`docs/01-business/PITCH_DECK_FERIA.md`):**
+- **Guía Oficial del Stand de Exposición SENA y Rol Estratégico del Portal Web (`docs/01-business/PITCH_DECK_FERIA.md` & `docs/05-web-portal/WEB_ARCHITECTURE.md`):**
     - Adaptación e incorporación de la guía oficial de presentación del stand de exposición para la Muestra de Proyectos de Tecnólogo SENA (ADSO) en `docs/01-business/PITCH_DECK_FERIA.md`.
-    - Guión explicativo para la atención en stand (1 a 2 minutos), flujo de demostración en vivo en 5 pasos (filtrado por municipio, agendamiento con validación de traslapes, negociación Handshake, perfil 2.0 con manual de uso integrado y portal web) y puntos destacados de arquitectura técnica (Kotlin, Jetpack Compose, Atomic Design, Clean MVVM, Supabase Realtime, Firebase Hosting y binario `.aab` versionCode 6 Play Store Ready).
+    - Guión explicativo para la atención en stand (1 a 2 minutos), flujo de demostración en vivo en 5 pasos (filtrado por municipio, agendamiento con validación de traslapes, negociación Handshake, perfil 2.0 con manual de uso integrado y portal web como embudo de conversión) y puntos destacados de arquitectura técnica (Kotlin, Jetpack Compose, Atomic Design, Clean MVVM, Supabase Realtime, Firebase Hosting y binario `.aab` versionCode 6 Play Store Ready).
+    - Especificación estratégica del Portal Web como **Embudo de Conversión (Conversion Funnel)** del ecosistema, articulando su propósito informativo, comercial e instruccional (manuales interactivos por rol) para orientar a los visitantes y canalizar la captación de usuarios hacia la descarga de la App móvil en Google Play Store.
 
 ### Cambiado
 - **Armonización y Unificación Total del Tema Oscuro en el Portal Web (`#0F172A` / `#1E293B`):**

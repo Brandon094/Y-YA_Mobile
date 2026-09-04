@@ -42,9 +42,10 @@ Para mostrar el proyecto a los compañeros e instructores que visiten el stand, 
 | las tarjetas de acceso rápido (Servicios, Solicitudes, Reputación ⭐)             |
 | y abre el "Manual de Uso de la App" integrado directamente sin salir de la app.   |
 +-----------------------------------------------------------------------------------+
-| PASO 5: DEMOSTRACIÓN DEL PORTAL WEB EN LA LAPTOP                                  |
-| Muestra la página web oficial (https://y-ya-d5929.web.app/manuales) funcionando   |
-| en tiempo real con el selector de roles interactivo y el tema oscuro.             |
+| PASO 5: DEMOSTRACIÓN DEL PORTAL WEB EN LA LAPTOP (EMBUDO DE CONVERSIÓN)            |
+| Muestra el Portal Web (https://y-ya-d5929.web.app/manuales) que actúa como        |
+| embudo de conversión público, presentando la solución, manuales por rol          |
+| y botón directo de descarga hacia Google Play Store.                               |
 +-----------------------------------------------------------------------------------+
 ```
 
@@ -57,7 +58,7 @@ Si tus compañeros u otros instructores te preguntan sobre el desarrollo técnic
 1. **Lenguaje y UI Móvil:** Desarrollada 100% nativa en **Kotlin** utilizando **Jetpack Compose** con arquitectura de componentes **Atomic Design** (Átomos, Moléculas, Organismos).
 2. **Arquitectura:** Patrón **Clean MVVM** con `StateFlow` y reactividad de estados para que la vista sea totalmente tonta/declarativa.
 3. **Backend & Base de Datos:** **Supabase (PostgreSQL en la nube)** con suscripciones en tiempo real (`Realtime WebSockets`), autenticación y almacenamiento de imágenes (`Storage`).
-4. **Portal Web:** Construido en HTML5 + JavaScript modular con estilos en **Tailwind CSS**, desplegado en producción en **Firebase Hosting** de Google Cloud.
+4. **Portal Web (Embudo de Conversión):** Construido en HTML5 + JavaScript modular con estilos en **Tailwind CSS**, desplegado en producción en **Firebase Hosting** de Google Cloud. Funciona como el **Embudo de Conversión** de la plataforma para presentar los beneficios, manuales por rol y dirigir a los usuarios a la descarga de la App en Google Play Store.
 5. **Calidad y Seguridad:** Adaptación a Tema Oscuro/Claro, capa de anonimato para moderadores comunitarios y compilación `.aab` (`versionCode 6`) lista en Google Play Console.
 
 ---
