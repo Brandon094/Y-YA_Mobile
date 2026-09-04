@@ -73,9 +73,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Reubicación visual de la estrella e indicador promedio de calificación (`RatingIndicator`) hacia la cabecera del componente `ServiceCard`, situándolo directamente debajo del nombre del prestador (`state.domain.provider?.full_name`).
     - Alineación semántica directa con la tabla SQL `public.ratings` (que califica al prestador / `provider_id` y su reputación general de talento), eliminando cualquier confusión previa donde la estrella aparentaba ser una calificación del servicio individual en lugar del prestador.
     - Reorganización visual de la categoría del servicio y la disponibilidad de días en el pie de página de la tarjeta (`ServiceCard`) para un layout limpio e intuitivo.
-- **Incremento de Versión y Etiquetado Oficial Git:**
-    - Actualización de versión oficial a `versionName = "1.1.0"` y `versionCode = 5` en `app/build.gradle.kts` para despliegue en Google Play Store.
-    - Etiquetado oficial del Release Tag `v1.1.0` en Git para GitHub con el mensaje `"Lanzamiento Oficial YÁYA v1.1.0 (versionCode 5)"`, consolidando el Hito de Versión Oficial en Producción / Play Store Ready (`versionCode = 5`, `versionName = "1.1.0"`).
+- **Incremento de Versión y Compilación Release `.aab` Exitosa:**
+    - Actualización de versión oficial a `versionName = "1.1.0"` y `versionCode = 6` en `app/build.gradle.kts` con compilación exitosa del binario de producción Android App Bundle (`app:bundleRelease`) para publicación en Google Play Store.
+    - Etiquetado oficial del Release Tag `v1.1.0` en Git para GitHub consolidando el Hito de Versión Oficial en Producción / Play Store Ready (`versionCode = 6`, `versionName = "1.1.0"`).
 - **Unificación y Fusión Oficial a Producción (`desarrollo` ➔ `produccion`):**
     - Fusión y sincronización exitosa de la rama `desarrollo` hacia la rama principal de producción `produccion` (`origin/produccion`) en Git/GitHub, consolidando oficialmente todo el trabajo acumulado de la versión `v1.1.0` (`versionCode = 5`).
     - Impacto total del release consolidado: 63 archivos actualizados con +3101 inserciones y -770 eliminaciones en el repositorio oficial.

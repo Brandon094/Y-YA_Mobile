@@ -1,4 +1,4 @@
-# Biblia Técnica de Ingeniería y Despliegue - YÁYA (v1.1.0 - versionCode 5)
+# Biblia Técnica de Ingeniería y Despliegue - YÁYA (v1.1.0 - versionCode 6)
 
 Este documento constituye la fuente de verdad técnica para la plataforma **YÁYA**. Detalla la arquitectura, el modelado de datos, los estándares de codificación y los procedimientos de despliegue para garantizar la escalabilidad y mantenibilidad del sistema por parte de **BH++ Team**.
 
@@ -183,7 +183,7 @@ ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';
 ## 3. Stack Tecnológico y Dependencias Clave
 
 *   **Lenguaje:** Kotlin 2.4.10 (K2 Compiler, JVM Target 17).
-*   **Target SDK:** Android API 37 (minSdk 26, versionCode 5, versionName "1.1.0").
+*   **Target SDK:** Android API 37 (minSdk 26, versionCode = 6, versionName "1.1.0").
 *   **UI & Accesibilidad:** Jetpack Compose (Material 3) con soporte para arquitectura atómica, componentes de desplazamiento optimizados y estandarización estricta de contraste en Tema Oscuro (Deep Midnight) mediante tokens dinámicos (`MaterialTheme.colorScheme.onBackground` y `primary`) e inhabilitación de colores oscuros estáticos en textos sobre superficies.
 *   **Backend:** Supabase (PostgreSQL + Realtime + Storage).
 *   **Permisos y Cumplimiento Google Play:** Declaración de `com.google.android.gms.permission.AD_ID` para servicios de analítica e identificador de anuncios en Google Play.
@@ -208,7 +208,7 @@ ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';
 
 ### 4.2. Compilación
 *   **Debug:** Ejecutar tarea `app:assembleDebug`.
-*   **Release:** Configurar el archivo `.jks` y ejecutar `app:bundleRelease` (genera el archivo `.aab` para Google Play con `versionCode = 5` (`versionName "1.1.0"`) y símbolos de depuración nativos NDK en nivel `FULL`).
+*   **Release:** Configurar el archivo `.jks` y ejecutar `app:bundleRelease` (genera el archivo `.aab` para Google Play con `versionCode = 6` (`versionName "1.1.0"`) y símbolos de depuración nativos NDK en nivel `FULL`).
 
 ---
 
@@ -241,7 +241,7 @@ Para evitar excepciones en runtime como `IllegalStateException` durante la fase 
     *   **Procesamiento Dinámico:** Autodetección y decodificación transparente de datos codificados en Base64 o JSON plano.
     *   **Fallback Resiliente de CI/CD:** Si el secreto está ausente o es inválido, se inyecta automáticamente un archivo `app/google-services.json` de respaldo funcional con el paquete `com.bhplusplus.yaya` y la estructura dummy requerida por el plugin de Google Services.
     *   **Validación de Sintaxis con `jq`:** Verificación obligatoria de integridad JSON mediante `jq empty` antes de ejecutar `./gradlew assembleDebug`, garantizando un pipeline de CI/CD 100% estable sin interrupciones por credenciales en entornos de análisis de seguridad.
-3.  **App Bundle & Depuración Nativa:** Generación del binario `.aab` con firma de producción SHA-256, `versionCode = 5` (`versionName "1.1.0"`) y la directiva `ndk { debugSymbolLevel = 'FULL' }` en `app/build.gradle.kts` para análisis nativo completo en Play Console.
+3.  **App Bundle & Depuración Nativa:** Generación del binario `.aab` con firma de producción SHA-256, `versionCode = 6` (`versionName "1.1.0"`) y la directiva `ndk { debugSymbolLevel = 'FULL' }` en `app/build.gradle.kts` para análisis nativo completo en Play Console.
 
 ---
 *Documento certificado por la Dirección Técnica de BH++ Team - 2026*

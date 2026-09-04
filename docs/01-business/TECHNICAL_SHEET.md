@@ -2,9 +2,9 @@
 
 ## Información General
 - **Nombre del Proyecto:** YÁYA
-- **Versión Actual:** 1.1.0 (versionCode 5 - Play Store Ready)
+- **Versión Actual:** 1.1.0 (versionCode 6 - Play Store Release)
 - **Desarrollador:** BH++
-- **Estado:** 🟢 Producción / Play Store Ready (v1.1.0 - versionCode 5)
+- **Estado:** 🟢 Producción / Play Store Release (v1.1.0 - versionCode 6)
 - **Plataforma:** Android
 
 ## Especificaciones de Software
