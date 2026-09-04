@@ -34,6 +34,9 @@ import com.bhplusplus.yaya.ui.components.molecules.YayaConfirmationDialog
 import com.bhplusplus.yaya.ui.components.molecules.YayaRatingItem
 import com.bhplusplus.yaya.ui.components.organisms.ProfileHeroHeader
 import com.bhplusplus.yaya.ui.components.organisms.ProfileSectionCard
+import com.bhplusplus.yaya.ui.components.organisms.TutorialStep
+import com.bhplusplus.yaya.ui.components.organisms.YayaTutorialOverlay
+import com.bhplusplus.yaya.utils.TutorialManager
 
 /**
  * PANTALLA DE PERFIL DE USUARIO (Atomic Design Refactor)
@@ -453,6 +456,21 @@ fun ProfileScreen(
             }
         }
     }
+
+    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce)
+    YayaTutorialOverlay(
+        tutorialKey = TutorialManager.TUTORIAL_PROFILE_REPUTATION,
+        steps = listOf(
+            TutorialStep(
+                title = "Navegación Modular por Pestañas",
+                description = "Usa las pestañas superiores para alternar fácilmente entre tu operación diaria y tus configuraciones."
+            ),
+            TutorialStep(
+                title = "Mi Reputación y Reseñas",
+                description = "Consulta tus estrellas promedio y lee los comentarios recibidos por tus clientes desde tu perfil."
+            )
+        )
+    )
 }
 
 @Preview(showBackground = true)

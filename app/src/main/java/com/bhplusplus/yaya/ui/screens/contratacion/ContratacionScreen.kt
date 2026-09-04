@@ -30,6 +30,9 @@ import com.bhplusplus.yaya.ui.components.molecules.PriceNegotiator
 import com.bhplusplus.yaya.ui.components.molecules.YayaSelectorButton
 import com.bhplusplus.yaya.ui.components.organisms.ProfileSectionCard
 import com.bhplusplus.yaya.ui.components.organisms.ServiceRequestHero
+import com.bhplusplus.yaya.ui.components.organisms.TutorialStep
+import com.bhplusplus.yaya.ui.components.organisms.YayaTutorialOverlay
+import com.bhplusplus.yaya.utils.TutorialManager
 import com.bhplusplus.yaya.utils.ValidationUtils
 import java.time.Instant
 import java.time.ZoneId
@@ -266,6 +269,21 @@ fun ContratacionContent(
             }
         }
     }
+
+    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce)
+    YayaTutorialOverlay(
+        tutorialKey = TutorialManager.TUTORIAL_CONTRATACION_HANDSHAKE,
+        steps = listOf(
+            TutorialStep(
+                title = "Agendamiento y Oferta Económica",
+                description = "Selecciona la fecha y hora de tu cita. El sistema bloquea automáticamente horarios pasados o no disponibles."
+            ),
+            TutorialStep(
+                title = "Cierre de Trato 'Handshake'",
+                description = "Propón tu precio inicial y negocia de forma transparente con el prestador."
+            )
+        )
+    )
 }
 
 @Preview(showBackground = true)

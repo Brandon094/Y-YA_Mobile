@@ -36,7 +36,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.organisms.TutorialStep
+import com.bhplusplus.yaya.ui.components.organisms.YayaTutorialOverlay
 import com.bhplusplus.yaya.utils.ImageUtils
+import com.bhplusplus.yaya.utils.TutorialManager
 import com.bhplusplus.yaya.utils.ValidationUtils
 
 /**
@@ -626,4 +629,19 @@ fun CreateServiceScreen(
             }
         }
     }
+
+    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce)
+    YayaTutorialOverlay(
+        tutorialKey = TutorialManager.TUTORIAL_CREATE_SERVICE_SCHEDULE,
+        steps = listOf(
+            TutorialStep(
+                title = "Horario y Municipio del Servicio",
+                description = "Asigna la localidad donde prestarás este talento y selecciona tus días de atención."
+            ),
+            TutorialStep(
+                title = "Detección de Traslapes Horarios",
+                description = "El sistema validará automáticamente que los horarios no se crucen con tus otros servicios activos."
+            )
+        )
+    )
 }

@@ -32,6 +32,9 @@ import com.bhplusplus.yaya.ui.components.molecules.YayaConfirmationDialog
 import com.bhplusplus.yaya.ui.components.organisms.HomeTopBar
 import com.bhplusplus.yaya.ui.components.organisms.SearchBarIntegrated
 import com.bhplusplus.yaya.ui.components.organisms.ServiceCard
+import com.bhplusplus.yaya.ui.components.organisms.TutorialStep
+import com.bhplusplus.yaya.ui.components.organisms.YayaTutorialOverlay
+import com.bhplusplus.yaya.utils.TutorialManager
 import com.bhplusplus.yaya.utils.ValidationUtils
 
 /**
@@ -259,4 +262,19 @@ fun HomeScreen(
             }
         }
     }
+
+    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce)
+    YayaTutorialOverlay(
+        tutorialKey = TutorialManager.TUTORIAL_HOME_MUNICIPIO,
+        steps = listOf(
+            TutorialStep(
+                title = "Filtro Geográfico por Municipio",
+                description = "Toca el selector de municipio en la barra superior para explorar servicios disponibles en La Plata, Nátaga, Neiva u otra localidad."
+            ),
+            TutorialStep(
+                title = "Explora por Categorías y Búsqueda",
+                description = "Usa el buscador o los botones de categorías para encontrar de forma rápida el talento o servicio que necesitas."
+            )
+        )
+    )
 }
