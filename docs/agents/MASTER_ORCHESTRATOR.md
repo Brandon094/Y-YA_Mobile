@@ -110,6 +110,10 @@ En esta intervención, el Orquestador Maestro dirigió la implementación del mo
     - **Confirmación de URLs en Producción:**
       - Dominio Principal: [https://y-ya-d5929.web.app](https://y-ya-d5929.web.app)
       - Portal Web de Manuales: [https://y-ya-d5929.web.app/manuales](https://y-ya-d5929.web.app/manuales)
+18. **Armonización y Unificación del Tema Oscuro Deep Midnight en el Portal Web (`darkBg: '#0F172A'` / `darkSurface: '#1E293B'`):**
+    - **Estandarización de Paleta Nocturna Slate 900 / Slate 800:** Implementación unificada de `darkBg: '#0F172A'` (Slate 900) y `darkSurface: '#1E293B'` (Slate 800) en la totalidad de las páginas del portal web (`index.html`, `tecnica.html`, `manuales.html`, `terminos.html`, `privacidad.html`, `eliminar-cuenta.html` y `js/components.js`), reemplazando el fondo negro genérico (`#121212` / `#1E1E1E`).
+    - **Coherencia e Identidad de Marca 100%:** Paridad visual absoluta entre la App móvil Android v1.1.0 (Deep Midnight) y el Portal Web en producción de YÁYA.
+    - **Insignia de Versión en Footer Global:** Actualización de la insignia de versión en el pie de página de `components.js` a `v1.1.0 Stable (versionCode 5)`.
 
 ### 🔹 Sesión Septiembre 2026 (Estabilidad, Cumplimiento Play Store y CI/CD)
 En esta intervención, el Orquestador Maestro dirigió un plan de optimización enfocado en la estabilidad de la interfaz, el cumplimiento regulatorio de Google Play y el fortalecimiento de la infraestructura de calidad:

@@ -10,12 +10,13 @@ El Portal Web de YÁYA es una infraestructura estática de alto rendimiento dise
 
 ## 2. Metodología de Diseño: Web Atomic
 Para mantener la consistencia con la App, se aplica una jerarquía de componentes en el archivo `js/components.js`:
-*   **Átomos:** Definición de paleta de colores (`yayaRed`, `yayaNavy`), botones Pro y Badges institucionales.
+*   **Átomos:** Definición de paleta de colores (`yayaRed`, `yayaNavy`, `darkBg: '#0F172A'`, `darkSurface: '#1E293B'`), botones Pro y Badges institucionales.
 *   **Moléculas:** Tarjetas de beneficios, pasos del ciclo de vida y elementos de navegación.
-*   **Organismos:** Navbar responsivo con soporte de Modo Oscuro y Footer unificado con enlaces legales.
+*   **Organismos:** Navbar responsivo con soporte de Modo Oscuro y Footer unificado con enlaces legales e insignia de versión (`v1.1.0 Stable (versionCode 5)`).
+*   **Estandarización de Tema Oscuro (Deep Midnight):** Aplicación de la paleta Slate 900 (`#0F172A`) y Slate 800 (`#1E293B`) en el 100% de las páginas web del portal (`index.html`, `tecnica.html`, `manuales.html`, `terminos.html`, `privacidad.html`, `eliminar-cuenta.html` y `js/components.js`), eliminando fondos negros genéricos (`#121212` / `#1E1E1E`) para lograr 100% de coherencia visual e identidad de marca con la App móvil Android v1.1.0.
 
 ## 3. Funcionalidades Core
-*   **Tema Dual:** Soporte nativo para Modo Claro y Modo Oscuro con persistencia en `localStorage`.
+*   **Tema Dual:** Soporte nativo para Modo Claro y Modo Oscuro con persistencia en `localStorage` y estandarización de la paleta nocturna Deep Midnight (`darkBg: '#0F172A'` / `darkSurface: '#1E293B'`) en el 100% de las páginas web y componentes dinámicos (`js/components.js`), garantizando paridad e identidad visual absoluta con la aplicación móvil Android v1.1.0.
 *   **Responsive UI:** Menú de hamburguesa y layouts elásticos que se adaptan a cualquier resolución móvil.
 *   **Legal Rendering:** Motor de visualización jerárquico para documentos normativos (Markdown-lite).
 *   **Manuales de Uso Interconectados y Segregados por Rol (`portal_web/manuales.html`):**

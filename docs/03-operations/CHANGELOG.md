@@ -57,6 +57,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Despliegue verificado en producción en el Dominio Principal ([https://y-ya-d5929.web.app](https://y-ya-d5929.web.app)) y en el Portal Web de Manuales ([https://y-ya-d5929.web.app/manuales](https://y-ya-d5929.web.app/manuales)).
 
 ### Cambiado
+- **Armonización y Unificación Total del Tema Oscuro en el Portal Web (`#0F172A` / `#1E293B`):**
+    - Estandarización de la paleta nocturna Deep Midnight `darkBg: '#0F172A'` (Slate 900) y `darkSurface: '#1E293B'` (Slate 800) en el 100% de las páginas del portal web (`index.html`, `tecnica.html`, `manuales.html`, `terminos.html`, `privacidad.html`, `eliminar-cuenta.html` y `js/components.js`), reemplazando el fondo negro genérico (`#121212` / `#1E1E1E`).
+    - Garantía de 100% de coherencia visual e identidad de marca entre la App móvil Android v1.1.0 y el Portal Web en producción.
+    - Actualización de la insignia de versión en el footer unificado en `js/components.js` a `v1.1.0 Stable (versionCode 5)`.
 - **Rediseño del Selector de Rol (`RegisterUserScreen`):**
     - Reemplazo de los RadioButton sueltos por Tarjetas Atómicas de Selección (`Surface` / `OutlinedCard`) con borde en color primario (`MaterialTheme.colorScheme.primary`) al ser seleccionadas, mejorando el área táctil y la jerarquía visual del selector de rol.
 - **Alineación Semántica de Calificaciones en `ServiceCard` (`RatingIndicator`):**
