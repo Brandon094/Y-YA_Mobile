@@ -113,7 +113,19 @@ fun AppNavigation(startRoute: Any) {
         // Registro
         composable<RegisterRoute> {
             RegisterScreen(
-                onRegister = { navController.navigate(LoginRoute) },
+                onRegister = { registeredRole ->
+                    if (registeredRole == "provider") {
+                        // Prestador: Entra directo a configurar su Jornada Maestra inicial
+                        navController.navigate(AvailabilityRoute) {
+                            popUpTo(WelcomeRoute) { inclusive = true }
+                        }
+                    } else {
+                        // Cliente: Entra directo al Catálogo Principal
+                        navController.navigate(HomeRoute) {
+                            popUpTo(WelcomeRoute) { inclusive = true }
+                        }
+                    }
+                },
                 onGoToLogin = { navController.navigate(LoginRoute) },
                 onViewTerms = { navController.navigate(TermsRoute) },
                 onViewPrivacy = { navController.navigate(PrivacyRoute) }

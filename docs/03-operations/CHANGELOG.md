@@ -23,8 +23,17 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Incorporación del indicador gráfico `RatingIndicator` en la cabecera Hero del perfil (`ProfileHeroHeader`) directamente alineado con el badge de rol.
     - Integración de la opción *"Mi Reputación y Reseñas"* en la sección *"MI TALENTO"* del perfil con soporte para badges textuales con resumen de estrellas (`badgeText`, ej: `⭐ 4.9 (18)` o `"Sin opiniones"`) en `ProfileOptionItem`.
     - Despliegue de modal de hoja inferior (`ModalBottomSheet`) en `ProfileScreen` para examinar el listado completo de reseñas recibidas mediante componentes atómicos `YayaRatingItem`, con feedback para estado sin calificaciones.
-- **Redirección Automática de Onboarding para Prestadores (Post-Registro):**
-    - Redirección automática de usuarios recién registrados con rol `provider` hacia la pantalla de configuración de Jornada Maestra (`AvailabilityScreen`), garantizando la parametrización de rangos de disponibilidad base (`public.availability`) antes de la creación y oferta de servicios.
+- **Auto-Login Inmediato y Onboarding Diferenciado por Rol Post-Registro (`RegisterUserViewModel` & `AppNavigation`):**
+    - Implementación del inicio de sesión automático e inmediato `signInWith(Email)` en `RegisterUserViewModel` tras la creación exitosa del usuario e inserción del perfil en `public.profiles`.
+    - Retorno del rol registrado en la devolución de llamada de éxito `onResult(success: Boolean, role: String)`.
+    - Redirección directa e inteligente por rol en `AppNavigation` limpiando la pila anterior (`popUpTo(WelcomeRoute)`):
+        * *Prestadores (`role == "provider"`):* Redirección directa hacia `AvailabilityRoute` (*"Mi Horario General"*) para configurar su Jornada Maestra inicial antes de publicar o gestionar servicios.
+        * *Clientes (`role == "client"`):* Redirección directa hacia `HomeRoute` (*"Catálogo Principal"*) para explorar de inmediato el catálogo de servicios de su municipio sin requerir un inicio de sesión manual intermedio.
+- **Rediseño del Formulario de Registro en 3 Pasos (Wizard de Registro - `RegisterUserScreen` & `RegisterUserViewModel`):**
+    - Estructuración del proceso de registro de usuarios en un asistente guiado de 3 pasos con indicador de progreso gráfico (`LinearProgressIndicator` al 33% en Paso 1, 66% en Paso 2 y 100% en Paso 3).
+    - *Paso 1 (Información Personal y Rol):* Nombre Completo, Documento de Identidad / Cédula, Fecha de Nacimiento (`birthDate` DatePicker) y Selección de Rol (*Cliente* vs *Prestador*), validado reactivamente con `isStep1Valid`.
+    - *Paso 2 (Contacto y Ubicación):* Teléfono Celular (10 dígitos), Dirección de Residencia y Municipio / Ciudad del Huila (`ExposedDropdownMenuBox` sincronizado con `ValidationUtils.HUILA_MUNICIPALITIES`), validado reactivamente con `isStep2Valid`.
+    - *Paso 3 (Seguridad y Consentimiento Legal):* Correo Electrónico, Contraseña Segura, Aceptación de Términos & Condiciones y Políticas de Privacidad, validado reactivamente con `isStep3Valid`.
 - **Carga Inteligente de Disponibilidad y Detector de Cruces (`CreateServiceScreen` & `CreateServiceViewModel`):**
     - Action button *"Cargar mi jornada maestra"* que puebla de forma instantánea el listado de días laborables (`working_days`) utilizando la configuración general almacenada en `public.availability`.
     - Algoritmo de detección de ocupación en `CreateServiceViewModel.loadProviderAvailabilityAndServices()` que consulta servicios previos del prestador e identifica la distribución de días ya asignados a otros servicios (`occupiedDaysByOtherServices`).
@@ -167,6 +176,8 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Estandarización de la paleta nocturna Deep Midnight `darkBg: '#0F172A'` (Slate 900) y `darkSurface: '#1E293B'` (Slate 800) en el 100% de las páginas del portal web (`index.html`, `tecnica.html`, `manuales.html`, `terminos.html`, `privacidad.html`, `eliminar-cuenta.html` y `js/components.js`), reemplazando el fondo negro genérico (`#121212` / `#1E1E1E`).
     - Garantía de 100% de coherencia visual e identidad de marca entre la App móvil Android v1.1.0 y el Portal Web en producción.
     - Actualización de la insignia de versión en el footer unificado en `js/components.js` a `v1.1.0 Stable (versionCode 5)`.
+- **Rediseño UI/UX del Formulario de Registro a Wizard en 3 Pasos (`RegisterUserScreen` & `RegisterUserViewModel`):**
+    - Rediseño de la experiencia de registro pasando de un formulario continuo a un asistente interactivo de 3 pasos guiado por `LinearProgressIndicator`, con separación por bloques lógicos (Información Personal y Rol ➔ Contacto y Ubicación ➔ Seguridad y Consentimiento Legal), validación parcial reactiva (`isStep1Valid`, `isStep2Valid`, `isStep3Valid`) y navegación mediante botones *"Siguiente"* y *"Volver"*.
 - **Rediseño UI/UX del Formulario de Creación de Servicios a Wizard en 2 Pasos (`CreateServiceScreen`):**
     - Rediseño de la experiencia de creación y edición de servicios pasando de un formulario extenso a un asistente interactivo en 2 Pasos con validación progresiva, botón "Siguiente: Precio y Horarios ➔", botón "⬅️ Volver" e indicador dinámico de progreso.
 - **Sincronización del Tutorial Spotlight con los Pasos del Wizard (`CreateServiceScreen.kt`):**

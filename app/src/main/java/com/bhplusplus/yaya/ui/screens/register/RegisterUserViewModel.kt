@@ -1,6 +1,9 @@
 package com.bhplusplus.yaya.ui.screens.register
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,6 +30,34 @@ class RegisterUserViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
+    // ESTADO Y NAVEGACIÓN DEL WIZARD EN 3 PASOS (MVVM)
+    var currentStep by mutableIntStateOf(1)
+        private set
+
+    fun goToStep(step: Int) {
+        if (step in 1..3) {
+            currentStep = step
+        }
+    }
+
+    fun isStep1Valid(name: String, documentId: String, birthDate: String): Boolean {
+        return ValidationUtils.isValidName(name) && 
+               ValidationUtils.isValidDocumentId(documentId) && 
+               ValidationUtils.isValidBirthDate(birthDate)
+    }
+
+    fun isStep2Valid(phone: String, address: String, municipality: String): Boolean {
+        return ValidationUtils.isValidPhone(phone) && 
+               ValidationUtils.isValidAddress(address) && 
+               municipality.isNotBlank()
+    }
+
+    fun isStep3Valid(email: String, password: String, acceptedTerms: Boolean, acceptedPrivacy: Boolean): Boolean {
+        return ValidationUtils.isValidEmail(email) && 
+               ValidationUtils.isSecurePassword(password) && 
+               acceptedTerms && acceptedPrivacy
+    }
+
     /**
      * Registra un nuevo usuario con todos los datos requeridos por el modelo de negocio.
      */
@@ -40,61 +71,61 @@ class RegisterUserViewModel : ViewModel() {
         birthDate: String,
         role: String,
         municipality: String = "La Plata",
-        onResult: (Boolean) -> Unit
+        onResult: (Boolean, String) -> Unit
     ) {
         // Validaciones rigurosas con ValidationUtils (DRY)
         val nameError = ValidationUtils.getNameError(name)
         if (nameError != null) {
             _errorMessage.value = nameError
-            onResult(false)
+            onResult(false, role)
             return
         }
 
         val docError = ValidationUtils.getDocumentIdError(documentId)
         if (docError != null) {
             _errorMessage.value = docError
-            onResult(false)
+            onResult(false, role)
             return
         }
 
         val phoneError = ValidationUtils.getPhoneError(phone)
         if (phoneError != null) {
             _errorMessage.value = phoneError
-            onResult(false)
+            onResult(false, role)
             return
         }
 
         val emailError = ValidationUtils.getEmailError(email)
         if (emailError != null) {
             _errorMessage.value = emailError
-            onResult(false)
+            onResult(false, role)
             return
         }
 
         val passwordError = ValidationUtils.getPasswordError(password)
         if (passwordError != null) {
             _errorMessage.value = passwordError
-            onResult(false)
+            onResult(false, role)
             return
         }
 
         val addressError = ValidationUtils.getAddressError(address)
         if (addressError != null) {
             _errorMessage.value = addressError
-            onResult(false)
+            onResult(false, role)
             return
         }
 
         val birthDateError = ValidationUtils.getBirthDateError(birthDate)
         if (birthDateError != null) {
             _errorMessage.value = birthDateError
-            onResult(false)
+            onResult(false, role)
             return
         }
 
         if (role.isBlank() || (role != "client" && role != "provider" && role != "admin")) {
             _errorMessage.value = "Por favor selecciona tu rol principal (Cliente o Prestador)"
-            onResult(false)
+            onResult(false, role)
             return
         }
 
@@ -148,7 +179,7 @@ class RegisterUserViewModel : ViewModel() {
 
                 _isLoading.value = false
                 _errorMessage.value = null
-                onResult(true)
+                onResult(true, role)
 
             } catch (e: Exception) {
                 Log.e("Register", "Error fatal durante el registro: ${e.message}", e)
@@ -157,7 +188,7 @@ class RegisterUserViewModel : ViewModel() {
                     e.message?.contains("already registered", true) == true -> "Este correo ya está registrado"
                     else -> "Error en el registro: ${e.localizedMessage}"
                 }
-                onResult(false)
+                onResult(false, role)
             }
         }
     }
