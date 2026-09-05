@@ -1,6 +1,7 @@
 package com.bhplusplus.yaya.ui.screens.create_service
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
@@ -22,6 +23,44 @@ import android.util.Log
  * Sincronizado con el esquema de base de datos SQL de YÁYA.
  */
 class CreateServiceViewModel : ViewModel() {
+
+    // NAVEGACIÓN Y ESTADOS DEL FORMULARIO WIZARD (MVVM)
+    var currentStep by mutableIntStateOf(1)
+        private set
+
+    var estimatedTimeNumber by mutableStateOf("2")
+    var estimatedTimeUnit by mutableStateOf("Horas")
+    val timeUnits = listOf("Minutos", "Horas", "Días", "Meses", "Años")
+
+    val combinedEstimatedTime: String
+        get() = "$estimatedTimeNumber $estimatedTimeUnit"
+
+    fun goToStep(step: Int) {
+        if (step in 1..2) {
+            currentStep = step
+        }
+    }
+
+    /**
+     * Parsea la duración almacenada en Supabase (ej. "2 Horas") a número y unidad.
+     */
+    fun parseEstimatedTime(rawTime: String?) {
+        val str = rawTime ?: ""
+        if (str.isNotBlank() && str.contains(" ")) {
+            estimatedTimeNumber = str.substringBefore(" ")
+            estimatedTimeUnit = str.substringAfter(" ")
+        } else if (str.isNotBlank()) {
+            estimatedTimeNumber = str.filter { it.isDigit() }.ifBlank { "2" }
+            estimatedTimeUnit = "Horas"
+        }
+    }
+
+    /**
+     * Valida si la información del Paso 1 está lista para avanzar al Paso 2.
+     */
+    fun isStep1Valid(title: String, description: String, categoryId: String?, municipality: String): Boolean {
+        return title.isNotBlank() && description.isNotBlank() && categoryId != null && municipality.isNotBlank()
+    }
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -122,6 +161,7 @@ class CreateServiceViewModel : ViewModel() {
                 val service = SupabaseManager.client.postgrest["services"]
                     .select { filter { eq("id", serviceId) } }
                     .decodeSingle<Service>()
+                parseEstimatedTime(service.estimated_time)
                 onLoaded(service)
             } catch (e: Exception) {
                 Log.e("CreateServiceVM", "Error al cargar servicio: ${e.message}")

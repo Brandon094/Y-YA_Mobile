@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -23,6 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.data.models.Service
 import com.bhplusplus.yaya.ui.components.ServiceItemShimmer
@@ -60,6 +63,14 @@ fun HomeScreen(
 
     var showMunicipalityDialog by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var profileIconBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
+    var municipalityBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
+    var chatIconBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
+    var notificationsIconBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
+    var searchBarBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
+    var categorySelectorBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
+    var firstServiceCardBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
+    var fabBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
     val municipalities = remember { ValidationUtils.HUILA_MUNICIPALITIES + "Todos" }
 
     if (showLogoutDialog) {
@@ -137,6 +148,10 @@ fun HomeScreen(
                 notificationCount = viewModel.notificationCount,
                 selectedMunicipality = viewModel.selectedMunicipality,
                 onMunicipalityClick = { showMunicipalityDialog = true },
+                onMunicipalityPositioned = { municipalityBounds = it },
+                onProfileIconPositioned = { profileIconBounds = it },
+                onChatIconPositioned = { chatIconBounds = it },
+                onNotificationsIconPositioned = { notificationsIconBounds = it },
                 onProfileClick = onProfileClick,
                 onChatListClick = onChatListClick,
                 onNotificationsClick = {
@@ -153,7 +168,10 @@ fun HomeScreen(
                 FloatingActionButton(
                     onClick = onCreateServiceClick,
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
+                    contentColor = Color.White,
+                    modifier = Modifier.onGloballyPositioned { coords ->
+                        fabBounds = coords.boundsInWindow()
+                    }
                 ) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "Crear Servicio")
                 }
@@ -203,27 +221,34 @@ fun HomeScreen(
                 // Organismo: Barra de búsqueda integrada
                 SearchBarIntegrated(
                     query = viewModel.searchQuery,
-                    onQueryChange = { viewModel.onSearchQueryChange(it) }
+                    onQueryChange = { viewModel.onSearchQueryChange(it) },
+                    onSearchFieldPositioned = { searchBarBounds = it }
                 )
 
                 Spacer(Modifier.height(16.dp))
 
                 // Molécula: Selector de categorías
-                Text(
-                    text = "¿Qué buscas hoy?",
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                
-                Spacer(Modifier.height(12.dp))
+                Column(
+                    modifier = Modifier.onGloballyPositioned { coords ->
+                        categorySelectorBounds = coords.boundsInWindow()
+                    }
+                ) {
+                    Text(
+                        text = "¿Qué buscas hoy?",
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    
+                    Spacer(Modifier.height(12.dp))
 
-                CategorySelector(
-                    categories = viewModel.categories,
-                    selectedCategoryId = viewModel.selectedCategoryId,
-                    onCategorySelect = { viewModel.onCategorySelect(it) }
-                )
+                    CategorySelector(
+                        categories = viewModel.categories,
+                        selectedCategoryId = viewModel.selectedCategoryId,
+                        onCategorySelect = { viewModel.onCategorySelect(it) }
+                    )
+                }
 
                 Spacer(Modifier.height(8.dp))
 
@@ -250,11 +275,16 @@ fun HomeScreen(
                     )
                 } else {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(viewModel.filteredServices) { uiState ->
+                        itemsIndexed(viewModel.filteredServices) { index, uiState ->
                             // Organismo: Tarjeta de servicio
                             ServiceCard(
                                 state = uiState, 
-                                onClick = { onServiceClick(uiState.domain) }
+                                onClick = { onServiceClick(uiState.domain) },
+                                modifier = if (index == 0) {
+                                    Modifier.onGloballyPositioned { coords ->
+                                        firstServiceCardBounds = coords.boundsInWindow()
+                                    }
+                                } else Modifier
                             )
                         }
                     }
@@ -263,18 +293,86 @@ fun HomeScreen(
         }
     }
 
-    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce)
+    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce + Spotlight Cutout)
     YayaTutorialOverlay(
         tutorialKey = TutorialManager.TUTORIAL_HOME_MUNICIPIO,
-        steps = listOf(
-            TutorialStep(
-                title = "Filtro Geográfico por Municipio",
-                description = "Toca el selector de municipio en la barra superior para explorar servicios disponibles en La Plata, Nátaga, Neiva u otra localidad."
-            ),
-            TutorialStep(
-                title = "Explora por Categorías y Búsqueda",
-                description = "Usa el buscador o los botones de categorías para encontrar de forma rápida el talento o servicio que necesitas."
+        steps = buildList {
+            add(
+                TutorialStep(
+                    title = "📍 Filtro por Municipio",
+                    description = "Explora servicios y talentos disponibles en tu localidad. Puedes cambiar entre La Plata, Nátaga, Paicol, Neiva y otros municipios del Huila para actualizar el catálogo al instante.",
+                    targetBounds = municipalityBounds,
+                    targetCornerRadius = 12.dp,
+                    targetPadding = 2.dp
+                )
             )
-        )
+            add(
+                TutorialStep(
+                    title = "👤 Mi Perfil y Negocio",
+                    description = "Accede a tus datos personales, historial de pedidos, mensajes, reputación por estrellas ⭐, configuraciones y al manual de uso de la App.",
+                    targetBounds = profileIconBounds,
+                    targetCornerRadius = 24.dp,
+                    targetPadding = 2.dp
+                )
+            )
+            add(
+                TutorialStep(
+                    title = "💬 Mensajería Directa",
+                    description = "Abre tus conversaciones en tiempo real para coordinar detalles, ubicar direcciones y resolver dudas con clientes o prestadores.",
+                    targetBounds = chatIconBounds,
+                    targetCornerRadius = 24.dp,
+                    targetPadding = 2.dp
+                )
+            )
+            add(
+                TutorialStep(
+                    title = "🔔 Solicitudes y Alertas",
+                    description = "Consulta las alertas de solicitudes recibidas, contrataciones enviadas y actualizaciones en el estado de tus servicios.",
+                    targetBounds = notificationsIconBounds,
+                    targetCornerRadius = 24.dp,
+                    targetPadding = 2.dp
+                )
+            )
+            add(
+                TutorialStep(
+                    title = "🔍 Búsqueda de Servicios",
+                    description = "Busca por nombre o palabra clave (ej. 'Plomería', 'Mascotas', 'Tecnología'). El catálogo filtrará los resultados en tiempo real.",
+                    targetBounds = searchBarBounds,
+                    targetCornerRadius = 16.dp,
+                    targetPadding = 2.dp
+                )
+            )
+            add(
+                TutorialStep(
+                    title = "🏷️ Exploración por Categorías",
+                    description = "Filtra las ofertas según el rubro de tu interés (Hogar, Tecnología, Mascotas, Salud y Bienestar) para descubrir opciones organizadas.",
+                    targetBounds = categorySelectorBounds,
+                    targetCornerRadius = 20.dp,
+                    targetPadding = 4.dp
+                )
+            )
+            if (firstServiceCardBounds != null) {
+                add(
+                    TutorialStep(
+                        title = "📋 Tarjetas de Servicio",
+                        description = "Muestra el título del talento, precio base, la reputación ⭐ del prestador y sus días de atención. Toca la tarjeta para ver los detalles completos o solicitar una cita.",
+                        targetBounds = firstServiceCardBounds,
+                        targetCornerRadius = 24.dp,
+                        targetPadding = 4.dp
+                    )
+                )
+            }
+            if (viewModel.userRole == "provider" || viewModel.userRole == "admin") {
+                add(
+                    TutorialStep(
+                        title = "💼 Publicar un Nuevo Talento",
+                        description = "Presiona el botón + para ofrecer un nuevo servicio en YÁYA especificando tu precio, municipio de cobertura y horario de atención.",
+                        targetBounds = fabBounds,
+                        targetCornerRadius = 28.dp,
+                        targetPadding = 4.dp
+                    )
+                )
+            }
+        }
     )
 }

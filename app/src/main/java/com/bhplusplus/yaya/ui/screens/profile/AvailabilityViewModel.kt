@@ -42,6 +42,56 @@ class AvailabilityViewModel : ViewModel() {
     var message by mutableStateOf<String?>(null)
         private set
 
+    val activeDaysCount: Int
+        get() = daysState.count { it.isWorking }
+
+    val totalWeeklyHours: Int
+        get() = daysState.filter { it.isWorking }.sumOf { day ->
+            try {
+                val start = java.time.LocalTime.parse(day.startTime.take(5))
+                val end = java.time.LocalTime.parse(day.endTime.take(5))
+                java.time.Duration.between(start, end).toHours().toInt().coerceAtLeast(0)
+            } catch (_: Exception) {
+                0
+            }
+        }
+
+    fun applyPresetMonToFri() {
+        daysState = daysState.map { day ->
+            if (day.dayOfWeek in 1..5) {
+                day.copy(isWorking = true, startTime = "08:00:00", endTime = "18:00:00")
+            } else {
+                day.copy(isWorking = false)
+            }
+        }
+    }
+
+    fun applyPresetAllDays() {
+        daysState = daysState.map { day ->
+            day.copy(isWorking = true, startTime = "08:00:00", endTime = "18:00:00")
+        }
+    }
+
+    fun clearAllDays() {
+        daysState = daysState.map { day ->
+            day.copy(isWorking = false)
+        }
+    }
+
+    fun copyFirstActiveDayTimesToAll() {
+        val firstActive = daysState.firstOrNull { it.isWorking } ?: return
+        val start = firstActive.startTime
+        val end = firstActive.endTime
+
+        daysState = daysState.map { day ->
+            if (day.isWorking) {
+                day.copy(startTime = start, endTime = end)
+            } else {
+                day
+            }
+        }
+    }
+
     init {
         loadAvailability()
     }

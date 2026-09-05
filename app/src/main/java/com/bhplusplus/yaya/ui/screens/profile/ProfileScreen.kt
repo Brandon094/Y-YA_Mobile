@@ -15,7 +15,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,6 +68,9 @@ fun ProfileScreen(
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showRatingsSheet by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableIntStateOf(0) }
+    var tabRowBounds by remember { mutableStateOf<Rect?>(null) }
+    var headerBounds by remember { mutableStateOf<Rect?>(null) }
+    var quickActionCardsBounds by remember { mutableStateOf<Rect?>(null) }
 
     // DIÁLOGO DE CONFIRMACIÓN DE CERRAR SESIÓN (Molécula Atómica)
     if (showLogoutDialog) {
@@ -182,7 +188,10 @@ fun ProfileScreen(
                     role = profile?.role ?: "client",
                     averageRating = viewModel.averageRating,
                     totalRatings = viewModel.totalRatings,
-                    onEditProfileClick = onEditProfile
+                    onEditProfileClick = onEditProfile,
+                    modifier = Modifier.onGloballyPositioned { coords ->
+                        headerBounds = coords.boundsInWindow()
+                    }
                 )
 
                 Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
@@ -192,7 +201,10 @@ fun ProfileScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 20.dp),
+                                .padding(bottom = 20.dp)
+                                .onGloballyPositioned { coords ->
+                                    quickActionCardsBounds = coords.boundsInWindow()
+                                },
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             // Card 1: Servicios
@@ -312,7 +324,11 @@ fun ProfileScreen(
                         containerColor = Color.Transparent,
                         contentColor = MaterialTheme.colorScheme.primary,
                         divider = { HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant) },
-                        modifier = Modifier.padding(bottom = 20.dp)
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                            .onGloballyPositioned { coords ->
+                                tabRowBounds = coords.boundsInWindow()
+                            }
                     ) {
                         Tab(
                             selected = selectedTab == 0,
@@ -457,17 +473,30 @@ fun ProfileScreen(
         }
     }
 
-    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce)
+    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce + Spotlight Cutout)
     YayaTutorialOverlay(
         tutorialKey = TutorialManager.TUTORIAL_PROFILE_REPUTATION,
         steps = listOf(
             TutorialStep(
-                title = "Navegación Modular por Pestañas",
-                description = "Usa las pestañas superiores para alternar fácilmente entre tu operación diaria y tus configuraciones."
+                title = "💼 Navegación por Pestañas",
+                description = "Alterna fácilmente entre 'Mi Operación' (tu actividad diaria) y 'Ajustes y Ayuda' (seguridad, manuales y configuraciones).",
+                targetBounds = tabRowBounds,
+                targetCornerRadius = 16.dp,
+                targetPadding = 2.dp
             ),
             TutorialStep(
-                title = "Mi Reputación y Reseñas",
-                description = "Consulta tus estrellas promedio y lee los comentarios recibidos por tus clientes desde tu perfil."
+                title = "⚡ Accesos Rápidos",
+                description = "Accede directamente a la gestión de tus servicios publicados, solicitudes pendientes con contador de notificaciones y a tu reputación comercial.",
+                targetBounds = quickActionCardsBounds,
+                targetCornerRadius = 20.dp,
+                targetPadding = 4.dp
+            ),
+            TutorialStep(
+                title = "⭐ Tu Reputación y Ajustes",
+                description = "Edita tu foto y datos desde el icono de lápiz y consulta tu promedio de estrellas y reseñas acumuladas recibidas de tus clientes.",
+                targetBounds = headerBounds,
+                targetCornerRadius = 24.dp,
+                targetPadding = 4.dp
             )
         )
     )

@@ -14,9 +14,14 @@ object TutorialManager {
 
     // Claves estandarizadas para cada sección
     const val TUTORIAL_HOME_MUNICIPIO = "tutorial_home_municipio_v1"
-    const val TUTORIAL_CREATE_SERVICE_SCHEDULE = "tutorial_create_service_schedule_v1"
+    const val TUTORIAL_CREATE_SERVICE_STEP1 = "tutorial_create_service_step1_v1"
+    const val TUTORIAL_CREATE_SERVICE_STEP2 = "tutorial_create_service_step2_v1"
     const val TUTORIAL_CONTRATACION_HANDSHAKE = "tutorial_contratacion_handshake_v1"
     const val TUTORIAL_PROFILE_REPUTATION = "tutorial_profile_reputation_v1"
+    const val TUTORIAL_AVAILABILITY_MASTER = "tutorial_availability_master_v1"
+    const val TUTORIAL_MY_SERVICES = "tutorial_my_services_v1"
+    const val TUTORIAL_INCOMING_REQUESTS = "tutorial_incoming_requests_v1"
+    const val TUTORIAL_SERVICE_DETAIL = "tutorial_service_detail_v1"
 
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

@@ -33,7 +33,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.ui.components.organisms.TutorialStep
@@ -65,11 +68,12 @@ fun CreateServiceScreen(
         }
     )
 
-    // ESTADOS
+    // ESTADOS DE FORMULARIO (WIZARD DE 2 PASOS CONECTADO AL VIEWMODEL)
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
-    var estimatedTime by remember { mutableStateOf("") }
+    var timeUnitExpanded by remember { mutableStateOf(false) }
+
     var selectedDays by remember { mutableStateOf<Set<Int>>(emptySet()) }
     var startTime by remember { mutableStateOf("08:00") }
     var endTime by remember { mutableStateOf("18:00") }
@@ -82,9 +86,16 @@ fun CreateServiceScreen(
     var selectedCategoryName by remember { mutableStateOf("Selecciona una categoría") }
     var expanded by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
+    var municipalityBounds by remember { mutableStateOf<Rect?>(null) }
+    var scheduleBounds by remember { mutableStateOf<Rect?>(null) }
+    var daysPickerBounds by remember { mutableStateOf<Rect?>(null) }
 
     val isLoading by viewModel.isLoading.observeAsState(false)
     val errorMessage by viewModel.errorMessage.observeAsState()
+
+    val isStep1Valid = remember(title, description, selectedCategoryId, municipality) {
+        viewModel.isStep1Valid(title, description, selectedCategoryId, municipality)
+    }
 
     val currentValidationError = remember(
         title, price, selectedCategoryId, selectedDays, startTime, endTime, municipality,
@@ -139,7 +150,6 @@ fun CreateServiceScreen(
                 title = service.title
                 description = service.description
                 price = service.price.toString()
-                estimatedTime = service.estimated_time ?: ""
                 selectedDays = service.working_days.toSet()
                 startTime = service.start_time.substring(0, 5)
                 endTime = service.end_time.substring(0, 5)
@@ -195,163 +205,7 @@ fun CreateServiceScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // CATEGORÍA
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "CATEGORÍA DEL TALENTO",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(Modifier.height(8.dp))
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { if (!isLoading) expanded = !expanded },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = selectedCategoryName,
-                        onValueChange = {},
-                        readOnly = true,
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        modifier = Modifier.menuAnchor().fillMaxWidth(),
-                        enabled = !isLoading,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                        )
-                    )
-                    ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        viewModel.categories.forEach { category ->
-                            DropdownMenuItem(
-                                text = { Text(category.name) },
-                                onClick = {
-                                    selectedCategoryId = category.id
-                                    selectedCategoryName = category.name
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-
-            // MUNICIPIO DE ATENCIÓN (Dropdown)
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "MUNICIPIO DE ATENCIÓN",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(Modifier.height(8.dp))
-                ExposedDropdownMenuBox(
-                    expanded = municipalityExpanded,
-                    onExpandedChange = { if (!isLoading) municipalityExpanded = !municipalityExpanded },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = municipality,
-                        onValueChange = {},
-                        readOnly = true,
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = municipalityExpanded) },
-                        modifier = Modifier.menuAnchor().fillMaxWidth(),
-                        enabled = !isLoading,
-                        shape = RoundedCornerShape(12.dp),
-                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                        )
-                    )
-                    ExposedDropdownMenu(
-                        expanded = municipalityExpanded,
-                        onDismissRequest = { municipalityExpanded = false }
-                    ) {
-                        ValidationUtils.HUILA_MUNICIPALITIES.forEach { muni ->
-                            DropdownMenuItem(
-                                text = { Text(muni) },
-                                onClick = {
-                                    municipality = muni
-                                    municipalityExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-
-            // TÍTULO
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "TÍTULO DEL SERVICIO",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = title, onValueChange = { title = it },
-                    placeholder = { Text("Ej: Limpieza de muebles") },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading, shape = RoundedCornerShape(12.dp)
-                )
-            }
-
-            // DESCRIPCIÓN
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "DESCRIPCIÓN DETALLADA",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = description, onValueChange = { description = it },
-                    placeholder = { Text("Describe qué incluye tu servicio...") },
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp),
-                    enabled = !isLoading, shape = RoundedCornerShape(12.dp)
-                )
-            }
-
-            // PRECIO Y TIEMPO
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "PRECIO BASE",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = price, onValueChange = { price = it },
-                        prefix = { Text("$") },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        enabled = !isLoading, shape = RoundedCornerShape(12.dp)
-                    )
-                }
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "DURACIÓN",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = estimatedTime, onValueChange = { estimatedTime = it },
-                        placeholder = { Text("Ej: 2 horas") },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = !isLoading, shape = RoundedCornerShape(12.dp)
-                    )
-                }
-            }
-
-            // DISPONIBILIDAD (Day Picker UX con FlowRow)
+            // INDICADOR DE PROGRESO DEL WIZARD (2 PASOS)
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -359,289 +213,580 @@ fun CreateServiceScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "DÍAS DE PRESTACIÓN",
+                        text = if (viewModel.currentStep == 1) "PASO 1 DE 2: INFORMACIÓN BÁSICA" else "PASO 2 DE 2: PRECIO Y HORARIOS",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary,
+                        letterSpacing = 1.sp
+                    )
+                    Text(
+                        text = "${(viewModel.currentStep * 50)}%",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Spacer(Modifier.height(6.dp))
+                LinearProgressIndicator(
+                    progress = { if (viewModel.currentStep == 1) 0.5f else 1.0f },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(3.dp)),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                )
+            }
+
+            if (viewModel.currentStep == 1) {
+                // ==================== PASO 1: INFORMACIÓN BÁSICA Y PORTAFOLIO ====================
+                // CATEGORÍA
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "CATEGORÍA DEL TALENTO",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-
-                    if (viewModel.masterWorkingDays.isNotEmpty()) {
-                        TextButton(
-                            onClick = { selectedDays = viewModel.masterWorkingDays.toSet() },
+                    Spacer(Modifier.height(8.dp))
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { if (!isLoading) expanded = !expanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = selectedCategoryName,
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                            modifier = Modifier.menuAnchor().fillMaxWidth(),
                             enabled = !isLoading,
-                            contentPadding = PaddingValues(0.dp)
-                        ) {
-                            Text("Cargar mi jornada maestra", fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
-                Spacer(Modifier.height(8.dp))
-
-                @OptIn(ExperimentalLayoutApi::class)
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    val days = listOf("L", "M", "M", "J", "V", "S", "D")
-                    days.forEachIndexed { index, name ->
-                        val dayNumber = index + 1
-                        val isSelected = selectedDays.contains(dayNumber)
-                        val occupiedByTitle = viewModel.occupiedDaysByOtherServices[dayNumber]
-                        val isOccupiedByOther = occupiedByTitle != null
-                        val isMasterAllowed = viewModel.masterWorkingDays.isEmpty() || viewModel.masterWorkingDays.contains(dayNumber)
-                        
-                        Box(
-                            modifier = Modifier
-                                .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
-                                .background(
-                                    color = when {
-                                        !isMasterAllowed -> Color.LightGray.copy(alpha = 0.15f)
-                                        isSelected -> MaterialTheme.colorScheme.primary
-                                        isOccupiedByOther -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
-                                        else -> Color.LightGray.copy(alpha = 0.2f)
-                                    },
-                                    shape = CircleShape
-                                )
-                                .clip(CircleShape)
-                                .clickable(enabled = !isLoading && isMasterAllowed) {
-                                    selectedDays = if (isSelected) selectedDays - dayNumber else selectedDays + dayNumber
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = name,
-                                color = when {
-                                    !isMasterAllowed -> Color.Gray.copy(alpha = 0.3f)
-                                    isSelected -> Color.White
-                                    isOccupiedByOther -> MaterialTheme.colorScheme.error
-                                    else -> Color.Gray
-                                },
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
+                        )
+                        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                            viewModel.categories.forEach { category ->
+                                DropdownMenuItem(
+                                    text = { Text(category.name) },
+                                    onClick = {
+                                        selectedCategoryId = category.id
+                                        selectedCategoryName = category.name
+                                        expanded = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }
 
-                if (viewModel.occupiedDaysByOtherServices.isNotEmpty()) {
-                    val dayNames = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
-                    val occupiedInfo = viewModel.occupiedDaysByOtherServices.entries.joinToString(", ") { (day, title) ->
-                        "${dayNames[day - 1]}: $title"
-                    }
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = "ℹ️ Días asignados a otros de tus servicios: $occupiedInfo",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 11.sp
-                    )
-                }
-            }
-
-            // SELECTORES DE HORA
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "RANGO HORARIO",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                // MUNICIPIO DE ATENCIÓN
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onGloballyPositioned { coords ->
+                            municipalityBounds = coords.boundsInWindow()
+                        }
                 ) {
-                    OutlinedTextField(
-                        value = startTime,
-                        onValueChange = { startTime = it },
-                        label = { Text("Inicio") },
-                        modifier = Modifier.weight(1f),
-                        placeholder = { Text("08:00") },
-                        enabled = !isLoading,
-                        shape = RoundedCornerShape(12.dp)
+                    Text(
+                        text = "MUNICIPIO DE ATENCIÓN",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
                     )
+                    Spacer(Modifier.height(8.dp))
+                    ExposedDropdownMenuBox(
+                        expanded = municipalityExpanded,
+                        onExpandedChange = { if (!isLoading) municipalityExpanded = !municipalityExpanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = municipality,
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = municipalityExpanded) },
+                            modifier = Modifier.menuAnchor().fillMaxWidth(),
+                            enabled = !isLoading,
+                            shape = RoundedCornerShape(12.dp),
+                            leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                            )
+                        )
+                        ExposedDropdownMenu(
+                            expanded = municipalityExpanded,
+                            onDismissRequest = { municipalityExpanded = false }
+                        ) {
+                            ValidationUtils.HUILA_MUNICIPALITIES.forEach { muni ->
+                                DropdownMenuItem(
+                                    text = { Text(muni) },
+                                    onClick = {
+                                        municipality = muni
+                                        municipalityExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // TÍTULO
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "TÍTULO DEL SERVICIO",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = endTime,
-                        onValueChange = { endTime = it },
-                        label = { Text("Fin") },
-                        modifier = Modifier.weight(1f),
-                        placeholder = { Text("18:00") },
-                        enabled = !isLoading,
-                        shape = RoundedCornerShape(12.dp)
+                        value = title, onValueChange = { title = it },
+                        placeholder = { Text("Ej: Limpieza de muebles") },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isLoading, shape = RoundedCornerShape(12.dp)
                     )
                 }
-            }
 
-            // MATERIALES
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(checked = materialsIncluded, onCheckedChange = { materialsIncluded = it }, enabled = !isLoading)
-                        Text("¿Incluye materiales e insumos?", fontWeight = FontWeight.Medium)
+                // DESCRIPCIÓN
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "DESCRIPCIÓN DETALLADA",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = description, onValueChange = { description = it },
+                        placeholder = { Text("Describe qué incluye tu servicio...") },
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp),
+                        enabled = !isLoading, shape = RoundedCornerShape(12.dp)
+                    )
+                }
+
+                // PORTAFOLIO DE IMÁGENES
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "PORTAFOLIO (TRABAJOS REALIZADOS)",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Surface(
+                            onClick = {
+                                photoPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                            enabled = !isLoading,
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            modifier = Modifier.size(90.dp)
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                                Icon(Icons.Default.AddPhotoAlternate, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                Text("Añadir", fontSize = 10.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                            }
+                        }
+
+                        viewModel.selectedImages.take(2).forEach { bytes ->
+                            Box(
+                                modifier = Modifier
+                                    .size(90.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                            ) {
+                                AsyncImage(
+                                    model = bytes,
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
+                        
+                        if (viewModel.selectedImages.size > 2) {
+                            Box(
+                                modifier = Modifier.size(60.dp).align(Alignment.CenterVertically),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("+${viewModel.selectedImages.size - 2}", fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
+                            }
+                        }
                     }
+                    
+                    if (viewModel.selectedImages.isNotEmpty()) {
+                        TextButton(onClick = { viewModel.selectedImages = emptyList() }, modifier = Modifier.align(Alignment.End)) {
+                            Icon(Icons.Default.DeleteSweep, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text("Limpiar galería", color = MaterialTheme.colorScheme.error, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
 
-                    if (!materialsIncluded) {
+                Spacer(Modifier.height(8.dp))
+
+                Button(
+                    onClick = { viewModel.goToStep(2) },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    enabled = isStep1Valid && !isLoading
+                ) {
+                    Text("Siguiente: Precio y Horarios ➔", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                }
+
+            } else {
+                // ==================== PASO 2: PRECIO, DURACIÓN Y DISPONIBILIDAD ====================
+                // PRECIO Y DURACIÓN (Estructurada Compuesta: Número + Unidad)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "PRECIO BASE",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                         Spacer(Modifier.height(8.dp))
                         OutlinedTextField(
-                            value = extraCost, onValueChange = { extraCost = it },
-                            label = { Text("Costo extra de materiales") },
+                            value = price, onValueChange = { price = it },
                             prefix = { Text("$") },
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             enabled = !isLoading, shape = RoundedCornerShape(12.dp)
                         )
                     }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "DURACIÓN ESTIMADA",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = viewModel.estimatedTimeNumber,
+                                onValueChange = { viewModel.estimatedTimeNumber = it.filter { c -> c.isDigit() } },
+                                modifier = Modifier.weight(1f),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                enabled = !isLoading,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            ExposedDropdownMenuBox(
+                                expanded = timeUnitExpanded,
+                                onExpandedChange = { if (!isLoading) timeUnitExpanded = !timeUnitExpanded },
+                                modifier = Modifier.weight(1.2f)
+                            ) {
+                                OutlinedTextField(
+                                    value = viewModel.estimatedTimeUnit,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = timeUnitExpanded) },
+                                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                                    enabled = !isLoading,
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                                    )
+                                )
+                                ExposedDropdownMenu(expanded = timeUnitExpanded, onDismissRequest = { timeUnitExpanded = false }) {
+                                    viewModel.timeUnits.forEach { unit ->
+                                        DropdownMenuItem(
+                                            text = { Text(unit) },
+                                            onClick = {
+                                                viewModel.estimatedTimeUnit = unit
+                                                timeUnitExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-            }
 
-            // PORTAFOLIO DE IMÁGENES
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "PORTAFOLIO (TRABAJOS REALIZADOS)",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(Modifier.height(12.dp))
-                
+                // DISPONIBILIDAD (Day Picker UX con FlowRow)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onGloballyPositioned { coords ->
+                            daysPickerBounds = coords.boundsInWindow()
+                        }
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "DÍAS DE PRESTACIÓN",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
+                        if (viewModel.masterWorkingDays.isNotEmpty()) {
+                            TextButton(
+                                onClick = { selectedDays = viewModel.masterWorkingDays.toSet() },
+                                enabled = !isLoading,
+                                contentPadding = PaddingValues(0.dp)
+                            ) {
+                                Text("Cargar mi jornada maestra", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+
+                    @OptIn(ExperimentalLayoutApi::class)
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        val days = listOf("L", "M", "M", "J", "V", "S", "D")
+                        days.forEachIndexed { index, name ->
+                            val dayNumber = index + 1
+                            val isSelected = selectedDays.contains(dayNumber)
+                            val occupiedByTitle = viewModel.occupiedDaysByOtherServices[dayNumber]
+                            val isOccupiedByOther = occupiedByTitle != null
+                            val isMasterAllowed = viewModel.masterWorkingDays.isEmpty() || viewModel.masterWorkingDays.contains(dayNumber)
+                            
+                            Box(
+                                modifier = Modifier
+                                    .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                                    .background(
+                                        color = when {
+                                            !isMasterAllowed -> Color.LightGray.copy(alpha = 0.15f)
+                                            isSelected -> MaterialTheme.colorScheme.primary
+                                            isOccupiedByOther -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+                                            else -> Color.LightGray.copy(alpha = 0.2f)
+                                        },
+                                        shape = CircleShape
+                                    )
+                                    .clip(CircleShape)
+                                    .clickable(enabled = !isLoading && isMasterAllowed) {
+                                        selectedDays = if (isSelected) selectedDays - dayNumber else selectedDays + dayNumber
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = name,
+                                    color = when {
+                                        !isMasterAllowed -> Color.Gray.copy(alpha = 0.3f)
+                                        isSelected -> Color.White
+                                        isOccupiedByOther -> MaterialTheme.colorScheme.error
+                                        else -> Color.Gray
+                                    },
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
+                            }
+                        }
+                    }
+
+                    if (viewModel.occupiedDaysByOtherServices.isNotEmpty()) {
+                        val dayNames = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
+                        val occupiedInfo = viewModel.occupiedDaysByOtherServices.entries.joinToString(", ") { (day, title) ->
+                            "${dayNames[day - 1]}: $title"
+                        }
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "ℹ️ Días asignados a otros de tus servicios: $occupiedInfo",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+
+                // SELECTORES DE HORA
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onGloballyPositioned { coords ->
+                            scheduleBounds = coords.boundsInWindow()
+                        }
+                ) {
+                    Text(
+                        text = "RANGO HORARIO",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = startTime,
+                            onValueChange = { startTime = it },
+                            label = { Text("Inicio") },
+                            modifier = Modifier.weight(1f),
+                            placeholder = { Text("08:00") },
+                            enabled = !isLoading,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        OutlinedTextField(
+                            value = endTime,
+                            onValueChange = { endTime = it },
+                            label = { Text("Fin") },
+                            modifier = Modifier.weight(1f),
+                            placeholder = { Text("18:00") },
+                            enabled = !isLoading,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    }
+                }
+
+                // MATERIALES
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(checked = materialsIncluded, onCheckedChange = { materialsIncluded = it }, enabled = !isLoading)
+                            Text("¿Incluye materiales e insumos?", fontWeight = FontWeight.Medium)
+                        }
+
+                        if (!materialsIncluded) {
+                            Spacer(Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = extraCost, onValueChange = { extraCost = it },
+                                label = { Text("Costo extra de materiales") },
+                                prefix = { Text("$") },
+                                modifier = Modifier.fillMaxWidth(),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                enabled = !isLoading, shape = RoundedCornerShape(12.dp)
+                            )
+                        }
+                    }
+                }
+
+                val displayedError = errorMessage ?: currentValidationError
+
+                if (!displayedError.isNullOrEmpty()) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.85f),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                            Spacer(Modifier.width(10.dp))
+                            Text(
+                                text = displayedError,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Botón para añadir imágenes
-                    Surface(
-                        onClick = {
-                            photoPickerLauncher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                            )
-                        },
-                        enabled = !isLoading,
+                    OutlinedButton(
+                        onClick = { viewModel.goToStep(1) },
+                        modifier = Modifier.weight(1f).height(56.dp),
                         shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        modifier = Modifier.size(90.dp)
+                        enabled = !isLoading
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                            Icon(Icons.Default.AddPhotoAlternate, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                            Text("Añadir", fontSize = 10.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                        }
+                        Text("⬅️ Volver", fontWeight = FontWeight.Bold)
                     }
 
-                    // Lista de imágenes seleccionadas (Vista previa)
-                    viewModel.selectedImages.take(2).forEach { bytes ->
-                        Box(
-                            modifier = Modifier
-                                .size(90.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                        ) {
-                            AsyncImage(
-                                model = bytes,
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                    }
-                    
-                    if (viewModel.selectedImages.size > 2) {
-                        Box(
-                            modifier = Modifier.size(60.dp).align(Alignment.CenterVertically),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("+${viewModel.selectedImages.size - 2}", fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
-                        }
-                    }
-                }
-                
-                if (viewModel.selectedImages.isNotEmpty()) {
-                    TextButton(onClick = { viewModel.selectedImages = emptyList() }, modifier = Modifier.align(Alignment.End)) {
-                        Icon(Icons.Default.DeleteSweep, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text("Limpiar galería", color = MaterialTheme.colorScheme.error, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
-            }
-
-            val displayedError = errorMessage ?: currentValidationError
-
-            if (!displayedError.isNullOrEmpty()) {
-                Surface(
-                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.85f),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    Button(
+                        onClick = {
+                            viewModel.saveService(
+                                serviceId = serviceId,
+                                title = title,
+                                description = description,
+                                price = price,
+                                categoryId = selectedCategoryId,
+                                estimatedTime = viewModel.combinedEstimatedTime,
+                                workingDays = selectedDays.toList().sorted(),
+                                startTime = startTime,
+                                endTime = endTime,
+                                materialsIncluded = materialsIncluded,
+                                extraCost = extraCost,
+                                municipality = municipality
+                            ) { success ->
+                                if (success) {
+                                    if (serviceId == null) {
+                                        showSuccessDialog = true
+                                    } else {
+                                        onServiceCreated()
+                                    }
+                                }
+                            }
+                        },
+                        modifier = Modifier.weight(1.5f).height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        enabled = !isLoading && currentValidationError == null
                     ) {
-                        Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
-                        Spacer(Modifier.width(10.dp))
-                        Text(
-                            text = displayedError,
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Medium
+                        if (isLoading) CircularProgressIndicator(color = Color.White)
+                        else Text(
+                            text = if (serviceId == null) "Publicar 🚀" else "Guardar Cambios", 
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
             }
-
-            Button(
-                onClick = {
-                    viewModel.saveService(
-                        serviceId = serviceId,
-                        title = title,
-                        description = description,
-                        price = price,
-                        categoryId = selectedCategoryId,
-                        estimatedTime = estimatedTime,
-                        workingDays = selectedDays.toList().sorted(),
-                        startTime = startTime,
-                        endTime = endTime,
-                        materialsIncluded = materialsIncluded,
-                        extraCost = extraCost,
-                        municipality = municipality
-                    ) { success ->
-                        if (success) {
-                            if (serviceId == null) {
-                                // Si es nuevo, mostramos el aviso de moderación
-                                showSuccessDialog = true
-                            } else {
-                                // Si es edición, navegamos directamente
-                                onServiceCreated()
-                            }
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                enabled = !isLoading && currentValidationError == null
-            ) {
-                if (isLoading) CircularProgressIndicator(color = Color.White)
-                else Text(
-                    text = if (serviceId == null) stringResource(R.string.create_service_button) else "Guardar Cambios", 
-                    fontWeight = FontWeight.Bold
-                )
-            }
         }
     }
 
-    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce)
-    YayaTutorialOverlay(
-        tutorialKey = TutorialManager.TUTORIAL_CREATE_SERVICE_SCHEDULE,
-        steps = listOf(
-            TutorialStep(
-                title = "Horario y Municipio del Servicio",
-                description = "Asigna la localidad donde prestarás este talento y selecciona tus días de atención."
-            ),
-            TutorialStep(
-                title = "Detección de Traslapes Horarios",
-                description = "El sistema validará automáticamente que los horarios no se crucen con tus otros servicios activos."
+    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce + Spotlight Cutout Sincronizado por Paso del Wizard)
+    if (viewModel.currentStep == 1) {
+        YayaTutorialOverlay(
+            tutorialKey = TutorialManager.TUTORIAL_CREATE_SERVICE_STEP1,
+            steps = listOf(
+                TutorialStep(
+                    title = "📍 Municipio de Cobertura",
+                    description = "Selecciona el municipio donde prestarás este servicio para que los clientes de esa zona lo encuentren en su catálogo.",
+                    targetBounds = municipalityBounds,
+                    targetCornerRadius = 16.dp,
+                    targetPadding = 2.dp
+                )
             )
         )
-    )
+    } else {
+        YayaTutorialOverlay(
+            tutorialKey = TutorialManager.TUTORIAL_CREATE_SERVICE_STEP2,
+            steps = listOf(
+                TutorialStep(
+                    title = "📅 Días de Atención",
+                    description = "Selecciona los días de la semana en los que estarás disponible. Puedes cargar tu jornada maestra de trabajo en un solo clic.",
+                    targetBounds = daysPickerBounds,
+                    targetCornerRadius = 20.dp,
+                    targetPadding = 4.dp
+                ),
+                TutorialStep(
+                    title = "⏱️ Rango Horario y Traslapes",
+                    description = "Define la hora de inicio y fin. El sistema validará automáticamente que no existan cruces de horario con tus otros servicios activos.",
+                    targetBounds = scheduleBounds,
+                    targetCornerRadius = 16.dp,
+                    targetPadding = 2.dp
+                )
+            )
+        )
+    }
 }

@@ -14,6 +14,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -158,6 +161,10 @@ fun ContratacionContent(
     onBack: () -> Unit,
     onContratar: () -> Unit
 ) {
+    var addressBounds by remember { mutableStateOf<Rect?>(null) }
+    var dateTimeBounds by remember { mutableStateOf<Rect?>(null) }
+    var negotiatorBounds by remember { mutableStateOf<Rect?>(null) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -215,10 +222,18 @@ fun ContratacionContent(
                                 label = "Dirección de atención",
                                 errorMessage = if (direccion.isNotEmpty() && !ValidationUtils.isValidAddress(direccion)) "Ingresa una dirección válida (mínimo 5 caracteres)" else null,
                                 leadingIcon = { Icon(Icons.Default.LocationOn, null, tint = MaterialTheme.colorScheme.primary) },
-                                enabled = !isLoading
+                                enabled = !isLoading,
+                                modifier = Modifier.onGloballyPositioned { coords ->
+                                    addressBounds = coords.boundsInWindow()
+                                }
                             )
                             
-                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                modifier = Modifier.onGloballyPositioned { coords ->
+                                    dateTimeBounds = coords.boundsInWindow()
+                                }
+                            ) {
                                 YayaSelectorButton(
                                     label = if (fecha.isEmpty()) "Fecha" else fecha,
                                     icon = Icons.Default.CalendarMonth,
@@ -239,7 +254,11 @@ fun ContratacionContent(
                 }
 
                 // Sección: Negociación (Molécula)
-                Column {
+                Column(
+                    modifier = Modifier.onGloballyPositioned { coords ->
+                        negotiatorBounds = coords.boundsInWindow()
+                    }
+                ) {
                     YayaSectionHeader("NEGOCIACIÓN DE PRECIO")
                     PriceNegotiator(
                         currentOffer = uiState.formattedOffer,
@@ -270,17 +289,30 @@ fun ContratacionContent(
         }
     }
 
-    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce)
+    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce + Spotlight Cutout)
     YayaTutorialOverlay(
         tutorialKey = TutorialManager.TUTORIAL_CONTRATACION_HANDSHAKE,
         steps = listOf(
             TutorialStep(
-                title = "Agendamiento y Oferta Económica",
-                description = "Selecciona la fecha y hora de tu cita. El sistema bloquea automáticamente horarios pasados o no disponibles."
+                title = "📍 Dirección de Atención",
+                description = "Ingresa la dirección exacta de residencia o lugar donde el prestador deberá acudir para realizar el trabajo.",
+                targetBounds = addressBounds,
+                targetCornerRadius = 16.dp,
+                targetPadding = 2.dp
             ),
             TutorialStep(
-                title = "Cierre de Trato 'Handshake'",
-                description = "Propón tu precio inicial y negocia de forma transparente con el prestador."
+                title = "📅 Agendamiento de Cita",
+                description = "Selecciona la fecha y la hora programada. El sistema bloquea automáticamente días no trabajados, fechas pasadas u horas transcurridas hoy.",
+                targetBounds = dateTimeBounds,
+                targetCornerRadius = 16.dp,
+                targetPadding = 4.dp
+            ),
+            TutorialStep(
+                title = "🤝 Cierre de Trato 'Handshake'",
+                description = "Propón tu oferta económica inicial usando los botones + y -. Al confirmar, se enviará la solicitud al prestador para su aceptación o contraoferta.",
+                targetBounds = negotiatorBounds,
+                targetCornerRadius = 20.dp,
+                targetPadding = 4.dp
             )
         )
     )

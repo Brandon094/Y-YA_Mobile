@@ -1,16 +1,17 @@
 package com.bhplusplus.yaya.ui.components.organisms
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.bhplusplus.yaya.ui.components.molecules.TimeSelectorPill
 import com.bhplusplus.yaya.ui.components.molecules.YayaTimePickerDialog
 import com.bhplusplus.yaya.ui.screens.profile.DayAvailabilityState
 import java.util.Locale
@@ -51,56 +52,83 @@ fun AvailabilityDayCard(
         )
     }
 
-    Card(
+    Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (state.isWorking) MaterialTheme.colorScheme.surface 
-                             else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = if (state.isWorking) 2.dp else 0.dp)
+        shape = RoundedCornerShape(12.dp),
+        color = if (state.isWorking) MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+        border = if (state.isWorking) BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)) else null
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // DÍA
+            Text(
+                text = dayNames[state.dayOfWeek],
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 14.sp,
+                color = if (state.isWorking) MaterialTheme.colorScheme.onSurface else Color.Gray,
+                modifier = Modifier.width(80.dp)
+            )
+
+            // RANGO DE HORAS O DESCANSO
+            if (state.isWorking) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Surface(
+                        onClick = { showStartPicker = true },
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.surface
+                    ) {
+                        Text(
+                            text = state.startTime.take(5),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+
+                    Text("➔", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+
+                    Surface(
+                        onClick = { showEndPicker = true },
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.surface
+                    ) {
+                        Text(
+                            text = state.endTime.take(5),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+            } else {
                 Text(
-                    text = dayNames[state.dayOfWeek],
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 18.sp,
-                    color = if (state.isWorking) MaterialTheme.colorScheme.onSurface else Color.Gray
-                )
-                Switch(
-                    checked = state.isWorking, 
-                    onCheckedChange = { onToggle() },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = MaterialTheme.colorScheme.primary
-                    )
+                    text = "Día de descanso",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Medium
                 )
             }
 
-            if (state.isWorking) {
-                Spacer(Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    TimeSelectorPill(
-                        label = "INICIA",
-                        time = state.startTime.take(5),
-                        modifier = Modifier.weight(1f),
-                        onClick = { showStartPicker = true }
-                    )
-                    TimeSelectorPill(
-                        label = "TERMINA",
-                        time = state.endTime.take(5),
-                        modifier = Modifier.weight(1f),
-                        onClick = { showEndPicker = true }
-                    )
-                }
-            }
+            // SWITCH
+            Switch(
+                checked = state.isWorking,
+                onCheckedChange = { onToggle() },
+                modifier = Modifier.scale(0.85f),
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.primary
+                )
+            )
         }
     }
 }

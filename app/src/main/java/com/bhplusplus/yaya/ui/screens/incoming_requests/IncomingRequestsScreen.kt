@@ -29,10 +29,16 @@ import coil3.compose.AsyncImage
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import com.bhplusplus.yaya.R
 import com.bhplusplus.yaya.ui.components.RequestItemShimmer
 import com.bhplusplus.yaya.ui.components.molecules.YayaNegotiationDialog
 import com.bhplusplus.yaya.ui.components.organisms.IncomingRequestCard
+import com.bhplusplus.yaya.ui.components.organisms.TutorialStep
+import com.bhplusplus.yaya.ui.components.organisms.YayaTutorialOverlay
+import com.bhplusplus.yaya.utils.TutorialManager
 import com.bhplusplus.yaya.ui.theme.YYATheme
 import androidx.compose.ui.tooling.preview.Preview
 import com.bhplusplus.yaya.data.models.ServiceRequest
@@ -49,6 +55,7 @@ fun IncomingRequestsScreen(
     viewModel: IncomingRequestsViewModel = viewModel()
 ) {
     var showNegotiationDialog by remember { mutableStateOf<IncomingRequestUiState?>(null) }
+    var requestsListBounds by remember { mutableStateOf<Rect?>(null) }
     val pullToRefreshState = rememberPullToRefreshState()
 
     if (showNegotiationDialog != null) {
@@ -105,7 +112,11 @@ fun IncomingRequestsScreen(
                     EmptyIncomingRequestsView()
                 } else {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .onGloballyPositioned { coords ->
+                                requestsListBounds = coords.boundsInWindow()
+                            },
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
@@ -132,6 +143,27 @@ fun IncomingRequestsScreen(
             }
         }
     }
+
+    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce + Spotlight Cutout)
+    YayaTutorialOverlay(
+        tutorialKey = TutorialManager.TUTORIAL_INCOMING_REQUESTS,
+        steps = listOf(
+            TutorialStep(
+                title = "📬 Solicitudes de Clientes",
+                description = "Revisa los detalles de cada oferta recibida: cliente, ubicación, fecha, hora programada y la propuesta económica ofrecida.",
+                targetBounds = requestsListBounds,
+                targetCornerRadius = 24.dp,
+                targetPadding = 4.dp
+            ),
+            TutorialStep(
+                title = "⚡ Aceptar, Negociar o Rechazar",
+                description = "Presiona 'Aceptar' para confirmar la cita, 'Negociar' para proponer un nuevo valor, 'Rechazar' si no puedes atenderla, o usa el icono de chat para hablar con el cliente.",
+                targetBounds = requestsListBounds,
+                targetCornerRadius = 24.dp,
+                targetPadding = 4.dp
+            )
+        )
+    )
 }
 
 @Composable

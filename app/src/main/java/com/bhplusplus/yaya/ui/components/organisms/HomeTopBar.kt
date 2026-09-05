@@ -11,8 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,10 @@ fun HomeTopBar(
     notificationCount: Int,
     selectedMunicipality: String? = "La Plata",
     onMunicipalityClick: (() -> Unit)? = null,
+    onMunicipalityPositioned: ((Rect) -> Unit)? = null,
+    onProfileIconPositioned: ((Rect) -> Unit)? = null,
+    onChatIconPositioned: ((Rect) -> Unit)? = null,
+    onNotificationsIconPositioned: ((Rect) -> Unit)? = null,
     onProfileClick: () -> Unit,
     onChatListClick: () -> Unit,
     onNotificationsClick: () -> Unit,
@@ -53,7 +60,12 @@ fun HomeTopBar(
                             onClick = onMunicipalityClick,
                             shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
                             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                            contentColor = MaterialTheme.colorScheme.primary
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            modifier = if (onMunicipalityPositioned != null) {
+                                Modifier.onGloballyPositioned { coords ->
+                                    onMunicipalityPositioned(coords.boundsInWindow())
+                                }
+                            } else Modifier
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -86,7 +98,14 @@ fun HomeTopBar(
             }
         },
         navigationIcon = {
-            IconButton(onClick = onProfileClick) {
+            IconButton(
+                onClick = onProfileClick,
+                modifier = if (onProfileIconPositioned != null) {
+                    Modifier.onGloballyPositioned { coords ->
+                        onProfileIconPositioned(coords.boundsInWindow())
+                    }
+                } else Modifier
+            ) {
                 YayaAvatar(
                     imageUrl = avatarUrl,
                     size = 32.dp
@@ -94,7 +113,14 @@ fun HomeTopBar(
             }
         },
         actions = {
-            IconButton(onClick = onChatListClick) {
+            IconButton(
+                onClick = onChatListClick,
+                modifier = if (onChatIconPositioned != null) {
+                    Modifier.onGloballyPositioned { coords ->
+                        onChatIconPositioned(coords.boundsInWindow())
+                    }
+                } else Modifier
+            ) {
                 BadgedBox(
                     badge = {
                         if (unreadMessagesCount > 0) {
@@ -115,7 +141,14 @@ fun HomeTopBar(
                 }
             }
 
-            IconButton(onClick = onNotificationsClick) {
+            IconButton(
+                onClick = onNotificationsClick,
+                modifier = if (onNotificationsIconPositioned != null) {
+                    Modifier.onGloballyPositioned { coords ->
+                        onNotificationsIconPositioned(coords.boundsInWindow())
+                    }
+                } else Modifier
+            ) {
                 BadgedBox(
                     badge = {
                         if (notificationCount > 0) {

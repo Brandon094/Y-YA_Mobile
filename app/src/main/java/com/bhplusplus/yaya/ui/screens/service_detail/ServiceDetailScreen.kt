@@ -17,6 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,7 +41,10 @@ import com.bhplusplus.yaya.ui.components.molecules.YayaRatingItem
 import com.bhplusplus.yaya.ui.components.molecules.YayaReportDialog
 import com.bhplusplus.yaya.ui.components.organisms.ProviderCard
 import com.bhplusplus.yaya.ui.components.organisms.ServiceDetailGallery
+import com.bhplusplus.yaya.ui.components.organisms.TutorialStep
+import com.bhplusplus.yaya.ui.components.organisms.YayaTutorialOverlay
 import com.bhplusplus.yaya.utils.FormatterUtils
+import com.bhplusplus.yaya.utils.TutorialManager
 
 /**
  * PANTALLA DE DETALLE DEL SERVICIO (Atomic Design Refactor)
@@ -56,6 +62,9 @@ fun ServiceDetailScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var showReportDialog by remember { mutableStateOf(false) }
+    var reportButtonBounds by remember { mutableStateOf<Rect?>(null) }
+    var providerCardBounds by remember { mutableStateOf<Rect?>(null) }
+    var orderButtonBounds by remember { mutableStateOf<Rect?>(null) }
 
     LaunchedEffect(serviceId) {
         viewModel.fetchServiceById(serviceId)
@@ -87,7 +96,12 @@ fun ServiceDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showReportDialog = true }) {
+                    IconButton(
+                        onClick = { showReportDialog = true },
+                        modifier = Modifier.onGloballyPositioned { coords ->
+                            reportButtonBounds = coords.boundsInWindow()
+                        }
+                    ) {
                         Icon(Icons.Default.OutlinedFlag, null, tint = Color.Red.copy(alpha = 0.7f))
                     }
                 },
@@ -104,7 +118,11 @@ fun ServiceDetailScreen(
                     YayaPrimaryButton(
                         text = "SOLICITAR ESTE SERVICIO",
                         onClick = onContratar,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .onGloballyPositioned { coords ->
+                                orderButtonBounds = coords.boundsInWindow()
+                            }
                     )
                 }
             }
@@ -162,6 +180,9 @@ fun ServiceDetailScreen(
                                 totalRatings = viewModel.ratings.size,
                                 onChatClick = {
                                     provider?.let { onChatClick(it.id, it.full_name) }
+                                },
+                                modifier = Modifier.onGloballyPositioned { coords ->
+                                    providerCardBounds = coords.boundsInWindow()
                                 }
                             )
 
@@ -204,6 +225,34 @@ fun ServiceDetailScreen(
             }
         }
     }
+
+    // ORGANISMO ATÓMICO: Tutorial In-App (ShowOnce + Spotlight Cutout)
+    YayaTutorialOverlay(
+        tutorialKey = TutorialManager.TUTORIAL_SERVICE_DETAIL,
+        steps = listOf(
+            TutorialStep(
+                title = "🚩 Reportar o Denunciar",
+                description = "Si detectas alguna anomalía, contenido falso o inapropiado, presiona este botón de bandera para enviar un reporte confidencial al equipo de moderación.",
+                targetBounds = reportButtonBounds,
+                targetCornerRadius = 24.dp,
+                targetPadding = 2.dp
+            ),
+            TutorialStep(
+                title = "⭐ Prestador del Talento, Reputación y Chat",
+                description = "Consulta el nombre del prestador, su promedio de estrellas y opiniones reales. Toca el botón de chat para hablar directamente con él en tiempo real.",
+                targetBounds = providerCardBounds,
+                targetCornerRadius = 20.dp,
+                targetPadding = 4.dp
+            ),
+            TutorialStep(
+                title = "🤝 Solicitar y Programar Cita",
+                description = "Presiona el botón iluminado abajo para abrir la pantalla de programación de dirección, fecha, hora y tu oferta económica de contratación.",
+                targetBounds = orderButtonBounds,
+                targetCornerRadius = 16.dp,
+                targetPadding = 2.dp
+            )
+        )
+    )
 }
 
 @Preview(showBackground = true)

@@ -9,7 +9,10 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -19,6 +22,7 @@ import com.bhplusplus.yaya.R
 fun SearchBarIntegrated(
     query: String,
     onQueryChange: (String) -> Unit,
+    onSearchFieldPositioned: ((Rect) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -31,7 +35,14 @@ fun SearchBarIntegrated(
             onValueChange = onQueryChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 24.dp, top = 8.dp),
+                .padding(start = 16.dp, end = 16.dp, bottom = 24.dp, top = 8.dp)
+                .then(
+                    if (onSearchFieldPositioned != null) {
+                        Modifier.onGloballyPositioned { coords ->
+                            onSearchFieldPositioned(coords.boundsInWindow())
+                        }
+                    } else Modifier
+                ),
             placeholder = { 
                 Text(
                     stringResource(R.string.home_search_placeholder),
