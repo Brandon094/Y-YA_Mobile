@@ -20,5 +20,6 @@ data class UserProfile(
     val address: String? = null,
     val municipality: String? = "La Plata",
     val avatar_url: String? = null,
-    val fcm_token: String? = null
+    val fcm_token: String? = null,
+    val is_suspended: Boolean = false
 )

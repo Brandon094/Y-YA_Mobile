@@ -19,6 +19,7 @@ import com.bhplusplus.yaya.ui.components.ReportItemShimmer
 import com.bhplusplus.yaya.ui.components.UserItemShimmer
 import com.bhplusplus.yaya.ui.components.molecules.EmptyStateView
 import com.bhplusplus.yaya.ui.components.molecules.UserListItem
+import com.bhplusplus.yaya.ui.components.molecules.YayaConfirmationDialog
 import com.bhplusplus.yaya.ui.components.organisms.AdminServiceCard
 import com.bhplusplus.yaya.ui.components.organisms.AdminTopBar
 import com.bhplusplus.yaya.ui.components.organisms.ReportSummaryCard
@@ -41,6 +42,7 @@ fun AdminDashboardScreen(
         onApproveService = { viewModel.approveService(it) },
         onRejectService = { viewModel.rejectService(it) },
         onSuspendUser = { viewModel.suspendUser(it) },
+        onReactivateUser = { viewModel.reactivateUser(it) },
         onDeleteUser = { viewModel.deleteUserAccount(it) },
         onWarnUser = { id, count -> viewModel.warnUser(id, count) },
         onBack = onBack,
@@ -58,6 +60,7 @@ fun AdminDashboardContent(
     onApproveService: (String) -> Unit,
     onRejectService: (String) -> Unit,
     onSuspendUser: (String) -> Unit,
+    onReactivateUser: (String) -> Unit,
     onDeleteUser: (String) -> Unit,
     onWarnUser: (String, Int) -> Unit,
     onBack: () -> Unit,
@@ -108,7 +111,12 @@ fun AdminDashboardContent(
                         onApprove = onApproveService,
                         onReject = onRejectService
                     )
-                    1 -> UsersList(profiles = allProfiles)
+                    1 -> UsersList(
+                        profiles = allProfiles,
+                        onSuspend = onSuspendUser,
+                        onReactivate = onReactivateUser,
+                        onDelete = onDeleteUser
+                    )
                     2 -> ReportsList(
                         summaries = reportsSummary,
                         onSuspend = onSuspendUser,
@@ -143,12 +151,44 @@ fun PendingServicesList(
 }
 
 @Composable
-fun UsersList(profiles: List<UserProfile>) {
-    LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(profiles) { profile ->
-            // Molécula: Item de lista de usuario
-            UserListItem(profile = profile)
-            HorizontalDivider(thickness = 0.5.dp, color = Color.Gray.copy(alpha = 0.2f))
+fun UsersList(
+    profiles: List<UserProfile>,
+    onSuspend: (String) -> Unit,
+    onReactivate: (String) -> Unit,
+    onDelete: (String) -> Unit
+) {
+    var userToDelete by remember { mutableStateOf<UserProfile?>(null) }
+
+    if (userToDelete != null) {
+        val target = userToDelete!!
+        YayaConfirmationDialog(
+            title = "¿Eliminar cuenta de usuario?",
+            message = "¿Estás seguro de que deseas eliminar permanentemente a '${target.full_name}'? Esta acción borrará su perfil de la base de datos.",
+            confirmButtonText = "Eliminar cuenta",
+            onConfirm = {
+                onDelete(target.id)
+                userToDelete = null
+            },
+            onDismiss = { userToDelete = null }
+        )
+    }
+
+    if (profiles.isEmpty()) {
+        EmptyStateView(
+            title = "Sin usuarios registrados",
+            description = "No hay perfiles registrados en la plataforma por ahora."
+        )
+    } else {
+        LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            items(profiles) { profile ->
+                // Molécula: Item de lista de usuario con acciones de moderación
+                UserListItem(
+                    profile = profile,
+                    onSuspend = onSuspend,
+                    onReactivate = onReactivate,
+                    onDelete = { userToDelete = profile }
+                )
+            }
         }
     }
 }
@@ -194,6 +234,7 @@ fun AdminDashboardPreview() {
             onApproveService = {},
             onRejectService = {},
             onSuspendUser = {},
+            onReactivateUser = {},
             onDeleteUser = {},
             onWarnUser = { _, _ -> },
             onBack = {},

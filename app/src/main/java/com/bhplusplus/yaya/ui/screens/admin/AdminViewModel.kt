@@ -15,6 +15,8 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 /**
  * Modelo para resumir reportes por usuario denunciado.
@@ -42,6 +44,9 @@ class AdminViewModel : ViewModel() {
     
     // Lista agrupada para detectar infractores
     var reportedUsersSummaries by mutableStateOf<List<ReportedUserSummary>>(emptyList())
+        private set
+
+    var suspendedUserIds by mutableStateOf<Set<String>>(emptySet())
         private set
 
     var isLoading by mutableStateOf(false)
@@ -75,6 +80,22 @@ class AdminViewModel : ViewModel() {
                 allProfiles = SupabaseManager.client.postgrest["profiles"]
                     .select()
                     .decodeList<UserProfile>()
+
+                // Cargar servicios para detectar usuarios suspendidos
+                try {
+                    val allServices = SupabaseManager.client.postgrest["services"]
+                        .select()
+                        .decodeList<Service>()
+
+                    val servicesByProvider = allServices.groupBy { it.provider_id }
+                    val detectedSuspended = servicesByProvider.filter { (_, services) ->
+                        services.isNotEmpty() && services.all { it.status == "inactive" }
+                    }.keys.filterNotNull().toSet()
+
+                    suspendedUserIds = suspendedUserIds + detectedSuspended
+                } catch (e: Exception) {
+                    Log.w("AdminVM", "Info al detectar suspendidos: ${e.message}")
+                }
 
                 // 3. Cargar reportes con Joins para ver quién denuncia a quién
                 val reportsResult = SupabaseManager.client.postgrest["reports"]
@@ -140,21 +161,64 @@ class AdminViewModel : ViewModel() {
     }
 
     /**
-     * Acciones de sanción para infractores.
+     * Acciones de sanción y rehabilitación para usuarios.
      */
     fun suspendUser(userId: String) {
+        // 1. Actualización optimista en memoria para CERO recarga/parpadeo de la lista
+        allProfiles = allProfiles.map { profile ->
+            if (profile.id == userId) profile.copy(is_suspended = true) else profile
+        }
+
         viewModelScope.launch {
             try {
-                // Desactivar sus servicios como medida de suspensión inmediata
+                // 2. Persistir suspensión en public.profiles
+                SupabaseManager.client.postgrest["profiles"].update({
+                    set("is_suspended", true)
+                }) {
+                    filter { eq("id", userId) }
+                }
+
+                // 3. Desactivar sus servicios
                 SupabaseManager.client.postgrest["services"].update({
                     set("status", "inactive")
                 }) {
                     filter { eq("provider_id", userId) }
                 }
-                Log.i("AdminVM", "Usuario $userId suspendido: Servicios desactivados.")
-                loadAdminData()
+
+                suspendedUserIds = suspendedUserIds + userId
+                Log.i("AdminVM", "Usuario $userId suspendido en BD exitosamente.")
             } catch (e: Exception) {
-                Log.e("AdminVM", "Error al suspender: ${e.message}")
+                Log.e("AdminVM", "Error al suspender en BD: ${e.message}")
+            }
+        }
+    }
+
+    fun reactivateUser(userId: String) {
+        // 1. Actualización optimista en memoria para CERO recarga/parpadeo de la lista
+        allProfiles = allProfiles.map { profile ->
+            if (profile.id == userId) profile.copy(is_suspended = false) else profile
+        }
+
+        viewModelScope.launch {
+            try {
+                // 2. Persistir reactivación en public.profiles
+                SupabaseManager.client.postgrest["profiles"].update({
+                    set("is_suspended", false)
+                }) {
+                    filter { eq("id", userId) }
+                }
+
+                // 3. Reactivar sus servicios
+                SupabaseManager.client.postgrest["services"].update({
+                    set("status", "active")
+                }) {
+                    filter { eq("provider_id", userId) }
+                }
+
+                suspendedUserIds = suspendedUserIds - userId
+                Log.i("AdminVM", "Usuario $userId reactivado en BD exitosamente.")
+            } catch (e: Exception) {
+                Log.e("AdminVM", "Error al reactivar en BD: ${e.message}")
             }
         }
     }
@@ -162,13 +226,83 @@ class AdminViewModel : ViewModel() {
     fun deleteUserAccount(userId: String) {
         viewModelScope.launch {
             try {
-                SupabaseManager.client.postgrest["profiles"].delete {
-                    filter { eq("id", userId) }
-                }
+                // INTENTO 1: Invocación a función RPC atómica almacenada en Postgres (SECURITY DEFINER)
+                SupabaseManager.client.postgrest.rpc(
+                    function = "admin_delete_user_account",
+                    parameters = buildJsonObject {
+                        put("target_user_id", userId)
+                    }
+                )
+                Log.i("AdminVM", "Usuario $userId eliminado exitosamente vía RPC en Postgres.")
                 loadAdminData()
-            } catch (e: Exception) {
-                Log.e("AdminVM", "Error al eliminar cuenta: ${e.message}")
+            } catch (rpcError: Exception) {
+                Log.w("AdminVM", "RPC no disponible, ejecutando borrado secuencial: ${rpcError.message}")
+                deleteUserAccountSequential(userId)
             }
+        }
+    }
+
+    private suspend fun deleteUserAccountSequential(userId: String) {
+        try {
+            // 1. Ratings
+            try {
+                SupabaseManager.client.postgrest["ratings"].delete { filter { eq("client_id", userId) } }
+                SupabaseManager.client.postgrest["ratings"].delete { filter { eq("provider_id", userId) } }
+            } catch (e: Exception) { Log.w("AdminVM", "Ratings: ${e.message}") }
+
+            // 2. Requests
+            try {
+                val userServices = SupabaseManager.client.postgrest["services"]
+                    .select { filter { eq("provider_id", userId) } }
+                    .decodeList<Service>()
+
+                userServices.forEach { s ->
+                    s.id?.let { sId ->
+                        SupabaseManager.client.postgrest["requests"].delete { filter { eq("service_id", sId) } }
+                    }
+                }
+                SupabaseManager.client.postgrest["requests"].delete { filter { eq("client_id", userId) } }
+            } catch (e: Exception) { Log.w("AdminVM", "Requests: ${e.message}") }
+
+            // 3. Messages
+            try {
+                SupabaseManager.client.postgrest["messages"].delete { filter { eq("sender_id", userId) } }
+                SupabaseManager.client.postgrest["messages"].delete { filter { eq("receiver_id", userId) } }
+            } catch (e: Exception) { Log.w("AdminVM", "Messages: ${e.message}") }
+
+            // 4. Reports
+            try {
+                SupabaseManager.client.postgrest["reports"].delete { filter { eq("reporter_id", userId) } }
+                SupabaseManager.client.postgrest["reports"].delete { filter { eq("reported_user_id", userId) } }
+            } catch (e: Exception) { Log.w("AdminVM", "Reports: ${e.message}") }
+
+            // 5. Services & Images
+            try {
+                val userServices = SupabaseManager.client.postgrest["services"]
+                    .select { filter { eq("provider_id", userId) } }
+                    .decodeList<Service>()
+
+                userServices.forEach { s ->
+                    s.id?.let { sId ->
+                        SupabaseManager.client.postgrest["service_images"].delete { filter { eq("service_id", sId) } }
+                    }
+                }
+                SupabaseManager.client.postgrest["services"].delete { filter { eq("provider_id", userId) } }
+            } catch (e: Exception) { Log.w("AdminVM", "Services: ${e.message}") }
+
+            // 6. Availability
+            try {
+                SupabaseManager.client.postgrest["availability"].delete { filter { eq("provider_id", userId) } }
+            } catch (e: Exception) { Log.w("AdminVM", "Availability: ${e.message}") }
+
+            // 7. Profile
+            SupabaseManager.client.postgrest["profiles"].delete { filter { eq("id", userId) } }
+
+            Log.i("AdminVM", "Usuario $userId y registros asociados eliminados secuencialmente.")
+            loadAdminData()
+        } catch (e: Exception) {
+            Log.e("AdminVM", "Error fatal al eliminar cuenta: ${e.message}", e)
+            errorMessage = "No se pudo eliminar el usuario: ${e.localizedMessage}"
         }
     }
 
