@@ -308,7 +308,7 @@ fun ProfileScreen(
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = if (viewModel.totalRatings > 0) String.format(java.util.Locale.US, "⭐ %.1f (%d)", viewModel.averageRating, viewModel.totalRatings) else "Sin reseñas",
+                                        text = if (viewModel.totalRatings > 0) String.format(java.util.Locale.US, "%.1f (%d)", viewModel.averageRating, viewModel.totalRatings) else "Sin reseñas",
                                         style = MaterialTheme.typography.bodySmall,
                                         fontSize = 11.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -333,12 +333,12 @@ fun ProfileScreen(
                         Tab(
                             selected = selectedTab == 0,
                             onClick = { selectedTab = 0 },
-                            text = { Text("💼 Mi Operación", fontWeight = FontWeight.Bold, fontSize = 14.sp) }
+                            text = { Text("Mi Operación", fontWeight = FontWeight.Bold, fontSize = 14.sp) }
                         )
                         Tab(
                             selected = selectedTab == 1,
                             onClick = { selectedTab = 1 },
-                            text = { Text("⚙️ Ajustes y Ayuda", fontWeight = FontWeight.Bold, fontSize = 14.sp) }
+                            text = { Text("Ajustes y Ayuda", fontWeight = FontWeight.Bold, fontSize = 14.sp) }
                         )
                     }
 
@@ -382,7 +382,7 @@ fun ProfileScreen(
                                     title = "Mi Reputación y Reseñas",
                                     icon = Icons.Default.Star,
                                     onClick = { showRatingsSheet = true },
-                                    badgeText = if (viewModel.totalRatings > 0) String.format(java.util.Locale.US, "⭐ %.1f (%d)", viewModel.averageRating, viewModel.totalRatings) else "Sin opiniones"
+                                    badgeText = if (viewModel.totalRatings > 0) String.format(java.util.Locale.US, "%.1f (%d)", viewModel.averageRating, viewModel.totalRatings) else "Sin opiniones"
                                 )
                             }
                         }
@@ -478,21 +478,21 @@ fun ProfileScreen(
         tutorialKey = TutorialManager.TUTORIAL_PROFILE_REPUTATION,
         steps = listOf(
             TutorialStep(
-                title = "💼 Navegación por Pestañas",
+                title = "Navegación por Pestañas",
                 description = "Alterna fácilmente entre 'Mi Operación' (tu actividad diaria) y 'Ajustes y Ayuda' (seguridad, manuales y configuraciones).",
                 targetBounds = tabRowBounds,
                 targetCornerRadius = 16.dp,
                 targetPadding = 2.dp
             ),
             TutorialStep(
-                title = "⚡ Accesos Rápidos",
+                title = "Accesos Rápidos",
                 description = "Accede directamente a la gestión de tus servicios publicados, solicitudes pendientes con contador de notificaciones y a tu reputación comercial.",
                 targetBounds = quickActionCardsBounds,
                 targetCornerRadius = 20.dp,
                 targetPadding = 4.dp
             ),
             TutorialStep(
-                title = "⭐ Tu Reputación y Ajustes",
+                title = "Tu Reputación y Ajustes",
                 description = "Edita tu foto y datos desde el icono de lápiz y consulta tu promedio de estrellas y reseñas acumuladas recibidas de tus clientes.",
                 targetBounds = headerBounds,
                 targetCornerRadius = 24.dp,

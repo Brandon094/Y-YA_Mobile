@@ -294,21 +294,21 @@ fun ContratacionContent(
         tutorialKey = TutorialManager.TUTORIAL_CONTRATACION_HANDSHAKE,
         steps = listOf(
             TutorialStep(
-                title = "📍 Dirección de Atención",
+                title = "Dirección de Atención",
                 description = "Ingresa la dirección exacta de residencia o lugar donde el prestador deberá acudir para realizar el trabajo.",
                 targetBounds = addressBounds,
                 targetCornerRadius = 16.dp,
                 targetPadding = 2.dp
             ),
             TutorialStep(
-                title = "📅 Agendamiento de Cita",
+                title = "Agendamiento de Cita",
                 description = "Selecciona la fecha y la hora programada. El sistema bloquea automáticamente días no trabajados, fechas pasadas u horas transcurridas hoy.",
                 targetBounds = dateTimeBounds,
                 targetCornerRadius = 16.dp,
                 targetPadding = 4.dp
             ),
             TutorialStep(
-                title = "🤝 Cierre de Trato 'Handshake'",
+                title = "Cierre de Trato Handshake",
                 description = "Propón tu oferta económica inicial usando los botones + y -. Al confirmar, se enviará la solicitud al prestador para su aceptación o contraoferta.",
                 targetBounds = negotiatorBounds,
                 targetCornerRadius = 20.dp,

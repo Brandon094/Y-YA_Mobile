@@ -246,7 +246,7 @@ class MyOrdersViewModel : ViewModel() {
                 }
 
                 val formattedPrice = "$${priceVal.toInt()}"
-                val updatedDescription = "${request.request_description}\n🔹 Nueva oferta Cliente: $formattedPrice"
+                val updatedDescription = "${request.request_description}\nNueva oferta Cliente: $formattedPrice"
                 
                 SupabaseManager.client.postgrest["requests"].update({
                     set("request_description", updatedDescription)

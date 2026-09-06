@@ -871,7 +871,7 @@ fun CreateServiceScreen(
             tutorialKey = TutorialManager.TUTORIAL_CREATE_SERVICE_STEP1,
             steps = listOf(
                 TutorialStep(
-                    title = "📍 Municipio de Cobertura",
+                    title = "Municipio de Cobertura",
                     description = "Selecciona el municipio donde prestarás este servicio para que los clientes de esa zona lo encuentren en su catálogo.",
                     targetBounds = municipalityBounds,
                     targetCornerRadius = 16.dp,
@@ -884,14 +884,14 @@ fun CreateServiceScreen(
             tutorialKey = TutorialManager.TUTORIAL_CREATE_SERVICE_STEP2,
             steps = listOf(
                 TutorialStep(
-                    title = "📅 Días de Atención",
+                    title = "Días de Atención",
                     description = "Selecciona los días de la semana en los que estarás disponible. Puedes cargar tu jornada maestra de trabajo en un solo clic.",
                     targetBounds = daysPickerBounds,
                     targetCornerRadius = 20.dp,
                     targetPadding = 4.dp
                 ),
                 TutorialStep(
-                    title = "⏱️ Rango Horario y Traslapes",
+                    title = "Rango Horario y Traslapes",
                     description = "Define la hora de inicio y fin. El sistema validará automáticamente que no existan cruces de horario con tus otros servicios activos.",
                     targetBounds = scheduleBounds,
                     targetCornerRadius = 16.dp,

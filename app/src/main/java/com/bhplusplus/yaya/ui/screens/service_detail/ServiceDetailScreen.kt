@@ -231,21 +231,21 @@ fun ServiceDetailScreen(
         tutorialKey = TutorialManager.TUTORIAL_SERVICE_DETAIL,
         steps = listOf(
             TutorialStep(
-                title = "🚩 Reportar o Denunciar",
+                title = "Reportar o Denunciar",
                 description = "Si detectas alguna anomalía, contenido falso o inapropiado, presiona este botón de bandera para enviar un reporte confidencial al equipo de moderación.",
                 targetBounds = reportButtonBounds,
                 targetCornerRadius = 24.dp,
                 targetPadding = 2.dp
             ),
             TutorialStep(
-                title = "⭐ Prestador del Talento, Reputación y Chat",
+                title = "Prestador del Talento, Reputación y Chat",
                 description = "Consulta el nombre del prestador, su promedio de estrellas y opiniones reales. Toca el botón de chat para hablar directamente con él en tiempo real.",
                 targetBounds = providerCardBounds,
                 targetCornerRadius = 20.dp,
                 targetPadding = 4.dp
             ),
             TutorialStep(
-                title = "🤝 Solicitar y Programar Cita",
+                title = "Solicitar y Programar Cita",
                 description = "Presiona el botón iluminado abajo para abrir la pantalla de programación de dirección, fecha, hora y tu oferta económica de contratación.",
                 targetBounds = orderButtonBounds,
                 targetCornerRadius = 16.dp,

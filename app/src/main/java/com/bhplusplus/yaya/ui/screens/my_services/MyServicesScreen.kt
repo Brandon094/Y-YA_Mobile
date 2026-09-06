@@ -116,14 +116,14 @@ fun MyServicesScreen(
         tutorialKey = TutorialManager.TUTORIAL_MY_SERVICES,
         steps = listOf(
             TutorialStep(
-                title = "💼 Mis Servicios Publicados",
+                title = "Mis Servicios Publicados",
                 description = "Gestiona tu portafolio de talentos. Toca 'Editar' para cambiar precios o horarios, o utiliza el interruptor para activar o pausar la visibilidad de tu servicio.",
                 targetBounds = myServicesListBounds,
                 targetCornerRadius = 24.dp,
                 targetPadding = 4.dp
             ),
             TutorialStep(
-                title = "🟢 Estado y Moderación",
+                title = "Estado y Moderación",
                 description = "Las publicaciones nuevas o editadas entran en revisión breve por el equipo administrativo para garantizar la calidad y seguridad de la comunidad.",
                 targetBounds = myServicesListBounds,
                 targetCornerRadius = 24.dp,

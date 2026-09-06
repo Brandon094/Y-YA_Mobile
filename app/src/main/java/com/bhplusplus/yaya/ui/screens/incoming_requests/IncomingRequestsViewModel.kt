@@ -196,7 +196,7 @@ class IncomingRequestsViewModel : ViewModel() {
             try {
                 val priceVal = newPrice.toDoubleOrNull() ?: 0.0
                 val formattedPrice = "$${priceVal.toInt()}"
-                val updatedDescription = "${request.request_description}\n🚩 Contraoferta Prestador: $formattedPrice"
+                val updatedDescription = "${request.request_description}\nContraoferta Prestador: $formattedPrice"
                 
                 SupabaseManager.client.postgrest["requests"].update({
                     set("request_description", updatedDescription)

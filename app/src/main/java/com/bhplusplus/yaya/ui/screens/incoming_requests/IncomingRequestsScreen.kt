@@ -149,14 +149,14 @@ fun IncomingRequestsScreen(
         tutorialKey = TutorialManager.TUTORIAL_INCOMING_REQUESTS,
         steps = listOf(
             TutorialStep(
-                title = "📬 Solicitudes de Clientes",
+                title = "Solicitudes de Clientes",
                 description = "Revisa los detalles de cada oferta recibida: cliente, ubicación, fecha, hora programada y la propuesta económica ofrecida.",
                 targetBounds = requestsListBounds,
                 targetCornerRadius = 24.dp,
                 targetPadding = 4.dp
             ),
             TutorialStep(
-                title = "⚡ Aceptar, Negociar o Rechazar",
+                title = "Aceptar, Negociar o Rechazar",
                 description = "Presiona 'Aceptar' para confirmar la cita, 'Negociar' para proponer un nuevo valor, 'Rechazar' si no puedes atenderla, o usa el icono de chat para hablar con el cliente.",
                 targetBounds = requestsListBounds,
                 targetCornerRadius = 24.dp,

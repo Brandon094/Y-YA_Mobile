@@ -317,13 +317,13 @@ class AdminViewModel : ViewModel() {
                     sender_id = adminId,
                     receiver_id = userId,
                     content = """
-                        🚩 NOTIFICACIÓN OFICIAL DE MODERACIÓN
+                        NOTIFICACIÓN OFICIAL DE MODERACIÓN
                         
                         Hola. Hemos detectado que tu perfil ha acumulado $reportsCount reportes por parte de la comunidad. 
                         
                         Este es un llamado de atención preventivo. Te invitamos a revisar nuestras normas de convivencia y asegurar que tus servicios cumplan con la calidad y respeto que YÁYA exige.
                         
-                        ⚠️ IMPORTANTE: La reincidencia en comportamientos reportables resultará en la SUSPENSIÓN de tus servicios o la ELIMINACIÓN PERMANENTE de tu cuenta.
+                        IMPORTANTE: La reincidencia en comportamientos reportables resultará en la SUSPENSIÓN de tus servicios o la ELIMINACIÓN PERMANENTE de tu cuenta.
                         
                         Atentamente,
                         Equipo de Moderación YÁYA.

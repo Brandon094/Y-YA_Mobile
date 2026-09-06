@@ -299,7 +299,7 @@ fun HomeScreen(
         steps = buildList {
             add(
                 TutorialStep(
-                    title = "📍 Filtro por Municipio",
+                    title = "Filtro por Municipio",
                     description = "Explora servicios y talentos disponibles en tu localidad. Puedes cambiar entre La Plata, Nátaga, Paicol, Neiva y otros municipios del Huila para actualizar el catálogo al instante.",
                     targetBounds = municipalityBounds,
                     targetCornerRadius = 12.dp,
@@ -308,8 +308,8 @@ fun HomeScreen(
             )
             add(
                 TutorialStep(
-                    title = "👤 Mi Perfil y Negocio",
-                    description = "Accede a tus datos personales, historial de pedidos, mensajes, reputación por estrellas ⭐, configuraciones y al manual de uso de la App.",
+                    title = "Mi Perfil y Negocio",
+                    description = "Accede a tus datos personales, historial de pedidos, mensajes, reputación por estrellas, configuraciones y al manual de uso de la App.",
                     targetBounds = profileIconBounds,
                     targetCornerRadius = 24.dp,
                     targetPadding = 2.dp
@@ -317,7 +317,7 @@ fun HomeScreen(
             )
             add(
                 TutorialStep(
-                    title = "💬 Mensajería Directa",
+                    title = "Mensajería Directa",
                     description = "Abre tus conversaciones en tiempo real para coordinar detalles, ubicar direcciones y resolver dudas con clientes o prestadores.",
                     targetBounds = chatIconBounds,
                     targetCornerRadius = 24.dp,
@@ -326,7 +326,7 @@ fun HomeScreen(
             )
             add(
                 TutorialStep(
-                    title = "🔔 Solicitudes y Alertas",
+                    title = "Notificaciones y Alertas",
                     description = "Consulta las alertas de solicitudes recibidas, contrataciones enviadas y actualizaciones en el estado de tus servicios.",
                     targetBounds = notificationsIconBounds,
                     targetCornerRadius = 24.dp,
@@ -335,7 +335,7 @@ fun HomeScreen(
             )
             add(
                 TutorialStep(
-                    title = "🔍 Búsqueda de Servicios",
+                    title = "Búsqueda de Servicios",
                     description = "Busca por nombre o palabra clave (ej. 'Plomería', 'Mascotas', 'Tecnología'). El catálogo filtrará los resultados en tiempo real.",
                     targetBounds = searchBarBounds,
                     targetCornerRadius = 16.dp,
@@ -344,7 +344,7 @@ fun HomeScreen(
             )
             add(
                 TutorialStep(
-                    title = "🏷️ Exploración por Categorías",
+                    title = "Exploración por Categorías",
                     description = "Filtra las ofertas según el rubro de tu interés (Hogar, Tecnología, Mascotas, Salud y Bienestar) para descubrir opciones organizadas.",
                     targetBounds = categorySelectorBounds,
                     targetCornerRadius = 20.dp,
@@ -354,8 +354,8 @@ fun HomeScreen(
             if (firstServiceCardBounds != null) {
                 add(
                     TutorialStep(
-                        title = "📋 Tarjetas de Servicio",
-                        description = "Muestra el título del talento, precio base, la reputación ⭐ del prestador y sus días de atención. Toca la tarjeta para ver los detalles completos o solicitar una cita.",
+                        title = "Tarjetas de Servicio",
+                        description = "Muestra el título del talento, precio base, la reputación del prestador y sus días de atención. Toca la tarjeta para ver los detalles completos o solicitar una cita.",
                         targetBounds = firstServiceCardBounds,
                         targetCornerRadius = 24.dp,
                         targetPadding = 4.dp
@@ -365,7 +365,7 @@ fun HomeScreen(
             if (viewModel.userRole == "provider" || viewModel.userRole == "admin") {
                 add(
                     TutorialStep(
-                        title = "💼 Publicar un Nuevo Talento",
+                        title = "Publicar un Nuevo Talento",
                         description = "Presiona el botón + para ofrecer un nuevo servicio en YÁYA especificando tu precio, municipio de cobertura y horario de atención.",
                         targetBounds = fabBounds,
                         targetCornerRadius = 28.dp,
