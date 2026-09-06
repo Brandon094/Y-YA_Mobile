@@ -131,7 +131,7 @@ fun AvailabilityScreen(
                                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = "📊 MI JORNADA MAESTRA",
+                                            text = "MI JORNADA MAESTRA",
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = FontWeight.ExtraBold,
                                             color = MaterialTheme.colorScheme.primary,
@@ -173,19 +173,19 @@ fun AvailabilityScreen(
                                         FilterChip(
                                             selected = viewModel.activeDaysCount == 5 && viewModel.daysState.take(5).all { it.isWorking },
                                             onClick = { viewModel.applyPresetMonToFri() },
-                                            label = { Text("💼 L a V", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                                            label = { Text("Lunes a Viernes", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                                             shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp)
                                         )
                                         FilterChip(
                                             selected = viewModel.activeDaysCount == 7,
                                             onClick = { viewModel.applyPresetAllDays() },
-                                            label = { Text("📅 Todos", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                                            label = { Text("Todos los Días", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                                             shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp)
                                         )
                                         FilterChip(
                                             selected = false,
                                             onClick = { viewModel.clearAllDays() },
-                                            label = { Text("🧹 Limpiar", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                                            label = { Text("Limpiar", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                                             shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp)
                                         )
                                     }
@@ -250,28 +250,28 @@ fun AvailabilityScreen(
         tutorialKey = TutorialManager.TUTORIAL_AVAILABILITY_MASTER,
         steps = listOf(
             TutorialStep(
-                title = "📊 Resumen de Jornada Maestra",
+                title = "Resumen de Jornada Maestra",
                 description = "Muestra cuántos días activos tienes configurados y la carga horaria semanal. Te brinda una visión ejecutiva inmediata de tu agenda laboral.",
                 targetBounds = summaryBannerBounds,
                 targetCornerRadius = 20.dp,
                 targetPadding = 2.dp
             ),
             TutorialStep(
-                title = "⚡ Atajos de Configuración en 1 Clic",
+                title = "Atajos de Configuración en 1 Clic",
                 description = "Usa los atajos rápidos para activar de Lunes a Viernes, Lunes a Domingo o Limpiar tu agenda en un solo toque, sin tener que encender cada día manualmente.",
                 targetBounds = presetsBarBounds,
                 targetCornerRadius = 16.dp,
                 targetPadding = 4.dp
             ),
             TutorialStep(
-                title = "🗓️ Tabla Compacta de Días Hábiles",
+                title = "Tabla Compacta de Días Hábiles",
                 description = "Usa los interruptores para activar los días que trabajas y toca las píldoras de hora para cambiar tu horario de inicio y fin de forma personalizada.",
                 targetBounds = daysListBounds,
                 targetCornerRadius = 20.dp,
                 targetPadding = 4.dp
             ),
             TutorialStep(
-                title = "💾 Guardar y Sincronizar Agenda",
+                title = "Guardar y Sincronizar Agenda",
                 description = "Guarda tus cambios para sincronizar tu disponibilidad general. YÁYA usará estos horarios para validar que tus servicios específicos no se traslapen.",
                 targetBounds = saveButtonBounds,
                 targetCornerRadius = 16.dp,

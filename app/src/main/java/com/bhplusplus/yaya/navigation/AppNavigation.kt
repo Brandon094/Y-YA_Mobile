@@ -271,10 +271,16 @@ fun AppNavigation(startRoute: Any) {
             )
         }
 
-        // Disponibilidad
+        // Disponibilidad (Con navegación inteligente en la pila de retroceso)
         composable<AvailabilityRoute> {
             AvailabilityScreen(
-                onBack = { navController.popBackStack() }
+                onBack = {
+                    if (!navController.popBackStack()) {
+                        navController.navigate(HomeRoute) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                }
             )
         }
 
