@@ -1,6 +1,6 @@
 # Términos y Condiciones de Uso - YÁYA
 
-**Última actualización:** Agosto 2026
+**Última actualización:** Septiembre 2026
 
 Bienvenido a **YÁYA**, una plataforma operada por **BH++ Team**. Al utilizar nuestra aplicación móvil, usted acepta cumplir con los siguientes términos y condiciones. Por favor, léalos atentamente.
 
@@ -8,7 +8,7 @@ Bienvenido a **YÁYA**, una plataforma operada por **BH++ Team**. Al utilizar nu
 YÁYA es un ecosistema digital que actúa exclusivamente como intermediario para conectar a prestadores de servicios independientes ("Prestadores") con usuarios que buscan contratar dichos servicios ("Clientes"). YÁYA no presta los servicios listados ni es empleador de los Prestadores.
 
 ## 2. Registro y Cuenta Universal
-*   **Elegibilidad:** Debe tener al menos 18 años para registrarse.
+*   **Elegibilidad:** Debe tener al menos 15 años para registrarse. En caso de ser menor de edad, el uso de la plataforma debe estar supervisado por sus padres o tutores legales.
 *   **Cuenta Única:** YÁYA utiliza un modelo de "Cuenta Universal" donde un mismo usuario puede actuar como Cliente o Prestador.
 *   **Veracidad:** Usted se compromete a proporcionar información real, incluyendo su documento de identidad y datos de contacto.
 *   **Seguridad:** Usted es responsable de mantener la confidencialidad de su contraseña y de todas las actividades realizadas en su cuenta.

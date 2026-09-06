@@ -40,6 +40,18 @@
 - **Respuesta:** "Para implementar el **Flujo de Datos Unidireccional (UDF)**."
 - **Argumento Senior:** "El ViewModel centraliza la lógica de negocio y expone el estado de forma reactiva a la UI. Esto asegura que la interfaz de usuario sea una representación fiel del estado de los datos en Supabase, facilitando el mantenimiento y permitiendo que varios desarrolladores trabajen en módulos diferentes sin interferencias."
 
+## 7. Seguridad Pre-flight
+**Pregunta probable:** *¿Por qué validan duplicados antes de llamar a Auth?*
+
+- **Respuesta:** "Para evitar la creación de **usuarios huérfanos** y mejorar la experiencia de usuario (UX)."
+- **Argumento Senior:** "Si enviamos el registro directamente a Supabase Auth y luego falla la inserción en la tabla de perfiles (por cédula duplicada), el usuario queda creado en Auth pero sin perfil. Al validar 'Pre-flight', garantizamos que el registro sea exitoso en ambas capas o no se realice en absoluto."
+
+## 8. Onboarding Inteligente (Spotlight)
+**Pregunta probable:** *¿Cómo reducen la curva de aprendizaje del usuario?*
+
+- **Respuesta:** "Mediante un **Motor de Tutoriales Nativo (Spotlight)**."
+- **Argumento Senior:** "Implementamos una capa de asistencia visual en Compose que ilumina los componentes clave de la interfaz. Esto guía al usuario paso a paso en sus primeras interacciones, reduciendo el abandono de la app y eliminando la necesidad de leer manuales externos."
+
 ---
 
 ### 💡 Tips de Oro para la Sustentación:

@@ -5,7 +5,7 @@ paginate: true
 backgroundColor: #ffffff
 color: #2d3436
 header: '![w:32 h:32](./ic_logo.png) **Calidad de Software | BH++ Team**'
-footer: 'Brandon Daza | ADSO 2026 | ISO 25010 • 12207 • 27001'
+footer: 'Brandon Daza | ADSO Septiembre 2026 | ISO 25010 • 12207 • 27001 (v1.2.0)'
 style: |
   section {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -90,7 +90,7 @@ Reduce el retrabajo, mejora la satisfacción del usuario y garantiza la robustez
 
 <br>
 
-> **Caso Práctico:** Una App de servicios que no colapsa en horas pico (**Fiabilidad**) y es fácil de navegar (**Usabilidad**).
+> **Caso Práctico:** La validación **Pre-flight de cédula** y la restricción de **15 años** como ejemplos críticos de Adecuación Funcional y Seguridad.
 
 ---
 

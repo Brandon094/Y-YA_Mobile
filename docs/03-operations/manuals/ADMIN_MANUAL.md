@@ -1,4 +1,4 @@
-# Manual Maestro de Administración - YÁYA (v1.1.0)
+# Manual Maestro de Administración - YÁYA (v1.2.0)
 
 Este documento constituye la guía de referencia técnica y operativa para los usuarios con rol de Administrador (Equipo de Moderación BH++). Estipula los procedimientos, herramientas y límites para la supervisión de contenidos, moderación disciplinaria y control de calidad del ecosistema YÁYA.
 
@@ -39,10 +39,21 @@ El módulo de atención a denuncias agrupa automáticamente las quejas emitidas 
 * **Nivel Naranja (3-4 Reportes - Riesgo Medio):** Se recomienda la Suspensión Temporal de los servicios del prestador (`status = 'paused'`).
 * **Nivel Rojo (5 o más Reportes - Riesgo Alto):** Se recomienda la Eliminación Definitiva de la Cuenta.
 
-### Acciones Directas de Moderación
+### Acciones Directas de Moderación (Módulo 1: Gestión de Usuarios)
+Desde la pestaña "Usuarios" del Panel Administrativo, el equipo de moderación puede ejercer control directo sobre las cuentas:
+* **Suspender/Reactivar Usuario:** Permite inhabilitar temporalmente a un usuario, ocultando todos sus servicios y bloqueando su acceso, con la posibilidad de revertir la acción en un clic. El estado se sincroniza en tiempo real en toda la plataforma.
+* **Eliminar Cuenta (Borrado Atómico en Cascada):** Acción irreversible que elimina la cuenta del usuario y ejecuta una purga profunda vía RPC (Remote Procedure Call) en el servidor.
+    * **Fases del Borrado Técnico (8 Fases):** 
+        1. Eliminación de Mensajes de Chat.
+        2. Limpieza de Notificaciones.
+        3. Borrado de Solicitudes y Ofertas (Handshakes).
+        4. Purga de Imágenes de Portafolio en Storage.
+        5. Eliminación de Servicios y Categorías Vinculadas.
+        6. Borrado de Registros de Disponibilidad.
+        7. Eliminación del Perfil Público.
+        8. Borrado de la Identidad en Auth (Supabase).
+    * **Garantía:** Este proceso garantiza que no existan datos huérfanos ni violaciones de integridad referencial.
 * **Llamado de Atención Automático:** Envía un mensaje disciplinario estandarizado vía chat directo al usuario reportado desde el panel de administración, informando la falta cometida sin revelar la identidad del moderador.
-* **Suspender Prestador:** Desactiva de forma inmediata la totalidad de los servicios asociados a la cuenta del infractor (`status = 'paused'`).
-* **Eliminar Cuenta:** Cancela la cuenta de usuario de manera definitiva y remueve sus datos de la plataforma en caso de reincidencia o infracción grave.
 
 ---
 

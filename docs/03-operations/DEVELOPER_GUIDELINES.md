@@ -1,4 +1,4 @@
-# 🤖 Agente de Desarrollo YÁYA - Manual de Instrucciones Senior
+# 🤖 Agente de Desarrollo YÁYA - Manual de Instrucciones Senior (v1.2.0)
 
 Este documento define las leyes inmutables del código para el ecosistema **YÁYA**. Cualquier agente de IA o desarrollador debe adherirse a estos estándares para mantener la integridad Premium del software.
 
@@ -8,6 +8,7 @@ Toda la interfaz de usuario debe construirse siguiendo la jerarquía atómica en
 - **Molecules (`molecules/`):** Unidades funcionales simples (`RatingIndicator`, `YayaNegotiationDialog`).
 - **Organisms (`organisms/`):** Secciones de pantalla orquestadas (`ServiceCard`, `HomeTopBar`).
 - **Páginas (`screens/`):** Orquestadores finales que inyectan el ViewModel.
+- **Tutoriales:** El motor nativo `YayaTutorialOverlay` es el estándar obligatorio para todas las guías in-app. No usar diálogos personalizados para onboarding.
 
 ## 2. Filosofía DRY & Formatter Engine
 **Prohibido duplicar lógica de formateo.**
@@ -30,14 +31,17 @@ Toda la interfaz de usuario debe construirse siguiendo la jerarquía atómica en
 ## 5. Protocolo de Red & Observabilidad
 - **Skeleton Ready:** Todas las pantallas de carga deben implementar un `ShimmerEffect` (Skeletons) que imite la estructura final.
 - **Handshake Flow:** El flujo de servicios debe respetar estrictamente los estados: `pending` -> `accepted` -> `in_progress` -> `completed`.
+- **Integridad de Datos:** El flujo de **Purga Atómica** vía RPC (`admin_delete_user_account`) es el estándar para borrados administrativos, asegurando la eliminación en cascada en Auth y DB.
 - **Manejo de Errores Senior:** Prohibido dejar bloques `catch` vacíos. Es obligatorio usar `CrashReporter.logException(e)` para notificar errores no fatales a la consola de Firebase.
 
-## 6. Gobernanza Git & Commits
+## 6. Gobernanza Git & Iconografía
 Usar **Conventional Commits** estrictos:
 - `feat:` Funcionalidades que añaden valor al usuario.
 - `refactor:` Mejoras de estructura (Ej. migración a Atomic Design).
 - `design:` Ajustes puramente visuales o de UX.
 - `fix:`, `docs:`, `chore:`.
+
+**Regla de Oro Visual:** Cero emojis en la UI en favor de componentes vectoriales nativos de Material Design 3 (`Icons.Rounded.*`) para mantener la estética Premium.
 
 ---
 *Propiedad Intelectual de **BH++** - 2026*

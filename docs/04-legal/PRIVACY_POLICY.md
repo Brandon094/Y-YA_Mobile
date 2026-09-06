@@ -1,6 +1,6 @@
 # Política de Privacidad - YÁYA
 
-**Última actualización:** Agosto 2026
+**Última actualización:** Septiembre 2026
 
 En **YÁYA**, operada por **BH++ Team**, nos tomamos muy en serio la seguridad de sus datos personales. Esta política detalla qué información recopilamos y cómo la protegemos.
 

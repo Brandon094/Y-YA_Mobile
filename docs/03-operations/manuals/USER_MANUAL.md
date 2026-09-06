@@ -1,4 +1,4 @@
-# Manual del Usuario Final - YÁYA (v1.1.0)
+# Manual del Usuario Final - YÁYA (v1.2.0)
 
 Bienvenido a YÁYA. La plataforma de intermediación donde el talento local se conecta con soluciones rápidas, transparentes y seguras. Este manual oficial orienta detalladamente el funcionamiento del sistema para cada rol de usuario.
 
@@ -27,21 +27,17 @@ YÁYA es un ecosistema móvil diseñado para conectar a trabajadores independien
 
 ## 2. Registro e Inicio de Sesión
 
-### 2.1. Registro de Cuenta Nueva
+### 2.1. Registro de Cuenta Nueva (Wizard de 3 Pasos)
 1. Abra la aplicación y presione el botón "Regístrate".
-2. Complete el formulario con validación en tiempo real (`ValidationUtils`):
-   * **Nombre Completo:** Caracteres alfabéticos latinos y espacios (sin números).
-   * **Documento de Identidad (DNI / CC):** Cadena numérica de 6 a 12 dígitos.
-   * **Fecha de Nacimiento:** Selección mediante calendario interactivo con restricción de fechas futuras. Requiere ser mayor de 18 años.
-   * **Teléfono Móvil:** Cadena de exactamente 10 dígitos numéricos.
-   * **Municipio:** Selección mediante lista desplegable inmutable (`ExposedDropdownMenuBox`) entre los municipios autorizados del Huila (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante).
-   * **Correo Electrónico:** Formato estándar RFC/Patterns.
-   * **Contraseña Segura:** Mínimo 8 caracteres combinando mayúscula, minúscula y número o símbolo.
+2. Complete el flujo de registro guiado:
+   * **Paso 1: Datos Personales:** Nombre Completo (letras y espacios), Documento de Identidad (6-12 dígitos) y Fecha de Nacimiento (Selección mediante calendario con **inhabilitación automática de fechas** para garantizar el cumplimiento de la edad mínima legal de **15 años**).
+   * **Paso 2: Ubicación y Contacto:** Teléfono Móvil (10 dígitos) y Municipio del Huila.
+   * **Paso 3: Credenciales:** Correo Electrónico y Contraseña Segura (mínimo 8 caracteres, mayúscula, minúscula y número).
 3. **Selección de Rol Inicial:**
    * "Quiero servicios" (Cliente / Solicitante).
-   * "Ofrecer talentos" (Prestador / Proveedor). Nota: Los prestadores son redirigidos automáticamente al onboarding de configuración de jornada maestra tras completar el registro.
+   * "Ofrecer talentos" (Prestador / Proveedor).
 4. Acepte los Términos y Condiciones y la Política de Privacidad.
-5. Presione "Registrarme".
+5. Presione "Registrarme". El sistema realizará una **Doble Verificación Previa** para asegurar que el documento y el correo no existan previamente.
 
 ### 2.2. Autenticación y Recuperación de Credenciales
 1. Ingrese su correo electrónico y contraseña en la pantalla de acceso.
@@ -80,8 +76,11 @@ El usuario Cliente accede a YÁYA para buscar, negociar y contratar talentos loc
 El usuario Prestador publica sus habilidades, administra su jornada laboral y gestiona las solicitudes recibidas. Cuenta con acceso universal, pudiendo actuar también como cliente contratante.
 
 #### LO QUE PUEDE HACER EL PRESTADOR (FACULTADES)
-* **Publicación y Edición de Servicios:** Registrar talentos indicando título, descripción, precio de referencia, categoría, municipio de cobertura y fotografías del trabajo.
-* **Configuración de Jornada Maestra ("Mi Horario"):** Estipular su horario laboral general y días activos en la sección "Mi Perfil > Mi Horario de Trabajo" (`AvailabilityScreen`).
+* **Publicación y Edición de Servicios (Wizard de 2 Pasos):** Registrar talentos mediante un proceso simplificado:
+    * **Paso 1: Información General:** Título, descripción, precio y categoría.
+    * **Paso 2: Multimedia y Ubicación:** Galería de fotos y municipio de cobertura.
+    * **Selector de Duración Compuesta:** Define el tiempo estimado del servicio combinando Valor Numérico + Unidad (Minutos, Horas, Días).
+* **Configuración de Jornada Maestra ("Mi Horario"):** Estipular su horario laboral general y días activos en la sección "Mi Perfil > Mi Horario de Trabajo". La vista es compacta (sin scroll) e incluye **Presets de configuración rápida** (atajos de 1 clic) para activar jornadas completas o turnos estándar instantáneamente.
 * **Asignación Horaria por Servicio:** Asignar días y rangos de atención específicos para cada servicio ofertado mediante la función "Cargar mi jornada maestra".
 * **Detección e Indicación de Traslapes:** Recibir alertas contextuales en pantalla si se intenta asignar a un servicio un horario que colisiona con otro servicio activo previamente registrado.
 * **Gestión de Solicitudes:** Aceptar, rechazar o enviar contraofertas a las propuestas económicas de los clientes.
@@ -132,4 +131,4 @@ El Administrador supervisa la plataforma, audita la calidad de los contenidos y 
 Para soporte directo o consultas institucionales, contacte a BH++ Team mediante los canales oficiales o el portal web del proyecto.
 
 ---
-*YÁYA - Desarrollado por BH++ Team. Documento Oficial v1.1.0 (2026).*
+*YÁYA - Desarrollado por BH++ Team. Documento Oficial v1.2.0 (2026).*

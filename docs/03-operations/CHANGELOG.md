@@ -31,6 +31,12 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Política RLS UPDATE para Administradores sobre Perfiles (`SUPABASE_RLS_POLICIES.md`):**
     - Habilitación y confirmación de la política RLS `Admins pueden actualizar perfiles` (`FOR UPDATE TO authenticated USING (role = 'admin') WITH CHECK (role = 'admin')`) en `public.profiles`.
     - Garantiza la autorización formal en la base de datos Supabase PostgreSQL para la modificación de la columna `is_suspended` desde el Panel Administrativo.
+- **Auditoría y Sincronización de los 9 Modelos de Datos Serializables (`com.bhplusplus.yaya.data.models` & @docs):**
+    - Verificación y sincronización 100% de las 9 data classes con Kotlinx Serialization: `UserProfile.kt` (`id`, `full_name`, `role`, `phone`, `document_id`, `birth_date`, `address`, `municipality`, `avatar_url`, `fcm_token`, `is_suspended`), `Category.kt`, `Service.kt` (con `@SerialName("provider_profile")`), `ServiceImage.kt`, `Availability.kt`, `ServiceRequest.kt` (`Request.kt` con `@SerialName("profiles")`), `Rating.kt`, `Message.kt` y `Report.kt` (con `@SerialName("reporter_profile")` y `@SerialName("reported_profile")`).
+    - Confirmación y documentación completa en el Diccionario de Datos (`DATA_DICTIONARY.md`), Manual Técnico (`TECHNICAL_MANUAL.md`), Orquestador (`MASTER_ORCHESTRATOR.md`) y Changelog.
+- **Documentación del Esquema Maestro DDL SQL de Base de Datos (`DATABASE_SCHEMA.md`):**
+    - Creación e integración del documento maestro `docs/02-architecture/DATABASE_SCHEMA.md` con la definición DDL técnica completa de creación de tablas en PostgreSQL Supabase v1.2.0 para las 9 tablas del sistema (`profiles`, `categories`, `services`, `availability`, `requests`, `ratings`, `messages`, `reports`, `service_images`).
+    - Inclusión del resumen de relaciones de clave foránea (`FOREIGN KEYs`), restricciones de verificación e integridad (`CHECK constraints`), claves primarias y valores por defecto (`DEFAULT`).
 
 ### Cambiado
 - **Actualización Optimista e Inmediata en Memoria para Suspensión/Reactivación (`AdminViewModel.kt`):**

@@ -145,10 +145,15 @@ USING (bucket_id IN ('avatars', 'portfolios'));
 
 ---
 
-## 5. Políticas RLS para Disponibilidad (Availability) 📅
-Asegura que los prestadores solo puedan gestionar su propio horario:
+## 5. Políticas RLS de Seguridad e Integridad 🛡️
+Asegura que el sistema cumpla con las políticas para las 9 tablas (`profiles`, `services`, `requests`, `messages`, `availability`, `portfolios`, `reviews`, `notifications`, `admin_logs`):
 
 ```sql
+-- Ejemplo: Solo el dueño o un ADMIN pueden gestionar perfiles
+CREATE POLICY "Gestión de perfiles" ON public.profiles
+FOR ALL TO authenticated
+USING (auth.uid() = id OR (SELECT role FROM profiles WHERE id = auth.uid()) = 'admin');
+
 -- Solo el dueño puede insertar/editar su disponibilidad
 CREATE POLICY "Dueños manejan su disponibilidad" ON public.availability
 FOR ALL TO authenticated
@@ -161,4 +166,32 @@ FOR SELECT TO authenticated
 USING (true);
 ```
 
-*Nota: La App asume que los archivos en 'avatars' siguen el patrón 'id_avatar.jpg'.*
+### Solución a Fallos de Moderación
+Si los administradores no pueden borrar o editar contenido ajeno, asegúrate de que las políticas `DELETE` y `UPDATE` incluyan el check de rol:
+`OR (SELECT role FROM profiles WHERE id = auth.uid()) = 'admin'`
+
+---
+
+## 6. Funciones RPC y Purga Atómica ☢️
+Para la operatividad del Panel Admin, es vital contar con la función de borrado total (Auth + DB) que sortee las restricciones de cliente.
+
+### Función `admin_delete_user_account`
+Ejecuta esto como `SUPERUSER` o vía SQL Editor:
+```sql
+CREATE OR REPLACE FUNCTION admin_delete_user_account(target_user_id UUID)
+RETURNS VOID AS $$
+BEGIN
+    -- 1. La eliminación en 'public.profiles' dispara el borrado en cascada
+    -- en el resto de tablas públicas debido a las FK con ON DELETE CASCADE.
+    DELETE FROM public.profiles WHERE id = target_user_id;
+    
+    -- 2. Eliminar del esquema de autenticación (Requiere permisos de servicio)
+    DELETE FROM auth.users WHERE id = target_user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+```
+*Nota: Esta función debe ser llamada desde el Panel Admin usando el cliente de Supabase con `rpc('admin_delete_user_account', ...)`. *
+
+---
+*Mantenimiento: Equipo BH++*
+

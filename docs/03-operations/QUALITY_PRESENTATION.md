@@ -8,11 +8,11 @@ header: 'BH++ Team | Ecosistema YÁYA'
 footer: 'ISO/IEC 25010 | 12207 | 27001'
 ---
 
-# 🚀 Calidad de Software: El ADN de YÁYA
+# 🚀 Calidad de Software: El ADN de YÁYA (v1.2.0)
 ## Implementación Integral de Estándares ISO/IEC
 
 **Brandon Daza**
-*Senior Software Engineer - BH++ Team*
+*Senior Software Engineer - BH++ Team - Septiembre 2026*
 
 ---
 
@@ -36,7 +36,7 @@ footer: 'ISO/IEC 25010 | 12207 | 27001'
 - **Mantenibilidad:** Arquitectura MVVM con alta cohesión y bajo acoplamiento.
 
 **🛠️ Caso de Éxito YÁYA:**
-El componente **Day Picker** dinámico: funcional, usable y eficiente.
+La validación **Pre-flight de cédula** y la restricción de **15 años** como ejemplos críticos de Adecuación Funcional y Seguridad.
 
 ---
 
@@ -77,4 +77,4 @@ En **YÁYA**, la aplicación de estas 3 normas nos permite transitar de un "proy
 **¡Gracias por su atención!**
 
 *BH++ Team - Ingeniería con Propósito*
-*Brandon Daza | 2026*
+*Brandon Daza | Septiembre 2026*

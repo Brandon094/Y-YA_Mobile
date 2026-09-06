@@ -22,11 +22,11 @@ graph TD
 *   **Data Layer:** Integración directa con Supabase mediante el cliente global, gestionando Auth, Postgrest y Realtime.
 
 ### 1.2. Estructura de Módulos y Paquetes Principales
-*   `com.yaya.app.data.models`: Data classes de dominio serializables (`UserProfile`, `Service`, `ServiceRequest`, `Availability`, `Rating`, `Report`, etc.).
-*   `com.yaya.app.data.utils`: Utilidades centralizadas DRY (`ValidationUtils`, `FormatterUtils`, `ImageUtils`).
-*   `com.yaya.app.ui.components`: Componentes reutilizables bajo Atomic Design (`atoms`, `molecules`, `organisms`).
-*   `com.yaya.app.ui.screens`: Pantallas composables pasivas divididas por flujo funcional.
-*   `com.yaya.app.ui.viewmodels`: Controladores de estado con arquitectura Jetpack ViewModel y Kotlin Flows.
+*   `com.bhplusplus.yaya.data.models`: Data classes de dominio serializables (`UserProfile`, `Category`, `Service`, `ServiceImage`, `Availability`, `ServiceRequest`, `Rating`, `Message`, `Report`).
+*   `com.bhplusplus.yaya.utils`: Utilidades centralizadas DRY (`ValidationUtils`, `FormatterUtils`, `ImageUtils`, `TutorialManager`).
+*   `com.bhplusplus.yaya.ui.components`: Componentes reutilizables bajo Atomic Design (`atoms`, `molecules`, `organisms`).
+*   `com.bhplusplus.yaya.ui.screens`: Pantallas composables pasivas divididas por flujo funcional.
+*   `com.bhplusplus.yaya.ui.viewmodels`: Controladores de estado con arquitectura Jetpack ViewModel y Kotlin Flows.
 
 ### 1.3. Arquitectura de Clases (MVVM Pattern)
 Para cada pantalla, se implementa el siguiente flujo de componentes:
@@ -274,7 +274,101 @@ erDiagram
       | `23502` | Violación de restricción NOT NULL en campos obligatorios de Postgrest | *"Faltan datos obligatorios para completar tu perfil."* |
       | `23503` / `requests_client_id_fkey` | Clave foránea inexistente o violación relacional al eliminar perfiles con solicitudes asociadas | Resuelto preventivamente mediante `ensureProfileExists(user)` y la limpieza atómica en cascada de 8 fases en `AdminViewModel.deleteUserAccount` |
     - *Erradicación de Trazas Técnicas:* Todas las excepciones capturadas desde Supabase Postgrest o Auth son interceptadas y transformadas mediante bloques `when`, garantizando que la UI renderice exclusivamente mensajes amigables en español de alto nivel, erradicando cadenas técnicas crudas, códigos SQL o trazas de base de datos.
+*   **Esquema DDL de Base de Datos (`DATABASE_SCHEMA.md`):** La definición DDL SQL técnica completa de creación de tablas para PostgreSQL Supabase v1.2.0, incluyendo restricciones de clave primaria (`PRIMARY KEY`), clave foránea (`FOREIGN KEY`), restricciones de integridad (`CHECK`) y valores por defecto (`DEFAULT`) para las 9 tablas del sistema (`profiles`, `categories`, `services`, `availability`, `requests`, `ratings`, `messages`, `reports`, `service_images`) se encuentra documentada en el archivo maestro [`docs/02-architecture/DATABASE_SCHEMA.md`](../../02-architecture/DATABASE_SCHEMA.md).
 *   **Matriz de Políticas de Seguridad Row Level Security (RLS):** La especificación detallada de permisos, matriz de acceso y políticas de seguridad PostgreSQL para las 9 tablas del sistema se define en el documento maestro [`docs/02-architecture/SUPABASE_RLS_POLICIES.md`](../../02-architecture/SUPABASE_RLS_POLICIES.md).
+
+### 2.1.1. Desglose Exhaustivo de los 9 Modelos de Datos en Kotlin (`com.bhplusplus.yaya.data.models`)
+
+Sincronización auditada al 100% entre las tablas relacionales de Supabase PostgreSQL y las 9 data classes serializables con `kotlinx.serialization`:
+
+1. **`UserProfile.kt` (`UserProfile`)** - Mapeo con `public.profiles`:
+   - `id: String`: Identificador único del usuario (PK, FK `auth.users`).
+   - `full_name: String`: Nombre completo del usuario.
+   - `role: String`: Rol en la plataforma (`client`, `provider`, `admin`).
+   - `phone: String? = null`: Número de contacto telefónico.
+   - `document_id: String? = null`: Documento de identidad / Cédula.
+   - `birth_date: String? = null`: Fecha de nacimiento.
+   - `address: String? = null`: Dirección de residencia.
+   - `municipality: String? = "La Plata"`: Municipio del Huila (`ValidationUtils.HUILA_MUNICIPALITIES`).
+   - `avatar_url: String? = null`: URL pública de la foto de perfil en Storage.
+   - `fcm_token: String? = null`: Token de notificaciones push de Firebase.
+   - `is_suspended: Boolean = false`: Estado de suspensión de cuenta administrado desde el Panel Admin.
+
+2. **`Category.kt` (`Category`)** - Mapeo con `public.categories`:
+   - `id: String = ""`: UUID de la categoría.
+   - `name: String = ""`: Nombre de la categoría.
+   - `description: String? = null`: Descripción extendida.
+   - `icon_name: String? = null`: Identificador del icono para la UI.
+
+3. **`Service.kt` (`Service`)** - Mapeo con `public.services`:
+   - `id: String? = null`: UUID del servicio.
+   - `provider_id: String? = null`: Referencia FK al prestador (`profiles.id`).
+   - `category_id: String? = null`: Referencia FK a la categoría (`categories.id`).
+   - `title: String = ""`: Título del servicio publicado.
+   - `description: String = ""`: Descripción detallada.
+   - `price: Double = 0.0`: Precio base en COP.
+   - `estimated_time: String? = null`: Tiempo estimado estructurado (ej. `"2 Horas"`).
+   - `working_days: List<Int> = emptyList()`: Días de atención (`[1..7]`).
+   - `start_time: String = "08:00:00"`: Hora de inicio de atención.
+   - `end_time: String = "18:00:00"`: Hora de fin de atención.
+   - `materials_included: Boolean = false`: Indicador de inclusión de materiales.
+   - `extra_cost: Double = 0.0`: Costo adicional de materiales.
+   - `municipality: String? = "La Plata"`: Municipio de cobertura.
+   - `status: String = "pending_approval"`: Estado (`active`, `inactive`, `pending_approval`).
+   - `created_at: String? = null`: Marca temporal de creación.
+   - `@SerialName("provider_profile") val provider: UserProfile? = null`: Objeto Join con el perfil del prestador.
+
+4. **`ServiceImage.kt` (`ServiceImage`)** - Mapeo con `public.service_images`:
+   - `id: String? = null`: UUID de la imagen.
+   - `service_id: String = ""`: Referencia FK al servicio (`services.id`).
+   - `image_url: String = ""`: URL pública en Supabase Storage.
+   - `created_at: String? = null`: Marca temporal de carga.
+
+5. **`Availability.kt` (`Availability`)** - Mapeo con `public.availability`:
+   - `id: String? = null`: UUID del registro de disponibilidad.
+   - `provider_id: String`: Referencia FK al prestador (`profiles.id`).
+   - `day_of_week: Int`: Día laborable (`1`=Lunes a `7`=Domingo).
+   - `start_time: String`: Hora de inicio de la Jornada Maestra (`"HH:mm:ss"`).
+   - `end_time: String`: Hora de fin de la Jornada Maestra (`"HH:mm:ss"`).
+
+6. **`Request.kt` (`ServiceRequest`)** - Mapeo con `public.requests`:
+   - `id: String? = null`: UUID de la solicitud.
+   - `client_id: String = ""`: Referencia FK al cliente (`profiles.id`).
+   - `service_id: String = ""`: Referencia FK al servicio (`services.id`).
+   - `final_price: Double = 0.0`: Precio final acordado en la negociación Handshake.
+   - `request_description: String? = null`: Notas adicionales del cliente.
+   - `service_address: String = ""`: Dirección física de atención.
+   - `scheduled_date: String? = null`: Fecha y hora agendada (ISO 8601).
+   - `status: String = "pending"`: Estado (`pending`, `accepted`, `in_progress`, `completed`, `cancelled`).
+   - `created_at: String? = null`: Marca temporal de creación.
+   - `services: Service? = null`: Objeto Join con la información del servicio.
+   - `@SerialName("profiles") val client: UserProfile? = null`: Objeto Join con el perfil del cliente.
+
+7. **`Rating.kt` (`Rating`)** - Mapeo con `public.ratings`:
+   - `id: String? = null`: UUID de la calificación.
+   - `request_id: String = ""`: Referencia FK a la solicitud (`requests.id`).
+   - `client_id: String = ""`: Referencia FK al cliente calificador (`profiles.id`).
+   - `provider_id: String = ""`: Referencia FK al prestador calificado (`profiles.id`).
+   - `score: Int = 0`: Puntuación en estrellas (1 a 5).
+   - `comment: String? = null`: Comentario o reseña de la experiencia.
+   - `created_at: String? = null`: Marca temporal de creación.
+
+8. **`Message.kt` (`Message`)** - Mapeo con `public.messages`:
+   - `id: String? = null`: UUID del mensaje.
+   - `sender_id: String = ""`: Referencia FK al remitente (`profiles.id`).
+   - `receiver_id: String = ""`: Referencia FK al destinatario (`profiles.id`).
+   - `content: String = ""`: Contenido textual del mensaje.
+   - `is_read: Boolean = false`: Estado de lectura (Visto).
+   - `sent_at: String? = null`: Marca temporal de envío.
+
+9. **`Report.kt` (`Report`)** - Mapeo con `public.reports`:
+   - `id: String? = null`: UUID de la denuncia.
+   - `reporter_id: String = ""`: Referencia FK al denunciante (`profiles.id`).
+   - `reported_user_id: String = ""`: Referencia FK al usuario reportado (`profiles.id`).
+   - `reason: String = ""`: Motivo de la denuncia.
+   - `created_at: String? = null`: Marca temporal de creación.
+   - `@SerialName("reporter_profile") val reporter: UserProfile? = null`: Objeto Join con el perfil del denunciante.
+   - `@SerialName("reported_profile") val reported: UserProfile? = null`: Objeto Join con el perfil del reportado.
 
 ### 2.2. Seguridad a Nivel de Fila (RLS)
 Todas las 9 tablas en Supabase PostgreSQL (`profiles`, `services`, `availability`, `messages`, `requests`, `reports`, `ratings`, `categories`, `service_images`) tienen políticas **RLS** (Row Level Security) activas para garantizar la privacidad e integridad de la información a nivel de base de datos:

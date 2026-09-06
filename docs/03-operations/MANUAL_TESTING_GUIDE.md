@@ -74,4 +74,26 @@ Este documento detalla los pasos exactos para validar que todas las funcionalida
 | 3 | Enviar Reseña. | Se guardan las estrellas y el comentario en la tabla `ratings`. | [ ] |
 
 ---
+
+## 💡 FLUJO 6: Asistencia y Onboarding (Spotlight)
+**Objetivo:** Validar la guía visual para nuevos usuarios.
+
+| Paso | Acción | Resultado Esperado | Estado |
+| :--- | :--- | :--- | :--- |
+| 1 | Iniciar App por primera vez. | Se activa el tutorial Spotlight iluminando componentes clave. | [ ] |
+| 2 | Navegar entre pasos. | La iluminación (overlay) se desplaza con precisión al siguiente elemento. | [ ] |
+| 3 | Finalizar tutorial. | La pantalla recupera su brillo normal y no vuelve a aparecer tras reinicio. | [ ] |
+
+---
+
+## 🔒 FLUJO 7: Reglas de Negocio y Seguridad Pre-flight
+**Objetivo:** Validar restricciones críticas de datos.
+
+| Paso | Acción | Resultado Esperado | Estado |
+| :--- | :--- | :--- | :--- |
+| 1 | Registro con Cédula duplicada. | Bloqueo inmediato con mensaje: "El documento ya está registrado". | [ ] |
+| 2 | Registro con Correo existente. | Bloqueo inmediato con mensaje: "El correo ya está en uso". | [ ] |
+| 3 | Selección de Edad (Calendario). | Las fechas que harían al usuario menor de 15 años están deshabilitadas. | [ ] |
+
+---
 **Generado por el Orquestador Maestro de BH++**

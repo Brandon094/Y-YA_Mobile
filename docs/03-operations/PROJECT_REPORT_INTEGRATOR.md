@@ -1,8 +1,8 @@
 # Informe Técnico: Taller Integrador de Codificación
-**Proyecto:** YÁYA (v1.1.0 - versionCode 5)  
+**Proyecto:** YÁYA (v1.2.0 - versionCode 7)  
 **Desarrollador:** Brandon Daza  
 **Organización:** BH++ Team  
-**Fecha:** 27 de Agosto de 2026
+**Fecha:** 6 de Septiembre de 2026
 
 ---
 
@@ -93,6 +93,9 @@ Este módulo implementa el ciclo de vida completo de los datos (Create, Read, Up
 | 13 | Redundancia UI/UX | Refactorización masiva bajo **Atomic Design** (Atoms, Molecules, Organisms) para garantizar consistencia DRY absoluta. |
 | 14 | Desorden en Formateo | Implementación de `FormatterUtils.kt` como motor único de verdad para moneda compacta y fechas. |
 | 15 | Inseguridad en Trato | Protocolo de **Handshake Digital** (`in_progress`) para blindar el precio acordado antes de finalizar servicios. |
+| 16 | Mismatch visual de tutoriales | Recalibración de coordenadas en `SpotlightEngine` para asegurar que el foco coincida con el componente UI en diferentes densidades de pantalla. |
+| 17 | Violación de clave foránea 23503 | Implementación de `AtomicDeleteRPC` para manejar la purga en cascada de registros dependientes en el orden correcto. |
+| 18 | Errores de permisos RLS 42501 | Refactorización de políticas de seguridad en Supabase para permitir lecturas en tablas de unión sin comprometer la privacidad. |
 
 **Evidencia de Corrección (Persistencia de Sesión):**
 ![Persistencia Supabase](../assets/SupaBase.png)
