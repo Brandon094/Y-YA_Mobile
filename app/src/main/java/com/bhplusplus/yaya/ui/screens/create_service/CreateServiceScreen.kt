@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,11 +40,14 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import com.bhplusplus.yaya.R
+import com.bhplusplus.yaya.ui.components.molecules.TimeSelectorPill
+import com.bhplusplus.yaya.ui.components.molecules.YayaTimePickerDialog
 import com.bhplusplus.yaya.ui.components.organisms.TutorialStep
 import com.bhplusplus.yaya.ui.components.organisms.YayaTutorialOverlay
 import com.bhplusplus.yaya.utils.ImageUtils
 import com.bhplusplus.yaya.utils.TutorialManager
 import com.bhplusplus.yaya.utils.ValidationUtils
+import java.util.Locale
 
 /**
  * PANTALLA DE CREACIÓN Y EDICIÓN DE SERVICIO
@@ -77,6 +81,8 @@ fun CreateServiceScreen(
     var selectedDays by remember { mutableStateOf<Set<Int>>(emptySet()) }
     var startTime by remember { mutableStateOf("08:00") }
     var endTime by remember { mutableStateOf("18:00") }
+    var showStartPicker by remember { mutableStateOf(false) }
+    var showEndPicker by remember { mutableStateOf(false) }
     var materialsIncluded by remember { mutableStateOf(false) }
     var extraCost by remember { mutableStateOf("0") }
     var municipality by remember { mutableStateOf("La Plata") }
@@ -139,6 +145,31 @@ fun CreateServiceScreen(
                     Text("Entendido")
                 }
             }
+        )
+    }
+
+    // DIÁLOGOS DE SELECCIÓN DE HORA (TIMEPICKER UX ESTANDARIZADO)
+    if (showStartPicker) {
+        YayaTimePickerDialog(
+            onDismiss = { showStartPicker = false },
+            onConfirm = { h, m ->
+                val time = String.format(Locale.getDefault(), "%02d:%02d:00", h, m)
+                startTime = time.take(5)
+                showStartPicker = false
+            },
+            initialHour = startTime.substringBefore(":").toIntOrNull() ?: 8
+        )
+    }
+
+    if (showEndPicker) {
+        YayaTimePickerDialog(
+            onDismiss = { showEndPicker = false },
+            onConfirm = { h, m ->
+                val time = String.format(Locale.getDefault(), "%02d:%02d:00", h, m)
+                endTime = time.take(5)
+                showEndPicker = false
+            },
+            initialHour = endTime.substringBefore(":").toIntOrNull() ?: 18
         )
     }
 
@@ -440,77 +471,90 @@ fun CreateServiceScreen(
                     shape = RoundedCornerShape(16.dp),
                     enabled = isStep1Valid && !isLoading
                 ) {
-                    Text("Siguiente: Precio y Horarios ➔", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text("Siguiente: Precio y Horarios", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Spacer(Modifier.width(8.dp))
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
                 }
 
             } else {
                 // ==================== PASO 2: PRECIO, DURACIÓN Y DISPONIBILIDAD ====================
-                // PRECIO Y DURACIÓN (Estructurada Compuesta: Número + Unidad)
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "PRECIO BASE",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(Modifier.height(8.dp))
+                // PRECIO BASE
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "PRECIO BASE",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = price,
+                        onValueChange = { price = it },
+                        prefix = { Text("$") },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text("Ej: 50000") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        enabled = !isLoading,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                }
+
+                // DURACIÓN ESTIMADA DEL SERVICIO (Control Compuesto Espacioso de 1 Línea)
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "DURACIÓN ESTIMADA DEL SERVICIO",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         OutlinedTextField(
-                            value = price, onValueChange = { price = it },
-                            prefix = { Text("$") },
-                            modifier = Modifier.fillMaxWidth(),
+                            value = viewModel.estimatedTimeNumber,
+                            onValueChange = { viewModel.estimatedTimeNumber = it.filter { c -> c.isDigit() } },
+                            modifier = Modifier.weight(1f),
+                            placeholder = { Text("2") },
+                            singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            enabled = !isLoading, shape = RoundedCornerShape(12.dp)
+                            enabled = !isLoading,
+                            shape = RoundedCornerShape(12.dp)
                         )
-                    }
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "DURACIÓN ESTIMADA",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ExposedDropdownMenuBox(
+                            expanded = timeUnitExpanded,
+                            onExpandedChange = { if (!isLoading) timeUnitExpanded = !timeUnitExpanded },
+                            modifier = Modifier.weight(1.5f)
                         ) {
                             OutlinedTextField(
-                                value = viewModel.estimatedTimeNumber,
-                                onValueChange = { viewModel.estimatedTimeNumber = it.filter { c -> c.isDigit() } },
-                                modifier = Modifier.weight(1f),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                value = viewModel.estimatedTimeUnit,
+                                onValueChange = {},
+                                readOnly = true,
+                                singleLine = true,
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = timeUnitExpanded) },
+                                modifier = Modifier.menuAnchor().fillMaxWidth(),
                                 enabled = !isLoading,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            ExposedDropdownMenuBox(
-                                expanded = timeUnitExpanded,
-                                onExpandedChange = { if (!isLoading) timeUnitExpanded = !timeUnitExpanded },
-                                modifier = Modifier.weight(1.2f)
-                            ) {
-                                OutlinedTextField(
-                                    value = viewModel.estimatedTimeUnit,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = timeUnitExpanded) },
-                                    modifier = Modifier.menuAnchor().fillMaxWidth(),
-                                    enabled = !isLoading,
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                                    )
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
                                 )
-                                ExposedDropdownMenu(expanded = timeUnitExpanded, onDismissRequest = { timeUnitExpanded = false }) {
-                                    viewModel.timeUnits.forEach { unit ->
-                                        DropdownMenuItem(
-                                            text = { Text(unit) },
-                                            onClick = {
-                                                viewModel.estimatedTimeUnit = unit
-                                                timeUnitExpanded = false
-                                            }
-                                        )
-                                    }
+                            )
+                            ExposedDropdownMenu(
+                                expanded = timeUnitExpanded,
+                                onDismissRequest = { timeUnitExpanded = false }
+                            ) {
+                                viewModel.timeUnits.forEach { unit ->
+                                    DropdownMenuItem(
+                                        text = { Text(unit, fontWeight = FontWeight.Bold) },
+                                        onClick = {
+                                            viewModel.estimatedTimeUnit = unit
+                                            timeUnitExpanded = false
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -597,21 +641,83 @@ fun CreateServiceScreen(
                     }
 
                     if (viewModel.occupiedDaysByOtherServices.isNotEmpty()) {
-                        val dayNames = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
-                        val occupiedInfo = viewModel.occupiedDaysByOtherServices.entries.joinToString(", ") { (day, title) ->
-                            "${dayNames[day - 1]}: $title"
+                        val dayNames = listOf("", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
+                        Spacer(Modifier.height(12.dp))
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+                            )
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Text(
+                                        text = "AGENDA DE TUS OTROS SERVICIOS ACTIVOS",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        letterSpacing = 0.5.sp
+                                    )
+                                }
+
+                                Spacer(Modifier.height(8.dp))
+
+                                viewModel.occupiedDaysByOtherServices.entries.sortedBy { it.key }.forEach { (day, info) ->
+                                    Surface(
+                                        color = MaterialTheme.colorScheme.surface,
+                                        shape = RoundedCornerShape(10.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 3.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 10.dp, vertical = 6.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Surface(
+                                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                                shape = RoundedCornerShape(6.dp)
+                                            ) {
+                                                Text(
+                                                    text = dayNames.getOrElse(day) { "Día $day" },
+                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                                    fontSize = 11.sp,
+                                                    fontWeight = FontWeight.ExtraBold,
+                                                    color = MaterialTheme.colorScheme.primary
+                                                )
+                                            }
+                                            Text(
+                                                text = info,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Medium,
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .padding(start = 8.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = "ℹ️ Días asignados a otros de tus servicios: $occupiedInfo",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 11.sp
-                        )
                     }
                 }
 
-                // SELECTORES DE HORA
+                // SELECTORES DE HORA (TIMEPICKER UX ESTANDARIZADO)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -620,7 +726,7 @@ fun CreateServiceScreen(
                         }
                 ) {
                     Text(
-                        text = "RANGO HORARIO",
+                        text = "RANGO HORARIO DE ATENCIÓN",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -628,25 +734,28 @@ fun CreateServiceScreen(
                     Spacer(Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        OutlinedTextField(
-                            value = startTime,
-                            onValueChange = { startTime = it },
-                            label = { Text("Inicio") },
+                        TimeSelectorPill(
+                            label = "HORA INICIO",
+                            time = startTime.take(5),
                             modifier = Modifier.weight(1f),
-                            placeholder = { Text("08:00") },
-                            enabled = !isLoading,
-                            shape = RoundedCornerShape(12.dp)
+                            onClick = { showStartPicker = true }
                         )
-                        OutlinedTextField(
-                            value = endTime,
-                            onValueChange = { endTime = it },
-                            label = { Text("Fin") },
+
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+
+                        TimeSelectorPill(
+                            label = "HORA FIN",
+                            time = endTime.take(5),
                             modifier = Modifier.weight(1f),
-                            placeholder = { Text("18:00") },
-                            enabled = !isLoading,
-                            shape = RoundedCornerShape(12.dp)
+                            onClick = { showEndPicker = true }
                         )
                     }
                 }
@@ -711,7 +820,9 @@ fun CreateServiceScreen(
                         shape = RoundedCornerShape(16.dp),
                         enabled = !isLoading
                     ) {
-                        Text("⬅️ Volver", fontWeight = FontWeight.Bold)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        Spacer(Modifier.width(6.dp))
+                        Text("Volver", fontWeight = FontWeight.Bold)
                     }
 
                     Button(
@@ -745,7 +856,7 @@ fun CreateServiceScreen(
                     ) {
                         if (isLoading) CircularProgressIndicator(color = Color.White)
                         else Text(
-                            text = if (serviceId == null) "Publicar 🚀" else "Guardar Cambios", 
+                            text = if (serviceId == null) stringResource(R.string.create_service_button) else "Guardar Cambios", 
                             fontWeight = FontWeight.Bold
                         )
                     }
