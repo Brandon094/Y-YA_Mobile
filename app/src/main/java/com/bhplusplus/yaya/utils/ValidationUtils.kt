@@ -89,14 +89,15 @@ object ValidationUtils {
 
     /**
      * Valida la fecha de nacimiento.
-     * La fecha no puede ser futura y debe ser una fecha válida previa al día de hoy.
+     * La persona debe tener al menos 15 años cumplidos de edad y no superar los 120 años.
      */
     fun isValidBirthDate(birthDate: String): Boolean {
         if (birthDate.isBlank()) return false
         return try {
             val date = java.time.LocalDate.parse(birthDate.trim())
             val today = java.time.LocalDate.now()
-            !date.isAfter(today) && date.isAfter(today.minusYears(120))
+            val minAgeDate = today.minusYears(15)
+            !date.isAfter(minAgeDate) && date.isAfter(today.minusYears(120))
         } catch (_: Exception) {
             false
         }
@@ -204,7 +205,7 @@ object ValidationUtils {
 
     fun getBirthDateError(birthDate: String): String? {
         if (birthDate.isBlank()) return "La fecha de nacimiento es obligatoria"
-        if (!isValidBirthDate(birthDate)) return "La fecha de nacimiento no puede ser futura"
+        if (!isValidBirthDate(birthDate)) return "Debes tener al menos 15 años de edad para registrarte en YÁYA"
         return null
     }
 

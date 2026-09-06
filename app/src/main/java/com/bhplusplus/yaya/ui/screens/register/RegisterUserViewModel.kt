@@ -134,43 +134,93 @@ class RegisterUserViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // 1. Crear el usuario en Supabase Auth y recibir el UserInfo directamente de signUpWith
-                val userResponse = SupabaseManager.client.auth.signUpWith(Email) {
-                    this.email = email
-                    this.password = password
-                    data = buildJsonObject {
-                        put("full_name", name.trim())
-                        put("role", role)
-                        put("phone", phone.trim())
-                        put("address", address.trim())
-                        put("municipality", municipality.ifBlank { "La Plata" })
+                val cleanDoc = documentId.trim()
+                val cleanEmail = email.trim()
+
+                // 1. VERIFICACIÓN PREVIA (Pre-flight Check) DE CÉDULA / DOCUMENTO
+                // Consultamos si el documento de identidad ya existe en 'public.profiles'
+                // ANTES de crear el usuario en Supabase Auth para evitar registros huérfanos
+                try {
+                    val existingDocCount = SupabaseManager.client.postgrest["profiles"]
+                        .select { filter { eq("document_id", cleanDoc) } }
+                        .decodeList<UserProfile>().size
+
+                    if (existingDocCount > 0) {
+                        _isLoading.value = false
+                        _errorMessage.value = "Este número de cédula o documento ya está registrado con otra cuenta."
+                        onResult(false, role)
+                        return@launch
                     }
+                } catch (e: Exception) {
+                    Log.w("RegisterVM", "Verificación previa de documento omitida por RLS/Red: ${e.message}")
                 }
 
-                // 2. Extraer el ID único (UUID) asignado en auth.users
+                // 2. Crear el usuario en Supabase Auth
+                val userResponse = try {
+                    SupabaseManager.client.auth.signUpWith(Email) {
+                        this.email = cleanEmail
+                        this.password = password
+                        data = buildJsonObject {
+                            put("full_name", name.trim())
+                            put("role", role)
+                            put("phone", phone.trim())
+                            put("address", address.trim())
+                            put("municipality", municipality.ifBlank { "La Plata" })
+                        }
+                    }
+                } catch (e: Exception) {
+                    val msg = e.message ?: ""
+                    Log.e("RegisterVM", "Error en Supabase Auth signUpWith: $msg", e)
+                    _isLoading.value = false
+                    _errorMessage.value = when {
+                        msg.contains("already registered", true) || msg.contains("User already registered", true) -> 
+                            "Este correo electrónico ya está registrado. Intenta iniciar sesión."
+                        else -> "Error de autenticación: ${e.localizedMessage}"
+                    }
+                    onResult(false, role)
+                    return@launch
+                }
+
+                // 3. Extraer el ID único (UUID) asignado en auth.users
                 val userId = userResponse?.id
                     ?: SupabaseManager.client.auth.currentUserOrNull()?.id
-                    ?: throw Exception("No se pudo obtener la identidad del usuario en Supabase Auth")
+                    ?: throw Exception("No se pudo obtener el identificador único del usuario en Supabase Auth")
 
-                // 3. Crear e insertar inmediatamente el perfil obligatorio en la tabla pública 'public.profiles'
+                // 4. Crear e insertar inmediatamente el perfil obligatorio en 'public.profiles'
                 val newProfile = UserProfile(
                     id = userId,
                     full_name = name.trim(),
                     phone = phone.ifBlank { null },
-                    document_id = documentId.ifBlank { null },
+                    document_id = cleanDoc.ifBlank { null },
                     birth_date = birthDate.ifBlank { null },
                     address = address.ifBlank { null },
                     municipality = municipality.ifBlank { "La Plata" },
                     role = role
                 )
 
-                SupabaseManager.client.postgrest["profiles"].upsert(newProfile)
-                Log.i("Register", "Perfil insertado con éxito en 'public.profiles' para id=$userId (rol=$role)")
+                try {
+                    SupabaseManager.client.postgrest["profiles"].upsert(newProfile)
+                    Log.i("Register", "Perfil insertado con éxito en 'public.profiles' para id=$userId (rol=$role)")
+                } catch (e: Exception) {
+                    val dbMsg = e.message ?: ""
+                    Log.e("Register", "Error Postgrest al guardar perfil: $dbMsg", e)
+                    
+                    _isLoading.value = false
+                    _errorMessage.value = when {
+                        dbMsg.contains("profiles_document_id_key", true) || dbMsg.contains("23505", true) -> 
+                            "Este número de cédula o documento ya está registrado con otra cuenta."
+                        dbMsg.contains("23502", true) -> 
+                            "Faltan datos obligatorios para completar tu perfil."
+                        else -> "Error al guardar el perfil: ${e.localizedMessage}"
+                    }
+                    onResult(false, role)
+                    return@launch
+                }
 
-                // 4. Intentar iniciar sesión para dejar la sesión activa en el dispositivo
+                // 5. Intentar iniciar sesión explícitamente para dejar la sesión activa en el dispositivo
                 try {
                     SupabaseManager.client.auth.signInWith(Email) {
-                        this.email = email
+                        this.email = cleanEmail
                         this.password = password
                     }
                 } catch (e: Exception) {
@@ -184,10 +234,7 @@ class RegisterUserViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.e("Register", "Error fatal durante el registro: ${e.message}", e)
                 _isLoading.value = false
-                _errorMessage.value = when {
-                    e.message?.contains("already registered", true) == true -> "Este correo ya está registrado"
-                    else -> "Error en el registro: ${e.localizedMessage}"
-                }
+                _errorMessage.value = "Error al procesar el registro: ${e.localizedMessage}"
                 onResult(false, role)
             }
         }

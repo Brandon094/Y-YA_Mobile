@@ -10,6 +10,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -92,12 +94,17 @@ fun RegisterScreen(
 
     val isFormValid = isStep1Valid && isStep2Valid && isStep3Valid
 
-    // ESTADOS DEL SELECTOR DE FECHA (DatePicker - Restringido a hoy o fechas pasadas)
+    // ESTADOS DEL SELECTOR DE FECHA (DatePicker - Restringido a mayores de 15 años)
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                return utcTimeMillis <= System.currentTimeMillis()
+                val maxAllowedDateMillis = java.time.LocalDate.now()
+                    .minusYears(15)
+                    .atStartOfDay(java.time.ZoneId.of("UTC"))
+                    .toInstant()
+                    .toEpochMilli()
+                return utcTimeMillis <= maxAllowedDateMillis
             }
         }
     )
@@ -350,7 +357,9 @@ fun RegisterScreen(
                 shape = RoundedCornerShape(16.dp),
                 enabled = isStep1Valid && !isLoading
             ) {
-                Text("Siguiente: Contacto ➔", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text("Siguiente: Contacto", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Spacer(Modifier.width(8.dp))
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
             }
 
         } else if (viewModel.currentStep == 2) {
@@ -430,7 +439,9 @@ fun RegisterScreen(
                     shape = RoundedCornerShape(16.dp),
                     enabled = !isLoading
                 ) {
-                    Text("⬅️ Volver", fontWeight = FontWeight.Bold)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text("Volver", fontWeight = FontWeight.Bold)
                 }
 
                 Button(
@@ -439,7 +450,9 @@ fun RegisterScreen(
                     shape = RoundedCornerShape(16.dp),
                     enabled = isStep2Valid && !isLoading
                 ) {
-                    Text("Siguiente: Seguridad ➔", fontWeight = FontWeight.Bold)
+                    Text("Siguiente: Seguridad", fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.width(6.dp))
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
                 }
             }
 
@@ -527,7 +540,9 @@ fun RegisterScreen(
                     shape = RoundedCornerShape(16.dp),
                     enabled = !isLoading
                 ) {
-                    Text("⬅️ Volver", fontWeight = FontWeight.Bold)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text("Volver", fontWeight = FontWeight.Bold)
                 }
 
                 Button(
