@@ -60,21 +60,37 @@
         </div>
 
         <div class="grid lg:grid-cols-4 gap-12 lg:gap-16">
-            <!-- Sidebar Navigation -->
+            <!-- Sidebar Navigation (Technical TOC Style) -->
             <aside class="lg:col-span-1">
-                <nav class="sticky top-24 md:top-28 space-y-6 md:space-y-8 bg-white dark:bg-darkSurface lg:bg-transparent p-6 lg:p-0 rounded-3xl border lg:border-0 border-gray-100 dark:border-white/5">
+                <nav class="sticky top-32 space-y-12">
                     <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 md:mb-6">Infraestructura</p>
-                        <ul class="space-y-3 md:space-y-4 text-sm font-bold">
-                            <li><a href="#stack" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Stack Tecnológico</a></li>
-                            <li><a href="#architecture" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Clean MVVM</a></li>
+                        <p class="text-[10px] font-black text-yayaRed uppercase tracking-[0.25em] mb-6">Infraestructura</p>
+                        <ul class="space-y-5 border-l border-gray-200 dark:border-white/10">
+                            <li>
+                                <a href="#stack" class="block pl-4 text-sm font-bold text-yayaNavy dark:text-gray-400 hover:text-yayaRed hover:border-l-2 hover:border-yayaRed transition-all duration-200 -ml-px">
+                                    Stack Tecnológico
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#architecture" class="block pl-4 text-sm font-bold text-yayaNavy dark:text-gray-400 hover:text-yayaRed hover:border-l-2 hover:border-yayaRed transition-all duration-200 -ml-px">
+                                    Arquitectura MVVM
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 md:mb-6">Datos & Seguridad</p>
-                        <ul class="space-y-3 md:space-y-4 text-sm font-bold">
-                            <li><a href="#database" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Modelo Relacional</a></li>
-                            <li><a href="#security" class="text-yayaNavy dark:text-gray-400 hover:text-yayaRed transition">Políticas RLS</a></li>
+                        <p class="text-[10px] font-black text-yayaRed uppercase tracking-[0.25em] mb-6">Datos & Seguridad</p>
+                        <ul class="space-y-5 border-l border-gray-200 dark:border-white/10">
+                            <li>
+                                <a href="#database" class="block pl-4 text-sm font-bold text-yayaNavy dark:text-gray-400 hover:text-yayaRed hover:border-l-2 hover:border-yayaRed transition-all duration-200 -ml-px">
+                                    Modelo Relacional
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#security" class="block pl-4 text-sm font-bold text-yayaNavy dark:text-gray-400 hover:text-yayaRed hover:border-l-2 hover:border-yayaRed transition-all duration-200 -ml-px">
+                                    Seguridad RLS & RPC
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </nav>
@@ -85,24 +101,24 @@
 
                 <!-- Tech Stack -->
                 <section id="stack" class="scroll-mt-32">
-                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">01. Stack Tecnológico</h2>
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight italic">01. Stack Tecnológico <span class="text-yayaRed">v1.2.0</span></h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="bg-white dark:bg-darkSurface p-6 md:p-8 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm">
                             <h4 class="font-bold text-yayaRed mb-4 uppercase text-[10px] md:text-xs tracking-widest">Mobile Core</h4>
                             <ul class="space-y-2 md:space-y-3 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">
                                 <li>● Kotlin 2.4.10 (K2 Compiler)</li>
                                 <li>● Jetpack Compose (Material 3)</li>
-                                <li>● Navigation Type-Safety</li>
-                                <li>● Coroutines & Flows</li>
+                                <li>● Motor Atómico Spotlight (Nativo)</li>
+                                <li>● Android API 37 (Android 16 Ready)</li>
                             </ul>
                         </div>
                         <div class="bg-white dark:bg-darkSurface p-6 md:p-8 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm">
                             <h4 class="font-bold text-yayaRed mb-4 uppercase text-[10px] md:text-xs tracking-widest">Cloud Backend</h4>
                             <ul class="space-y-2 md:space-y-3 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">
-                                <li>● Supabase (PostgreSQL)</li>
-                                <li>● Supabase Realtime Engine</li>
-                                <li>● Edge Functions (TypeScript)</li>
-                                <li>● Firebase Cloud Messaging</li>
+                                <li>● Supabase (PostgreSQL 15+)</li>
+                                <li>● Realtime WebSockets</li>
+                                <li>● Funciones RPC pl/pgsql</li>
+                                <li>● Firebase Cloud Messaging (V1)</li>
                             </ul>
                         </div>
                     </div>
@@ -110,14 +126,20 @@
 
                 <!-- Architecture -->
                 <section id="architecture" class="scroll-mt-32">
-                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">02. Arquitectura de Software</h2>
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight italic">02. Arquitectura de <span class="text-yayaRed">Software</span></h2>
                     <div class="bg-white dark:bg-darkSurface p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm space-y-6 md:space-y-8">
-                        <p class="text-base md:text-lg leading-relaxed text-gray-600 dark:text-gray-400">
-                            YÁYA implementa un patrón <strong>Clean MVVM</strong> acoplado a un sistema de <strong>Diseño Atómico</strong>, garantizando escalabilidad y mantenibilidad total.
+                        <p class="text-base md:text-lg leading-relaxed text-gray-600 dark:text-gray-400 font-medium">
+                            YÁYA implementa un patrón <strong>Clean MVVM</strong> acoplado a un sistema de <strong>Diseño Atómico</strong> y un motor de <strong>Asistencia Cognitiva Spotlight</strong>, garantizando escalabilidad y una curva de aprendizaje mínima.
                         </p>
-                        <div class="p-6 bg-yayaNavy text-white rounded-3xl">
-                            <h5 class="font-black text-yayaRed mb-4 uppercase text-[10px] md:text-xs tracking-widest">Componente Atómico</h5>
-                            <p class="text-xs md:text-sm opacity-80 leading-relaxed italic">"Las vistas son 100% pasivas. Toda lógica de negocio reside exclusivamente en los ViewModels mediante UiState."</p>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="p-6 bg-yayaNavy text-white rounded-3xl">
+                                <h5 class="font-black text-yayaRed mb-2 uppercase text-[10px] md:text-xs tracking-widest">UI Passive Layer</h5>
+                                <p class="text-xs md:text-sm opacity-80 leading-relaxed italic">"Vistas 100% pasivas. Toda lógica reside en ViewModels mediante UiState."</p>
+                            </div>
+                            <div class="p-6 bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-3xl">
+                                <h5 class="font-black text-yayaRed mb-2 uppercase text-[10px] md:text-xs tracking-widest">Spotlight Engine</h5>
+                                <p class="text-xs md:text-sm text-slate-500 dark:text-gray-400 leading-relaxed">"Motor nativo en Compose con recortes transparentes y Anillos de Luz focales."</p>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -146,12 +168,20 @@
 
                 <!-- Security -->
                 <section id="security" class="scroll-mt-32 pb-20 md:pb-24">
-                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight">04. Seguridad y RLS</h2>
-                    <div class="bg-yayaNavy text-white p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-xl space-y-6 text-center sm:text-left">
-                        <h3 class="text-lg md:text-xl font-bold">Blindaje a Nivel de Fila</h3>
-                        <p class="text-sm md:text-base text-gray-300 leading-relaxed font-medium">
-                            Ninguna consulta al servidor es anónima. PostgreSQL valida el <strong>JWT</strong> de Supabase para asegurar integridad total de los datos privados.
-                        </p>
+                    <h2 class="text-3xl md:text-4xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 uppercase tracking-tight italic">04. Seguridad y <span class="text-yayaRed">Integridad</span></h2>
+                    <div class="bg-yayaNavy text-white p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-xl space-y-8">
+                        <div class="space-y-4">
+                            <h3 class="text-xl md:text-2xl font-black text-yayaRed tracking-widest uppercase">Blindaje RLS & RPC</h3>
+                            <p class="text-sm md:text-base text-gray-300 leading-relaxed font-medium">
+                                El sistema garantiza integridad total mediante <strong>Row Level Security</strong>. Para operaciones críticas, implementamos funciones <strong>RPC (SECURITY DEFINER)</strong> que permiten purgas atómicas en cascada para evitar registros huérfanos.
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10">
+                            <div class="text-center"><p class="text-[10px] uppercase font-black tracking-widest text-yayaRed">HTTPS</p><p class="text-[8px] opacity-60">SSL Encryption</p></div>
+                            <div class="text-center"><p class="text-[10px] uppercase font-black tracking-widest text-yayaRed">JWT</p><p class="text-[8px] opacity-60">Auth Tokens</p></div>
+                            <div class="text-center"><p class="text-[10px] uppercase font-black tracking-widest text-yayaRed">RLS</p><p class="text-[8px] opacity-60">DB Isolation</p></div>
+                            <div class="text-center"><p class="text-[10px] uppercase font-black tracking-widest text-yayaRed">RPC</p><p class="text-[8px] opacity-60">Atomic Purge</p></div>
+                        </div>
                     </div>
                 </section>
 

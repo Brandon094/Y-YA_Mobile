@@ -3,7 +3,7 @@
 **Proyecto:** YÁYA (Ecosistema Móvil Android + Portal Web)  
 **Programa:** Tecnólogo en Análisis y Desarrollo de Software (ADSO)  
 **Equipo:** BH++ Team (Brandon Daza y Equipo)  
-**Versión:** `v1.2.0` (versionCode 8 - Play Store Ready)  
+**Versión:** `v1.2.0` (versionCode 7 - Play Store Ready)  
 **Portal Web Activo:** [https://y-ya-d5929.web.app](https://y-ya-d5929.web.app)  
 
 ---

@@ -26,9 +26,9 @@
                     colors: {
                         yayaRed: '#E85C5C',
                         yayaNavy: '#1E2A38',
-                        darkBg: '#0F172A',       // Slate 900 (Azul Medianoche Profundo)
-                        darkSurface: '#1E293B',  // Slate 800
-                        darkBorder: '#334155'   // Slate 700
+                        darkBg: '#0F172A',
+                        darkSurface: '#1E293B',
+                        darkBorder: '#334155'
                     },
                     fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
@@ -42,37 +42,58 @@
     <div id="yaya-navbar" data-page="legal"></div>
 
     <main class="max-w-4xl mx-auto px-6 py-24 md:py-32">
-        <a href="index.html" class="inline-flex items-center text-yayaRed font-bold mb-8 hover:underline">
+        <a href="index.html" class="inline-flex items-center text-yayaRed font-bold mb-8 hover:underline transition-all">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Volver al inicio
         </a>
 
-        <h1 class="text-4xl md:text-5xl font-black text-yayaNavy dark:text-white mb-4 tracking-tighter">Términos y Condiciones</h1>
-        <p class="text-gray-500 mb-12 md:mb-16">Última actualización: Agosto 2026</p>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-yayaNavy dark:text-white mb-4 tracking-tighter uppercase italic">Términos y <span class="text-yayaRed">Condiciones</span></h1>
+        <p class="text-gray-500 font-bold mb-12 md:mb-16 uppercase tracking-widest text-xs md:text-sm">Última actualización: Septiembre 2026</p>
 
         <div class="prose prose-sm md:prose-lg dark:prose-invert max-w-none space-y-10 md:space-y-12">
             <section>
-                <h2 class="text-xl md:text-2xl font-bold text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight">1. Descripción del Servicio</h2>
+                <h2 class="text-xl md:text-2xl font-black text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight border-l-4 border-yayaRed pl-4">1. Descripción del Servicio</h2>
                 <p class="leading-relaxed text-gray-700 dark:text-gray-300 font-medium">YÁYA es un ecosistema digital que actúa exclusivamente como intermediario para conectar a prestadores de servicios independientes ("Prestadores") con usuarios que buscan contratar dichos servicios ("Clientes"). YÁYA no presta los servicios listados ni es empleador de los Prestadores.</p>
             </section>
 
             <section>
-                <h2 class="text-xl md:text-2xl font-bold text-yayaRed mb-6 uppercase tracking-widest leading-tight">2. Registro y Cuenta Universal</h2>
-                <div class="bg-white dark:bg-white/5 p-6 md:p-8 rounded-2xl md:rounded-3xl border border-gray-100 dark:border-white/5 space-y-4">
-                    <p class="text-sm md:text-base">● <strong>Elegibilidad:</strong> Debe tener al menos 18 años para registrarse.</p>
-                    <p class="text-sm md:text-base">● <strong>Cuenta Única:</strong> YÁYA utiliza un modelo de "Cuenta Universal" donde un mismo usuario puede actuar como Cliente o Prestador.</p>
-                    <p class="text-sm md:text-base">● <strong>Veracidad:</strong> Usted se compromete a proporcionar información real, incluyendo su documento de identidad y datos de contacto.</p>
+                <h2 class="text-xl md:text-2xl font-black text-yayaRed mb-6 uppercase tracking-widest leading-tight border-l-4 border-yayaRed pl-4">2. Registro y Roles de Usuario</h2>
+                <div class="bg-white dark:bg-white/5 p-6 md:p-8 rounded-3xl border border-gray-100 dark:border-white/5 space-y-4 shadow-xl shadow-yayaNavy/5">
+                    <p class="text-sm md:text-base leading-relaxed">● <strong>Elegibilidad:</strong> Debe tener al menos <strong>15 años</strong> para registrarse. En caso de ser menor de edad, el uso de la plataforma debe estar supervisado por sus padres o tutores legales.</p>
+                    <p class="text-sm md:text-base leading-relaxed">● <strong>Cuenta Universal:</strong> YÁYA utiliza un modelo de cuenta única donde el acceso a funcionalidades depende del rol activo:</p>
+                    <ul class="pl-6 space-y-2 text-sm md:text-base">
+                        <li>- <strong>Rol Cliente:</strong> Facultad exclusiva para buscar, negociar y contratar servicios del catálogo.</li>
+                        <li>- <strong>Rol Prestador:</strong> Facultad para publicar talentos, gestionar su agenda de trabajo y también contratar servicios de terceros.</li>
+                    </ul>
+                    <p class="text-sm md:text-base leading-relaxed">● <strong>Veracidad:</strong> Usted se compromete a proporcionar información real, incluyendo su documento de identidad verificado y datos de contacto.</p>
                 </div>
             </section>
 
             <section>
-                <h2 class="text-xl md:text-2xl font-bold text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight">3. Uso de la Plataforma</h2>
-                <p class="leading-relaxed text-gray-700 dark:text-gray-300 font-medium">Los Prestadores deben describir sus habilidades de manera honesta. El comportamiento dentro de la app debe ser respetuoso; queda prohibido el acoso, spam o servicios ilegales.</p>
+                <h2 class="text-xl md:text-2xl font-black text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight border-l-4 border-yayaRed pl-4">3. Uso de la Plataforma</h2>
+                <div class="space-y-4 text-gray-700 dark:text-gray-300 font-medium">
+                    <p class="leading-relaxed">Los Prestadores deben describir sus habilidades de manera honesta. El sistema cuenta con un proceso de <strong>moderación administrativa</strong> previo a la publicación.</p>
+                    <p class="leading-relaxed">La negociación de precios y términos se realiza mediante el flujo de chat y <strong>Handshake Digital</strong> interno de la App.</p>
+                    <p class="leading-relaxed">Queda prohibido el uso de lenguaje ofensivo, acoso, spam o la publicación de servicios ilegales.</p>
+                </div>
             </section>
 
             <section>
-                <h2 class="text-xl md:text-2xl font-bold text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight">4. Pagos y Comisiones</h2>
-                <p class="leading-relaxed text-gray-700 dark:text-gray-300 font-medium">El pago se realiza directamente entre el Cliente y el Prestador. YÁYA se reserva el derecho de implementar pasarelas de pago y esquemas de suscripción en versiones futuras.</p>
+                <h2 class="text-xl md:text-2xl font-black text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight border-l-4 border-yayaRed pl-4">4. Pagos y Comisiones</h2>
+                <p class="leading-relaxed text-gray-700 dark:text-gray-300 font-medium">YÁYA facilita la negociación, pero el pago se realiza directamente entre las partes bajo las condiciones acordadas. YÁYA se reserva el derecho de implementar pasarelas de pago y esquemas de suscripción (SaaS) en el futuro.</p>
+            </section>
+
+            <section>
+                <h2 class="text-xl md:text-2xl font-black text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight border-l-4 border-yayaRed pl-4">5. Reputación y Sanciones</h2>
+                <div class="space-y-4 text-gray-700 dark:text-gray-300 font-medium">
+                    <p class="leading-relaxed">Los Clientes pueden calificar y reseñar el trabajo. Estas valoraciones son públicas y conforman la reputación del talento.</p>
+                    <p class="leading-relaxed">YÁYA utiliza un sistema de <strong>Semáforo Disciplinario</strong> basado en reportes. Nos reservamos el derecho de suspender o eliminar cuentas que violen las normas de convivencia.</p>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-xl md:text-2xl font-black text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight border-l-4 border-yayaRed pl-4">6. Propiedad Intelectual</h2>
+                <p class="leading-relaxed text-gray-700 dark:text-gray-300 font-medium">Todos los derechos sobre el diseño, código, logos y marca YÁYA pertenecen a <strong>BH++ Team</strong>. Queda prohibida su reproducción total o parcial sin autorización.</p>
             </section>
         </div>
     </main>

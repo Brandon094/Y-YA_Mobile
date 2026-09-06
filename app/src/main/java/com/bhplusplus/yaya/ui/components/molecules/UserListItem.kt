@@ -23,10 +23,10 @@ import com.bhplusplus.yaya.ui.components.atoms.YayaAvatar
 @Composable
 fun UserListItem(
     profile: UserProfile,
+    modifier: Modifier = Modifier,
     onSuspend: ((String) -> Unit)? = null,
     onReactivate: ((String) -> Unit)? = null,
-    onDelete: ((String) -> Unit)? = null,
-    modifier: Modifier = Modifier
+    onDelete: ((String) -> Unit)? = null
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),

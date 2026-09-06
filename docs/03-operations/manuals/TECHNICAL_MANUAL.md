@@ -148,6 +148,10 @@ YÁYA implementa una estrategia de filtrado multizona, gestión elástica de tie
     *   *Navegación por Pestañas Segmentadas (`TabRow`):* Segmentación modular y limpia de las 14 opciones de perfil en un control `TabRow` de 2 pestañas:
         - **Pestaña 1 ("💼 Mi Operación"):** Agrupa la operatividad diaria del usuario (Horario de trabajo, servicios publicados, solicitudes recibidas, mis pedidos, mensajes y acceso al panel administrativo).
         - **Pestaña 2 ("⚙️ Ajustes y Ayuda"):** Agrupa la configuración de seguridad, soporte e información institucional (Cambio de contraseña, Manual de uso de la app, Términos y Condiciones, Política de Privacidad, Borrado de cuenta y Cerrar sesión).
+*   **Matriz de Facultades y Restricciones por Rol (Cuenta Universal):** Definición formal de permisos para el modelo de cuenta única, asegurando la segregación operativa y el cumplimiento legal:
+    *   **Rol Cliente:** Facultad exclusiva para búsqueda local por municipio, exploración de categorías, negociación Handshake, contratación de servicios, gestión de pedidos propios, chat y sistema de calificaciones. No posee acceso a herramientas de publicación o gestión de agenda.
+    *   **Rol Prestador (Perfil Híbrido):** Habilitado para la publicación de talentos, carga de jornada maestra, gestión de agenda de servicios, detector de traslapes y visualización de reputación ⭐. Mantiene el 100% de las facultades del Rol Cliente, permitiendo la contratación de servicios de terceros sin requerir cambio de cuenta.
+    *   **Rol Administrador:** Acceso al Panel Maestro de Auditoría, moderación con semáforo disciplinario, gestión directa de usuarios (suspensión/reactivación/eliminación) y capa de anonimato protegido para intervenciones de soporte.
 *   **Norma de Accesibilidad, Contraste de Color y Adaptabilidad a Tema Oscuro (`LoginScreen` & `RegisterUserScreen`):**
     *   *Inhabilitación de Colores Oscuros Estáticos:* Queda estrictamente prohibido fijar colores oscuros o de baja luminancia (como `NavyBlue` `#1E2A38` asignado a `secondary`) en textos o enlaces que se renderizan sobre superficies variables o fondos en Tema Oscuro.
     *   *Optimización del Enlace de Recuperación de Clave (`LoginScreen`):* El enlace *"¿Olvidaste tu contraseña?"* se configuró con `MaterialTheme.colorScheme.primary` (`RedPrimary` con `FontWeight.Bold`), garantizando visibilidad y legibilidad del 100% en Tema Claro y Tema Oscuro (Deep Midnight).
@@ -377,6 +381,16 @@ Todas las 9 tablas en Supabase PostgreSQL (`profiles`, `services`, `availability
 *   **Escritura:** Restringida al `auth.uid()` del propietario (proteger identidad, solicitudes y finanzas).
 *   **Permisos Administrativos:** Habilitación de acciones de eliminación (`DELETE`) y control total (`ALL`) para usuarios con rol `'admin'` sobre las tablas del esquema relacional (`profiles`, `services`, `availability`, `requests`, `messages`, `reports`, `ratings`, `service_images`).
 *   **Negociación y Mensajería:** Solo el cliente y el prestador vinculados a una `request_id` o conversación de chat pueden consultar o actualizar su estado.
+*   **Matriz de Facultades por Rol (Cuenta Universal):**
+    | Facultad / Acción | Cliente | Prestador | Administrador |
+    | --- | :---: | :---: | :---: |
+    | Buscar y Filtrar por Municipio | ✅ | ✅ | ✅ |
+    | Contratar Servicios (Handshake) | ✅ | ✅ | ✅ |
+    | Calificar y Reseñar | ✅ | ✅ | ✅ |
+    | Publicar Talentos / Servicios | ❌ | ✅ | ❌ |
+    | Gestionar Jornada Maestra | ❌ | ✅ | ❌ |
+    | Moderar Contenido y Reportes | ❌ | ❌ | ✅ |
+    | Suspender / Eliminar Usuarios | ❌ | ❌ | ✅ |
 
 ### 2.3. Resiliencia en Serialización (KotlinX Serialization)
 La estrategia de serialización y deserialización de modelos en YÁYA responde a dos reglas críticas de arquitectura según el flujo de datos:
@@ -411,7 +425,7 @@ ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT false;
 ## 3. Stack Tecnológico y Dependencias Clave
 
 *   **Lenguaje:** Kotlin 2.4.10 (K2 Compiler, JVM Target 17).
-*   **Target SDK:** Android API 37 (minSdk 26, versionCode = 8, versionName "1.2.0").
+*   **Target SDK:** Android API 37 (minSdk 26, versionCode = 7, versionName "1.2.0").
 *   **UI & Accesibilidad:** Jetpack Compose (Material 3) con soporte para arquitectura atómica, componentes de desplazamiento optimizados y estandarización estricta de contraste en Tema Oscuro (Deep Midnight) mediante tokens dinámicos (`MaterialTheme.colorScheme.onBackground` y `primary`) e inhabilitación de colores oscuros estáticos en textos sobre superficies.
 *   **Backend:** Supabase (PostgreSQL + Realtime + Storage).
 *   **Permisos y Cumplimiento Google Play:** Declaración de `com.google.android.gms.permission.AD_ID` para servicios de analítica e identificador de anuncios en Google Play.

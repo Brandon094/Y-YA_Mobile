@@ -1,4 +1,4 @@
-# Arquitectura de Software - YÁYA (Master Document - v1.2.0 - versionCode 8)
+# Arquitectura de Software - YÁYA (Master Document - v1.2.0 - versionCode 7)
 
 Este documento define la columna vertebral técnica de YÁYA, detallando los patrones de diseño, la jerarquía de componentes y las decisiones de ingeniería que garantizan un software de clase empresarial.
 

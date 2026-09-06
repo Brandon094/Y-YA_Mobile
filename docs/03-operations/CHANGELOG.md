@@ -60,9 +60,17 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - **Sección de Impacto Realista:** Ajuste de cobertura geográfica a municipios activos (La Plata, Nátaga) con visualización de red animada.
     - Actualización de la mensajería principal a *"Encuentra, Negocia y Contrata Talento."*.
     - Sincronización de la insignia de versión en el Footer global a `v1.2.0 Stable (versionCode 7)`.
-- **Incremento de Versionamiento de la Aplicación (Hito v1.2.0 - versionCode 8):**
+- **Incremento de Versionamiento de la Aplicación (Hito v1.2.0 - versionCode 7):**
     - Actualización de la versión a `versionName = "1.2.0"` y `versionCode = 7` en `app/build.gradle.kts`.
     - Consolidación del lanzamiento oficial v1.2.0 que integra el Motor de Tutoriales Spotlight en 8 pantallas, el Wizard de Creación de Servicios en 2 Pasos con Duración Compuesta y Rediseño UI/UX 2.0, la Verificación Previa de Cédula, la Restricción de Edad Mínima de 15 Años y la Estandarización Iconográfica MD3 (limpieza completa de emojis en la pantalla de disponibilidad y formularios).
+- **Clarificación de Facultades por Rol (Cuenta Universal):**
+    - Refinamiento de la matriz de permisos para el modelo de cuenta única:
+        - **Rol Cliente:** Limitado a búsqueda, negociación y contratación.
+        - **Rol Prestador:** Habilitado para publicación de talentos y gestión de agenda, manteniendo facultades de contratación.
+- **Blindaje Legal v1.2.0:**
+    - Ratificación de la edad mínima de registro en **15 años**.
+    - Sincronización de fecha de vigencia a **Septiembre 2026** en todos los canales.
+    - Alineación de textos legales entre el binario móvil y los portales web oficiales.
 
 ### Corregido
 - **UX Web:** Elevación de z-index del contenido central y botones (z-30) para asegurar interactividad total y evitar oclusión por capas de fondo en el Hero inmersivo.

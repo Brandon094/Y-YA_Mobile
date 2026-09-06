@@ -26,9 +26,9 @@
                     colors: {
                         yayaRed: '#E85C5C',
                         yayaNavy: '#1E2A38',
-                        darkBg: '#0F172A',       // Slate 900 (Azul Medianoche Profundo)
-                        darkSurface: '#1E293B',  // Slate 800
-                        darkBorder: '#334155'   // Slate 700
+                        darkBg: '#0F172A',
+                        darkSurface: '#1E293B',
+                        darkBorder: '#334155'
                     },
                     fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
@@ -42,41 +42,61 @@
     <div id="yaya-navbar" data-page="legal"></div>
 
     <main class="max-w-4xl mx-auto px-6 py-24 md:py-32">
-        <a href="index.html" class="inline-flex items-center text-yayaRed font-bold mb-8 hover:underline">
+        <a href="index.html" class="inline-flex items-center text-yayaRed font-bold mb-8 hover:underline transition-all">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Volver al inicio
         </a>
 
-        <h1 class="text-4xl md:text-5xl font-black text-yayaNavy dark:text-white mb-4 tracking-tighter">Política de Privacidad</h1>
-        <p class="text-gray-500 mb-12 md:mb-16">Última actualización: Agosto 2026</p>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-yayaNavy dark:text-white mb-4 tracking-tighter uppercase italic">Política de <span class="text-yayaRed">Privacidad</span></h1>
+        <p class="text-gray-500 font-bold mb-12 md:mb-16 uppercase tracking-widest text-xs md:text-sm">Última actualización: Septiembre 2026</p>
 
         <div class="prose prose-sm md:prose-lg dark:prose-invert max-w-none space-y-10 md:space-y-12">
-            <p class="text-lg md:text-xl font-medium leading-relaxed text-gray-700 dark:text-gray-300">En <strong>YÁYA</strong>, operada por <strong>BH++ Team</strong>, nos tomamos muy en serio la seguridad de sus datos personales.</p>
+            <p class="text-lg md:text-xl font-medium leading-relaxed text-gray-700 dark:text-gray-300">En <strong>YÁYA</strong>, operada por <strong>BH++ Team</strong>, nos tomamos muy en serio la seguridad de sus datos personales bajo estándares de calidad industrial.</p>
 
             <section>
-                <h2 class="text-xl md:text-2xl font-bold text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight">1. Información Recopilada</h2>
-                <div class="bg-white dark:bg-white/5 p-6 md:p-8 rounded-2xl md:rounded-3xl border border-gray-100 dark:border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                    <ul class="space-y-2 md:space-y-3">
-                        <li class="flex items-center font-bold text-[10px] md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">● Identidad Real</li>
-                        <li class="flex items-center font-bold text-[10px] md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">● Contacto Directo</li>
-                        <li class="flex items-center font-bold text-[10px] md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">● Geo-Ubicación</li>
+                <h2 class="text-xl md:text-2xl font-black text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight border-l-4 border-yayaRed pl-4">1. Información Recopilada</h2>
+                <div class="bg-white dark:bg-white/5 p-6 md:p-8 rounded-3xl border border-gray-100 dark:border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 shadow-xl">
+                    <ul class="space-y-3">
+                        <li class="flex items-center font-bold text-xs md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">
+                            <span class="w-2 h-2 bg-yayaRed rounded-full mr-3"></span> Identidad y Documento
+                        </li>
+                        <li class="flex items-center font-bold text-xs md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">
+                            <span class="w-2 h-2 bg-yayaRed rounded-full mr-3"></span> Contacto y Ubicación
+                        </li>
+                        <li class="flex items-center font-bold text-xs md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">
+                            <span class="w-2 h-2 bg-yayaRed rounded-full mr-3"></span> Fecha de Nacimiento
+                        </li>
                     </ul>
-                    <ul class="space-y-2 md:space-y-3">
-                        <li class="flex items-center font-bold text-[10px] md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">● Historial Transaccional</li>
-                        <li class="flex items-center font-bold text-[10px] md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">● Mensajería Chat</li>
-                        <li class="flex items-center font-bold text-[10px] md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">● Token de Notificación</li>
+                    <ul class="space-y-3">
+                        <li class="flex items-center font-bold text-xs md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">
+                            <span class="w-2 h-2 bg-yayaRed rounded-full mr-3"></span> Historial de Pedidos
+                        </li>
+                        <li class="flex items-center font-bold text-xs md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">
+                            <span class="w-2 h-2 bg-yayaRed rounded-full mr-3"></span> Chats Real-time
+                        </li>
+                        <li class="flex items-center font-bold text-xs md:text-sm uppercase tracking-wider text-yayaNavy dark:text-gray-300">
+                            <span class="w-2 h-2 bg-yayaRed rounded-full mr-3"></span> Tokens de Notificación
+                        </li>
                     </ul>
                 </div>
             </section>
 
             <section>
-                <h2 class="text-xl md:text-2xl font-bold text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight">2. Uso Estratégico</h2>
-                <p class="leading-relaxed text-gray-700 dark:text-gray-300 font-medium">Utilizamos sus datos exclusivamente para gestionar su cuenta, facilitar la conexión entre partes y mantener la seguridad comunitaria mediante moderación.</p>
+                <h2 class="text-xl md:text-2xl font-black text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight border-l-4 border-yayaRed pl-4">2. Uso de la Información</h2>
+                <div class="space-y-4 text-gray-700 dark:text-gray-300 font-medium">
+                    <p class="leading-relaxed">Utilizamos sus datos exclusivamente para gestionar su cuenta y perfil según las facultades de su rol (Cliente o Prestador), facilitar la conexión segura y mantener la seguridad comunitaria.</p>
+                    <p class="leading-relaxed">No vendemos ni comercializamos su información personal a anunciantes externos bajo ninguna circunstancia.</p>
+                </div>
             </section>
 
             <section>
-                <h2 class="text-xl md:text-2xl font-bold text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight">3. Seguridad Senior</h2>
-                <p class="leading-relaxed text-gray-700 dark:text-gray-300 font-medium">Implementamos cifrado HTTPS, <strong>RLS</strong> en base de datos y autenticación de nivel bancario mediante tokens JWT.</p>
+                <h2 class="text-xl md:text-2xl font-black text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight border-l-4 border-yayaRed pl-4">3. Seguridad Industrial</h2>
+                <p class="leading-relaxed text-gray-700 dark:text-gray-300 font-medium">Implementamos cifrado <strong>HTTPS/SSL</strong>, seguridad a nivel de fila (<strong>RLS</strong>) en PostgreSQL y autenticación robusta mediante Supabase Auth.</p>
+            </section>
+
+            <section>
+                <h2 class="text-xl md:text-2xl font-black text-yayaRed mb-4 md:mb-6 uppercase tracking-widest leading-tight border-l-4 border-yayaRed pl-4">4. Sus Derechos</h2>
+                <p class="leading-relaxed text-gray-700 dark:text-gray-300 font-medium">Usted tiene derecho a acceder, rectificar o eliminar sus datos personales directamente desde la sección de ajustes de la aplicación móvil.</p>
             </section>
         </div>
     </main>
