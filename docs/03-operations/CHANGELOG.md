@@ -5,6 +5,26 @@ Todas las modificaciones notables en este proyecto serán documentadas en este a
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-09-05
+### Añadido
+- **Restricción de Edad Mínima de 15 Años en Registro (`ValidationUtils.kt` & `RegisterUserScreen.kt`):**
+    - Lógica de validación centralizada en `ValidationUtils.isValidBirthDate()` que verifica que el usuario tenga al menos 15 años cumplidos (`!date.isAfter(today.minusYears(15))`).
+    - Mensaje de error contextual amigable: *"Debes tener al menos 15 años de edad para registrarte en YÁYA."*.
+    - Restricción visual en el selector de calendario `DatePickerState` (`SelectableDates`) en `RegisterUserScreen`, deshabilitando automáticamente fechas posteriores a `LocalDate.now().minusYears(15)`.
+
+### Cambiado
+- **Rediseño UI/UX 2.0 del Campo de Duración Estimada, Matriz Tabular Ocupada y Estandarización del Control de Hora (`CreateServiceScreen.kt`):**
+    - **Spacious Duration Field (Control Compuesto en 1 Línea Horizontal):** Maquetación del bloque de Duración Estimada en una sola línea amplia horizontal (`Row(Modifier.fillMaxWidth())`), donde el campo de cantidad (`OutlinedTextField`) y el selector de unidad (`ExposedDropdownMenuBox`) disponen de espacio para desplegar unidades de medida (`Horas`, `Minutos`, `Días`, `Meses`, `Años`) limpiamente sin envolver caracteres verticalmente.
+    - **Matriz Tabular de Agenda de Servicios Ocupados ("Agenda de tus Otros Servicios Activos"):** Sustitución del párrafo descriptivo continuo por una tarjeta contenedora atómica con estructura tabular (`Surface` por día con badge `[Lunes]` y rango de horario ocupado `06:00 AM - 06:00 PM`), permitiendo al prestador identificar en medio segundo qué días y horas tiene libres.
+    - **Estandarización del Control de Hora con `YayaTimePickerDialog` y `TimeSelectorPill`:** Sustitución de los campos de texto libre `OutlinedTextField` de hora inicio y hora fin por las píldoras de tiempo atómicas `TimeSelectorPill` conectadas al diálogo modal `YayaTimePickerDialog`, garantizando la consistencia de la experiencia de usuario (UX/UI) y la máxima reutilización de componentes atómicos (DRY) a lo largo de toda la plataforma (`AvailabilityScreen`, `ContratacionScreen` y `CreateServiceScreen`).
+- **Estandarización Iconográfica Material Design 3 y Limpieza de Emojis (`RegisterUserScreen.kt`, `CreateServiceScreen.kt`, `AvailabilityScreen.kt` & `AvailabilityDayCard.kt`):**
+    - Sustitución de emojis de navegación y acción ("⬅️ Volver", "Siguiente ➔", "Publicar 🚀") por componentes vectoriales nativos `Icon(Icons.AutoMirrored.Filled.ArrowBack)` e `Icon(Icons.AutoMirrored.Filled.ArrowForward)` en los asistentes de Registro y Creación de Servicios.
+    - Reemplazo de símbolos y emojis en títulos, atajos de presets (*"Lunes a Viernes"*, *"Todos los Días"*, *"Limpiar"*) y tarjetas de días en la pantalla de Jornada Maestra / Mi Horario General (`AvailabilityScreen.kt` y `AvailabilityDayCard.kt`) por componentes vectoriales nativos `Icon(Icons.AutoMirrored.Filled.ArrowForward)` y textos sobrios.
+    - Aplicación de espaciado atómico entre icono y texto (`6.dp` a `8.dp`), garantizando una interfaz sobria, profesional y adaptada a las directrices oficiales de Material Design 3 en todo el módulo de disponibilidad del prestador y formularios del sistema.
+- **Incremento de Versionamiento de la Aplicación (Hito v1.2.0 - versionCode 8):**
+    - Actualización de la versión a `versionName = "1.2.0"` y `versionCode = 7` en `app/build.gradle.kts`.
+    - Consolidación del lanzamiento oficial v1.2.0 que integra el Motor de Tutoriales Spotlight en 8 pantallas, el Wizard de Creación de Servicios en 2 Pasos con Duración Compuesta y Rediseño UI/UX 2.0, la Verificación Previa de Cédula, la Restricción de Edad Mínima de 15 Años y la Estandarización Iconográfica MD3 (limpieza completa de emojis en la pantalla de disponibilidad y formularios).
+
 ## [1.1.0] - 2026-09-03
 ### Añadido
 - **Motor Centralizado de Validaciones de Datos (`ValidationUtils.kt`):**
@@ -231,6 +251,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Solución al Error de Serialización PostgreSQL 23502 en Registro (`UserProfile.kt`):**
     - Eliminación de los valores por defecto en las propiedades no nulas `id`, `full_name` y `role` en `UserProfile.kt`.
     - Corrección de la omisión implícita por parte de `kotlinx.serialization` cuando `role = "client"` coincidía con su valor predeterminado, forzando la codificación explícita de `"role"` en las peticiones HTTP POST/UPSERT hacia Postgrest y erradicando la violación de restricción `NOT NULL` (`Code: 23502`).
+- **Manejo Defensivo del BackStack en `AvailabilityRoute` (`AppNavigation.kt`):**
+    - Corrección del estancamiento en `AvailabilityScreen` al presionar el botón de regresar cuando el prestador era redirigido desde el flujo de Onboarding/Login (BackStack vacío).
+    - Implementación de navegación condicional defensiva en el callback `onBack` de `composable<AvailabilityRoute>`: `if (!navController.popBackStack()) { navController.navigate(HomeRoute) { popUpTo(0) { inclusive = true } } }`.
+    - Garantía de retorno fluido al Perfil si se navegó desde este, o navegación proactiva hacia `HomeRoute` si el historial estaba vacío por redirección de Onboarding.
+- **Verificación Previa de Cédula/Documento (Pre-flight Check) y Mapeo Amigable de Errores DB/Auth (`RegisterUserViewModel.kt`):**
+    - Verificación previa en `RegisterUserViewModel.kt` consultando `public.profiles` por `document_id` antes de invocar Supabase Auth `signUpWith`, deteniendo el proceso si la cédula ya existe con el mensaje: *"Este número de cédula o documento ya está registrado con otra cuenta."*, evitando la creación de usuarios huérfanos en Auth (`auth.users`).
+    - Mapeo amigable de excepciones de base de datos PostgreSQL `Code 23505` (`profiles_document_id_key`) a un mensaje en español claro e intuitivo.
+    - Mapeo de errores de autenticación (`already registered` / `User already registered`) a *"Este correo electrónico ya está registrado. Intenta iniciar sesión."*, erradicando por completo mensajes técnicos crudos o trazas de base de datos en la interfaz de usuario.
 
 ## [1.0.1] - 2026-09-02
 ### Corregido
