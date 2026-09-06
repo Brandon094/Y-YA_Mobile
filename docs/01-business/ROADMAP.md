@@ -77,14 +77,19 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 - [x] **Estabilidad de Layouts & CI/CD:** Fix de `IllegalStateException` en scrolleables Compose, símbolos NDK FULL y CodeQL CI/CD con Java 17.
 - [ ] **Carga de Datos Real:** Fase de pruebas con usuarios reales (Mauro, Harold, Brandon).
 
+## Hito 8: Integridad de Agenda y Seguridad Operativa (Corto Plazo)
+- [ ] **Detector de Colisiones en Aceptación:** Implementar validación server-side o en ViewModel para impedir que un prestador acepte dos servicios en la misma franja horaria.
+- [ ] **Cálculo de Ventana de Tiempo:** Uso del campo `estimated_time` para bloquear automáticamente el calendario del prestador tras un Handshake exitoso.
+
 ## Futuro (Post-MVP & Expansión Comercial)
 ### Inteligencia de Ubicación
 - [ ] **Geolocalización en Tiempo Real:** Integración de mapas para visualizar talento local por proximidad.
 - [ ] **Filtro de Radio:** Búsqueda de servicios basada en distancia (ej. 5km a la redonda).
 
-### Monetización y Pagos
+### Modelo de Negocio y Monetización (Largo Plazo)
+- [ ] **Estrategia de Ingresos YÁYA:** Diseño e implementación del modelo de monetización (Comisiones por transacción exitosa o Planes de Suscripción Premium).
 - [ ] **Pasarela de Pagos Integrada:** Escrow system (depósito en garantía) con Wompi/MercadoPago.
-- [ ] **Modelo de Suscripciones:** Planes Premium para prestadores con visibilidad destacada.
+- [ ] **Visibilidad Destacada:** Sistema de anuncios pagados para prestadores en el catálogo principal.
 
 ### Confianza Bancaria
 - [ ] **Verificación Biométrica:** Validación de identidad mediante reconocimiento facial y OCR de documentos.
