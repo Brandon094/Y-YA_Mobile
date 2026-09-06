@@ -7,6 +7,9 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [1.2.0] - 2026-09-05
 ### Añadido
+- **Rediseño Inmersivo y Animado del Portal Web v1.2.0:**
+    - **Infinite Marquee de Categorías:** Implementación de animación de desplazamiento horizontal continuo para las categorías de servicios con efecto de desvanecimiento lateral.
+    - **Infinite Stats Marquee Compacto:** Implementación de una cinta de éxitos animada con hitos técnicos (+50 Categorías, REAL Time Stack, ADMIN Moderación, SAFE Handshake).
 - **Módulo 1: Gestión Directa de Usuarios y Bivalencia de Suspensión/Reactivación en Panel Administrativo (`AdminDashboardScreen.kt`, `UserListItem.kt`, `UserProfile.kt` & `AdminViewModel.kt`):**
     - **Atributo `is_suspended` y Columna en DB:** Incorporación del campo `is_suspended: Boolean = false` en `UserProfile.kt` y la columna `is_suspended` en `public.profiles`.
     - **Bivalencia de Estados y Acciones en `AdminViewModel.kt`:**
@@ -50,11 +53,19 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
     - Sustitución de emojis de navegación y acción ("⬅️ Volver", "Siguiente ➔", "Publicar 🚀") por componentes vectoriales nativos `Icon(Icons.AutoMirrored.Filled.ArrowBack)` e `Icon(Icons.AutoMirrored.Filled.ArrowForward)` en los asistentes de Registro y Creación de Servicios.
     - Reemplazo de símbolos y emojis en títulos, atajos de presets (*"Lunes a Viernes"*, *"Todos los Días"*, *"Limpiar"*) y tarjetas de días en la pantalla de Jornada Maestra / Mi Horario General (`AvailabilityScreen.kt` y `AvailabilityDayCard.kt`) por componentes vectoriales nativos `Icon(Icons.AutoMirrored.Filled.ArrowForward)` y textos sobrios.
     - Aplicación de espaciado atómico entre icono y texto (`6.dp` a `8.dp`), garantizando una interfaz sobria, profesional y adaptada a las directrices oficiales de Material Design 3 en todo el módulo de disponibilidad del prestador y formularios del sistema.
+- **Rediseño Centralizado del Portal Web e Integración del Gráfico Maestro de Funciones (`index.html` & `js/components.js`):**
+    - Sustitución del Hero Layout de 2 columnas por una arquitectura centralizada enfocada en la propuesta de valor.
+    - **Hero Section Inmersiva (Overlay):** Rediseño hacia una arquitectura de capas con imagen de fondo panorámica (`yaya_hero_banner.png`) y overlay de gradiente para legibilidad.
+    - Integración del activo panorámico `yaya_hero_banner.jpg` que visualiza el ecosistema completo (Prestador, Slogan, Funciones y UI).
+    - **Sección de Impacto Realista:** Ajuste de cobertura geográfica a municipios activos (La Plata, Nátaga) con visualización de red animada.
+    - Actualización de la mensajería principal a *"Encuentra, Negocia y Contrata Talento."*.
+    - Sincronización de la insignia de versión en el Footer global a `v1.2.0 Stable (versionCode 7)`.
 - **Incremento de Versionamiento de la Aplicación (Hito v1.2.0 - versionCode 8):**
     - Actualización de la versión a `versionName = "1.2.0"` y `versionCode = 7` en `app/build.gradle.kts`.
     - Consolidación del lanzamiento oficial v1.2.0 que integra el Motor de Tutoriales Spotlight en 8 pantallas, el Wizard de Creación de Servicios en 2 Pasos con Duración Compuesta y Rediseño UI/UX 2.0, la Verificación Previa de Cédula, la Restricción de Edad Mínima de 15 Años y la Estandarización Iconográfica MD3 (limpieza completa de emojis en la pantalla de disponibilidad y formularios).
 
 ### Corregido
+- **UX Web:** Elevación de z-index del contenido central y botones (z-30) para asegurar interactividad total y evitar oclusión por capas de fondo en el Hero inmersivo.
 - **Resolución de Restricción de Clave Foránea 23503 (`requests_client_id_fkey`), Limpieza de `service_images` y Alineación de Esquema SQL (`AdminViewModel.kt` & `SUPABASE_RLS_POLICIES.md`):**
     - Corrección de la excepción PostgreSQL Code `23503` (`requests_client_id_fkey`) al eliminar cuentas de usuario desde el Panel Administrativo (`deleteUserAccount`).
     - Alineación exacta con las columnas reales de `public.requests` (`client_id` y `service_id`), eliminando la consulta con el filtro errado por `provider_id` (que provocaba `Code 42703 - Undefined Column`).

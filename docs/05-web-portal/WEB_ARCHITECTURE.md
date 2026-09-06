@@ -13,9 +13,20 @@ Para mantener la consistencia con la App, se aplica una jerarquía de componente
 *   **Átomos:** Definición de paleta de colores (`yayaRed`, `yayaNavy`, `darkBg: '#0F172A'`, `darkSurface: '#1E293B'`), botones Pro y Badges institucionales.
 *   **Moléculas:** Tarjetas de beneficios, pasos del ciclo de vida y elementos de navegación.
 *   **Organismos:** Navbar responsivo con soporte de Modo Oscuro y Footer unificado con enlaces legales e insignia de versión (`v1.2.0 Stable (versionCode 7)`).
+*   **Hero Section (Organismo Central):** Arquitectura centralizada de alto impacto que sustituye el layout previo de 2 columnas. Este componente focaliza la atención en el H1 ("Encuentra, Negocia y Contrata Talento.") y el banner panorámico del ecosistema.
+    *   **Arquitectura de Capas del Hero:** Implementación de un layout de tres niveles:
+        1. **Capa de Fondo:** Imagen panorámica (`yaya_hero_banner.png`) con cobertura total (`bg-cover`).
+        2. **Capa de Overlay:** Gradiente radial/lineal para garantizar el contraste y legibilidad del texto superior.
+        3. **Capa de Contenido (z-30):** Elementos interactivos (H1, CTA Buttons) elevados en el eje Z para asegurar prioridad de clic y visibilidad.
 *   **Estandarización de Tema Oscuro (Deep Midnight):** Aplicación de la paleta Slate 900 (`#0F172A`) y Slate 800 (`#1E293B`) en el 100% de las páginas web del portal (`index.html`, `tecnica.html`, `manuales.html`, `terminos.html`, `privacidad.html`, `eliminar-cuenta.html` y `js/components.js`), eliminando fondos negros genéricos (`#121212` / `#1E1E1E`) para lograr 100% de coherencia visual e identidad de marca con la App móvil Android v1.2.0.
 
 ## 3. Funcionalidades Core
+*   **Hero Section Inmersiva:** Nuevo layout de alto impacto que prioriza la mensajería ("Encuentra, Negocia y Contrata Talento.") y la visualización del ecosistema mediante una arquitectura de capas y overlays.
+*   **Infinite Marquee de Categorías y Stats:** Implementación de animaciones CSS (`keyframes scroll`) para el desplazamiento horizontal infinito.
+    *   **Categorías:** Cinta continua de servicios con efecto de desvanecimiento en los bordes (`mask-image`).
+    *   **Stats:** Cinta técnica compacta con hitos del proyecto.
+*   **Sección de Impacto Realista:** Visualización de red animada restringida a los municipios de cobertura activa (La Plata, Nátaga).
+*   **Ecosistema Visual (Hero Banner):** Integración del activo `yaya_hero_banner.jpg` como banner principal panorámico. Este gráfico ilustra de forma integral el flujo de valor (Prestador + Slogan + Funciones + UI de la App), actuando como el núcleo visual del embudo de conversión.
 *   **Tema Dual:** Soporte nativo para Modo Claro y Modo Oscuro con persistencia en `localStorage` y estandarización de la paleta nocturna Deep Midnight (`darkBg: '#0F172A'` / `darkSurface: '#1E293B'`) en el 100% de las páginas web y componentes dinámicos (`js/components.js`), garantizando paridad e identidad visual absoluta con la aplicación móvil Android v1.2.0.
 *   **Responsive UI:** Menú de hamburguesa y layouts elásticos que se adaptan a cualquier resolución móvil.
 *   **Legal Rendering:** Motor de visualización jerárquico para documentos normativos (Markdown-lite).

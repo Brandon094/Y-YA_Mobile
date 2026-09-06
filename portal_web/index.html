@@ -61,6 +61,20 @@
                         darkSurface: '#1E293B',  // Slate 800
                         darkBorder: '#334155'   // Slate 700
                     },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'scroll': 'scroll 50s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        scroll: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        }
+                    },
                     fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
@@ -73,8 +87,6 @@
         .gradient-bg { background: linear-gradient(135deg, #1E2A38 0%, #2c3e50 100%); }
         .dark .gradient-bg { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
         .hero-pattern { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e85c5c' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6zM36 4V0h-2v4h-4v2h4v4h2v-4h4v-2h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-20px); } 100% { transform: translateY(0px); } }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 font-sans hero-pattern transition-colors duration-300 overflow-x-hidden">
@@ -83,136 +95,196 @@
     <div id="yaya-navbar" data-page="home"></div>
 
     <main>
-        <!-- Hero Section -->
-        <header class="pt-32 md:pt-40 pb-16 md:pb-24 px-4 overflow-hidden">
-        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 md:gap-16">
-            <div class="lg:w-1/2 text-center lg:text-left order-2 lg:order-1">
-                <h1 class="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 tracking-tighter leading-[1.1] lg:leading-[0.9]">
-                    Confianza que <br class="hidden sm:block"> <span class="text-yayaRed italic">conecta.</span>
+        <!-- Hero Section Inmersiva (Overlay) -->
+        <header class="relative min-h-[85vh] flex items-center justify-center pt-20 overflow-hidden">
+            <!-- Capa de Imagen de Fondo -->
+            <div class="absolute inset-0 z-0">
+                <img src="assets/images/yaya_hero_banner.png" alt="YÁYA Background" class="w-full h-full object-cover">
+                <!-- Overlay de Oscurecimiento (Gradiante para legibilidad) -->
+                <div class="absolute inset-0 bg-gradient-to-b from-yayaNavy/90 via-yayaNavy/60 to-darkBg"></div>
+            </div>
+
+            <!-- Contenido Central -->
+            <div class="relative z-30 max-w-5xl mx-auto px-4 text-center mt-8">
+                <script>document.write(YayaComponents.atoms.badge("Huila · Colombia", "bg-yayaRed/20 text-yayaRed mb-6 border border-yayaRed/30"));</script>
+
+                <h1 class="text-4xl sm:text-6xl md:text-8xl font-black text-white mb-6 tracking-tighter leading-[0.95]">
+                    Encuentra, Negocia <br class="hidden sm:block"> y <span class="text-yayaRed italic">Contrata Talento.</span>
                 </h1>
-                <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 max-w-xl lg:mx-0 mx-auto mb-10 md:mb-12 leading-relaxed font-medium">
-                    YÁYA es la infraestructura definitiva para el talento independiente. Una experiencia Premium diseñada para revolucionar los servicios locales.
+
+                <p class="text-lg md:text-2xl text-gray-200 max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
+                    La plataforma definitiva para el talento independiente. Conecta de forma rápida, segura y confiable con expertos verificados.
                 </p>
-                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-6 px-4 sm:px-0">
+
+                <div class="flex flex-col sm:flex-row justify-center gap-6 w-full sm:w-auto px-4">
                     <script>
                         const playStoreUrl = "https://play.google.com/store/apps/details?id=com.bhplusplus.yaya";
-                        document.write(YayaComponents.atoms.buttonPrimary("Únete como Prestador", playStoreUrl));
-                        document.write(YayaComponents.atoms.buttonSecondary("Busca un Servicio", playStoreUrl));
+                        document.write(YayaComponents.atoms.buttonPrimary("Descargar App y Empezar", playStoreUrl));
+                        document.write(YayaComponents.atoms.buttonSecondary("Explorar Manuales", "manuales.html"));
                     </script>
                 </div>
             </div>
-            <div class="lg:w-1/2 relative order-1 lg:order-2">
-                <!-- Mockup App Pro con Imagen Real -->
-                <div class="relative w-56 sm:w-80 md:w-96 mx-auto group">
-                    <div class="absolute -inset-1 bg-gradient-to-r from-yayaRed to-yayaSalmon rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                    <div class="relative bg-white dark:bg-black rounded-[2.5rem] border-4 md:border-8 border-yayaNavy dark:border-white/10 shadow-2xl overflow-hidden animate-float">
-                        <img src="assets/images/logo_splash.png" alt="YÁYA App" width="400" height="800" class="w-full h-auto" fetchpriority="high">
-                    </div>
-                </div>
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] bg-yayaRed/10 rounded-full blur-[60px] sm:blur-[100px] -z-10"></div>
-            </div>
-        </div>
-    </header>
 
-    <!-- Categories Preview Section -->
-    <section class="py-16 md:py-24 bg-gray-50 dark:bg-darkBg transition-colors">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-             <h2 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-[0.25em] mb-8">Talento Local Disponible</h2>
-            <div class="flex flex-wrap justify-center gap-3 md:gap-4" aria-label="Categorías de servicios">
-                <script>
-                    const cats = ["Mascotas", "Hogar", "Tecnología", "Salud", "Transporte", "Belleza", "Asesoría"];
-                    cats.forEach(c => document.write(YayaComponents.atoms.badge(c, "bg-gray-200 dark:bg-white/10 text-yayaNavy dark:text-gray-300 py-2 px-4 md:px-6 text-xs md:text-sm")));
-                </script>
+            <!-- Decoración Inferior (Blur) -->
+            <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-darkBg to-transparent z-20 pointer-events-none"></div>
+        </header>
+
+    <!-- Categories Preview Section (Infinite Marquee) -->
+    <section class="py-16 md:py-24 bg-gray-50 dark:bg-darkBg transition-colors overflow-hidden">
+        <div class="max-w-full text-center">
+             <h2 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-[0.25em] mb-12">Talento Local Disponible</h2>
+
+            <div class="flex overflow-hidden group relative">
+                <!-- Mascaras de desvanecimiento laterales -->
+                <div class="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-gray-50 dark:from-darkBg to-transparent z-10"></div>
+                <div class="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-gray-50 dark:from-darkBg to-transparent z-10"></div>
+
+                <div class="flex animate-scroll whitespace-nowrap gap-4 md:gap-8 py-4 hover:[animation-play-state:paused]">
+                    <script>
+                        const cats = ["Mascotas", "Hogar", "Tecnología", "Salud", "Transporte", "Belleza", "Asesoría", "Clases", "Mantenimiento", "Eventos", "Fotografía", "Construcción", "Legal"];
+                        const renderCats = () => cats.forEach(c => document.write(YayaComponents.atoms.badge(c, "bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-yayaNavy dark:text-gray-300 py-3 px-6 md:px-8 text-sm md:text-base shadow-sm")));
+                        renderCats(); // Original
+                        renderCats(); // Duplicado para loop infinito
+                    </script>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
+    <!-- Features Section (Ingeniería de Confianza) -->
     <section id="features" class="py-24 md:py-32 bg-white dark:bg-darkSurface transition-colors">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-16 md:mb-20">
-                <script>document.write(YayaComponents.atoms.badge("Ventajas Exclusivas"));</script>
-                <h2 class="text-3xl md:text-5xl font-black text-yayaNavy dark:text-white mt-4 uppercase tracking-tighter">Ingeniería de Confianza</h2>
+            <div class="text-center mb-16 md:mb-24">
+                <script>document.write(YayaComponents.atoms.badge("Ingeniería de Confianza"));</script>
+                <h2 class="text-3xl md:text-5xl lg:text-6xl font-black text-yayaNavy dark:text-white mt-4 uppercase tracking-tighter leading-tight">
+                    Tecnología diseñada <br class="hidden sm:block"> para <span class="text-yayaRed italic">protegerte.</span>
+                </h2>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                 <script>
                     document.write(YayaComponents.molecules.featureCard(
                         `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>`,
                         "Handshake Digital",
-                        "Nuestro protocolo único asegura que el trabajo inicie solo con un acuerdo de precio mutuo, blindando tu seguridad."
+                        "Tú tienes el control total. Nuestro protocolo asegura que el trabajo inicie solo cuando ambas partes confirman el acuerdo."
                     ));
                     document.write(YayaComponents.molecules.featureCard(
-                        `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`,
+                        `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>`,
                         "Subasta Interactiva",
-                        "Negocia en tiempo real con una interfaz de puja dinámica que permite encontrar el valor justo para ambas partes."
+                        "Dile adiós a los precios fijos e impuestos. Negocia en tiempo real y encuentra el valor justo mediante una puja dinámica."
                     ));
                     document.write(YayaComponents.molecules.featureCard(
-                        `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>`,
-                        "Ecosistema Atómico",
-                        "Interfaz de vanguardia construida con Atomic Design para una rapidez y adaptabilidad sin precedentes en Android."
+                        `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>`,
+                        "Spotlight UX",
+                        "Nuestra App te acompaña. Un sistema de iluminación inteligente te guía paso a paso para que domines YÁYA en segundos."
+                    ));
+                    document.write(YayaComponents.molecules.featureCard(
+                        `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 003 11c0-2.789 1.274-5.307 3.277-6.994m8.434 14.99L12 10.832m1.137 2.179a12.39 12.39 0 001.974-3.058m3.482 2.34A10.514 10.514 0 0115 11c0-1.283.227-2.512.643-3.651m3.357 2.183a9.946 9.946 0 01-1.928 5.056L18 16"></path></svg>`,
+                        "Identidad Verificada",
+                        "Comunidad responsable. Implementamos filtros de edad y validación previa de documentos para garantizar talentos confiables."
                     ));
                 </script>
             </div>
         </div>
     </section>
 
-    <!-- How it works -->
-    <section id="how-it-works" class="py-24 md:py-32 bg-gray-950 text-white transition-colors">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-16 md:mb-20">
-                <h2 class="text-3xl md:text-4xl font-black mb-4 uppercase tracking-tighter">Ciclo de Vida YÁYA</h2>
-                <p class="text-gray-300 text-sm md:text-base font-medium">Transformando la contratación en cuatro pasos.</p>
+    <!-- How it works (Ciclo de Vida YÁYA) -->
+    <section id="how-it-works" class="py-24 md:py-40 bg-gray-950 text-white transition-colors relative overflow-hidden">
+        <!-- Decoración de Fondo (Grid sutil) -->
+        <div class="absolute inset-0 opacity-5 pointer-events-none hero-pattern"></div>
+
+        <div class="max-w-7xl mx-auto px-4 relative z-10">
+            <div class="text-center mb-16 md:mb-24">
+                <h2 class="text-3xl md:text-5xl font-black mb-6 uppercase tracking-tighter leading-none">
+                    Un flujo pensado <br class="hidden sm:block"> para tu <span class="text-yayaRed italic">tranquilidad.</span>
+                </h2>
+                <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto font-medium">Transformando la contratación local en cuatro fases estratégicas.</p>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-16 relative">
+                <!-- Línea de conexión (Desktop) -->
+                <div class="hidden lg:block absolute top-12 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yayaRed/30 to-transparent z-0"></div>
+
                 <script>
-                    document.write(YayaComponents.molecules.stepItem("01", "Explora", "Busca talentos locales en nuestro catálogo."));
-                    document.write(YayaComponents.molecules.stepItem("02", "Negocia", "Ajusta el precio mediante subasta."));
-                    document.write(YayaComponents.molecules.stepItem("03", "Confirma", "Realiza el Handshake para iniciar."));
-                    document.write(YayaComponents.molecules.stepItem("04", "Califica", "Evalúa y fortalece la confianza."));
+                    document.write(YayaComponents.molecules.stepItem("01", "Explora y Aprende", "Encuentra talentos locales mientras nuestra Guía Spotlight te enseña a usar la App."));
+                    document.write(YayaComponents.molecules.stepItem("02", "Pacta el Valor", "Negocia el precio justo con total libertad mediante nuestro sistema de subasta."));
+                    document.write(YayaComponents.molecules.stepItem("03", "Ejecuta Seguro", "Activa el Handshake Digital para asegurar que el trabajo inicie bajo tus condiciones."));
+                    document.write(YayaComponents.molecules.stepItem("04", "Cierra con Éxito", "Finaliza el servicio, califica al talento y fortalece la reputación de la comunidad."));
                 </script>
             </div>
         </div>
     </section>
 
-    <!-- Impact Section -->
-    <section id="community" class="py-24 md:py-32 bg-white dark:bg-darkBg transition-colors overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center gap-12 md:gap-16">
-            <div class="md:w-1/2 text-center md:text-left">
-                <script>document.write(YayaComponents.atoms.badge("Impacto Regional", "bg-blue-600/10 text-blue-600 dark:text-blue-400"));</script>
-                <h2 class="text-3xl md:text-5xl font-black text-yayaNavy dark:text-white mb-6 md:mb-8 tracking-tighter uppercase mt-4">Potenciando el <span class="text-yayaRed italic">Huila</span></h2>
-                <p class="text-lg text-gray-700 dark:text-gray-300 mb-8 md:mb-10 leading-relaxed font-medium">
-                    YÁYA nace con la misión de digitalizar el talento local. Actualmente brindamos cobertura estratégica en zonas clave, conectando comunidades con servicios de calidad.
+    <!-- Impact Section (Regional Focus) -->
+    <section id="community" class="py-24 md:py-40 bg-white dark:bg-darkBg transition-colors overflow-hidden relative">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row items-center gap-16 md:gap-24">
+            <div class="lg:w-1/2 text-center lg:text-left relative z-10">
+                <script>document.write(YayaComponents.atoms.badge("Impacto Regional", "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mb-6"));</script>
+                <h2 class="text-3xl md:text-6xl font-black text-yayaNavy dark:text-white mb-8 tracking-tighter uppercase leading-[0.9]">
+                    Orgullo Opita, <br> <span class="text-yayaRed italic">Tecnología Global.</span>
+                </h2>
+                <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-10 leading-relaxed font-medium">
+                    YÁYA nace con la misión de digitalizar el talento del Huila. Conectamos comunidades rurales y urbanas mediante una plataforma que entiende y potencia la economía local.
                 </p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-                    <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl text-center border border-gray-100 dark:border-white/5 shadow-sm">
-                        <h3 class="font-bold text-yayaNavy dark:text-white">Nátaga</h3>
+
+                <!-- Tarjetas de Municipios Rediseñadas -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto lg:mx-0">
+                    <div class="group p-6 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10 hover:border-yayaRed transition-all duration-300">
+                        <div class="text-yayaRed mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-black text-yayaNavy dark:text-white group-hover:text-yayaRed transition">La Plata</h3>
+                        <p class="text-sm text-gray-500 mt-2 uppercase font-bold tracking-widest">Sede Principal</p>
                     </div>
-                    <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl text-center border border-gray-100 dark:border-white/5 shadow-sm">
-                        <h3 class="font-bold text-yayaNavy dark:text-white">La Plata</h3>
-                    </div>
-                    <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl text-center border border-gray-100 dark:border-white/5 shadow-sm">
-                        <h3 class="font-bold text-yayaNavy dark:text-white">Gallego</h3>
+                    <div class="group p-6 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10 hover:border-yayaRed transition-all duration-300">
+                        <div class="text-yayaRed mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-black text-yayaNavy dark:text-white group-hover:text-yayaRed transition">Nátaga</h3>
+                        <p class="text-sm text-gray-500 mt-2 uppercase font-bold tracking-widest">Cobertura Activa</p>
                     </div>
                 </div>
             </div>
-            <div class="md:w-1/2 flex justify-center mt-8 md:mt-0">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="w-32 sm:w-40 h-32 sm:h-40 bg-gray-100 dark:bg-white/5 rounded-3xl"></div>
-                    <div class="w-32 sm:w-40 h-32 sm:h-40 bg-yayaRed rounded-3xl mt-8"></div>
-                    <div class="w-32 sm:w-40 h-32 sm:h-40 bg-yayaNavy rounded-3xl -mt-8"></div>
-                    <div class="w-32 sm:w-40 h-32 sm:h-40 bg-gray-100 dark:bg-white/5 rounded-3xl"></div>
+
+            <!-- Visualización Conceptual de Red (Orgánico) -->
+            <div class="lg:w-1/2 relative flex justify-center items-center">
+                <div class="relative w-72 h-72 sm:w-96 sm:h-96">
+                    <!-- Circulos concéntricos animados -->
+                    <div class="absolute inset-0 border-2 border-yayaRed/20 rounded-full animate-[ping_3s_linear_infinite]"></div>
+                    <div class="absolute inset-4 border border-yayaNavy/20 dark:border-white/10 rounded-full"></div>
+
+                    <!-- Isotipo Central -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-24 h-24 sm:w-32 sm:h-32 bg-yayaRed rounded-[2.5rem] shadow-2xl shadow-yayaRed/40 flex items-center justify-center">
+                            <img src="assets/images/ic_logo.png" alt="YÁYA" class="w-12 sm:w-16 h-auto brightness-0 invert">
+                        </div>
+                    </div>
+
+                    <!-- Nodos de Red (Puntos en los municipios) -->
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-yayaRed rounded-full shadow-lg shadow-yayaRed/50"></div>
+                    <div class="absolute bottom-10 left-10 w-4 h-4 bg-yayaNavy dark:bg-white rounded-full"></div>
+                    <div class="absolute bottom-10 right-10 w-4 h-4 bg-emerald-500 rounded-full"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Stats Section -->
-    <section class="py-20 md:py-24 gradient-bg text-white overflow-hidden relative transition-all duration-500">
-        <div class="max-w-7xl mx-auto px-4 relative z-10">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-12 text-center text-sm font-black uppercase tracking-[0.2em]">
-                <div><div class="text-5xl md:text-7xl font-black mb-2 leading-none">+50</div><div class="text-red-200 dark:text-yayaRed">Categorías</div></div>
-                <div><div class="text-5xl md:text-7xl font-black mb-2 leading-none">REAL</div><div class="text-red-200 dark:text-yayaRed">Time Stack</div></div>
-                <div><div class="text-5xl md:text-7xl font-black mb-2 leading-none">ADMIN</div><div class="text-red-200 dark:text-yayaRed">Moderación</div></div>
+    <!-- Stats Section (Infinite Marquee - Compact) -->
+    <section class="py-10 md:py-16 gradient-bg text-white overflow-hidden relative transition-all duration-500">
+        <div class="max-w-full relative z-10">
+            <div class="flex animate-scroll whitespace-nowrap gap-16 md:gap-32 items-center">
+                <script>
+                    const renderStats = () => document.write(`
+                        <div class="flex items-center gap-16 md:gap-32 text-center text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">
+                            <div><div class="text-4xl md:text-6xl font-black mb-1 leading-none">+50</div><div class="text-red-200">Categorías</div></div>
+                            <div><div class="text-4xl md:text-6xl font-black mb-1 leading-none">REAL</div><div class="text-red-200">Time Stack</div></div>
+                            <div><div class="text-4xl md:text-6xl font-black mb-1 leading-none">ADMIN</div><div class="text-red-200">Moderación</div></div>
+                            <div><div class="text-4xl md:text-6xl font-black mb-1 leading-none">SAFE</div><div class="text-red-200">Handshake</div></div>
+                        </div>
+                    `);
+                    renderStats();
+                    renderStats(); // Duplicado para loop infinito
+                </script>
             </div>
         </div>
     </section>

@@ -107,7 +107,7 @@ const YayaComponents = {
                     </div>
                     <div class="pt-6 md:pt-8 border-t border-gray-100 dark:border-white/5 text-center">
                         <p class="text-gray-400 text-[10px] md:text-xs tracking-widest uppercase mb-2">© 2026 BH++ Team • Senior Engineering SENA</p>
-                        <p class="text-yayaRed/80 text-[9px] font-bold uppercase tracking-tighter">v1.1.0 Stable (versionCode 5)</p>
+                        <p class="text-yayaRed/80 text-[9px] font-bold uppercase tracking-tighter">v1.2.0 Stable (versionCode 7)</p>
                     </div>
                 </div>
             </footer>
