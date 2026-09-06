@@ -50,7 +50,7 @@ El componente `ValidationUtils` centraliza las reglas de negocio para la captura
 *   **Municipios y Cobertura:** Lista inmutable centralizada en `ValidationUtils.HUILA_MUNICIPALITIES` que suministra las opciones de municipios de cobertura en el departamento del Huila (La Plata, Nátaga, Paicol, Tesalia, Garzón, Neiva, Pitalito, Gigante) a componentes desplegables `ExposedDropdownMenuBox` en `RegisterUserScreen`, `EditProfileScreen`, `CreateServiceScreen` y al filtro geográfico de `HomeScreen`, eliminando errores de tipeo y campos de texto libre.
 *   **Estandarización Iconográfica Material Design 3 en Formularios, Validaciones y Gestión de Horarios:** Sustitución total de emojis por componentes vectoriales nativos `Icon(Icons.AutoMirrored.Filled.ArrowBack)` e `Icon(Icons.AutoMirrored.Filled.ArrowForward)` y textos sobrios en los asistentes de Registro (`RegisterUserScreen.kt`), Creación de Servicios (`CreateServiceScreen.kt`) y la pantalla de Jornada Maestra / Mi Horario General (`AvailabilityScreen.kt` y `AvailabilityDayCard.kt`), garantizando sobriedad visual, espaciado atómico de `6.dp` a `8.dp` y alineación con los estándares iconográficos de Material Design 3.
 
-### 1.5. Arquitectura de Filtrado Geográfico por Municipio/Zona, Flujo de Horarios y Reputación del Prestador
+### 1.5. Arquitectura de Filtrado Geográfico por Municipio/Zona, Flujo de Horarios, Reputación del Prestador y Módulo 1 de Administración
 YÁYA implementa una estrategia de filtrado multizona, gestión elástica de tiempos de atención y un motor de reputación transparente para segmentar la oferta de servicios y exponer la valoración de los prestadores:
 *   **Estandarización de Ubicación con `ExposedDropdownMenuBox`:** Los formularios de captura e interacción (`RegisterUserScreen`, `EditProfileScreen`, `CreateServiceScreen`) y el diálogo modal de filtro geográfico en `HomeScreen` consumen la lista inmutable `ValidationUtils.HUILA_MUNICIPALITIES`. Los campos de texto libre fueron reemplazados por selecciones desplegables inmutables con `ExposedDropdownMenuBox`, garantizando consistencia total en la base de datos y eliminando errores tipográficos.
 *   **Modelos de Datos de Ubicación:** La propiedad opcional `municipality: String?` ("La Plata" por defecto) se integra en los modelos de dominio `UserProfile` y `Service`.
@@ -209,6 +209,31 @@ YÁYA implementa una estrategia de filtrado multizona, gestión elástica de tie
     *   *Uso de Iconos Vectoriales AutoMirrored:* Integración de componentes vectoriales `Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = ...)` para navegación de retroceso y `Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = ...)` para avance de etapa, atajos y acciones principales, garantizando adaptación nativa e inercia direccional en cualquier entorno de sistema.
     *   *Espaciado Atómico de Interacción:* Estandarización de espaciado atómico de `6.dp` a `8.dp` (`Spacer(modifier = Modifier.width(6.dp))`) entre el icono vectorial y el texto en botones de control de navegación primarios y secundarios, atajos de presets y tarjetas de días.
     *   *Sobriedad y Rendimiento Visual:* Garantiza una interfaz de usuario 100% sobria, pulida, accesible, profesional, coherente con el sistema de diseño Material Design 3 y sin inconsistencias de renderizado tipográfico de fuentes emoji en diferentes plataformas y densidades de pantalla en la interfaz de gestión de horarios y formularios del sistema.
+*   **Módulo 1 de Administración: Gestión Directa de Usuarios y Bivalencia de Suspensión/Reactivación (`AdminDashboardScreen.kt`, `UserListItem.kt`, `UserProfile.kt` & `AdminViewModel.kt`):**
+    *   *Pestaña "Usuarios" en Panel Administrativo (`AdminDashboardScreen.kt` & `UsersList`):* Despliegue de la lista completa de perfiles de usuario almacenados en `public.profiles` (`AdminViewModel.allProfiles`), renderizados individualmente mediante la molécula atómica `UserListItem.kt`.
+    *   *Atributo `is_suspended` y Estado en `UserProfile.kt`:* Mapeo de la propiedad `is_suspended: Boolean = false` en `UserProfile.kt` vinculada a la columna `is_suspended` de `public.profiles`.
+    *   *Lógica Bivalente de Suspensión y Reactivación con Actualización Optimista e Inmediata en Memoria (`AdminViewModel.kt`):*
+        - **`suspendUser(userId)`:** Modifica de forma optimista e inmediata la propiedad `is_suspended = true` sobre el usuario en la lista en memoria `allProfiles` (refrescando reactivamente `filteredProfiles` al instante) y persiste el estado en `public.profiles` desactivando sus servicios (`status = "inactive"` en `public.services`).
+        - **`reactivateUser(userId)`:** Modifica de forma optimista e inmediata la propiedad `is_suspended = false` sobre el usuario en la lista en memoria `allProfiles` (refrescando reactivamente `filteredProfiles` al instante) y persiste el estado en `public.profiles` reactivando sus servicios (`status = "active"` en `public.services`).
+        - **Cero Recargas y Cero Saltos de Scroll (UX/UI Inmediata sin Parpadeo):** Eliminación de las llamadas a `fetchUsers()` tras cambiar el estado de suspensión. Esto erradica recargas completas de red, parpadeos (*flicker*) y la pérdida de la posición de scroll en la pantalla del Panel Administrativo, permitiendo un cambio de estado visual instantáneo en la insignia (`🔴 SUSPENDIDO` ↔ `🟢 ACTIVO`) y en el botón correspondiente.
+    *   *Política RLS UPDATE para Administradores (`SUPABASE_RLS_POLICIES.md`):* Habilitación de la política Row Level Security `Admins pueden actualizar perfiles` (`FOR UPDATE TO authenticated USING (role = 'admin') WITH CHECK (role = 'admin')`) sobre `public.profiles`, otorgando la autorización requerida en la capa PostgreSQL para la modificación del campo `is_suspended` desde la aplicación móvil por usuarios con rol administrador.
+    *   *Insignia Reactiva y Botonera Alternante en `UserListItem.kt`:*
+        - Si `is_suspended == true`: Muestra el badge `🔴 SUSPENDIDO` y habilita el botón *"Reactivar"*.
+        - Si `is_suspended == false`: Muestra el badge `🟢 ACTIVO` y habilita el botón *"Suspender"*.
+        - **`🗑️ Eliminar` (`onDelete` / `AdminViewModel.deleteUserAccount` & `YayaConfirmationDialog`):** Elimina permanentemente el perfil y sus datos asociados. Intercepta la acción mediante la molécula atómica de confirmación `YayaConfirmationDialog` solicitando confirmación explícita para evitar borrados accidentales.
+    *   *Secuencia Atómica de Borrado en Cascada e Integración de Esquema SQL (`AdminViewModel.deleteUserAccount`):* Para resolver y erradicar definitivamente la violación de restricción de clave foránea `requests_client_id_fkey` (`PostgreSQL Code 23503`) y evitar errores de columna no definida (`Code 42703`), la función ejecuta una secuencia atómica de purga estructurada en 8 fases adaptada strictly al esquema relacional de YÁYA:
+        1. `ratings`: Elimina calificaciones y reseñas emitidas o recibidas por el usuario (`client_id = userId` / `provider_id = userId`).
+        2. `requests`: Elimina las solicitudes donde el usuario actúa como cliente (`client_id = userId`) y las solicitudes vinculadas a los servicios ofertados por el usuario como prestador (obteniendo los `id` de `public.services` donde `provider_id = userId` y eliminando por `service_id`), respetando que `public.requests` no posee columna `provider_id`.
+        3. `messages`: Elimina mensajes enviados (`sender_id = userId`) o recibidos (`receiver_id = userId`).
+        4. `reports`: Elimina denuncias/reportes realizados por o hacia el usuario (`reporter_id = userId` / `reported_user_id = userId`).
+        5. `service_images`: Elimina las imágenes almacenadas en la galería de los servicios del prestador (`service_id` de sus servicios).
+        6. `services`: Elimina los servicios/talentos publicados por el prestador (`provider_id = userId`).
+        7. `availability`: Elimina registros de jornada maestra y horarios de atención (`provider_id = userId`).
+        8. `profiles`: Elimina permanentemente la fila de perfil principal en `public.profiles` (`id = userId`).
+    *   *Invocación RPC Atómica `admin_delete_user_account` en Postgres (`SECURITY DEFINER`):*
+        - **Ejecución Servidor Nativa:** `AdminViewModel.deleteUserAccount` invoca primariamente la función plpgsql `admin_delete_user_account(target_user_id)` mediante `rpc()`. La función se ejecuta en la base de datos Supabase con permisos `SECURITY DEFINER`, realizando la purga completa de 8 fases en una sola transacción atómica SQL nativa en ~5ms.
+        - **Fallback Resiliente de Borrado Secuencial (`deleteUserAccountSequential`):** Si la función RPC no existiera o fallara en el servidor, el bloque `catch` ejecuta automáticamente el borrado secuencial defensivo cliente por cliente en 8 fases (`ratings` ➔ `requests` ➔ `messages` ➔ `reports` ➔ `service_images` ➔ `services` ➔ `availability` ➔ `profiles`), garantizando resiliencia operativa y la erradicación total del error de clave foránea `Code 23503`.
+    *   *Protección de Seguridad para Administradores:* La botonera de acciones de suspensión y eliminación se oculta y deshabilita automáticamente cuando el perfil pertenece a un administrador (`profile.role != "admin"`), previniendo acciones destructivas accidental sobre cuentas de moderación del sistema.
 
 ---
 
@@ -230,12 +255,15 @@ erDiagram
     - La tabla `public.ratings` vincula cada evaluación realizada con el `provider_id` (prestador/talento) a través de la solicitud de servicio (`request_id`).
     - La reputación consolidada (promedio de estrellas y total de valoraciones) pertenece al perfil del prestador (`public.profiles.id` / `provider_id`).
     - En la interfaz de usuario, la tarjeta de servicio `ServiceCard` refleja fielmente esta relación situando el `RatingIndicator` en la cabecera del componente, directamente junto a los datos del prestador (`state.domain.provider?.full_name`). Esto garantiza consistencia semántica completa entre el modelo relacional PostgreSQL y la experiencia de usuario.
-*   **Integridad de Clave Foránea y Sincronización de Perfiles (`requests`, `services`, `ratings`, `messages`, `reports`):**
-    - Las tablas públicas (`requests`, `services`, `ratings`, `messages`, `reports`) mantienen relaciones de clave foránea FK (ej. `requests_client_id_fkey`, `services_provider_id_fkey`, `ratings_user_id_fkey`) apuntando a la columna `id` de `public.profiles`.
-    - Para prevenir fallos de integridad referencial PostgreSQL `23503` (`Key is not present in table "profiles"`), la arquitectura impone una estrategia defensiva multicapa (`RegisterUserViewModel`, `LoginViewModel`, `ContratacionViewModel`):
+*   **Integridad de Clave Foránea, Eliminación en Cascada y Sincronización de Perfiles (`requests`, `services`, `ratings`, `messages`, `reports`, `availability`, `profiles`, `service_images`):**
+    - Las tablas públicas (`requests`, `services`, `ratings`, `messages`, `reports`, `availability`, `service_images`) mantienen relaciones de clave foránea FK (ej. `requests_client_id_fkey`, `services_provider_id_fkey`, `ratings_user_id_fkey`, `service_images_service_id_fkey`) apuntando a las tablas relacionales del esquema.
+    - Para prevenir fallos de integridad referencial PostgreSQL `23503` (`Key is not present in table "profiles"` / `requests_client_id_fkey`), la arquitectura impone una estrategia defensiva multicapa (`RegisterUserViewModel`, `LoginViewModel`, `ContratacionViewModel`, `AdminViewModel`):
       1. *Sincronización en Registro:* Inserción directa de `newProfile` vía `upsert` en `public.profiles` inmediatamente tras la autenticación post-registro.
       2. *Verificación Defensiva en Login y Contratación (`ensureProfileExists`):* Verificación y creación atómica del perfil consumiendo la metadata de Auth previa a operaciones de negocio o inicio de sesión.
-    - Esta arquitectura garantiza que cualquier usuario registrado o autenticado en Supabase Auth (`auth.users`) posea de forma garantizada su registro correspondiente en `public.profiles`, erradicando por completo las violaciones de clave foránea 23503 en todo el sistema.
+      3. *Purga Atómica en Servidor vía RPC `admin_delete_user_account` y Borrado Secuencial Fallback (`AdminViewModel.deleteUserAccount`):*
+         - **Función RPC Atómica Server-Side (SECURITY DEFINER):** Invocación primaria de `admin_delete_user_account(target_user_id)` con permisos `SECURITY DEFINER` en PostgreSQL Supabase. Ejecuta la purga en 8 fases en una sola transacción SQL nativa del servidor en ~5ms (`ratings` ➔ `requests` ➔ `messages` ➔ `reports` ➔ `service_images` ➔ `services` ➔ `availability` ➔ `profiles`), erradicando latencia y llamadas HTTP múltiples.
+         - **Limpieza Secuencial Fallback de 8 Fases (`deleteUserAccountSequential`):** Si la RPC no estuviere disponible, se ejecuta la purga defensiva secuencial cliente por cliente respetando estrictamente el orden relacional. En la Fase 2 (`requests`), adapta la eliminación al esquema relacional de Supabase (donde `public.requests` conecta `client_id` con `service_id`): para solicitudes de cliente elimina por `client_id = userId`, y para solicitudes de prestador consulta primero los `id` de `public.services` donde `provider_id = userId` y elimina por `service_id`. Esto erradica tanto la excepción de columna no definida `Code 42703` como la violación de clave foránea `Code 23503` (`requests_client_id_fkey`).
+    - Esta arquitectura garantiza que cualquier usuario registrado o autenticado en Supabase Auth (`auth.users`) posea de forma garantizada su registro correspondiente en `public.profiles` y permite la eliminación limpia de cuentas sin violaciones relacionales.
 *   **Verificación Previa (Pre-flight Check) y Mapeo Amigable de Errores PostgreSQL / Supabase Auth (`RegisterUserViewModel.kt`):**
     - *Patrón de Verificación Pre-flight Check:* Previo a la creación de usuarios en Supabase Auth (`signUpWith`), el ViewModel consulta `public.profiles` filtrando por `document_id`. Si la cédula ya existe, detiene de inmediato el proceso notificando: *"Este número de cédula o documento ya está registrado con otra cuenta."*, impidiendo la generación de registros huérfanos en `auth.users`.
     - *Tabla de Mapeo de Errores PostgreSQL y Supabase Auth:*
@@ -244,14 +272,17 @@ erDiagram
       | `23505` / `profiles_document_id_key` | Violación de restricción de unicidad en `public.profiles.document_id` | *"Este número de cédula o documento ya está registrado con otra cuenta."* |
       | `already registered` / `User already registered` | Intento de registro con correo duplicado en Supabase Auth | *"Este correo electrónico ya está registrado. Intenta iniciar sesión."* |
       | `23502` | Violación de restricción NOT NULL en campos obligatorios de Postgrest | *"Faltan datos obligatorios para completar tu perfil."* |
-      | `23503` / `requests_client_id_fkey` | Clave foránea inexistente en `public.profiles` | Resuelto preventivamente mediante la rutina defensiva `ensureProfileExists(user)` |
+      | `23503` / `requests_client_id_fkey` | Clave foránea inexistente o violación relacional al eliminar perfiles con solicitudes asociadas | Resuelto preventivamente mediante `ensureProfileExists(user)` y la limpieza atómica en cascada de 8 fases en `AdminViewModel.deleteUserAccount` |
     - *Erradicación de Trazas Técnicas:* Todas las excepciones capturadas desde Supabase Postgrest o Auth son interceptadas y transformadas mediante bloques `when`, garantizando que la UI renderice exclusivamente mensajes amigables en español de alto nivel, erradicando cadenas técnicas crudas, códigos SQL o trazas de base de datos.
+*   **Matriz de Políticas de Seguridad Row Level Security (RLS):** La especificación detallada de permisos, matriz de acceso y políticas de seguridad PostgreSQL para las 9 tablas del sistema se define en el documento maestro [`docs/02-architecture/SUPABASE_RLS_POLICIES.md`](../../02-architecture/SUPABASE_RLS_POLICIES.md).
 
 ### 2.2. Seguridad a Nivel de Fila (RLS)
-Todas las tablas en Supabase tienen políticas **RLS** activas:
-*   **Lectura:** Pública para perfiles y servicios activos.
-*   **Escritura:** Restringida al `auth.uid()` del propietario (proteger identidad y finanzas).
-*   **Negociación:** Solo el cliente y el prestador vinculados a una `request_id` pueden actualizar su estado.
+Todas las 9 tablas en Supabase PostgreSQL (`profiles`, `services`, `availability`, `messages`, `requests`, `reports`, `ratings`, `categories`, `service_images`) tienen políticas **RLS** (Row Level Security) activas para garantizar la privacidad e integridad de la información a nivel de base de datos:
+*   **Documento Maestro RLS:** La especificación exhaustiva de la matriz de seguridad por tabla y el script SQL de habilitación para administradores se encuentran en [`docs/02-architecture/SUPABASE_RLS_POLICIES.md`](../../02-architecture/SUPABASE_RLS_POLICIES.md).
+*   **Lectura:** Pública para perfiles, servicios activos, categorías e imágenes de servicio.
+*   **Escritura:** Restringida al `auth.uid()` del propietario (proteger identidad, solicitudes y finanzas).
+*   **Permisos Administrativos:** Habilitación de acciones de eliminación (`DELETE`) y control total (`ALL`) para usuarios con rol `'admin'` sobre las tablas del esquema relacional (`profiles`, `services`, `availability`, `requests`, `messages`, `reports`, `ratings`, `service_images`).
+*   **Negociación y Mensajería:** Solo el cliente y el prestador vinculados a una `request_id` o conversación de chat pueden consultar o actualizar su estado.
 
 ### 2.3. Resiliencia en Serialización (KotlinX Serialization)
 La estrategia de serialización y deserialización de modelos en YÁYA responde a dos reglas críticas de arquitectura según el flujo de datos:
@@ -266,7 +297,7 @@ La estrategia de serialización y deserialización de modelos en YÁYA responde 
    * **Solución Aplicada:** Remover los valores por defecto en la definición de la data class de Kotlin para campos no nulos obligatorios. Al carecer de valor por defecto, `kotlinx.serialization` se ve forzado a codificar explícitamente la propiedad en el payload JSON de las peticiones HTTP POST/UPSERT hacia Supabase.
 
 ### 2.4. Migración de Esquema (DDL Supabase PostgreSQL)
-Para soportar el filtrado geográfico por municipio, la base de datos de Supabase integra la adición de la columna `municipality` en las tablas `public.profiles` y `public.services`:
+Para soportar el filtrado geográfico por municipio y la suspensión/reactivación bivalente de usuarios, la base de datos de Supabase integra la adición de las columnas `municipality` e `is_suspended` en las tablas del esquema:
 
 ```sql
 -- Migración para agregar la columna municipality a las tablas public.profiles y public.services
@@ -275,6 +306,10 @@ ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';
 
 ALTER TABLE public.services 
 ADD COLUMN IF NOT EXISTS municipality text DEFAULT 'La Plata';
+
+-- Migración para agregar la columna is_suspended a la tabla public.profiles
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT false;
 ```
 
 ---

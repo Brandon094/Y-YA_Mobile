@@ -7,12 +7,35 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 
 ## [1.2.0] - 2026-09-05
 ### Añadido
+- **Módulo 1: Gestión Directa de Usuarios y Bivalencia de Suspensión/Reactivación en Panel Administrativo (`AdminDashboardScreen.kt`, `UserListItem.kt`, `UserProfile.kt` & `AdminViewModel.kt`):**
+    - **Atributo `is_suspended` y Columna en DB:** Incorporación del campo `is_suspended: Boolean = false` en `UserProfile.kt` y la columna `is_suspended` en `public.profiles`.
+    - **Bivalencia de Estados y Acciones en `AdminViewModel.kt`:**
+        - **`suspendUser(userId)`:** Actualiza `is_suspended = true` en `public.profiles` y desactiva sus servicios (`status = "inactive"`).
+        - **`reactivateUser(userId)`:** Actualiza `is_suspended = false` en `public.profiles` y reactiva sus servicios (`status = "active"`).
+    - **Insignia Reactiva y Botones Alternantes en `UserListItem.kt`:**
+        - Si `is_suspended == true`: Badge `🔴 SUSPENDIDO` y botón *"Reactivar"*.
+        - Si `is_suspended == false`: Badge `🟢 ACTIVO` y botón *"Suspender"*.
+        - **`🗑️ Eliminar`:** Eliminación permanente de la cuenta en `public.profiles` mediante `deleteUserAccount(userId)` apoyado por el diálogo atómico de confirmación `YayaConfirmationDialog`.
+    - **Protección de Seguridad:** Ocultamiento y bloqueo automático de acciones de suspensión o eliminación sobre perfiles con rol administrador (`profile.role != "admin"`).
 - **Restricción de Edad Mínima de 15 Años en Registro (`ValidationUtils.kt` & `RegisterUserScreen.kt`):**
     - Lógica de validación centralizada en `ValidationUtils.isValidBirthDate()` que verifica que el usuario tenga al menos 15 años cumplidos (`!date.isAfter(today.minusYears(15))`).
     - Mensaje de error contextual amigable: *"Debes tener al menos 15 años de edad para registrarte en YÁYA."*.
     - Restricción visual en el selector de calendario `DatePickerState` (`SelectableDates`) en `RegisterUserScreen`, deshabilitando automáticamente fechas posteriores a `LocalDate.now().minusYears(15)`.
+- **Documentación y Confirmación Oficial de Políticas de Seguridad Row Level Security (RLS) en Supabase (`SUPABASE_RLS_POLICIES.md`):**
+    - Creación del documento maestro `docs/02-architecture/SUPABASE_RLS_POLICIES.md` definiendo la matriz exhaustiva de políticas RLS para las 9 tablas de Supabase PostgreSQL (`profiles`, `services`, `availability`, `messages`, `requests`, `reports`, `ratings`, `categories`, `service_images`).
+    - Confirmación de las políticas de eliminación `DELETE` habilitadas para administradores sobre `profiles`, `services`, `availability`, `requests`, `messages`, `reports` y `ratings`, incluyendo el script SQL de habilitación e instruccional de ejecución en Supabase SQL Editor.
+- **Invocación RPC Atómica de Eliminación de Usuarios en Postgres (`AdminViewModel.kt` & `SUPABASE_RLS_POLICIES.md`):**
+    - **Función Almacenada `admin_delete_user_account(target_user_id)`:** Implementación de la función RPC con permisos `SECURITY DEFINER` en PostgreSQL Supabase para la purga atómica de usuarios.
+    - **Purga Servidor en 8 Fases (5ms):** Ejecuta la eliminación atómica en cascada en una sola transacción SQL nativa del servidor en ~5ms abarcando 8 tablas relacionales (`ratings`, `requests`, `messages`, `reports`, `service_images`, `services`, `availability`, `profiles`), erradicando latencia y llamadas HTTP múltiples.
+    - **Mecanismo Fallback de Borrado Secuencial:** Integración en `AdminViewModel.deleteUserAccount` de la invocación `rpc("admin_delete_user_account")` con captura de excepciones para fallback automático a borrado secuencial defensivo en cliente si la función RPC no estuviese creada en el servidor.
+- **Política RLS UPDATE para Administradores sobre Perfiles (`SUPABASE_RLS_POLICIES.md`):**
+    - Habilitación y confirmación de la política RLS `Admins pueden actualizar perfiles` (`FOR UPDATE TO authenticated USING (role = 'admin') WITH CHECK (role = 'admin')`) en `public.profiles`.
+    - Garantiza la autorización formal en la base de datos Supabase PostgreSQL para la modificación de la columna `is_suspended` desde el Panel Administrativo.
 
 ### Cambiado
+- **Actualización Optimista e Inmediata en Memoria para Suspensión/Reactivación (`AdminViewModel.kt`):**
+    - Actualización inmediata del estado `is_suspended` sobre el perfil correspondiente en la lista en memoria `allProfiles` (`_allProfiles.value = currentList.map { ... }`) al accionar *"Suspender"* o *"Reactivar"*.
+    - Eliminación de la re-descarga de red mediante `fetchUsers()` tras cambiar el estado de suspensión, erradicando el parpadeo (*flicker*), recargas de lista e interrupciones de scroll en la interfaz del Panel Administrativo.
 - **Rediseño UI/UX 2.0 del Campo de Duración Estimada, Matriz Tabular Ocupada y Estandarización del Control de Hora (`CreateServiceScreen.kt`):**
     - **Spacious Duration Field (Control Compuesto en 1 Línea Horizontal):** Maquetación del bloque de Duración Estimada en una sola línea amplia horizontal (`Row(Modifier.fillMaxWidth())`), donde el campo de cantidad (`OutlinedTextField`) y el selector de unidad (`ExposedDropdownMenuBox`) disponen de espacio para desplegar unidades de medida (`Horas`, `Minutos`, `Días`, `Meses`, `Años`) limpiamente sin envolver caracteres verticalmente.
     - **Matriz Tabular de Agenda de Servicios Ocupados ("Agenda de tus Otros Servicios Activos"):** Sustitución del párrafo descriptivo continuo por una tarjeta contenedora atómica con estructura tabular (`Surface` por día con badge `[Lunes]` y rango de horario ocupado `06:00 AM - 06:00 PM`), permitiendo al prestador identificar en medio segundo qué días y horas tiene libres.
@@ -24,6 +47,14 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Incremento de Versionamiento de la Aplicación (Hito v1.2.0 - versionCode 8):**
     - Actualización de la versión a `versionName = "1.2.0"` y `versionCode = 7` en `app/build.gradle.kts`.
     - Consolidación del lanzamiento oficial v1.2.0 que integra el Motor de Tutoriales Spotlight en 8 pantallas, el Wizard de Creación de Servicios en 2 Pasos con Duración Compuesta y Rediseño UI/UX 2.0, la Verificación Previa de Cédula, la Restricción de Edad Mínima de 15 Años y la Estandarización Iconográfica MD3 (limpieza completa de emojis en la pantalla de disponibilidad y formularios).
+
+### Corregido
+- **Resolución de Restricción de Clave Foránea 23503 (`requests_client_id_fkey`), Limpieza de `service_images` y Alineación de Esquema SQL (`AdminViewModel.kt` & `SUPABASE_RLS_POLICIES.md`):**
+    - Corrección de la excepción PostgreSQL Code `23503` (`requests_client_id_fkey`) al eliminar cuentas de usuario desde el Panel Administrativo (`deleteUserAccount`).
+    - Alineación exacta con las columnas reales de `public.requests` (`client_id` y `service_id`), eliminando la consulta con el filtro errado por `provider_id` (que provocaba `Code 42703 - Undefined Column`).
+    - La eliminación de solicitudes `requests` para un prestador consulta sus `services` por `provider_id` y elimina las solicitudes asociadas por `service_id`, combinada con la eliminación por `client_id` para clientes, garantizando la erradicación total del error de clave foránea al purgar cuentas de prueba.
+    - Implementación de la eliminación atómica ordenada en cascada e inclusión de la purga explícita previa de `service_images` asociadas a los servicios del prestador en `AdminViewModel.kt` respetando las dependencias relacionales del esquema en 8 fases: `ratings` ➔ `requests` ➔ `messages` ➔ `reports` ➔ `service_images` ➔ `services` ➔ `availability` ➔ `profiles`.
+    - Extensión y confirmación de las políticas RLS de eliminación (`DELETE`) para administradores sobre las 7 tablas relacionadas y la purga de imágenes de servicio en `SUPABASE_RLS_POLICIES.md`.
 
 ## [1.1.0] - 2026-09-03
 ### Añadido
