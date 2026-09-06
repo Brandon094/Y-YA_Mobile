@@ -12,17 +12,17 @@ El Portal Web de YÁYA es una infraestructura estática de alto rendimiento dise
 Para mantener la consistencia con la App, se aplica una jerarquía de componentes en el archivo `js/components.js`:
 *   **Átomos:** Definición de paleta de colores (`yayaRed`, `yayaNavy`, `darkBg: '#0F172A'`, `darkSurface: '#1E293B'`), botones Pro y Badges institucionales.
 *   **Moléculas:** Tarjetas de beneficios, pasos del ciclo de vida y elementos de navegación.
-*   **Organismos:** Navbar responsivo con soporte de Modo Oscuro y Footer unificado con enlaces legales e insignia de versión (`v1.1.0 Stable (versionCode 5)`).
-*   **Estandarización de Tema Oscuro (Deep Midnight):** Aplicación de la paleta Slate 900 (`#0F172A`) y Slate 800 (`#1E293B`) en el 100% de las páginas web del portal (`index.html`, `tecnica.html`, `manuales.html`, `terminos.html`, `privacidad.html`, `eliminar-cuenta.html` y `js/components.js`), eliminando fondos negros genéricos (`#121212` / `#1E1E1E`) para lograr 100% de coherencia visual e identidad de marca con la App móvil Android v1.1.0.
+*   **Organismos:** Navbar responsivo con soporte de Modo Oscuro y Footer unificado con enlaces legales e insignia de versión (`v1.2.0 Stable (versionCode 7)`).
+*   **Estandarización de Tema Oscuro (Deep Midnight):** Aplicación de la paleta Slate 900 (`#0F172A`) y Slate 800 (`#1E293B`) en el 100% de las páginas web del portal (`index.html`, `tecnica.html`, `manuales.html`, `terminos.html`, `privacidad.html`, `eliminar-cuenta.html` y `js/components.js`), eliminando fondos negros genéricos (`#121212` / `#1E1E1E`) para lograr 100% de coherencia visual e identidad de marca con la App móvil Android v1.2.0.
 
 ## 3. Funcionalidades Core
-*   **Tema Dual:** Soporte nativo para Modo Claro y Modo Oscuro con persistencia en `localStorage` y estandarización de la paleta nocturna Deep Midnight (`darkBg: '#0F172A'` / `darkSurface: '#1E293B'`) en el 100% de las páginas web y componentes dinámicos (`js/components.js`), garantizando paridad e identidad visual absoluta con la aplicación móvil Android v1.1.0.
+*   **Tema Dual:** Soporte nativo para Modo Claro y Modo Oscuro con persistencia en `localStorage` y estandarización de la paleta nocturna Deep Midnight (`darkBg: '#0F172A'` / `darkSurface: '#1E293B'`) en el 100% de las páginas web y componentes dinámicos (`js/components.js`), garantizando paridad e identidad visual absoluta con la aplicación móvil Android v1.2.0.
 *   **Responsive UI:** Menú de hamburguesa y layouts elásticos que se adaptan a cualquier resolución móvil.
 *   **Legal Rendering:** Motor de visualización jerárquico para documentos normativos (Markdown-lite).
 *   **Manuales de Uso Interconectados y Segregados por Rol (`portal_web/manuales.html`):**
     *   **Selector Interactivo de Roles (`switchRoleTab`):** Controlador en JavaScript para conmutación fluida entre las guías operativas de *Rol Cliente*, *Rol Prestador* y *Rol Administrador*.
     *   **Matriz Atómica de Permisos:** Componentes con bloques destacados estilizados con Tailwind CSS que desglosan minuciosamente facultades ("LO QUE PUEDE HACER EL USUARIO" en contenedor verde `emerald`) y prohibiciones/restricciones ("LO QUE NO PUEDE HACER EL USUARIO" en contenedor rojo `rose`).
-    *   **Sincronización con Manuales v1.1.0 de la App:** Alineación total con el motor interno de la aplicación (`ManualConstants.kt`), reflejando el filtrado por municipio, la jornada maestra, la prevención de traslapes horarios, la reputación de talentos y el semáforo disciplinario de moderación.
+    *   **Sincronización con Manuales v1.2.0 de la App:** Alineación total con el motor interno de la aplicación (`ManualConstants.kt`), reflejando el filtrado por municipio, la jornada maestra compacta, la prevención de traslapes horarios, el Wizard de servicios 2.0 y el sistema Spotlight.
     *   **Estándar Técnico Sin Emojis:** Redacción formal acorde al estándar legal Markdown sin emojis, con soporte de Tema Dual e Interfaz Elástica Responsive.
 
 ## 4. Optimización y Accesibilidad
@@ -30,7 +30,7 @@ Para mantener la consistencia con la App, se aplica una jerarquía de componente
 *   **Inclusión:** Cumplimiento de estándares de accesibilidad con semántica HTML5, etiquetas ARIA para navegación móvil y contraste de color optimizado para legibilidad.
 
 ## 5. Versionamiento Semántico
-El portal web sigue el versionamiento unificado del proyecto YÁYA (**v1.1.0 - versionCode 5**), asegurando que la documentación y la cara pública correspondan siempre a la última versión estable del binario móvil. El despliegue de la versión v1.1.0 consolida el Portal Web y el Portal de Manuales en producción.
+El portal web sigue el versionamiento unificado del proyecto YÁYA (**v1.2.0 - versionCode 7**), asegurando que la documentación y la cara pública correspondan siempre a la última versión estable del binario móvil. El despliegue de la versión v1.2.0 consolida el Portal Web y el Portal de Manuales en producción.
 
 ## 6. Pipeline de Despliegue y Configuración de Hosting
 El despliegue está automatizado mediante la Firebase CLI sobre la infraestructura de Firebase Hosting (Google Cloud Infrastructure).

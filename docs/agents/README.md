@@ -8,13 +8,13 @@ El punto de entrada de cada solicitud. Traduce la visión del usuario y delega l
 ---
 
 ### 🏗️ [Arquitecto de Software](./LEAD_ARCHITECT.md)
-Guardián de la estructura MVVM, Kotlin 2.2.10 y navegación Type-Safe.
+Guardián de la estructura MVVM, Kotlin 2.4.10, API 37 y navegación Type-Safe.
 
 ### 🎨 [Especialista en UI/UX](./UI_UX_SPECIALIST.md)
-Responsable del diseño Material 3, internacionalización y consistencia visual de marca.
+Responsable del diseño Material 3, asistencia inteligente Spotlight, wizards guiados y consistencia visual de marca.
 
 ### 🛡️ [Experto en Datos y Seguridad](./DATA_SECURITY_AGENT.md)
-Encargado de la optimización de Supabase (Joins), políticas RLS y persistencia de sesión.
+Encargado de la optimización de Supabase (Joins), políticas RLS, funciones RPC y purga atómica de datos.
 
 ### 💼 [Estratega de Negocio](./BUSINESS_LOGIC_AGENT.md)
 Custodio de las reglas de cuenta universal, negociación y validación de disponibilidad.

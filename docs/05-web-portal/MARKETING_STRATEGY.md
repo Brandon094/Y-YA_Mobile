@@ -1,11 +1,11 @@
-# Estrategia de Marketing y Conversión (SEO) - YÁYA
+# Estrategia de Marketing y Conversión (SEO) - YÁYA (v1.2.0)
 
 El portal web actúa como el **Embudo de Conversión (Conversion Funnel)** oficial de YÁYA, transformando visitantes en usuarios de la App.
 
 ## 1. El Embudo de Conversión
 *   **Atracción (Awareness):** Título impactante ("Confianza que conecta") y mockups de alta calidad.
-*   **Interés (Interest):** Explicación clara de las ventajas exclusivas (Handshake, Subasta).
-*   **Deseo (Desire):** Muestra de categorías de talento y enfoque en impacto regional (Huila).
+*   **Interés (Interest):** Explicación clara de las ventajas exclusivas (Handshake, Subasta) y el innovador sistema de **Aprendizaje Inteligente (Spotlight)** que reduce la curva de aprendizaje a segundos.
+*   **Deseo (Desire):** Muestra de categorías de talento, seguridad de identidad reforzada (Pre-flight checks) y enfoque en impacto regional (Huila).
 *   **Acción (Action):** Botones CTA (Call to Action) directos hacia la ficha de la Google Play Store.
 
 ## 2. Optimización SEO de Élite
