@@ -32,8 +32,8 @@ Utilizada para dar feedback claro al usuario sobre el estado de sus procesos:
 
 ### Paleta de Superficie
 - **Fondo Claro:** `#F8F9FA` (Gris muy claro para descanso visual).
-- **Fondo Oscuro:** `#1C1C1E` (Gris carbón profundo, evita el negro puro).
-- **Superficie Oscura:** `#2C2C2E` (Tarjetas y elementos elevados en modo oscuro).
+- **Fondo Oscuro:** `#0B0E11` ("Deep Midnight" - El modo oscuro oficial unificado para máxima inmersión).
+- **Superficie Oscura:** `#161B22` (Tarjetas y elementos elevados en modo oscuro Deep Midnight).
 - **Texto Primario:** `#1A1A1A` (Gris casi negro para máxima legibilidad).
 
 ## 3. Elementos Gráficos

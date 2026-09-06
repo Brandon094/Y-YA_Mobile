@@ -29,6 +29,11 @@ Este documento define los términos clave utilizados en el ecosistema de YÁYA p
 - **Jetpack Compose:** Framework moderno de Android utilizado para construir la interfaz de usuario de forma declarativa.
 - **RLS (Row Level Security):** Políticas de seguridad a nivel de base de datos que aseguran que los usuarios solo puedan acceder a sus propios datos.
 - **UUID:** Identificador Universal Único utilizado para las llaves primarias de todas las tablas.
+- **Spotlight Effect:** Técnica de UI que oscurece la pantalla excepto por un área específica (recorte) para resaltar un componente durante el tutorial.
+- **Pre-flight Check:** Validación previa que se ejecuta antes de una acción crítica (como el registro) para asegurar que los datos sean únicos y válidos.
+- **Wizard:** Patrón de diseño que divide un proceso complejo en varios pasos secuenciales y sencillos.
+- **RPC (Remote Procedure Call):** Función ejecutada en el servidor (Postgres) invocada desde el cliente para realizar tareas complejas como el borrado atómico.
+- **Cascading Delete:** Mecanismo que asegura que al eliminar un registro principal, todos sus datos relacionados en otras tablas se borren automáticamente para mantener la integridad.
 
 ---
 *Mantenimiento de Glosario por BH++*

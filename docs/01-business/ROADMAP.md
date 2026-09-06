@@ -2,7 +2,7 @@
 
 Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA, dividida en hitos (milestones) que llevan el proyecto desde su estado actual hasta el lanzamiento del MVP (Producto Mínimo Viable) y futuras expansiones.
 
-## Estado Actual: 🟢 Producción / Play Store Ready (v1.1.0 - versionCode 5)
+## Estado Actual: 🟢 Producción / Play Store Ready (v1.2.0 - versionCode 8)
 - **Cuenta Universal:** Sin doble fricción entre clientes y prestadores.
 - **Negociación Activa ("Handshake"):** Flujo de contraofertas con doble confirmación funcional.
 - **Gestión Dual & Admin:** Panel administrativo con sanciones progresivas y anonimato de moderación.
@@ -61,12 +61,18 @@ Este documento describe la hoja de ruta estratégica para el desarrollo de YÁYA
 - [x] **Reportes de Comportamiento:** Implementación de tabla `public.reports` y sistema de denuncias visuales.
 - [x] **Auditoría de Servicios:** Flujo de aprobación para nuevos servicios de prestadores no verificados.
 
-## Hito 6: Finalización de Manuales, Rediseño Profile 2.0 y Lanzamiento (Presentación SENA & Play Store)
+## Hito 6: Evolución UI/UX y Seguridad Robusta (v1.2.0) - 🟢 COMPLETO
+- [x] **Tutoriales Spotlight:** Implementación del sistema *ShowOnce* con 8 pantallas, recortes transparentes y Anillo de Luz.
+- [x] **Wizard de Servicios 2.0:** Flujo de creación en 2 pasos con barra de progreso y duración estructurada.
+- [x] **Pre-flight Checks:** Validación preventiva de cédula y correo antes del registro en Auth.
+- [x] **Restricción de Edad:** Validación de 15 años mínimos con inhabilitación de fechas en calendario.
+- [x] **Borrado RPC:** Implementación de borrado atómico en cascada mediante procedimientos almacenados en Postgres.
 - [x] **Consolidación Atómica:** Refactorización total de UI/UX (Atoms, Molecules, Organisms).
-- [x] **Rediseño ProfileScreen 2.0:** Hero Header 2.0 con botón flotante de edición (`IconButton Icons.Default.Edit`), Quick Action Cards (*Mis Servicios*, *Solicitudes* con badge de pendientes, *Reputación* ⭐ 4.9) y navegación por `TabRow` (*"💼 Mi Operación"* y *"⚙️ Ajustes y Ayuda"*).
-- [x] **Visor de Manuales Integrado por Rol:** Segregación por rol (`ManualConstants.getManualContentForRole`) en `LegalViewerScreen` con estilo formal Markdown sin emojis para Cliente, Prestador y Admin.
+- [x] **Rediseño ProfileScreen 2.0:** Hero Header 2.0 con botón flotante de edición y Quick Action Cards.
 - [x] **Auditoría Admin:** Sistema de moderación y sanciones progresivas funcional.
 - [x] **Manual Técnico Completo:** Documentación de arquitectura Senior y estándares de codificación.
+
+## Hito 7: Lanzamiento y Carga de Datos Real
 - [x] **Ajuste Legal Final & Google Play:** Cumplimiento de políticas con visor legal, link de privacidad y permiso `AD_ID`.
 - [x] **Estabilidad de Layouts & CI/CD:** Fix de `IllegalStateException` en scrolleables Compose, símbolos NDK FULL y CodeQL CI/CD con Java 17.
 - [ ] **Carga de Datos Real:** Fase de pruebas con usuarios reales (Mauro, Harold, Brandon).

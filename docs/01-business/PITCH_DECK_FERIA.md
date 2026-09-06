@@ -3,7 +3,7 @@
 **Proyecto:** YÁYA (Ecosistema Móvil Android + Portal Web)  
 **Programa:** Tecnólogo en Análisis y Desarrollo de Software (ADSO)  
 **Equipo:** BH++ Team (Brandon Daza y Equipo)  
-**Versión:** `v1.1.0` (versionCode 6 - Play Store Ready)  
+**Versión:** `v1.2.0` (versionCode 8 - Play Store Ready)  
 **Portal Web Activo:** [https://y-ya-d5929.web.app](https://y-ya-d5929.web.app)  
 
 ---
@@ -28,19 +28,19 @@ Para mostrar el proyecto a los compañeros e instructores que visiten el stand, 
 | o "Neiva" para mostrar cómo el catálogo se actualiza al instante con los          |
 | servicios disponibles en ese municipio específico.                               |
 +-----------------------------------------------------------------------------------+
-| PASO 2: AGENDAMIENTO INTELIGENTE Y VALIDACIONES                                   |
-| Intenta agendar una cita en una fecha pasada o fuera del horario del prestador.   |
-| Explica cómo el motor de validaciones (ValidationUtils) bloquea citas inválidas  |
-| y previene el cruce/traslape de horarios entre servicios.                         |
+| PASO 2: AGENDAMIENTO INTELIGENTE Y WIZARD 2.0                                      |
+| Muestra el Wizard de 2 pasos para la creación de servicios con su barra de        |
+| progreso y duración estructurada. Intenta agendar una cita en una fecha pasada     |
+| o fuera del horario del prestador para mostrar las validaciones.                  |
 +-----------------------------------------------------------------------------------+
 | PASO 3: NEGOCIACIÓN "HANDSHAKE" Y CHAT REALTIME                                   |
 | Muestra el chat en tiempo real y cómo el cliente propone un precio y el           |
 | prestador confirma el acuerdo mediante el mecanismo digital "Handshake".          |
 +-----------------------------------------------------------------------------------+
-| PASO 4: PERFIL 2.0 Y MANUAL DE USO INTEGRADO                                      |
-| En el perfil, muestra el rediseño por pestañas (Mi Operación vs Ajustes),         |
-| las tarjetas de acceso rápido (Servicios, Solicitudes, Reputación ⭐)             |
-| y abre el "Manual de Uso de la App" integrado directamente sin salir de la app.   |
+| PASO 4: TUTORIAL SPOTLIGHT Y PERFIL 2.0                                           |
+| Inicia el Tutorial Spotlight que guía al usuario por la interfaz con recortes     |
+| y Anillo de Luz. Luego, en el perfil, muestra el rediseño por pestañas y las      |
+| tarjetas de acceso rápido.                                                        |
 +-----------------------------------------------------------------------------------+
 | PASO 5: DEMOSTRACIÓN DEL PORTAL WEB EN LA LAPTOP (EMBUDO DE CONVERSIÓN)            |
 | Muestra el Portal Web (https://y-ya-d5929.web.app/manuales) que actúa como        |
@@ -70,4 +70,4 @@ Si tus compañeros u otros instructores te preguntan sobre el desarrollo técnic
 - *"¡Gracias por pasar por nuestro stand de YÁYA!"*
 
 ---
-*Guía de Presentación del Stand - Proyecto YÁYA v1.1.0 • BH++ Team SENA*
+*Guía de Presentación del Stand - Proyecto YÁYA v1.2.0 • BH++ Team SENA*

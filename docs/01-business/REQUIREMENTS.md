@@ -1,4 +1,4 @@
-# Requisitos del Proyecto - YÁYA (v0.1.5-alpha)
+# Requisitos del Proyecto - YÁYA (v1.2.0)
 
 ## 1. Requisitos Funcionales (RF)
 
@@ -40,6 +40,10 @@
 - **RF-18:** **Flujo de Aprobación:** Los nuevos servicios entran en estado `pending_approval` y requieren validación humana para ser públicos.
 - **RF-19:** **Sistema de Sanciones Progresivas:** El sistema agrupará reportes por infractor y recomendará sanciones (Llamado de atención, Suspensión, Eliminación) basadas en el volumen de denuncias (Semáforo de Severidad).
 - **RF-21:** Los administradores podrán suspender servicios o eliminar cuentas de infractores directamente desde el panel de reportes.
+- **RF-22 (Tutoriales Spotlight):** El sistema incluirá una guía visual interactiva (*ShowOnce*) que ilumina componentes mediante recortes y Anillo de Luz.
+- **RF-23 (Verificación Previa):** El sistema realizará un *Pre-flight Check* para bloquear duplicados de cédula o correo antes de proceder al registro en Auth.
+- **RF-24 (Restricción de Edad):** El sistema exigirá un mínimo de 15 años cumplidos para el registro, inhabilitando fechas no permitidas en el calendario.
+- **RF-25 (Wizard de Servicios):** La creación de servicios se dividirá en 2 etapas claras con una barra de progreso y duración estructurada.
 
 ## 2. Requisitos No Funcionales (RNF)
 
