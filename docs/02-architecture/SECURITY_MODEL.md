@@ -4,6 +4,7 @@ Este documento describe las medidas de seguridad implementadas en YÁYA para pro
 
 ## 1. Autenticación y Sesiones
 - **Proveedor:** Utilizamos **Supabase Auth** para la gestión de usuarios.
+- **Verificación Previa (Pre-flight Check):** Antes de invocar a Supabase Auth, el sistema realiza una validación exhaustiva de duplicados de cédula y correo electrónico directamente en la base de datos. Esto evita la creación de "registros huérfanos" en Auth que no tengan un perfil correspondiente en la tabla `profiles`.
 - **Persistencia:** La sesión del usuario se guarda localmente mediante `SharedPreferencesSettings`, permitiendo que el usuario no deba re-autenticarse al cerrar y abrir la aplicación.
 - **Recuperación:** Se implementa un flujo de restablecimiento de contraseña mediante correos electrónicos gestionados por Supabase.
 
@@ -14,7 +15,7 @@ El sistema utiliza **Row Level Security (RLS)** de PostgreSQL para asegurar que 
     - **Lectura:** Usuarios autenticados ven servicios con `status = 'active'`. Dueños ven sus servicios en cualquier estado.
     - **Inserción:** Usuarios autenticados pueden crear servicios vinculados a su propio `auth.uid()`.
     - **Actualización:** Solo el dueño (`provider_id`) puede editar sus servicios.
-    - **Administración:** Los perfiles con rol `admin` tienen bypass de RLS para moderación total.
+    - **Administración:** Los perfiles con rol `admin` poseen permisos extendidos de RLS (DELETE/UPDATE) sobre todas las tablas de moderación. Para borrados críticos y limpios, se utiliza la función RPC `admin_delete_user_account` con privilegios `SECURITY DEFINER`, permitiendo la eliminación en cascada de registros relacionados en las 8 tablas maestras (mensajes, imágenes, servicios, etc.) que normalmente estarían protegidos por integridad relacional.
 - **Requests:** Solo el cliente que solicita (`client_id`) y el prestador que recibe el servicio (`provider_id` vía join) pueden ver y actualizar el estado o precio de una solicitud (Negociación).
 - **Messages:** 
     - **Lectura:** Usuarios solo ven mensajes donde son remitentes o destinatarios.
@@ -36,8 +37,9 @@ El sistema utiliza **Row Level Security (RLS)** de PostgreSQL para asegurar que 
 ## 4. Comunicación Segura
 - Todas las peticiones al backend se realizan mediante **HTTPS**, asegurando el cifrado de los datos en tránsito (SSL/TLS).
 
-## 5. Validación de Datos
+## 5. Validación de Datos e Integridad
 - **Frontend:** Implementamos validaciones en tiempo real para correos, contraseñas y campos obligatorios antes de enviar cualquier petición al servidor.
+- **Restricción de Edad:** El sistema impone una restricción de edad mínima de **15 años** para el registro. Esta regla se formaliza mediante un bloqueo lógico en el componente de calendario (Date Picker), impidiendo la selección de fechas de nacimiento que no cumplan con el requisito legal, sumado a validaciones en el ViewModel del Wizard de registro.
 - **Backend:** PostgreSQL aplica restricciones de integridad (Checks, Not Null, Unique) para evitar datos corruptos.
 
 ## 6. Privacidad y Anonimato Admin

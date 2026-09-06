@@ -1,4 +1,4 @@
-# 🛡️ Auditoría de Calidad y Requisitos - YÁYA (v1.1.0)
+# 🛡️ Auditoría de Calidad y Requisitos - YÁYA (v1.2.0)
 
 Este documento sirve como guía oficial para el proceso de verificación de requisitos y aseguramiento de la calidad basado en el estándar **ISO/IEC 25010**.
 
@@ -30,6 +30,16 @@ Este documento sirve como guía oficial para el proceso de verificación de requ
 - **CUANDO** selecciona múltiples imágenes de su galería y guarda el servicio.
 - **ENTONCES** el sistema debe subir los archivos al bucket de Storage, generar URLs públicas y persistirlas en la tabla `service_images` para su visualización en el catálogo.
 
+### Escenario 4: Aprendizaje Guiado (Spotlight Tutorials)
+- **DADO** que un nuevo usuario ingresa por primera vez a la pantalla de Negociación.
+- **CUANDO** la pantalla termina de cargar.
+- **ENTONCES** el sistema activa el motor `YayaTutorialOverlay`, oscureciendo la pantalla y resaltando secuencialmente el campo de contraoferta y el botón de aceptación para guiar al usuario.
+
+### Escenario 5: Wizard de Creación de Servicios (Carga Cognitiva)
+- **DADO** que un Prestador desea publicar un nuevo talento.
+- **CUANDO** inicia el Wizard de registro de servicios.
+- **ENTONCES** el sistema desglosa el proceso en un formulario de 2 pasos (Información Básica -> Multimedia y Duración) con una barra de progreso, reduciendo la fatiga visual y asegurando la captura de datos estructurados.
+
 ---
 
 ## 3. Matriz de Calidad ISO/IEC 25010 (Checklist)
@@ -42,11 +52,11 @@ Este documento sirve como guía oficial para el proceso de verificación de requ
 | | ¿Consumo de recursos estable? | Sí | Perfilado de memoria realizado con Android Profiler. |
 | **Compatibilidad** | ¿Funciona en SO objetivo? | Sí | Soporte nativo para Android 8.0 hasta Android 15. |
 | | ¿Integración con APIs correcta? | Sí | Sincronización perfecta con Supabase Postgrest y Realtime. |
-| **Usabilidad** | ¿Interfaz intuitiva y coherente? | Sí | Refactorización masiva bajo **Atomic Design**, ProfileScreen 2.0 (Hero Header, Quick Action Cards, TabRow) y Visor de Manuales por rol en estilo Markdown formal sin emojis. |
+| **Usabilidad** | ¿Interfaz intuitiva y coherente? | Sí | Refactorización masiva bajo **Atomic Design**, navegación guiada mediante tutoriales Spotlight y reducción de carga cognitiva en Wizards de 2 pasos. |
 | | ¿Mensajes de error claros? | Sí | Captura de excepciones con mensajes amigables al usuario. |
 | **Fiabilidad** | ¿Maneja fallos sin cerrarse (crashes)? | Sí | Implementación de `try-catch` en ViewModels y Scaffold de seguridad. |
 | | ¿Evita pérdida de datos? | Sí | Persistencia inmediata en PostgreSQL tras cada acción del usuario. |
-| **Seguridad** | ¿Valida autenticación y cifra claves? | Sí | Supabase Auth maneja tokens JWT y cifrado industrial. |
+| **Seguridad** | ¿Valida autenticación y cifra claves? | Sí | Supabase Auth maneja tokens JWT. Implementación de **Pre-flight Checks** para evitar duplicados antes del registro. |
 | | ¿Protegido contra Inyección SQL? | Sí | Acceso vía API Postgrest (Supabase) que parametriza toda consulta. |
 | **Mantenibilidad** | ¿Código estructurado y documentado? | Sí | Arquitectura MVVM, Clean Code y manual técnico completo. |
 | | ¿Existen pruebas de validación? | Sí | Guía de QA Manual (`MANUAL_TESTING_GUIDE.md`) ejecutada. |

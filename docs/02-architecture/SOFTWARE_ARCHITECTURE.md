@@ -1,4 +1,4 @@
-# Arquitectura de Software - YÁYA (Master Document - v1.1.0 - versionCode 5)
+# Arquitectura de Software - YÁYA (Master Document - v1.2.0 - versionCode 8)
 
 Este documento define la columna vertebral técnica de YÁYA, detallando los patrones de diseño, la jerarquía de componentes y las decisiones de ingeniería que garantizan un software de clase empresarial.
 
@@ -12,6 +12,7 @@ La interfaz de usuario se construye siguiendo la metodología **Atomic Design**,
 - **Moléculas:** Grupos de átomos que funcionan como una unidad funcional simple. (Ej: `RatingIndicator`, `DayIndicator`, `DetailRow`, `ChatBubble`, `YayaNegotiationDialog`).
 - **Organismos:** Secciones complejas orquestadas que forman bloques lógicos de una pantalla. (Ej: `ServiceCard`, `HomeTopBar`, `ProviderCard`, `IncomingRequestCard`, `MyOrderCard`).
 - **Páginas (Screens):** Composables de alto nivel que orquestan los organismos e inyectan el estado desde el ViewModel.
+- **Estandarización Iconográfica:** Transición de limpieza desde el uso de emojis hacia **Iconos Vectoriales Material Design 3 (MD3)**, garantizando una estética profesional y escalable sin distorsiones por renderizado de fuentes.
 
 **Reglas de Oro de la UI:**
 - **Stateless:** Las pantallas no mantienen estado interno de negocio.
@@ -63,6 +64,14 @@ El sistema administrativo implementa una lógica de protección comunitaria basa
 - **Agrupamiento Atómico:** Los reportes se consolidan por infractor (`ReportedUserSummary`) para facilitar la toma de decisiones masivas.
 - **Semáforo de Severidad:** Cálculo en tiempo real del nivel de riesgo (Llamado de atención, Suspensión, Eliminación) basado en umbrales de reincidencia (3 y 5 reportes).
 - **Advertencias Automatizadas:** Los administradores pueden enviar "Llamados de Atención" pre-diseñados mediante el sistema de chat, automatizando la comunicación preventiva sin necesidad de redacción manual.
+- **Purga Atómica Server-Side:** La eliminación de cuentas críticas se realiza mediante la función RPC `admin_delete_user_account` en Postgres con privilegios `SECURITY DEFINER`. Esta función garantiza la integridad relacional mediante un borrado sincronizado en las 8 tablas principales (`profiles`, `services`, `availability`, `requests`, `messages`, `reports`, `ratings`, `service_images`) en una sola transacción atómica, evitando registros huérfanos.
+
+## 10. Motor de Tutoriales Atómicos (YayaTutorialOverlay)
+YÁYA integra un motor de asistencia contextual de desarrollo propio para optimizar la curva de aprendizaje:
+- **Motor Nativo Compose:** A diferencia de librerías externas, `YayaTutorialOverlay` es un componente atómico nativo que utiliza `Canvas` y `BlendMode.Clear` para recortar formas (círculos/rectángulos) sobre una capa de oscurecimiento.
+- **Detección de Posición:** Utiliza `onGloballyPositioned` para capturar las coordenadas exactas de los elementos Material 3 a resaltar, garantizando que el "Spotlight" se alinee perfectamente independientemente de la densidad de pantalla.
+- **Persistencia ShowOnce:** Lógica basada en `SharedPreferences` que garantiza que los tutoriales solo se muestren una vez por sesión de usuario o hasta que se completen.
+- **Flujos Críticos Asistidos:** Implementación en pantallas de Negociación, Creación de Servicio y Gestión de Horarios.
 
 ## 8. Gestión de Cumplimiento Legal
 YÁYA integra un motor de visualización de documentos normativos:

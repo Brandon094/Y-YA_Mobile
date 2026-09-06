@@ -1,6 +1,8 @@
 # Diccionario de Datos - YÁYA
 
-Este documento detalla la definición técnica de cada tabla y columna en la base de datos de YÁYA (Supabase/PostgreSQL).
+Este documento detalla la definición técnica de cada tabla y columna en la base de datos de YÁYA (Supabase/PostgreSQL), sincronizado al 100% con los 9 modelos de datos serializables de Kotlin (`com.bhplusplus.yaya.data.models`).
+
+Para una referencia técnica del script DDL completo, consulte el [Esquema SQL Maestro (DATABASE_SCHEMA.md)](./DATABASE_SCHEMA.md).
 
 ## 1. Tabla: `profiles`
 Información de identidad de los usuarios, vinculada a `auth.users`.
@@ -17,6 +19,7 @@ Información de identidad de los usuarios, vinculada a `auth.users`.
 | `role` | varchar | CHECK (client, provider, admin) | Rol asignado en la plataforma. |
 | `avatar_url` | text | | URL de la imagen de perfil. |
 | `fcm_token` | text | | Token de Firebase para notificaciones push (Hito 4). |
+| `is_suspended` | boolean | DEFAULT false | Estado de suspensión de la cuenta administrado por el equipo de moderación (`UserProfile.kt`). |
 | `created_at` | timestamptz | DEFAULT now() | Fecha de creación del perfil. |
 
 ## 2. Tabla: `categories`
@@ -122,5 +125,22 @@ Registro de denuncias para moderación y calidad del ecosistema.
 | `reason` | text | NOT NULL | Motivo de la denuncia. |
 | `created_at` | timestamptz | DEFAULT now() | Fecha de creación. |
 
+## 10. Mapeo Módulos Kotlin (`com.bhplusplus.yaya.data.models`)
+
+Sincronización auditada al 100% entre las 9 tablas de Supabase PostgreSQL y las data classes serializables con `kotlinx.serialization`:
+
+| Tabla PostgreSQL | Modelo Kotlin (`.kt`) | Atributos Clave / Anotaciones Relacionales |
+| :--- | :--- | :--- |
+| `public.profiles` | `UserProfile.kt` | `id`, `full_name`, `role`, `phone`, `document_id`, `birth_date`, `address`, `municipality`, `avatar_url`, `fcm_token`, `is_suspended` |
+| `public.categories` | `Category.kt` | `id`, `name`, `description`, `icon_name` |
+| `public.services` | `Service.kt` | `id`, `provider_id`, `category_id`, `title`, `description`, `price`, `estimated_time`, `working_days`, `start_time`, `end_time`, `materials_included`, `extra_cost`, `municipality`, `status`, `created_at`, `@SerialName("provider_profile") provider` |
+| `public.service_images` | `ServiceImage.kt` | `id`, `service_id`, `image_url`, `created_at` |
+| `public.availability` | `Availability.kt` | `id`, `provider_id`, `day_of_week`, `start_time`, `end_time` |
+| `public.requests` | `ServiceRequest.kt` (`Request.kt`) | `id`, `client_id`, `service_id`, `final_price`, `request_description`, `service_address`, `scheduled_date`, `status`, `created_at`, `services`, `@SerialName("profiles") client` |
+| `public.ratings` | `Rating.kt` | `id`, `request_id`, `client_id`, `provider_id`, `score`, `comment`, `created_at` |
+| `public.messages` | `Message.kt` | `id`, `sender_id`, `receiver_id`, `content`, `is_read`, `sent_at` |
+| `public.reports` | `Report.kt` | `id`, `reporter_id`, `reported_user_id`, `reason`, `created_at`, `@SerialName("reporter_profile") reporter`, `@SerialName("reported_profile") reported` |
+
 ---
 *Documentación de Datos por BH++ Team - Ingeniería de Software*
+

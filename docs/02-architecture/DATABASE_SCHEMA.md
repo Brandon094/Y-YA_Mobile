@@ -1,25 +1,16 @@
-# 🗄️ Esquema DDL de Base de Datos - YÁYA Supabase PostgreSQL
+# Esquema SQL Maestro - YÁYA Supabase
 
-**Versión:** 1.2.0  
-**Motor DB:** PostgreSQL (Supabase)  
-**Ubicación:** `docs/02-architecture/DATABASE_SCHEMA.md`  
+Este documento contiene la definición DDL (Data Definition Language) de la base de datos de YÁYA en Supabase PostgreSQL. Es la referencia técnica para la creación y mantenimiento de la estructura de tablas.
 
 ---
 
-## 1. 🔍 Resumen del Esquema Relacional
-
-Este documento contiene la definición técnica exacta de creación de tablas (DDL - Data Definition Language) para la base de datos PostgreSQL de la plataforma **YÁYA**. Refleja la estructura de producción, restricciones de clave primaria (`PRIMARY KEY`), relaciones de clave foránea (`FOREIGN KEY`), restricciones de validación (`CHECK`) y valores por defecto (`DEFAULT`).
-
----
-
-## 2. 📜 Script DDL de Creación de Tablas (PostgreSQL)
+## 🏗️ Estructura de Tablas (Esquema Public)
 
 ```sql
--- ====================================================================
--- ESQUEMA DDL COMPLETO DE BASE DE DATOS - YÁYA PLATFORM v1.2.0
--- ====================================================================
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
 
--- 1. TABLA PUBLIC.PROFILES (Identidad de Usuarios)
+-- 1. Perfiles de Usuario
 CREATE TABLE public.profiles (
   id uuid NOT NULL,
   full_name character varying NOT NULL,
@@ -37,7 +28,7 @@ CREATE TABLE public.profiles (
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
 
--- 2. TABLA PUBLIC.CATEGORIES (Rubros de Servicios)
+-- 2. Categorías de Servicios
 CREATE TABLE public.categories (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   name character varying NOT NULL UNIQUE,
@@ -46,7 +37,7 @@ CREATE TABLE public.categories (
   CONSTRAINT categories_pkey PRIMARY KEY (id)
 );
 
--- 3. TABLA PUBLIC.SERVICES (Catálogo de Servicios Publicados)
+-- 3. Servicios Publicados
 CREATE TABLE public.services (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   provider_id uuid NOT NULL,
@@ -59,7 +50,7 @@ CREATE TABLE public.services (
   extra_cost numeric DEFAULT 0.00,
   status character varying DEFAULT 'pending_approval'::character varying CHECK (status::text = ANY (ARRAY['active'::text, 'inactive'::text, 'pending_approval'::text])),
   created_at timestamp with time zone DEFAULT now(),
-  working_days ARRAY DEFAULT '{}'::integer[],
+  working_days integer[] DEFAULT '{}'::integer[],
   start_time time without time zone DEFAULT '08:00:00'::time without time zone,
   end_time time without time zone DEFAULT '18:00:00'::time without time zone,
   municipality text DEFAULT 'La Plata'::text,
@@ -68,7 +59,7 @@ CREATE TABLE public.services (
   CONSTRAINT services_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id)
 );
 
--- 4. TABLA PUBLIC.AVAILABILITY (Jornada Maestra del Prestador)
+-- 4. Disponibilidad Maestra
 CREATE TABLE public.availability (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   provider_id uuid NOT NULL,
@@ -79,7 +70,7 @@ CREATE TABLE public.availability (
   CONSTRAINT availability_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id)
 );
 
--- 5. TABLA PUBLIC.REQUESTS (Solicitudes de Contratación)
+-- 5. Solicitudes de Contratación (Requests)
 CREATE TABLE public.requests (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   client_id uuid NOT NULL,
@@ -95,7 +86,7 @@ CREATE TABLE public.requests (
   CONSTRAINT requests_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.services(id)
 );
 
--- 6. TABLA PUBLIC.RATINGS (Calificaciones y Reputación)
+-- 6. Calificaciones y Reseñas
 CREATE TABLE public.ratings (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   request_id uuid NOT NULL,
@@ -110,7 +101,7 @@ CREATE TABLE public.ratings (
   CONSTRAINT ratings_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.profiles(id)
 );
 
--- 7. TABLA PUBLIC.MESSAGES (Mensajería de Chat en Tiempo Real)
+-- 7. Historial de Mensajería (Chat)
 CREATE TABLE public.messages (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   sender_id uuid NOT NULL,
@@ -123,7 +114,7 @@ CREATE TABLE public.messages (
   CONSTRAINT messages_receiver_id_fkey FOREIGN KEY (receiver_id) REFERENCES public.profiles(id)
 );
 
--- 8. TABLA PUBLIC.REPORTS (Denuncias y Moderación)
+-- 8. Reportes y Denuncias
 CREATE TABLE public.reports (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   reporter_id uuid NOT NULL,
@@ -135,7 +126,7 @@ CREATE TABLE public.reports (
   CONSTRAINT reports_reported_user_id_fkey FOREIGN KEY (reported_user_id) REFERENCES public.profiles(id)
 );
 
--- 9. TABLA PUBLIC.SERVICE_IMAGES (Galería del Portafolio)
+-- 9. Galería de Imágenes de Servicio
 CREATE TABLE public.service_images (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   service_id uuid,
@@ -147,23 +138,4 @@ CREATE TABLE public.service_images (
 ```
 
 ---
-
-## 3. 🔗 Mapa de Claves Foráneas (Foreign Keys Summary)
-
-- `profiles.id` ➔ `auth.users.id`
-- `services.provider_id` ➔ `profiles.id`
-- `services.category_id` ➔ `categories.id`
-- `availability.provider_id` ➔ `profiles.id`
-- `requests.client_id` ➔ `profiles.id`
-- `requests.service_id` ➔ `services.id`
-- `ratings.request_id` ➔ `requests.id`
-- `ratings.client_id` ➔ `profiles.id`
-- `ratings.provider_id` ➔ `profiles.id`
-- `messages.sender_id` ➔ `profiles.id`
-- `messages.receiver_id` ➔ `profiles.id`
-- `reports.reporter_id` ➔ `profiles.id`
-- `reports.reported_user_id` ➔ `profiles.id`
-- `service_images.service_id` ➔ `services.id`
-
----
-*Esquema oficial de base de datos para la plataforma YÁYA - BH++ Team*
+*BH++ Team - Arquitectura de Datos YÁYA*

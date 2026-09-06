@@ -13,15 +13,15 @@ En la plataforma **YÁYA**, la seguridad de los datos se gestiona directamente e
 Para permitir que las cuentas con rol `'admin'` gestionen y modifiquen la plataforma directamente desde la App móvil (sin requerir acceso manual a la consola de Supabase), se establecen políticas RLS especiales para administradores sobre todas las tablas del esquema relacional (`profiles`, `services`, `availability`, `requests`, `messages`, `reports`, `ratings`, `service_images`).
 
 ### **Garantía de Borrado Atómico en Cascada sin Violación de Claves Foráneas (`Code 23503`)**
-Para evitar la excepción PostgreSQL `Code 23503` (`requests_client_id_fkey`) y eliminar servicios u objetos huérfanos, el método `AdminViewModel.deleteUserAccount` ejecuta una purga atómica en 8 fases respetando el orden de dependencias relacionales:
-1. `ratings` (Calificaciones/Reseñas emitidas o recibidas)
-2. `requests` (Solicitudes creadas como cliente o recibidas por servicios del prestador)
+Para evitar la excepción PostgreSQL `Code 23503` y garantizar la eliminación limpia de cuentas, el sistema utiliza la función RPC `admin_delete_user_account` con privilegios `SECURITY DEFINER`. Esta función ejecuta una purga atómica en 8 fases respetando el orden de dependencias relacionales:
+1. `ratings` (Calificaciones/Reseñas)
+2. `requests` (Solicitudes)
 3. `messages` (Mensajes de chat)
 4. `reports` (Denuncias y reportes)
-5. `service_images` (Galería de imágenes de los servicios del prestador)
-6. `services` (Servicios y talentos del prestador)
-7. `availability` (Jornada maestra y horarios de atención)
-8. `profiles` (Perfil principal del usuario)
+5. `service_images` (Galería de imágenes)
+6. `services` (Servicios y talentos)
+7. `availability` (Horarios de atención)
+8. `profiles` (Perfil principal)
 
 ---
 
